@@ -14,6 +14,22 @@
 #           USA/
 #           files that apply to all scales
 #     scale_files/
+#' Title
+#'
+#' @param species_nm
+#' @param scale_nm
+#' @param root_pth
+#' @param force_crs
+#' @param eer_pkg
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' @import dplyr
+#' @import sf
+#' @importFrom raster raster crs
 run_CCVI_calcs <- function(species_nm, scale_nm, root_pth, force_crs = TRUE,
                            eer_pkg = requireNamespace("exactextractr",
                                                       quietly = TRUE)){
@@ -142,15 +158,4 @@ run_CCVI_calcs <- function(species_nm, scale_nm, root_pth, force_crs = TRUE,
 
 }
 
-# project crs using gdalUtils::gdalwarp
 
-wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE, ...){
-  if(!requireNamespace("gdalUtils", quietly = TRUE)){
-    stop("package gdalUtils is required for this function. Call" ,
-         "install.packages(\"gdalUtils\") to install it.")
-  }
-  input <- raster(rast)
-  src_crs <- input %>% crs() %>% .@projargs
-  gdalUtils::gdalwarp(rast, out_path, src_crs, ref_crs,
-                      overwrite = overwrite, ...)
-}

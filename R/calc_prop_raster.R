@@ -1,5 +1,11 @@
 #' Get the proportion of each class in a raster that overlaps a polygon
 #'
+#' @param rast
+#' @param poly
+#' @param var_name
+#' @param scope
+#' @param val_range
+#' @param eer_pkg
 calc_prop_raster <- function(rast, poly, var_name, scope, val_range = 1:6,
                              eer_pkg = requireNamespace("exactextractr",
                                                         quietly = TRUE)){

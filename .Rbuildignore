@@ -1,2 +1,4 @@
 ^ccviR\.Rproj$
 ^\.Rproj\.user$
+data\*
+documents\*

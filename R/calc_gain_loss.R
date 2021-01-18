@@ -1,4 +1,14 @@
 # Get the proportion of habitat gained and lost in range
+#' Title
+#'
+#' @param rast
+#' @param poly
+#' @param eer_pkg
+#'
+#' @return
+#' @export
+#'
+#' @examples
 calc_gain_loss <- function(rast, poly,
                            eer_pkg){
   if(eer_pkg){
@@ -17,10 +27,11 @@ calc_gain_loss <- function(rast, poly,
     filter(!is.na(value), value > 0) %>%
     mutate(gain_loss = case_when(value == 1 ~ "lost",
                                  value > 1 & value < 7 ~ "maint",
-                                 value == 7 ~ "gain") %>% factor(levels = c("gain", "lost", "maint"))) %>%
+                                 value == 7 ~ "gain") %>%
+             factor(levels = c("gain", "lost", "maint"))) %>%
     group_by(gain_loss, .drop = FALSE) %>%
     summarise(coverage_fraction = sum(coverage_fraction)) %>%
-    pivot_wider(names_from = gain_loss, values_from = coverage_fraction) %>%
+    tidyr::pivot_wider(names_from = gain_loss, values_from = coverage_fraction) %>%
     transmute(perc_lost = (lost/(lost + maint) * 100) %>% round(3),
               perc_gain = (gain/(lost + maint) * 100) %>% round(3),
               perc_maint = (maint/(lost+maint) * 100) %>% round(3))

@@ -7,6 +7,4 @@
 ## usethis namespace: end
 NULL
 
-#' @import dplyr
-#' @import sf
-#' @importFrom raster raster crs
+

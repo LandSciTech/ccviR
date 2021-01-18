@@ -11,7 +11,7 @@ if(!requireNamespace("gdalUtils", quietly = TRUE)){
 }
 
 # I tend to load raster first if I am using tidyverse due to naming conflicts
-library(raster) 
+library(raster)
 library(tidyverse)
 library(sf)
 # library(rasterVis)
@@ -36,7 +36,7 @@ map(fls, ~wrap_gdalwarp(.x, ref_crs, str_replace(.x, "change", "changeWGS84")))
 
 # # compare results
 # input <- raster(rast_pth)
-# 
+#
 # plot(input)
 # plot(out)
 
@@ -47,7 +47,7 @@ AMCO_NA <- run_CCVI_calcs(
   root_pth = "data"
 )
 
-# Run CCVI for one species
+ # Run CCVI for one species
 BANS_NA <- run_CCVI_calcs(
   species_nm = "BANS",
   scale_nm = "NA",
@@ -61,13 +61,13 @@ un_non_breed_BANS <- st_union(non_breed_BANS)
 # with things wraping around the 180/-180 line or reduce resolution?
 
 # Run for multiple scales
-AMCO_all <- map_df(list("NA", "CAN", "USA"), ~run_CCVI_calcs("AMCO", .x, "data")) 
+AMCO_all <- map_df(list("NA", "CAN", "USA"), ~run_CCVI_calcs("AMCO", .x, "data"))
 
 write.csv(AMCO_all, "data/outputs/AMCO_NA_CAN_USA.csv", row.names = FALSE)
 
 # Run for multiple species and scales
-results_all <- map_df(list("AMCO", "AWPE"), 
-                      ~map_df(list("NA", "CAN", "USA"), 
+results_all <- map_df(list("AMCO", "AWPE"),
+                      ~map_df(list("NA", "CAN", "USA"),
                               ~run_CCVI_calcs(.y, .x, "data"), .y = .x))
 
 write.csv(results_all, "data/outputs/AMCO_AWPE_NA_CAN_USA.csv", row.names = FALSE)
@@ -76,13 +76,13 @@ write.csv(results_all, "data/outputs/AMCO_AWPE_NA_CAN_USA.csv", row.names = FALS
 
 # Tried raster::extract version but takes > 20 min so stopped
 # source("scripts/CCVI_functions.R")
-# library(raster) 
+# library(raster)
 # library(tidyverse)
 # library(sf)
 # AWPE_NA <- run_CCVI_calcs(
 #   species_nm = "AWPE",
 #   scale_nm = "NA",
 #   root_pth = "data",
-#   force_crs = FALSE, 
+#   force_crs = FALSE,
 #   eer_pkg = FALSE
 # )

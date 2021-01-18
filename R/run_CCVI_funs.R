@@ -1,5 +1,20 @@
 # run the GIS related functions to get inputs to index calculator for 1 scale
 # and species
+#' Title
+#'
+#' @param species_nm
+#' @param scale_nm
+#' @param range_poly
+#' @param non_breed_poly
+#' @param scale_poly
+#' @param hs_rast
+#' @param clim_vars_lst
+#' @param eer_pkg
+#'
+#' @return
+#' @export
+#'
+#' @examples
 run_CCVI_funs <- function(species_nm, scale_nm, range_poly, non_breed_poly,
                           scale_poly, hs_rast, clim_vars_lst, eer_pkg){
 

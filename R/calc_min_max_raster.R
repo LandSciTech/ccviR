@@ -1,4 +1,15 @@
 # Get the min and max of raster that overlaps a polygon
+#' Title
+#'
+#' @param rast
+#' @param poly
+#' @param var_name
+#' @param eer_pkg
+#'
+#' @return
+#' @export
+#'
+#' @examples
 calc_min_max_raster <- function(rast, poly, var_name,
                                 eer_pkg = requireNamespace("exactextractr",
                                                            quietly = TRUE)){
