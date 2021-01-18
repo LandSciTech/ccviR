@@ -1,0 +1,14 @@
+Package: ccviR
+Title: NatureServe CCVI in R
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Sarah",
+           family = "Endicott",
+           role = c("aut", "cre"),
+           email = "sarah.endicott@canada. ca",
+           comment = c(ORCID = "0000-0001-9644-5343"))
+Description: Implements the NatureServe climate change vulnerability index 
+  calculator in R.
+License: TBD
+Encoding: UTF-8
+LazyData: true
