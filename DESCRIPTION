@@ -7,3 +7,12 @@ Description: Implements the NatureServe climate change vulnerability index
 License: TBD
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    dplyr,
+    raster,
+    sf,
+    purrr,
+    tidyr
+Suggests: 
+    exactextractr,
+    gdalUtils
