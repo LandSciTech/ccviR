@@ -1,5 +1,5 @@
 # Get the proportion of habitat gained and lost in range
-#' Title
+#' Get the proportion of habitat gained and lost in range
 #'
 #' @param rast
 #' @param poly
