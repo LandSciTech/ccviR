@@ -16,7 +16,7 @@ calc_prop_raster <- function(rast, poly, var_name, scope, val_range = 1:6,
       mutate(value = factor(value, levels = val_range)) %>%
       group_by(value, .drop = FALSE) %>%
       summarise(sum = sum(coverage_fraction)) %>%
-      transmute(value, prop = sum/sum(sum) * 100 %>% round(3))
+      transmute(value, prop = (sum/sum(sum) * 100) %>% round(3))
 
   } else {
     message("install package exactextractr for much faster execution")
