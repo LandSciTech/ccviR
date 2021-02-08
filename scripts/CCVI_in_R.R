@@ -17,9 +17,6 @@ library(sf)
 # library(rasterVis)
 # library(tmap)
 
-# this will load the functions defined in this script into Global environment
-# so that we can use them below
-source("scripts/CCVI_functions.R")
 
 # faster project raster
 ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -40,25 +37,14 @@ map(fls, ~wrap_gdalwarp(.x, ref_crs, str_replace(.x, "change", "changeWGS84")))
 # plot(input)
 # plot(out)
 
-# Run CCVI for one species
+
+# Exposure Spatial processing #===============================================
+# Run CCVI exposure for one species
 AMCO_NA <- run_CCVI_calcs(
   species_nm = "AMCO",
   scale_nm = "NA",
   root_pth = "data"
 )
-
- # Run CCVI for one species
-BANS_NA <- run_CCVI_calcs(
-  species_nm = "BANS",
-  scale_nm = "NA",
-  root_pth = "data"
-)
-
-non_breed_BANS <- st_read("data/species_files/BANS/BANS_non_breeding.shp")
-un_non_breed_BANS <- st_union(non_breed_BANS)
-# time for 1 run is 0.72 mins
-# hs_rast is 165 million cells which slows things down. Either fix the issue
-# with things wraping around the 180/-180 line or reduce resolution?
 
 # Run for multiple scales
 AMCO_all <- map_df(list("NA", "CAN", "USA"), ~run_CCVI_calcs("AMCO", .x, "data"))
@@ -72,17 +58,38 @@ results_all <- map_df(list("AMCO", "AWPE"),
 
 write.csv(results_all, "data/outputs/AMCO_AWPE_NA_CAN_USA.csv", row.names = FALSE)
 
+# Vulnerability index calculations #===========================================
 
+# convert from results table in excel to input for function to compare
+res_tbl <- readxl::read_excel("documents/ccvi_release_3.02_1_jun_2016_0.xlsm",
+                   sheet = "Results Table", range = "A5:CI7")
 
-# Tried raster::extract version but takes > 20 min so stopped
-# source("scripts/CCVI_functions.R")
-# library(raster)
-# library(tidyverse)
-# library(sf)
-# AWPE_NA <- run_CCVI_calcs(
-#   species_nm = "AWPE",
-#   scale_nm = "NA",
-#   root_pth = "data",
-#   force_crs = FALSE,
-#   eer_pkg = FALSE
-# )
+res_tbl2 <- res_tbl %>%
+  select_if(~!all(is.na(.x))) %>%
+  select(`Taxonomic Group`:Migratory, B1...25:D4...77, -`Geographic Area`) %>%
+  rename_all(~stringr::str_remove(.x, "\\.\\.\\.\\d\\d")) %>%
+  rename(Z2 = `Cave/GW`, Z3 = Migratory) %>%
+  tidyr::pivot_longer(c(-Species, -`Taxonomic Group`),
+                      names_to = "Code",
+                      values_to = "Value") %>%
+  tidyr::separate(Value, c("Value1", "Value2", "Value3", "Value4"), fill = "right",
+                  sep = "-") %>%
+  mutate_at(vars(contains("Value")), ~case_when(.x == "Inc" ~ 2,
+                                                .x == "SI" ~ 1,
+                                                .x == "N" ~ 0,
+                                                .x == "U" ~ -1,
+                                                .x == "N/A" ~ NA_real_,
+                                                .x == "" ~ NA_real_,
+                                                .x == "X" ~ 1,
+                                                is.na(.x) ~ NA_real_,
+                                                TRUE ~ 999))
+
+index_from_excel <- res_tbl %>% select(Species, Index:Confidence)
+
+res_tbl_lst <- split(res_tbl2, f = res_tbl2$Species)
+
+exp_df1 <-
+
+exp_dfs <- read.csv("data/outputs/AMCO_NA_CAN_USA.csv") %>% split(.$scale)
+
+purrr::map2(res_tbl_lst, exp_dfs, ~calc_vulnerability(exp_df = .y, vuln_df = .x))
