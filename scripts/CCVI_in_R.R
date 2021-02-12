@@ -76,7 +76,8 @@ res_tbl2 <- res_tbl %>%
                       values_to = "Value") %>%
   tidyr::separate(Value, c("Value1", "Value2", "Value3", "Value4"), fill = "right",
                   sep = "-") %>%
-  mutate_at(vars(contains("Value")), ~case_when(.x == "Inc" ~ 2,
+  mutate_at(vars(contains("Value")), ~case_when(.x == "GI" ~ 3,
+                                                .x == "Inc" ~ 2,
                                                 .x == "SI" ~ 1,
                                                 .x == "N" ~ 0,
                                                 .x == "U" ~ -1,
