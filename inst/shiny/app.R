@@ -3,6 +3,7 @@
 library(shiny)
 library(shinyFiles)
 library(tmap)
+library(tidyr)
 devtools::load_all()
 #library(ccviR)
 
@@ -16,6 +17,10 @@ fieldsMandatory <- c("assessor_name", "geo_location", "tax_grp", "species_name")
 # File path ids to use with file choose
 filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
                  "hs_rast_pth")
+
+# Input options
+valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
+valueOpts <- c(3, 2, 1, 0)
 
 # add an asterisk to an input label
 labelMandatory <- function(label) {
@@ -65,6 +70,7 @@ appCSS <-
   "
 
 shinyApp(
+  # Header #=================================
   ui = fluidPage(
     shinyjs::useShinyjs(),
     shinyjs::inlineCSS(appCSS),
@@ -81,7 +87,7 @@ shinyApp(
           HTML("&bull;"),
           a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"))
     ),
-
+    # Species Info #===============
     fluidRow(
       column(width = 12,
              div(
@@ -115,10 +121,11 @@ shinyApp(
              )
       )
     ),
+    # Spatial Analysis #============
     fluidRow(
       column(6,
              div(
-               id = "secA",
+               id = "spatial",
                h3("Spatial data analysis"),
                strong("Folder location of climate data:"),
                shinyDirButton("clim_var_dir", "Choose a folder",
@@ -154,16 +161,198 @@ shinyApp(
                )
              )
       )
+    ),
+    fluidRow(
+      column(12,
+             shinyjs::hidden(
+               div(
+                 id = "spat_res",
+                 DT::dataTableOutput("spat_res")
+               )
+             )
+      )
+    ),
+    # Section B questions #=================
+    fluidRow(
+      column(12,
+             div(id = "secB",
+                 h3("Section B: Indirect Exposure to Climate Change"),
+                 h4("Evaluate for specific geographical area under consideration"),
+                 h5("Factors that influence vulnerability (* at least three required)"),
+                 actionButton("guideB", "Show guidelines"),
+                 checkboxGroupInput("B1", "1) Exposure to sea level rise:",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("B2a", "2a) Distribution relative to natural barriers",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("B2b", "2b) Distribution relative to anthropogenic barriers",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+
+                 checkboxGroupInput("B1", "  3) Predicted impact of land use changes resulting from human responses to climate change",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE)
+                 )
+             )
+    ),
+    # Section C questions #=============================
+    fluidRow(
+      column(12,
+             div(id = "secC",
+                 h3("Section C: Sensitivity and Adaptive Capacity"),
+                 h5("(* at least 10 required)"),
+                 actionButton("guideC", "Show guidelines"),
+                 checkboxGroupInput("C1", "1) Dispersal and movements",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+
+                 strong("2a) Predicted sensitivity to changes in temperature:"),
+                 checkboxGroupInput("C2ai", "i) historical thermal niche. Leave blank except to override the spatial analysis.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("C2aii", "ii) physiological thermal niche. Leave blank except to override the spatial analysis.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+
+                 strong("2b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
+                 checkboxGroupInput("C2bi", "i)historical hydrological niche. Leave blank except to override the spatial analysis.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("C2bii", "ii) physiological hydrological niche.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+
+                 checkboxGroupInput("C2c", "2c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C2d", "2d) Dependence on ice, ice-edge, or snow-cover habitats.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+
+                 checkboxGroupInput("C3", "3) Restriction to uncommon landscape/geological features or derivatives.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4a", "4a) Dependence on other species to generate required habitat.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4b", "4b) Dietary versatility (animals only).",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4c", "4c) Pollinator versatility (plants only).",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4d", "4d) Dependence on other species for propagule dispersal.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4e", "4e) Sensitivity to pathogens or natural enemies.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4f", "4f) Sensitivity to competition from native or non-native species.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C4f", "4f) Forms part of an interspecific interaction not covered by 4a-f.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+
+                 checkboxGroupInput("C5a", "5a) Measured genetic variation.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 checkboxGroupInput("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are “unknown”).",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+
+                 checkboxGroupInput("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+             )
+      )
+    ),
+    # Section D questions #=============================
+    fluidRow(
+      column(12,
+             div(id = "secD",
+                 h3("Section D: Documented or Modeled Response to Climate Change"),
+                 h5("(Optional; May apply across the range of a species)"),
+                 actionButton("guideD", "Show guidelines"),
+                 checkboxGroupInput("D1", "1) Documented response to recent climate change. ",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("D2", "2) Modeled future (2050) change in population or range size.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("D3", "3) Overlap of modeled future (2050) range with current range.",
+                                    choiceNames = valueNms,
+                                    choiceValues = valueOpts,
+                                    inline = TRUE),
+                 checkboxGroupInput("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
+                                    choiceNames = valueNms[2:4],
+                                    choiceValues = valueOpts[2:4],
+                                    inline = TRUE),
+                 )
+             )
+    ),
+    fluidRow(
+      column(12,
+             div(
+               id = "formData",
+               DT::dataTableOutput("formData")
+             ))
     )
+
   ),
+  # Server #========================
   server = function(input, output, session) {
-    volumes <- c(wd = "C:/Users/endicotts/Documents/Ilona/ccviR",
+    volumes <- c(wd = "C:/Users/endicotts/Documents/Ilona/ccviR/data",
                  Home = fs::path_home(),
                  getVolumes()())
 
     # Find file paths
     shinyDirChoose(input, "clim_var_dir", root = volumes)
     purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input)
+
+    # Show guidelines with additional info for each section
+    observeEvent(input$guideB, {
+      showModal(modalDialog(
+        title = "Section B Guidelines",
+        includeHTML("C:/Users/endicotts/Documents/Definitions and Guidelines for Scoring Risk Factors.html")
+      ))
+    })
+
+    observeEvent(input$guideC, {
+      showModal(modalDialog(
+        title = "Section C Guidelines",
+        includeHTML("C:/Users/endicotts/Documents/Definitions and Guidelines for Scoring Risk Factors.html")
+      ))
+    })
 
     # Enable the Submit button when all mandatory fields are filled out
     observe({
@@ -176,14 +365,6 @@ shinyApp(
       mandatoryFilled <- all(mandatoryFilled)
 
       shinyjs::toggleState(id = "submit", condition = mandatoryFilled)
-    })
-
-    # Gather all the form inputs (and add timestamp)
-    formData <- reactive({
-      data <- sapply(fieldsAll, function(x) input[[x]])
-      data <- c(data, timestamp = epochTime())
-      data <- t(data)
-      data
     })
 
     # When the Submit button is clicked, submit the response
@@ -219,9 +400,10 @@ shinyApp(
 
     observeEvent(input$loadSpatial, {
       shinyjs::show("map")
+      shinyjs::show("spat_res")
     })
 
-    # render the admin panel
+    # render the map panel
     output$mapPanel <- renderUI({
 
       div(
@@ -232,10 +414,12 @@ shinyApp(
       )
     })
 
+    # output file paths #===========================
     output$range_poly_pth <- renderText({
       parseFilePaths(volumes, input$range_poly_pth)$datapath
     })
 
+    # load spatial data #===================
     clim_vars <- reactive({
       root_pth <- parseDirPath(volumes, input$clim_var_dir)
 
@@ -274,16 +458,65 @@ shinyApp(
                                  input$range_poly_pth)$datapath)
       })
 
-    # Make map
-    output$range_map <- tmap::renderTmap({
-      tmap::qtm(clim_vars()$mat)+
-        tmap::qtm(clim_vars()$tundra, shape.col = "red", fill = NULL)+
-        tmap::qtm(range_poly(), fill = NULL)
+    nonbreed_poly <- reactive({
+      sf::st_read(parseFilePaths(volumes,
+                                 input$nonbreed_poly_pth)$datapath)
     })
 
+    assess_poly <- reactive({
+      sf::st_read(parseFilePaths(volumes,
+                                 input$assess_poly_pth)$datapath)
+    })
+
+    hs_rast <- reactive({
+      raster::raster(parseFilePaths(volumes,
+                                    input$hs_rast_pth)$datapath)
+    })
+
+    # Make map
+    output$range_map <- tmap::renderTmap({
+     # tmap::qtm(clim_vars()$mat)+
+        tmap::qtm(clim_vars()$map)+
+        #tmap::qtm(clim_vars()$cmd)+
+        #tmap::qtm(clim_vars()$ccei)+
+        #tmap::qtm(clim_vars()$htn)+
+        #tmap::qtm(hs_rast())+
+        tmap::qtm(clim_vars()$tundra, borders = "red", fill = NULL)+
+        tmap::qtm(range_poly(), fill = NULL)+
+        tmap::qtm(nonbreed_poly(), fill = NULL)+
+        tmap::qtm(assess_poly(), fill = NULL, borders = "green")
+    })
+
+    # Do spatial analysis # ===========
+
+    sp_nm <- reactive(input$species_name)
+    scale_nm <- reactive(input$geo_location)
 
 
+    output$spat_res <- DT::renderDataTable({
+      spat_res <- run_CCVI_funs(species_nm = sp_nm(),
+                                scale_nm = scale_nm(),
+                                range_poly = range_poly(),
+                                non_breed_poly = nonbreed_poly(),
+                                scale_poly = assess_poly(),
+                                hs_rast = hs_rast(),
+                                clim_vars_lst = clim_vars(),
+                                eer_pkg = TRUE)})
 
+    # Calculate Index value #================================
+     # Gather all the form inputs
+    formData <- reactive({
+      vuln_qs <- stringr::str_subset(names(input), "[B,C,D]\\d.*")
+      data <- sapply(vuln_qs, function(x) input[[x]])
+      data <- t(data)
+      data
+    })
+
+    # format data for use in calc_vulnerability
+    vuln_df_in <- formData %>%
+      pivot_longer(everything(), names_to = "Code", values_to = Value)
+
+    output$formData <- DT::renderDataTable(formData())
 
     # Allow user to download responses
     output$downloadBtn <- downloadHandler(
