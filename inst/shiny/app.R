@@ -1,6 +1,10 @@
 # based on example app: https://github.com/daattali/shiny-server/blob/master/mimic-google-form/app.R
 # and blog post explaining it: https://deanattali.com/2015/06/14/mimicking-google-form-shiny/
 library(shiny)
+library(shinyFiles)
+library(tmap)
+devtools::load_all()
+#library(ccviR)
 
 # which fields get saved
 fieldsAll <- c("assessor_name", "geo_location", "tax_grp", "species_name",
@@ -8,6 +12,10 @@ fieldsAll <- c("assessor_name", "geo_location", "tax_grp", "species_name",
 
 # which fields are mandatory
 fieldsMandatory <- c("assessor_name", "geo_location", "tax_grp", "species_name")
+
+# File path ids to use with file choose
+filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
+                 "hs_rast_pth")
 
 # add an asterisk to an input label
 labelMandatory <- function(label) {
@@ -63,7 +71,7 @@ shinyApp(
     title = "ccviR app",
 
     div(id = "header",
-        h1("An app to run NatureServe CCVI process"),
+        h1("An app to run the NatureServe CCVI process"),
         h4("subtitle"),
         strong(
           span("Created by Sarah Endicott"),
@@ -111,16 +119,30 @@ shinyApp(
       column(6,
              div(
                id = "secA",
-               h3("Section A: Exposure to Local Climate Change (Calculate for species' range within assessment area)"),
-               textInput("clim_var_dir", "Folder location of climate data",
-                         placeholder = "C:/Users/path/to/folder"),
-               textInput("range_poly_pth", "Range polygon shapefile"),
-               textInput("nonbreed_poly_pth", "Non-breeding Range polygon shapefile",
-                         placeholder = "C:/Users/path/to/file.shp"),
-               textInput("assess_poly_pth", "Assessment area polygon shapefile",
-                         placeholder = "C:/Users/path/to/file.shp"),
-               textInput("hs_rast_pth", "Habitat suitability raster file",
-                         placeholder = "C:/Users/path/to/file.tif"),
+               h3("Spatial data analysis"),
+               strong("Folder location of climate data:"),
+               shinyDirButton("clim_var_dir", "Choose a folder",
+                              "Folder location of climate data"),
+               br(),
+               strong("Range polygon shapefile:"),
+               shinyFilesButton("range_poly_pth", "Choose file",
+                                "Range polygon shapefile", multiple = FALSE),
+               verbatimTextOutput("range_poly_pth", placeholder = TRUE),
+               br(),
+               strong("Non-breeding Range polygon shapefile"),
+               shinyFilesButton("nonbreed_poly_pth", "Choose file",
+                                "Non-breeding Range polygon shapefile",
+                                multiple = FALSE),
+               br(),
+               strong("Assessment area polygon shapefile"),
+               shinyFilesButton("assess_poly_pth", "Choose file",
+                                "Assessment area polygon shapefile",
+                                multiple = FALSE),
+               br(),
+               strong("Habitat suitability raster file"),
+               shinyFilesButton("hs_rast_pth", "Choose file",
+                                "Habitat suitability raster file", multiple = FALSE),
+               br(),
                actionButton("loadSpatial", "Load", class = "btn-primary")
              )
       ),
@@ -135,6 +157,13 @@ shinyApp(
     )
   ),
   server = function(input, output, session) {
+    volumes <- c(wd = "C:/Users/endicotts/Documents/Ilona/ccviR",
+                 Home = fs::path_home(),
+                 getVolumes()())
+
+    # Find file paths
+    shinyDirChoose(input, "clim_var_dir", root = volumes)
+    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input)
 
     # Enable the Submit button when all mandatory fields are filled out
     observe({
@@ -203,9 +232,12 @@ shinyApp(
       )
     })
 
-    # Make map
-    output$range_map <- tmap::renderTmap({
-      root_pth <- input$clim_var_dir
+    output$range_poly_pth <- renderText({
+      parseFilePaths(volumes, input$range_poly_pth)$datapath
+    })
+
+    clim_vars <- reactive({
+      root_pth <- parseDirPath(volumes, input$clim_var_dir)
 
       clim_vars <- list(
         mat = list.files(root_pth,
@@ -234,12 +266,19 @@ shinyApp(
                          full.names = TRUE) %>% raster()
 
       )
+      clim_vars
+    })
 
-      range_poly <- sf::st_read(input$range_poly_pth)
+    range_poly <- reactive({
+      sf::st_read(parseFilePaths(volumes,
+                                 input$range_poly_pth)$datapath)
+      })
 
-      tmap::qtm(clim_vars$mat)+
-        tmap::qtm(clim_vars$tundra, shape.col = "red", fill = NULL)+
-        tmap::qtm(range_poly, fill = NULL)
+    # Make map
+    output$range_map <- tmap::renderTmap({
+      tmap::qtm(clim_vars()$mat)+
+        tmap::qtm(clim_vars()$tundra, shape.col = "red", fill = NULL)+
+        tmap::qtm(range_poly(), fill = NULL)
     })
 
 
