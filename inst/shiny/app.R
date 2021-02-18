@@ -30,6 +30,18 @@ labelMandatory <- function(label) {
   )
 }
 
+# format multiple values from checkbox
+getMultValues <- function(x, nm){
+  if(length(x) == 0){
+    return(data.frame(Code = nm, Value1 = NA, stringsAsFactors = FALSE))
+  }
+  df <- data.frame(val = x, Code = nm, N = 1:length(x),
+                   stringsAsFactors = FALSE) %>%
+    pivot_wider(id_col = Code, names_from = N,
+                values_from = val, names_prefix = "Value")
+
+}
+
 # get current Epoch time
 epochTime <- function() {
   return(as.integer(Sys.time()))
@@ -69,9 +81,8 @@ appCSS <-
    #header { background: #fff; border-bottom: 1px solid #ddd; margin: -20px -15px 0; padding: 15px 15px 10px; }
   "
 
-shinyApp(
   # Header #=================================
-  ui = fluidPage(
+ui <-  fluidPage(
     shinyjs::useShinyjs(),
     shinyjs::inlineCSS(appCSS),
     title = "ccviR app",
@@ -317,6 +328,7 @@ shinyApp(
                                     choiceNames = valueNms[2:4],
                                     choiceValues = valueOpts[2:4],
                                     inline = TRUE),
+                 actionButton("submitVuln", "Submit", class = "btn-primary")
                  )
              )
     ),
@@ -328,32 +340,22 @@ shinyApp(
              ))
     )
 
-  ),
+  )
+
   # Server #========================
-  server = function(input, output, session) {
+server <- function(input, output, session) {
+
+    # start up Note this time out is because when I disconnected from VPN it
+    # made the getVolumes function hang forever because it was looking for
+    # drives that were no longer connected. Now it will give an error
+  R.utils::withTimeout({
     volumes <- c(wd = "C:/Users/endicotts/Documents/Ilona/ccviR/data",
                  Home = fs::path_home(),
                  getVolumes()())
+  }, timeout = 10, onTimeout = "error")
 
-    # Find file paths
-    shinyDirChoose(input, "clim_var_dir", root = volumes)
-    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input)
 
-    # Show guidelines with additional info for each section
-    observeEvent(input$guideB, {
-      showModal(modalDialog(
-        title = "Section B Guidelines",
-        includeHTML("C:/Users/endicotts/Documents/Definitions and Guidelines for Scoring Risk Factors.html")
-      ))
-    })
-
-    observeEvent(input$guideC, {
-      showModal(modalDialog(
-        title = "Section C Guidelines",
-        includeHTML("C:/Users/endicotts/Documents/Definitions and Guidelines for Scoring Risk Factors.html")
-      ))
-    })
-
+    # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
     observe({
       mandatoryFilled <-
@@ -367,59 +369,29 @@ shinyApp(
       shinyjs::toggleState(id = "submit", condition = mandatoryFilled)
     })
 
-    # When the Submit button is clicked, submit the response
-    observeEvent(input$submit, {
+    # When the Submit button is clicked create table of responses
+    # Not really needed now but when on separate pages will move to next page
+    # sp_df <- eventReactive(input$submit, {
+    #
+    #
+    # })
 
-      # User-experience stuff
-      shinyjs::disable("submit")
-      shinyjs::show("submit_msg")
-      shinyjs::hide("error")
+    # get values to use later
+    sp_nm <- reactive(input$species_name)
+    scale_nm <- reactive(input$geo_location)
 
-      # Save the data (show an error message in case of error)
-      tryCatch({
-        saveData(formData())
-        shinyjs::reset("form")
-        shinyjs::hide("form")
-        shinyjs::show("thankyou_msg")
-      },
-      error = function(err) {
-        shinyjs::html("error_msg", err$message)
-        shinyjs::show(id = "error", anim = TRUE, animType = "fade")
-      },
-      finally = {
-        shinyjs::enable("submit")
-        shinyjs::hide("submit_msg")
-      })
-    })
+    # Spatial Analysis #===============
+    # Find file paths
+    shinyDirChoose(input, "clim_var_dir", root = volumes)
+    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input)
 
-    # submit another response
-    observeEvent(input$submit_another, {
-      shinyjs::show("form")
-      shinyjs::hide("thankyou_msg")
-    })
-
-    observeEvent(input$loadSpatial, {
-      shinyjs::show("map")
-      shinyjs::show("spat_res")
-    })
-
-    # render the map panel
-    output$mapPanel <- renderUI({
-
-      div(
-        id = "range_map",
-        h2("Range map"),
-        br(), br(),
-        tmap::tmapOutput("range_map"), br(),
-      )
-    })
-
-    # output file paths #===========================
+    # output file paths
     output$range_poly_pth <- renderText({
       parseFilePaths(volumes, input$range_poly_pth)$datapath
     })
+    # TODO: Add these for each file so user can see path selected
 
-    # load spatial data #===================
+    # load spatial data
     clim_vars <- reactive({
       root_pth <- parseDirPath(volumes, input$clim_var_dir)
 
@@ -456,7 +428,7 @@ shinyApp(
     range_poly <- reactive({
       sf::st_read(parseFilePaths(volumes,
                                  input$range_poly_pth)$datapath)
-      })
+    })
 
     nonbreed_poly <- reactive({
       sf::st_read(parseFilePaths(volumes,
@@ -473,10 +445,17 @@ shinyApp(
                                     input$hs_rast_pth)$datapath)
     })
 
+    # Show map when load button clicked (seems like parent expressions don't run
+    # until child is visible)
+    observeEvent(input$loadSpatial, {
+      shinyjs::show("map")
+      shinyjs::show("spat_res")
+    })
+
     # Make map
     output$range_map <- tmap::renderTmap({
-     # tmap::qtm(clim_vars()$mat)+
-        tmap::qtm(clim_vars()$map)+
+      # tmap::qtm(clim_vars()$mat)+
+      tmap::qtm(clim_vars()$map)+
         #tmap::qtm(clim_vars()$cmd)+
         #tmap::qtm(clim_vars()$ccei)+
         #tmap::qtm(clim_vars()$htn)+
@@ -487,45 +466,69 @@ shinyApp(
         tmap::qtm(assess_poly(), fill = NULL, borders = "green")
     })
 
-    # Do spatial analysis # ===========
+    # render the map panel
+    output$mapPanel <- renderUI({
 
-    sp_nm <- reactive(input$species_name)
-    scale_nm <- reactive(input$geo_location)
-
-
-    output$spat_res <- DT::renderDataTable({
-      spat_res <- run_CCVI_funs(species_nm = sp_nm(),
-                                scale_nm = scale_nm(),
-                                range_poly = range_poly(),
-                                non_breed_poly = nonbreed_poly(),
-                                scale_poly = assess_poly(),
-                                hs_rast = hs_rast(),
-                                clim_vars_lst = clim_vars(),
-                                eer_pkg = TRUE)})
-
-    # Calculate Index value #================================
-     # Gather all the form inputs
-    formData <- reactive({
-      vuln_qs <- stringr::str_subset(names(input), "[B,C,D]\\d.*")
-      data <- sapply(vuln_qs, function(x) input[[x]])
-      data <- t(data)
-      data
+      div(
+        id = "range_map",
+        h2("Range map"),
+        br(), br(),
+        tmap::tmapOutput("range_map"), br(),
+      )
     })
 
-    # format data for use in calc_vulnerability
-    vuln_df_in <- formData %>%
-      pivot_longer(everything(), names_to = "Code", values_to = Value)
+    # run spatial calculations
+    spat_res <- reactive({
+      run_CCVI_funs(species_nm = input$species_name,
+                              scale_nm = input$geo_location,
+                              range_poly = range_poly(),
+                              non_breed_poly = nonbreed_poly(),
+                              scale_poly = assess_poly(),
+                              hs_rast = hs_rast(),
+                              clim_vars_lst = clim_vars(),
+                              eer_pkg = TRUE)
+    })
 
-    output$formData <- DT::renderDataTable(formData())
+    # Do spatial analysis
+    output$spat_res <- DT::renderDataTable({
+      spat_res()
+    })
 
-    # Allow user to download responses
-    output$downloadBtn <- downloadHandler(
-      filename = function() {
-        sprintf("mimic-google-form_%s.csv", humanTime())
-      },
-      content = function(file) {
-        write.csv(loadData(), file, row.names = FALSE)
-      }
-    )
-  }
-)
+    # Vulnerability Qs #===============
+    # Show guidelines with additional info for each section
+    observeEvent(input$guideB, {
+      showModal(modalDialog(
+        title = "Section B Guidelines",
+        includeHTML("C:/Users/endicotts/Documents/Definitions and Guidelines for Scoring Risk Factors.html")
+      ))
+    })
+
+    observeEvent(input$guideC, {
+      showModal(modalDialog(
+        title = "Section C Guidelines",
+        includeHTML("C:/Users/endicotts/Documents/Definitions and Guidelines for Scoring Risk Factors.html")
+      ))
+    })
+
+    # Calculate Index value #================================
+
+     # Gather all the form inputs
+    vuln_df <- eventReactive(input$submitVuln, {
+      vuln_qs <- stringr::str_subset(names(input), "[B,C,D]\\d.*")
+      data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
+      #data <- data.frame(names = vuln_qs)
+      data
+      # #data <- t(data)
+      # as_tibble(purrr::compact(data)) %>%
+      #   pivot_longer(everything(), names_to = "Code", values_to = "Value") %>%
+      #   distinct() %>%
+      #   group_by(Code) %>%
+      #   mutate(N = n())# %>%
+      #   #pivot_wider(id_cols = Code, names_from = "N", names_prefix = "Value")
+    })
+
+    output$formData <- DT::renderDataTable(vuln_df())
+
+}
+
+shinyApp(ui, server)
