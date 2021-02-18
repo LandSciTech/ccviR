@@ -158,15 +158,18 @@ ui <-  fluidPage(
                shinyFilesButton("nonbreed_poly_pth", "Choose file",
                                 "Non-breeding Range polygon shapefile",
                                 multiple = FALSE),
+               verbatimTextOutput("nonbreed_poly_pth", placeholder = TRUE),
                br(),
                strong("Assessment area polygon shapefile"),
                shinyFilesButton("assess_poly_pth", "Choose file",
                                 "Assessment area polygon shapefile",
                                 multiple = FALSE),
+               verbatimTextOutput("assess_poly_pth", placeholder = TRUE),
                br(),
                strong("Habitat suitability raster file"),
                shinyFilesButton("hs_rast_pth", "Choose file",
                                 "Habitat suitability raster file", multiple = FALSE),
+               verbatimTextOutput("hs_rast_pth", placeholder = TRUE),
                br(),
                actionButton("loadSpatial", "Load", class = "btn-primary")
              )
@@ -339,15 +342,20 @@ ui <-  fluidPage(
                  )
              )
     ),
+    # Results #===================================
     fluidRow(
       column(12,
              div(
                id = "formData",
-               verbatimTextOutput("index"),
-               verbatimTextOutput("formData")
+               h3("Results"),
+               strong("Climate Change Vulnerability Index: "),
+               span(textOutput("index")),
+               strong("Confidence in index: "),
+               textOutput("conf_index"),
+               plotOutput("conf_graph", width = 200, height = 200)
+               #verbatimTextOutput("formData")
              ))
     )
-
   )
 
   # Server #========================
@@ -396,6 +404,15 @@ server <- function(input, output, session) {
   # output file paths
   output$range_poly_pth <- renderText({
     parseFilePaths(volumes, input$range_poly_pth)$datapath
+  })
+  output$nonbreed_poly_pth <- renderText({
+    parseFilePaths(volumes, input$nonbreed_poly_pth)$datapath
+  })
+  output$assess_poly_pth <- renderText({
+    parseFilePaths(volumes, input$assess_poly_pth)$datapath
+  })
+  output$hs_rast_pth <- renderText({
+    parseFilePaths(volumes, input$hs_rast_pth)$datapath
   })
   # TODO: Add these for each file so user can see path selected
 
@@ -537,9 +554,16 @@ server <- function(input, output, session) {
       mutate(Species = input$species_name)
 
     index <- calc_vulnerability(spat_res(), vuln_df)
+    index
   })
 
-  output$index <- renderPrint(index_res())
+  output$index <- renderText(index_res()$index)
+  output$conf_index <- renderText(index_res()$conf_index)
+  output$conf_graph <- renderPlot({
+    ggplot2::quickplot(x= index, y = frequency, data = index_res()$index_conf,
+                       geom = "col")+
+     ggplot2::theme_classic()
+  })
 }
 
 shinyApp(ui, server)
