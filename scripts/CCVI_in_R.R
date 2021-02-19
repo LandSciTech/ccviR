@@ -31,12 +31,26 @@ fls <- list.files(folder_loc, full.names = TRUE)
 
 map(fls, ~wrap_gdalwarp(.x, ref_crs, str_replace(.x, "change", "changeWGS84")))
 
+hs1 <- raster(fls[[1]])
+hs2 <- raster(fls[[2]])
+fls[[3]] <- fls[[1]]
+
+ras_stk <- raster::stack(fls)
+
+sum_rasts <- raster::calc(ras_stk, function(x){ sum(x == 1, na.rm = TRUE)},
+                          filename = "data/hs_files2/summed_loss.tif")
+
 # # compare results
 # input <- raster(rast_pth)
 #
 # plot(input)
 # plot(out)
 
+# seems to be something wrong with CMD file that means it won't plot with leaflet
+cmd <- raster("data/clim_files/CMD_delta_reclass_NA_WGS84.tif")
+mat <- raster("data/clim_files/MAT_delta_100_reclass_NA.tif")
+
+qtm(cmd) %>% tmap_leaflet()
 
 # Exposure Spatial processing #===============================================
 # Run CCVI exposure for one species

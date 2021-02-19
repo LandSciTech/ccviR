@@ -17,6 +17,7 @@
 #' @examples
 run_CCVI_funs <- function(species_nm, scale_nm, range_poly, non_breed_poly,
                           scale_poly, hs_rast, clim_vars_lst, eer_pkg){
+  message("performing spatial analysis")
 
   # Section A - Exposure to Local Climate Change: #====
 
