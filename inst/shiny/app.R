@@ -105,6 +105,7 @@ ui <-  fluidPage(
     ),
     # Species Info #===============
     tabsetPanel(
+      id = "tabset",
       tabPanel(
         "Species Information",
         column(width = 12,
@@ -122,7 +123,8 @@ ui <-  fluidPage(
                  textInput("common_name", "Common Name"),
                  checkboxInput("cave", "Check if the species is an obligate of caves or groundwater systems"),
                  checkboxInput("mig", "Check if species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
-                 actionButton("submit", "Submit", class = "btn-primary")
+                 actionButton("next1", "Next", class = "btn-primary"),
+                 br(),br()
 
                )
         )),
@@ -136,7 +138,6 @@ ui <-  fluidPage(
                    strong("Folder location of climate data:"),
                    shinyDirButton("clim_var_dir", "Choose a folder",
                                   "Folder location of climate data"),
-
                    verbatimTextOutput("clim_var_dir", placeholder = TRUE),
                    br(),
                    strong("Range polygon shapefile:"),
@@ -161,14 +162,32 @@ ui <-  fluidPage(
                                     "Habitat suitability raster file", multiple = FALSE),
                    verbatimTextOutput("hs_rast_pth", placeholder = TRUE),
                    br(),
-                   actionButton("loadSpatial", "Load", class = "btn-primary")
+                   strong("Click Load to explore map or Next to proceed"),
+                   br(),
+                   actionButton("loadSpatial", "Load", class = "btn-primary"),
+                   actionButton("next2", "Next", class = "btn-primary"),
+                   br(), br()
                  )
           ),
-          column(6,
+          column(8,
                  shinyjs::hidden(
                    div(
-                     id = "map",
-                     uiOutput("mapPanel")
+                     id = "range_map",
+                     h2("Range map"),
+                     br(),
+                     selectInput("rast_plot", "Raster to plot",
+                                 list(Temperature = "mat",
+                                      Precipitation = "map",
+                                      Moisture = "cmd",
+                                      `Climate change exposure index` = "ccei",
+                                      `Historical thermal niche` = "htn",
+                                      `Habitat suitability` = "hs_rast")),
+                     selectInput("poly_plot", "Polygon to plot",
+                                 list(`Non-breeding range` = "nonbreed_poly",
+                                      `Assessment area`= "assess_poly",
+                                      `Physiological thermal niche` = "tundra")),
+                     br(),
+                     tmap::tmapOutput("range_map")
                    )
                  )
           )
@@ -333,7 +352,7 @@ ui <-  fluidPage(
                  id = "formData",
                  h3("Results"),
                  strong("Climate Change Vulnerability Index: "),
-                 span(textOutput("index")),
+                 textOutput("index"),
                  strong("Confidence in index: "),
                  textOutput("conf_index"),
                  plotOutput("conf_graph", width = 200, height = 200)
@@ -368,15 +387,15 @@ server <- function(input, output, session) {
              logical(1))
     mandatoryFilled <- all(mandatoryFilled)
 
-    shinyjs::toggleState(id = "submit", condition = mandatoryFilled)
+    shinyjs::toggleState(id = "next1", condition = mandatoryFilled)
   })
 
-  # When the Submit button is clicked create table of responses
-  # Not really needed now but when on separate pages will move to next page
-  # sp_df <- eventReactive(input$submit, {
-  #
-  #
-  # })
+  # When next button is clicked move to next panel
+  observeEvent(input$next1, {
+    updateTabsetPanel(session, "tabset",
+                      selected = "Spatial Data Analysis"
+    )
+  })
 
   # get values to use later
   sp_nm <- reactive(input$species_name)
@@ -389,7 +408,7 @@ server <- function(input, output, session) {
 
   # output file paths
   output$clim_var_dir <- renderText({
-    parseFilePaths(volumes, input$clim_var_dir)$datapath
+    parseDirPath(volumes, input$clim_var_dir)
   })
   output$range_poly_pth <- renderText({
     parseFilePaths(volumes, input$range_poly_pth)$datapath
@@ -403,7 +422,6 @@ server <- function(input, output, session) {
   output$hs_rast_pth <- renderText({
     parseFilePaths(volumes, input$hs_rast_pth)$datapath
   })
-  # TODO: Add these for each file so user can see path selected
 
   # load spatial data
   clim_vars <- reactive({
@@ -462,34 +480,32 @@ server <- function(input, output, session) {
   # Show map when load button clicked (seems like parent expressions don't run
   # until child is visible)
   observeEvent(input$loadSpatial, {
-    shinyjs::show("map")
+    shinyjs::show("range_map")
     shinyjs::show("spat_res")
   })
 
   # Make map
   output$range_map <- tmap::renderTmap({
-    # tmap::qtm(clim_vars()$mat)+
-    tmap::qtm(clim_vars()$map)+
-      #tmap::qtm(clim_vars()$cmd)+
-      #tmap::qtm(clim_vars()$ccei)+
-      #tmap::qtm(clim_vars()$htn)+
-      #tmap::qtm(hs_rast())+
-      tmap::qtm(clim_vars()$tundra, borders = "red", fill = NULL)+
-      tmap::qtm(range_poly(), fill = NULL)+
-      tmap::qtm(nonbreed_poly(), fill = NULL)+
-      tmap::qtm(assess_poly(), fill = NULL, borders = "green")
-  })
+    if(input$rast_plot %in% c(names(clim_vars()))){
+      rast <- clim_vars()[[input$rast_plot]]
+    } else {
+      rast <- hs_rast()
+    }
 
-  # render the map panel
-  output$mapPanel <- renderUI({
-
-    div(
-      id = "range_map",
-      h2("Range map"),
-      br(), br(),
-      tmap::tmapOutput("range_map"), br(),
+    poly <- switch(input$poly_plot,
+      nonbreed_poly = nonbreed_poly(),
+      assess_poly = assess_poly(),
+      tundra = clim_vars()[["tundra"]]
     )
+
+    tm_shape(rast)+
+      tm_raster()+
+      tm_shape(range_poly())+
+      tm_borders()+
+      tm_shape(poly)+
+      tm_borders(col = "red")
   })
+
 
   # run spatial calculations
   spat_res <- reactive({
@@ -503,10 +519,17 @@ server <- function(input, output, session) {
                   eer_pkg = TRUE)
   })
 
-  # Do spatial analysis
-  output$spat_res <- DT::renderDataTable({
-    spat_res()
+  # When next button is clicked move to next panel
+  observeEvent(input$next2, {
+    updateTabsetPanel(session, "tabset",
+                      selected = "Vulnerability Questions"
+    )
   })
+
+  # # Do spatial analysis Should spatial analysis results be displayed interactively?
+  # output$spat_res <- DT::renderDataTable({
+  #   spat_res()
+  # })
 
   # Vulnerability Qs #===============
   # Show guidelines with additional info for each section
