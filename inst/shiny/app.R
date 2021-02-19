@@ -32,14 +32,6 @@ labelMandatory <- function(label) {
 
 # format multiple values from checkbox
 getMultValues <- function(x, nm){
-  # if(length(x) == 0){
-  #   return(data.frame(Code = nm, Value1 = NA_real_, Value2 = NA, Value3 = NA, Value4 = NA,
-  #                     stringsAsFactors = FALSE))
-  # }
-  # df <- data.frame(val = as.numeric(x), Code = nm, N = 1:length(x),
-  #                  stringsAsFactors = FALSE) %>%
-  #   pivot_wider(id_col = Code, names_from = N,
-  #               values_from = val, names_prefix = "Value")
   x <- as.numeric(x)
 
   df <- data.frame(Code = nm, Value1 = x[1], Value2 = x[2], Value3 = x[3],
@@ -169,9 +161,7 @@ ui <-  fluidPage(
                    br(), br()
                  )
           ),
-          column(8,
-                 shinyjs::hidden(
-                   div(
+          column(8, div(
                      id = "range_map",
                      h2("Range map"),
                      br(),
@@ -190,7 +180,6 @@ ui <-  fluidPage(
                      tmap::tmapOutput("range_map")
                    )
                  )
-          )
         ),
       # Section B questions #=================
       tabPanel(
@@ -198,10 +187,16 @@ ui <-  fluidPage(
         fluidRow(
           column(12,
                  div(id = "secB",
+                     br(), br(),
+                     h4("Allow override of spatial analysis results?"),
+                     checkboxInput("override_spatial", "If checked questions below that are answered by the spatial analysis will be enabled and if they are filled in they will supersede the answer given by the spatial analysis",
+                                   width = "100%"),
+
                      h3("Section B: Indirect Exposure to Climate Change"),
                      h4("Evaluate for specific geographical area under consideration"),
                      h5("Factors that influence vulnerability (* at least three required)"),
                      actionButton("guideB", "Show guidelines"),
+
                      checkboxGroupInput("B1", "1) Exposure to sea level rise:",
                                         choiceNames = valueNms,
                                         choiceValues = valueOpts,
@@ -235,20 +230,31 @@ ui <-  fluidPage(
                                         inline = TRUE),
 
                      strong("2a) Predicted sensitivity to changes in temperature:"),
-                     checkboxGroupInput("C2ai", "i) historical thermal niche. Leave blank except to override the spatial analysis.",
-                                        choiceNames = valueNms,
-                                        choiceValues = valueOpts,
-                                        inline = TRUE),
-                     checkboxGroupInput("C2aii", "ii) physiological thermal niche. Leave blank except to override the spatial analysis.",
-                                        choiceNames = valueNms,
-                                        choiceValues = valueOpts,
-                                        inline = TRUE),
+                     shinyjs::disabled(
+                       div(
+                         id = "override1",
+                         checkboxGroupInput("C2ai", HTML("i) historical thermal niche.<font color=\"#FF0000\"><b> Check override spatial analysis to enable.</b></font>"),
+                                            choiceNames = valueNms,
+                                            choiceValues = valueOpts,
+                                            inline = TRUE),
+
+                         checkboxGroupInput("C2aii", HTML("ii) physiological thermal niche. <font color=\"#FF0000\"><b>Check override spatial analysis to enable.</b></font>"),
+                                            choiceNames = valueNms,
+                                            choiceValues = valueOpts,
+                                            inline = TRUE)
+                       )
+                     ),
 
                      strong("2b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
-                     checkboxGroupInput("C2bi", "i)historical hydrological niche. Leave blank except to override the spatial analysis.",
-                                        choiceNames = valueNms,
-                                        choiceValues = valueOpts,
-                                        inline = TRUE),
+                     shinyjs::disabled(
+                       div(
+                         id = "override2",
+                         checkboxGroupInput("C2bi", HTML("i)historical hydrological niche.  <font color=\"#FF0000\"><b>Check override spatial analysis to enable.</b></font>"),
+                                            choiceNames = valueNms,
+                                            choiceValues = valueOpts,
+                                            inline = TRUE)
+                       )
+                     ),
                      checkboxGroupInput("C2bii", "ii) physiological hydrological niche.",
                                         choiceNames = valueNms,
                                         choiceValues = valueOpts,
@@ -327,14 +333,19 @@ ui <-  fluidPage(
                                         choiceNames = valueNms,
                                         choiceValues = valueOpts,
                                         inline = TRUE),
-                     checkboxGroupInput("D2", "2) Modeled future (2050) change in population or range size.",
-                                        choiceNames = valueNms,
-                                        choiceValues = valueOpts,
-                                        inline = TRUE),
-                     checkboxGroupInput("D3", "3) Overlap of modeled future (2050) range with current range.",
-                                        choiceNames = valueNms,
-                                        choiceValues = valueOpts,
-                                        inline = TRUE),
+                     shinyjs::disabled(
+                       div(
+                         id = "override3",
+                         checkboxGroupInput("D2", HTML("2) Modeled future (2050) change in population or range size. <font color=\"#FF0000\"><b>Check override spatial analysis to enable.</b></font>"),
+                                            choiceNames = valueNms,
+                                            choiceValues = valueOpts,
+                                            inline = TRUE),
+                         checkboxGroupInput("D3", HTML("3) Overlap of modeled future (2050) range with current range. <font color=\"#FF0000\"><b>Check override spatial analysis to enable.</b></font>"),
+                                            choiceNames = valueNms,
+                                            choiceValues = valueOpts,
+                                            inline = TRUE)
+                       )
+                     ),
                      checkboxGroupInput("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
@@ -355,8 +366,8 @@ ui <-  fluidPage(
                  textOutput("index"),
                  strong("Confidence in index: "),
                  textOutput("conf_index"),
-                 plotOutput("conf_graph", width = 200, height = 200)
-                 #verbatimTextOutput("formData")
+                 plotOutput("conf_graph", width = 200, height = 200),
+                 downloadButton("downloadData", "Download results as csv"),
                ))
       )
     )
@@ -423,69 +434,71 @@ server <- function(input, output, session) {
     parseFilePaths(volumes, input$hs_rast_pth)$datapath
   })
 
-  # load spatial data
-  clim_vars <- reactive({
-    root_pth <- parseDirPath(volumes, input$clim_var_dir)
-
-    clim_vars <- list(
-      mat = list.files(root_pth,
-                       pattern = "MAT.*tif$",
-                       full.names = TRUE) %>% raster(),
-
-      map = list.files(root_pth,
-                       pattern = "MAP.*tif$",
-                       full.names = TRUE) %>% raster(),
-
-      tundra = list.files(root_pth,
-                          pattern = "tundra.*shp$",
-                          full.names = TRUE) %>%
-        st_read(agr = "constant", quiet = TRUE),
-
-      cmd = list.files(root_pth,
-                       pattern = "CMD.*tif$",
-                       full.names = TRUE) %>% raster(),
-
-      ccei = list.files(root_pth,
-                        pattern = "ccei.*tif$",
-                        full.names = TRUE) %>% raster(),
-
-      htn = list.files(root_pth,
-                       pattern = "MWMT.*tif$",
-                       full.names = TRUE) %>% raster()
-
-    )
-    clim_vars
-  })
-
-  range_poly <- reactive({
-    sf::st_read(parseFilePaths(volumes,
-                               input$range_poly_pth)$datapath)
-  })
-
-  nonbreed_poly <- reactive({
-    sf::st_read(parseFilePaths(volumes,
-                               input$nonbreed_poly_pth)$datapath)
-  })
-
-  assess_poly <- reactive({
-    sf::st_read(parseFilePaths(volumes,
-                               input$assess_poly_pth)$datapath)
-  })
-
-  hs_rast <- reactive({
-    raster::raster(parseFilePaths(volumes,
-                                  input$hs_rast_pth)$datapath)
-  })
 
   # Show map when load button clicked (seems like parent expressions don't run
-  # until child is visible)
-  observeEvent(input$loadSpatial, {
-    shinyjs::show("range_map")
-    shinyjs::show("spat_res")
+  # # until child is visible)
+   observeEvent(input$loadSpatial, {
+  #   shinyjs::show("range_map")
+  #   shinyjs::show("spat_res")
+     # load spatial data
+     clim_vars <<- reactive({
+       root_pth <- parseDirPath(volumes, input$clim_var_dir)
+
+       clim_vars <- list(
+         mat = list.files(root_pth,
+                          pattern = "MAT.*tif$",
+                          full.names = TRUE) %>% raster(),
+
+         map = list.files(root_pth,
+                          pattern = "MAP.*tif$",
+                          full.names = TRUE) %>% raster(),
+
+         tundra = list.files(root_pth,
+                             pattern = "tundra.*shp$",
+                             full.names = TRUE) %>%
+           st_read(agr = "constant", quiet = TRUE),
+
+         cmd = list.files(root_pth,
+                          pattern = "CMD.*tif$",
+                          full.names = TRUE) %>% raster(),
+
+         ccei = list.files(root_pth,
+                           pattern = "ccei.*tif$",
+                           full.names = TRUE) %>% raster(),
+
+         htn = list.files(root_pth,
+                          pattern = "MWMT.*tif$",
+                          full.names = TRUE) %>% raster()
+
+       )
+       clim_vars
+     })
+
+     range_poly <<- reactive({
+       sf::st_read(parseFilePaths(volumes,
+                                  input$range_poly_pth)$datapath)
+     })
+
+     nonbreed_poly <<- reactive({
+       sf::st_read(parseFilePaths(volumes,
+                                  input$nonbreed_poly_pth)$datapath)
+     })
+
+     assess_poly <<- reactive({
+       sf::st_read(parseFilePaths(volumes,
+                                  input$assess_poly_pth)$datapath)
+     })
+
+     hs_rast <<- reactive({
+       raster::raster(parseFilePaths(volumes,
+                                     input$hs_rast_pth)$datapath)
+     })
   })
 
   # Make map
   output$range_map <- tmap::renderTmap({
+    req(input$loadSpatial)
+
     if(input$rast_plot %in% c(names(clim_vars()))){
       rast <- clim_vars()[[input$rast_plot]]
     } else {
@@ -547,6 +560,22 @@ server <- function(input, output, session) {
     ))
   })
 
+  observe({
+    shinyjs::toggleState(id = "override1",
+                         condition = input$override_spatial)
+    shinyjs::toggleState(id = "override2",
+                         condition = input$override_spatial)
+    shinyjs::toggleState(id = "override3",
+                         condition = input$override_spatial)
+    })
+
+  # When next button is clicked move to next panel
+  observeEvent(input$submitVuln, {
+    updateTabsetPanel(session, "tabset",
+                      selected = "Results"
+    )
+  })
+
   # Calculate Index value #================================
 
   # Gather all the form inputs
@@ -576,6 +605,23 @@ server <- function(input, output, session) {
                        geom = "col")+
      ggplot2::theme_classic()
   })
+
+  out_data <- reactive({
+    spat_df <- spat_res()
+    sp_nm <- sp_nm()
+    data.frame(species_name = sp_nm, assessor = input$assessor_name) %>%
+      bind_cols(spat_df)
+  })
+
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste("data-", Sys.Date(), ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(out_data(), file)
+    }
+  )
+
 }
 
 shinyApp(ui, server)
