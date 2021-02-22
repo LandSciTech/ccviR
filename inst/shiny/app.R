@@ -137,17 +137,17 @@ ui <-  fluidPage(
                                     "Range polygon shapefile", multiple = FALSE),
                    verbatimTextOutput("range_poly_pth", placeholder = TRUE),
                    br(),
-                   strong("Non-breeding Range polygon shapefile"),
-                   shinyFilesButton("nonbreed_poly_pth", "Choose file",
-                                    "Non-breeding Range polygon shapefile",
-                                    multiple = FALSE),
-                   verbatimTextOutput("nonbreed_poly_pth", placeholder = TRUE),
-                   br(),
                    strong("Assessment area polygon shapefile"),
                    shinyFilesButton("assess_poly_pth", "Choose file",
                                     "Assessment area polygon shapefile",
                                     multiple = FALSE),
                    verbatimTextOutput("assess_poly_pth", placeholder = TRUE),
+                   br(),
+                   strong("Non-breeding Range polygon shapefile"),
+                   shinyFilesButton("nonbreed_poly_pth", "Choose file",
+                                    "Non-breeding Range polygon shapefile",
+                                    multiple = FALSE),
+                   verbatimTextOutput("nonbreed_poly_pth", placeholder = TRUE),
                    br(),
                    strong("Habitat suitability raster file"),
                    shinyFilesButton("hs_rast_pth", "Choose file",
@@ -173,8 +173,8 @@ ui <-  fluidPage(
                                       `Historical thermal niche` = "htn",
                                       `Habitat suitability` = "hs_rast")),
                      selectInput("poly_plot", "Polygon to plot",
-                                 list(`Non-breeding range` = "nonbreed_poly",
-                                      `Assessment area`= "assess_poly",
+                                 list(`Assessment area`= "assess_poly",
+                                      `Non-breeding range` = "nonbreed_poly",
                                       `Physiological thermal niche` = "tundra")),
                      br(),
                      tmap::tmapOutput("range_map")
@@ -277,14 +277,24 @@ ui <-  fluidPage(
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
                                         inline = TRUE),
-                     checkboxGroupInput("C4b", "4b) Dietary versatility (animals only).",
-                                        choiceNames = valueNms[2:4],
-                                        choiceValues = valueOpts[2:4],
-                                        inline = TRUE),
-                     checkboxGroupInput("C4c", "4c) Pollinator versatility (plants only).",
-                                        choiceNames = valueNms[2:4],
-                                        choiceValues = valueOpts[2:4],
-                                        inline = TRUE),
+                     shinyjs::hidden(
+                       div(
+                         id = "animal_only",
+                         checkboxGroupInput("C4b", "4b) Dietary versatility (animals only).",
+                                            choiceNames = valueNms[2:4],
+                                            choiceValues = valueOpts[2:4],
+                                            inline = TRUE)
+                       )
+                     ),
+                     shinyjs::hidden(
+                       div(
+                         id = "plant_only",
+                         checkboxGroupInput("C4c", "4c) Pollinator versatility (plants only).",
+                                            choiceNames = valueNms[2:4],
+                                            choiceValues = valueOpts[2:4],
+                                            inline = TRUE)
+                       )
+                     ),
                      checkboxGroupInput("C4d", "4d) Dependence on other species for propagule dispersal.",
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
@@ -306,14 +316,26 @@ ui <-  fluidPage(
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
                                         inline = TRUE),
-                     checkboxGroupInput("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
-                                        choiceNames = valueNms[2:4],
-                                        choiceValues = valueOpts[2:4],
-                                        inline = TRUE),
-                     checkboxGroupInput("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are “unknown”).",
-                                        choiceNames = valueNms[2:4],
-                                        choiceValues = valueOpts[2:4],
-                                        inline = TRUE),
+                     conditionalPanel(
+                       "input.C5a == ''",
+                       checkboxGroupInput("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
+                                          choiceNames = valueNms[2:4],
+                                          choiceValues = valueOpts[2:4],
+                                          inline = TRUE),
+
+                     ),
+                     conditionalPanel(
+                       "input.C5a == '' && input.C5b == ''",
+                       shinyjs::hidden(
+                         div(
+                           id = "plant_only2",
+                           checkboxGroupInput("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are “unknown”).",
+                                              choiceNames = valueNms[2:4],
+                                              choiceValues = valueOpts[2:4],
+                                              inline = TRUE)
+                         )
+                       )
+                     ),
 
                      checkboxGroupInput("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
                                         choiceNames = valueNms[2:4],
@@ -408,6 +430,33 @@ server <- function(input, output, session) {
     )
   })
 
+  observe({
+    tax_lg <- ifelse(input$tax_grp %in% c("Vascular Plant", "Nonvascular Plant"),
+                     "Plant",
+                     ifelse(
+                       input$tax_grp == "Lichen",
+                       "Lichen",
+                       "Animal"
+                     ))
+    if(tax_lg == "Plant"){
+      shinyjs::show("plant_only")
+      shinyjs::show("plant_only2")
+      shinyjs::hide("animal_only")
+    }
+    if(tax_lg == "Animal"){
+      shinyjs::show("animal_only")
+      shinyjs::hide("plant_only")
+      shinyjs::hide("plant_only2")
+    }
+    if(tax_lg == "Lichen"){
+      shinyjs::hide("animal_only")
+      shinyjs::hide("plant_only")
+      shinyjs::hide("plant_only2")
+    }
+
+  })
+
+
   # get values to use later
   sp_nm <- reactive(input$species_name)
   scale_nm <- reactive(input$geo_location)
@@ -480,8 +529,12 @@ server <- function(input, output, session) {
      })
 
      nonbreed_poly <<- reactive({
-       sf::st_read(parseFilePaths(volumes,
-                                  input$nonbreed_poly_pth)$datapath)
+       pth <- parseFilePaths(volumes,
+                             input$nonbreed_poly_pth)$datapath
+       if(!isTruthy(pth)){
+         return(NULL)
+       }
+       sf::st_read(pth)
      })
 
      assess_poly <<- reactive({
@@ -490,8 +543,13 @@ server <- function(input, output, session) {
      })
 
      hs_rast <<- reactive({
-       raster::raster(parseFilePaths(volumes,
-                                     input$hs_rast_pth)$datapath)
+       pth <- parseFilePaths(volumes,
+                             input$hs_rast_pth)$datapath
+       if(!isTruthy(pth)){
+         return(NULL)
+       }
+
+       raster::raster(pth)
      })
   })
 
@@ -522,14 +580,12 @@ server <- function(input, output, session) {
 
   # run spatial calculations
   spat_res <- reactive({
-    run_CCVI_funs(species_nm = input$species_name,
-                  scale_nm = input$geo_location,
-                  range_poly = range_poly(),
-                  non_breed_poly = nonbreed_poly(),
-                  scale_poly = assess_poly(),
-                  hs_rast = hs_rast(),
-                  clim_vars_lst = clim_vars(),
-                  eer_pkg = TRUE)
+    run_spatial(range_poly = range_poly(),
+                non_breed_poly = nonbreed_poly(),
+                scale_poly = assess_poly(),
+                hs_rast = hs_rast(),
+                clim_vars_lst = clim_vars(),
+                eer_pkg = TRUE)
   })
 
   # When next button is clicked move to next panel
@@ -598,7 +654,15 @@ server <- function(input, output, session) {
     index
   })
 
-  output$index <- renderText(index_res()$index)
+  output$index <- renderText({
+    ind <- index_res()$index
+    case_when(ind == "IE" ~ "Insufficient Evidence",
+              ind == "EV" ~ "Extremely Vulnerable",
+              ind == "HV" ~ "Highly Vulnerable",
+              ind == "MV" ~ "Moderately Vulnerable",
+              ind == "LV" ~ "Less Vulnerable",
+              TRUE ~ "Insufficient Evidence")
+    })
   output$conf_index <- renderText(index_res()$conf_index)
   output$conf_graph <- renderPlot({
     ggplot2::quickplot(x= index, y = frequency, data = index_res()$index_conf,
