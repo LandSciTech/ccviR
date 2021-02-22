@@ -86,7 +86,6 @@ ui <-  fluidPage(
 
     div(id = "header",
         h1("An app to run the NatureServe CCVI process"),
-        h4("subtitle"),
         strong(
           span("Created by Sarah Endicott"),
           HTML("&bull;"),
@@ -175,7 +174,7 @@ ui <-  fluidPage(
                      selectInput("poly_plot", "Polygon to plot",
                                  list(`Assessment area`= "assess_poly",
                                       `Non-breeding range` = "nonbreed_poly",
-                                      `Physiological thermal niche` = "tundra")),
+                                      `Physiological thermal niche` = "ptn")),
                      br(),
                      tmap::tmapOutput("range_map")
                    )
@@ -201,6 +200,7 @@ ui <-  fluidPage(
                                         choiceNames = valueNms,
                                         choiceValues = valueOpts,
                                         inline = TRUE),
+
                      checkboxGroupInput("B2a", "2a) Distribution relative to natural barriers",
                                         choiceNames = valueNms,
                                         choiceValues = valueOpts,
@@ -210,7 +210,7 @@ ui <-  fluidPage(
                                         choiceValues = valueOpts,
                                         inline = TRUE),
 
-                     checkboxGroupInput("B1", "  3) Predicted impact of land use changes resulting from human responses to climate change",
+                     checkboxGroupInput("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
                                         inline = TRUE)
@@ -388,7 +388,7 @@ ui <-  fluidPage(
                  textOutput("index"),
                  strong("Confidence in index: "),
                  textOutput("conf_index"),
-                 plotOutput("conf_graph", width = 200, height = 200),
+                 plotOutput("conf_graph", width = 300, height = 200),
                  downloadButton("downloadData", "Download results as csv"),
                ))
       )
@@ -456,11 +456,6 @@ server <- function(input, output, session) {
 
   })
 
-
-  # get values to use later
-  sp_nm <- reactive(input$species_name)
-  scale_nm <- reactive(input$geo_location)
-
   # Spatial Analysis #===============
   # Find file paths
   shinyDirChoose(input, "clim_var_dir", root = volumes)
@@ -493,39 +488,14 @@ server <- function(input, output, session) {
      clim_vars <<- reactive({
        root_pth <- parseDirPath(volumes, input$clim_var_dir)
 
-       clim_vars <- list(
-         mat = list.files(root_pth,
-                          pattern = "MAT.*tif$",
-                          full.names = TRUE) %>% raster(),
+       clim_vars <- get_clim_vars(root_pth)
 
-         map = list.files(root_pth,
-                          pattern = "MAP.*tif$",
-                          full.names = TRUE) %>% raster(),
-
-         tundra = list.files(root_pth,
-                             pattern = "tundra.*shp$",
-                             full.names = TRUE) %>%
-           st_read(agr = "constant", quiet = TRUE),
-
-         cmd = list.files(root_pth,
-                          pattern = "CMD.*tif$",
-                          full.names = TRUE) %>% raster(),
-
-         ccei = list.files(root_pth,
-                           pattern = "ccei.*tif$",
-                           full.names = TRUE) %>% raster(),
-
-         htn = list.files(root_pth,
-                          pattern = "MWMT.*tif$",
-                          full.names = TRUE) %>% raster()
-
-       )
-       clim_vars
      })
 
      range_poly <<- reactive({
        sf::st_read(parseFilePaths(volumes,
-                                  input$range_poly_pth)$datapath)
+                                  input$range_poly_pth)$datapath,
+                   agr = "constant", quiet = TRUE)
      })
 
      nonbreed_poly <<- reactive({
@@ -534,12 +504,13 @@ server <- function(input, output, session) {
        if(!isTruthy(pth)){
          return(NULL)
        }
-       sf::st_read(pth)
+       sf::st_read(pth, agr = "constant", quiet = TRUE)
      })
 
      assess_poly <<- reactive({
        sf::st_read(parseFilePaths(volumes,
-                                  input$assess_poly_pth)$datapath)
+                                  input$assess_poly_pth)$datapath,
+                   agr = "constant", quiet = TRUE)
      })
 
      hs_rast <<- reactive({
@@ -566,15 +537,17 @@ server <- function(input, output, session) {
     poly <- switch(input$poly_plot,
       nonbreed_poly = nonbreed_poly(),
       assess_poly = assess_poly(),
-      tundra = clim_vars()[["tundra"]]
+      ptn = clim_vars()[["ptn"]]
     )
 
     tm_shape(rast)+
-      tm_raster()+
+      tm_raster(title = input$rast_plot)+
       tm_shape(range_poly())+
       tm_borders()+
-      tm_shape(poly)+
-      tm_borders(col = "red")
+      tm_shape(poly,)+
+      tm_borders(col = "red")+
+      tm_add_legend("fill", labels = c("Range", input$poly_plot),
+                    col = c("black", "red"))
   })
 
 
@@ -627,9 +600,7 @@ server <- function(input, output, session) {
 
   # When next button is clicked move to next panel
   observeEvent(input$submitVuln, {
-    updateTabsetPanel(session, "tabset",
-                      selected = "Results"
-    )
+    updateTabsetPanel(session, "tabset", selected = "Results")
   })
 
   # Calculate Index value #================================
@@ -640,8 +611,6 @@ server <- function(input, output, session) {
     data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
     as_tibble(data)
   })
-
-  output$formData <- renderPrint(vuln_df())
 
   index_res <- reactive({
     z_df <- data.frame(Code = c("Z2", "Z3"),
@@ -665,24 +634,47 @@ server <- function(input, output, session) {
     })
   output$conf_index <- renderText(index_res()$conf_index)
   output$conf_graph <- renderPlot({
-    ggplot2::quickplot(x= index, y = frequency, data = index_res()$index_conf,
-                       geom = "col")+
+    ggplot2::quickplot(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
+                       y = frequency,
+                       data = index_res()$index_conf,
+                       geom = "col", xlab = "Index", ylab = "Frequency",
+                       main = "Monte Carlo Simulation Results")+
      ggplot2::theme_classic()
   })
 
   out_data <- reactive({
+    vuln_df <- index_res()$vuln_df %>%
+      select(Code, contains("Value")) %>%
+      filter(!Code %in% c("Z2", "Z3")) %>%
+      arrange(Code) %>%
+      mutate_all(as.character) %>%
+      tidyr::unite(Value, Value1:Value4, na.rm = TRUE, sep = ", ") %>%
+      pivot_wider(names_from = "Code", values_from = "Value")
+
     spat_df <- spat_res()
-    sp_nm <- sp_nm()
-    data.frame(species_name = sp_nm, assessor = input$assessor_name) %>%
-      bind_cols(spat_df)
+
+    conf_df <- index_res()$index_conf %>%
+      mutate(index = paste0("MC_freq_", index)) %>%
+      pivot_wider(names_from = "index", values_from = "frequency")
+
+    data.frame(species_name = input$species_name,
+               common_name = input$common_name,
+               geo_location = input$geo_location,
+               assessor = input$assessor_name,
+               taxonomic_group = input$tax_grp,
+               migratory = input$mig,
+               cave_grnd_water = input$cave,
+               CCVI_index = index_res()$index,
+               CCVI_conf_index = index_res()$conf_index) %>%
+      bind_cols(conf_df, spat_df, vuln_df)
   })
 
   output$downloadData <- downloadHandler(
     filename = function() {
-      paste("data-", Sys.Date(), ".csv", sep="")
+      paste("CCVI_data-", Sys.Date(), ".csv", sep="")
     },
     content = function(file) {
-      write.csv(out_data(), file)
+      write.csv(out_data(), file, row.names = FALSE)
     }
   )
 

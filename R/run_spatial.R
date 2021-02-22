@@ -54,8 +54,8 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Physiological Thermal niche
   ptn_perc <- calc_overlap_poly(range_poly %>%
-                                  st_transform(st_crs(clim_vars_lst$tundra)),
-                                clim_vars_lst$tundra, "PTN")
+                                  st_transform(st_crs(clim_vars_lst$ptn)),
+                                clim_vars_lst$ptn, "PTN")
 
   # Historical Hydrological niche
   range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP",
