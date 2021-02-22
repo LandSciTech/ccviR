@@ -1,4 +1,5 @@
-# load the files needed for the CCVI then run it.
+# load the files needed for the CCVI then run it for the process used by Sarah
+# Ouimette 2020
 
 # Assumes file structure with
 # root_path/
@@ -30,7 +31,7 @@
 #' @import dplyr
 #' @import sf
 #' @importFrom raster raster crs
-run_CCVI_calcs <- function(species_nm, scale_nm, root_pth, force_crs = TRUE,
+run_CCVI_calcs_SO <- function(species_nm, scale_nm, root_pth, force_crs = TRUE,
                            eer_pkg = requireNamespace("exactextractr",
                                                       quietly = TRUE)){
   message(paste0("running ", species_nm, " at scale: ", scale_nm))
