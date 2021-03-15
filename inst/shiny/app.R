@@ -7,12 +7,10 @@ library(tidyr)
 devtools::load_all()
 #library(ccviR)
 
-# which fields get saved
-fieldsAll <- c("assessor_name", "geo_location", "tax_grp", "species_name",
-               "common_name", "clim_var_dir")
-
 # which fields are mandatory
-fieldsMandatory <- c("assessor_name", "geo_location", "tax_grp", "species_name")
+fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
+
+fieldsMandatory2 <- c("clim_var_dir", "range_poly_pth", "assess_poly_pth")
 
 # File path ids to use with file choose
 filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
@@ -38,6 +36,18 @@ getMultValues <- function(x, nm){
                    Value4 = x[4], stringsAsFactors = FALSE)
 
 }
+
+# Name of input data layers for mapping
+rast_nms <- list(Temperature = "mat",
+                 Precipitation = "map",
+                 Moisture = "cmd",
+                 `Climate change exposure index` = "ccei",
+                 `Historical thermal niche` = "htn",
+                 `Habitat suitability` = "hs_rast")
+
+poly_nms <- list(`Assessment area`= "assess_poly",
+                 `Non-breeding range` = "nonbreed_poly",
+                 `Physiological thermal niche` = "ptn")
 
 # get current Epoch time
 epochTime <- function() {
@@ -126,17 +136,17 @@ ui <-  fluidPage(
                  div(
                    id = "spatial",
                    h3("Spatial data analysis"),
-                   strong("Folder location of climate data:"),
+                   labelMandatory(strong("Folder location of climate data:")),
                    shinyDirButton("clim_var_dir", "Choose a folder",
                                   "Folder location of climate data"),
                    verbatimTextOutput("clim_var_dir", placeholder = TRUE),
                    br(),
-                   strong("Range polygon shapefile:"),
+                   labelMandatory(strong("Range polygon shapefile:")),
                    shinyFilesButton("range_poly_pth", "Choose file",
                                     "Range polygon shapefile", multiple = FALSE),
                    verbatimTextOutput("range_poly_pth", placeholder = TRUE),
                    br(),
-                   strong("Assessment area polygon shapefile"),
+                   labelMandatory(strong("Assessment area polygon shapefile")),
                    shinyFilesButton("assess_poly_pth", "Choose file",
                                     "Assessment area polygon shapefile",
                                     multiple = FALSE),
@@ -164,17 +174,8 @@ ui <-  fluidPage(
                      id = "range_map",
                      h2("Range map"),
                      br(),
-                     selectInput("rast_plot", "Raster to plot",
-                                 list(Temperature = "mat",
-                                      Precipitation = "map",
-                                      Moisture = "cmd",
-                                      `Climate change exposure index` = "ccei",
-                                      `Historical thermal niche` = "htn",
-                                      `Habitat suitability` = "hs_rast")),
-                     selectInput("poly_plot", "Polygon to plot",
-                                 list(`Assessment area`= "assess_poly",
-                                      `Non-breeding range` = "nonbreed_poly",
-                                      `Physiological thermal niche` = "ptn")),
+                     selectInput("rast_plot", "Raster to plot", rast_nms),
+                     selectInput("poly_plot", "Polygon to plot", poly_nms),
                      br(),
                      tmap::tmapOutput("range_map")
                    )
@@ -413,7 +414,7 @@ server <- function(input, output, session) {
   # Enable the Submit button when all mandatory fields are filled out
   observe({
     mandatoryFilled <-
-      vapply(fieldsMandatory,
+      vapply(fieldsMandatory1,
              function(x) {
                !is.null(input[[x]]) && input[[x]] != ""
              },
@@ -457,6 +458,20 @@ server <- function(input, output, session) {
   })
 
   # Spatial Analysis #===============
+  # Enable the Submit button when all mandatory fields are filled out
+  observe({
+    mandatoryFilled2 <-
+      vapply(fieldsMandatory2,
+             function(x) {
+               isTruthy(input[[x]])
+             },
+             logical(1))
+    mandatoryFilled2 <- all(mandatoryFilled2)
+
+    shinyjs::toggleState(id = "loadSpatial", condition = mandatoryFilled2)
+    shinyjs::toggleState(id = "next2", condition = mandatoryFilled2)
+  })
+
   # Find file paths
   shinyDirChoose(input, "clim_var_dir", root = volumes)
   purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input)
@@ -540,13 +555,17 @@ server <- function(input, output, session) {
       ptn = clim_vars()[["ptn"]]
     )
 
+    # tried adding a line break to legend but doesn't work in interactive map
+    poly_nm <- names(poly_nms)[which(poly_nms == input$poly_plot)]
+    rast_nm <- names(rast_nms)[which(rast_nms == input$rast_plot)]
+
     tm_shape(rast)+
-      tm_raster(title = input$rast_plot)+
+      tm_raster(title = rast_nm)+
       tm_shape(range_poly())+
       tm_borders()+
       tm_shape(poly,)+
       tm_borders(col = "red")+
-      tm_add_legend("fill", labels = c("Range", input$poly_plot),
+      tm_add_legend("fill", labels = c("Range", poly_nm),
                     col = c("black", "red"))
   })
 

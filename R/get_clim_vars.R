@@ -24,6 +24,11 @@ check_clim <- function(root_pth, pattern, error){
       return(NULL)
     }
   }
+  if(length(pth) > 1){
+    stop("More than one file matching the expression: ", pattern,
+         ". Please remove duplicates",
+         call. = FALSE)
+  }
   pth
 }
 
@@ -31,15 +36,22 @@ load_clim <- function(pth){
   if(is.null(pth)){
     return(NULL)
   }
-  if(raster::extension(pth) == ".shp"){
-    out <- st_read(pth, agr = "constant", quiet = TRUE)
+  out <- tryCatch({
+    if(raster::extension(pth) == ".shp"){
+      out <- st_read(pth, agr = "constant", quiet = TRUE)
 
-    if(nrow(out) > 1){
-      out <- st_union(out) %>% st_as_sf()
+      if(nrow(out) > 1){
+        out <- st_union(out) %>% st_as_sf()
+      }
+    } else {
+      out <- raster::raster(pth)
     }
-  } else {
-    out <- raster::raster(pth)
-  }
+  },
+  error = function(cond){
+    message(pth)
+    stop(cond)
+  })
+
   out
 
 }

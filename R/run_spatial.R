@@ -37,7 +37,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
     not_overlap <- data.frame(perc_non_breed_not_over_ccei = NA_real_)
   } else {
-    non_breed_poly <-st_crop(non_breed_poly, c(xmin = -180, ymin = -85, xmax = -20, ymax = 180))
+    non_breed_poly <- st_crop(non_breed_poly, c(xmin = -180, ymin = -85, xmax = -20, ymax = 180))
     ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
                                      val_range = 1:4,
                                      eer_pkg)
@@ -49,17 +49,32 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   # Section C - Sensitivity and Adaptive Capacity: #====
 
   # Historical Thermal niche
-  htn_classes <- calc_prop_raster(clim_vars_lst$htn, range_poly, "HTN",
-                                  val_range = 1:4, eer_pkg)
+  if(is.null(clim_vars_lst$htn)){
+    htn_classes <- rep(NA_real_, 4) %>% as.list() %>% as.data.frame() %>%
+      purrr::set_names(paste0("HTN_", 1:4))
+  } else {
+    htn_classes <- calc_prop_raster(clim_vars_lst$htn, range_poly, "HTN",
+                                    val_range = 1:4, eer_pkg)
+  }
+
 
   # Physiological Thermal niche
-  ptn_perc <- calc_overlap_poly(range_poly %>%
-                                  st_transform(st_crs(clim_vars_lst$ptn)),
-                                clim_vars_lst$ptn, "PTN")
+  if(is.null(clim_vars_lst$ptn)){
+    ptn_perc <- data.frame(PTN = NA_real_)
+  } else {
+    ptn_perc <- calc_overlap_poly(range_poly %>%
+                                    st_transform(st_crs(clim_vars_lst$ptn)),
+                                  clim_vars_lst$ptn, "PTN")
+  }
 
   # Historical Hydrological niche
-  range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP",
-                                   eer_pkg)
+  if(is.null(clim_vars_lst$map)){
+    range_MAP <- data.frame(MAP_max = NA_real_, MAP_min = NA_real_)
+  } else {
+    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP",
+                                     eer_pkg)
+  }
+
 
   # Section D - Modelled Response to Climate Change #====
   if(is.null(hs_rast)){
@@ -83,7 +98,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   if(any(too_long)){
     stop("the " , paste0(names(which(too_long)), sep = " "),
-         " variables have multiple rows. Check polygon inputs")
+         " variables have multiple rows. Check polygon inputs have only one feature")
   }
 
   out <- bind_cols(mat_classes, cmd_classes, ccei_classes, not_overlap, htn_classes,
