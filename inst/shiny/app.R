@@ -4,6 +4,7 @@ library(shiny)
 library(shinyFiles)
 library(tmap)
 library(tidyr)
+library(ggplot2)
 devtools::load_all()
 #library(ccviR)
 
@@ -382,14 +383,14 @@ ui <-  fluidPage(
       # Results #===================================
       tabPanel(
         "Results",
-        column(12,
+        column(6,
                div(
                  id = "formData",
                  h3("Results"),
-                 tableOutput("test"),
                  strong("Climate Change Vulnerability Index: "),
                  shinycssloaders::withSpinner(textOutput("index")),
                  br(), br(),
+                 tableOutput("n_factors"),
                  strong("Confidence in index: "),
                  textOutput("conf_index"),
                  plotOutput("conf_graph", width = 300, height = 200),
@@ -397,7 +398,11 @@ ui <-  fluidPage(
                  downloadButton("downloadData", "Download results as csv"),
                  br(), br(),
                  actionButton("restart", "Assess another species", class = "btn-primary")
-               ))
+               )),
+        column(6,
+               div(id = "indplt",
+                   br(), br(), br(), br(),
+                   plotOutput("ind_score_plt")))
       )
     )
 )
@@ -637,10 +642,6 @@ server <- function(input, output, session) {
     as_tibble(data)
   })
 
-  # output$test <- renderText(stringr::str_subset(names(input), "[B,C,D]\\d.*"))
-
-  output$test <- renderTable(vuln_df())
-
   index_res <- reactive({
     z_df <- data.frame(Code = c("Z2", "Z3"),
                       Value1 = as.numeric(c(input$cave, input$mig)))
@@ -661,6 +662,30 @@ server <- function(input, output, session) {
               ind == "LV" ~ "Less Vulnerable",
               TRUE ~ "Insufficient Evidence")
     })
+  output$n_factors <- renderTable({
+    tibble(Section = c("Section A", "Section B", "Section C"),
+           `Number of factors with data` = c(index_res()$n_b_factors,
+                                             index_res()$n_c_factors,
+                                             index_res()$n_d_factors),
+           `Number of factors` = c(4L, 16L, 4L))
+  })
+
+  output$ind_score_plt <- renderPlot({
+    b_c_score <- case_when(index_res()$n_b_factors < 3 ~ NA_real_,
+                           index_res()$n_c_factors < 10 ~ NA_real_,
+                           TRUE ~ b_c_score)
+
+    d_score <- case_when(index_res()$n_d_factors < 1 ~ 0,
+                         TRUE ~ d_score)
+
+    # if b_c is IE no plot if d is IE set to 0 but still plot
+    if(is.na(b_c_score)){
+      return(NULL)
+    } else {
+      plot_score_index(b_c_score, index_res()$d_score)
+    }
+  })
+
   output$conf_index <- renderText(index_res()$conf_index)
   output$conf_graph <- renderPlot({
     ggplot2::quickplot(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
@@ -695,8 +720,8 @@ server <- function(input, output, session) {
                cave_grnd_water = input$cave,
                CCVI_index = index_res()$index,
                CCVI_conf_index = index_res()$conf_index,
-                mig_exposure = index_res()$mig_exp,
-                b_c_score = index_res()$b_c_score,
+               mig_exposure = index_res()$mig_exp,
+               b_c_score = index_res()$b_c_score,
                d_score = index_res()$d_score) %>%
       bind_cols(conf_df, spat_df, vuln_df)
   })
