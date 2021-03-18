@@ -30,6 +30,7 @@ labelMandatory <- function(label) {
 
 # format multiple values from checkbox
 getMultValues <- function(x, nm){
+  x <- ifelse(is.null(x), -1, x)
   x <- as.numeric(x)
 
   df <- data.frame(Code = nm, Value1 = x[1], Value2 = x[2], Value3 = x[3],
@@ -385,12 +386,17 @@ ui <-  fluidPage(
                div(
                  id = "formData",
                  h3("Results"),
+                 tableOutput("test"),
                  strong("Climate Change Vulnerability Index: "),
-                 textOutput("index"),
+                 shinycssloaders::withSpinner(textOutput("index")),
+                 br(), br(),
                  strong("Confidence in index: "),
                  textOutput("conf_index"),
                  plotOutput("conf_graph", width = 300, height = 200),
+                 br(), br(),
                  downloadButton("downloadData", "Download results as csv"),
+                 br(), br(),
+                 actionButton("restart", "Assess another species", class = "btn-primary")
                ))
       )
     )
@@ -571,7 +577,7 @@ server <- function(input, output, session) {
 
 
   # run spatial calculations
-  spat_res <- reactive({
+  spat_res <- eventReactive(input$next2,{
     run_spatial(range_poly = range_poly(),
                 non_breed_poly = nonbreed_poly(),
                 scale_poly = assess_poly(),
@@ -631,6 +637,10 @@ server <- function(input, output, session) {
     as_tibble(data)
   })
 
+  # output$test <- renderText(stringr::str_subset(names(input), "[B,C,D]\\d.*"))
+
+  output$test <- renderTable(vuln_df())
+
   index_res <- reactive({
     z_df <- data.frame(Code = c("Z2", "Z3"),
                       Value1 = as.numeric(c(input$cave, input$mig)))
@@ -684,7 +694,10 @@ server <- function(input, output, session) {
                migratory = input$mig,
                cave_grnd_water = input$cave,
                CCVI_index = index_res()$index,
-               CCVI_conf_index = index_res()$conf_index) %>%
+               CCVI_conf_index = index_res()$conf_index,
+                mig_exposure = index_res()$mig_exp,
+                b_c_score = index_res()$b_c_score,
+               d_score = index_res()$d_score) %>%
       bind_cols(conf_df, spat_df, vuln_df)
   })
 
@@ -696,6 +709,10 @@ server <- function(input, output, session) {
       write.csv(out_data(), file, row.names = FALSE)
     }
   )
+
+  observeEvent(input$restart,{
+    shinyjs::refresh()
+  })
 
 }
 

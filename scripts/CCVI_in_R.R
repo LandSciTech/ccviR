@@ -110,9 +110,12 @@ index_from_excel <- res_tbl %>% select(Species, Index:Confidence)
 
 res_tbl_lst <- split(res_tbl2, f = res_tbl2$Species)
 
-exp_dfs <- read.csv("data/outputs/AMCO_NA_CAN_USA.csv") %>% split(.$scale)
+exp_dfs <- read.csv("data/outputs/AMCO_NA_CAN_USA.csv") %>%
+  mutate_at(vars(-contains("MAT"), -contains("CMD"), -contains("CCEI"),
+                 -species, -scale), ~NA) %>%
+  split(.$scale)
 
-index_calc <-  purrr::map2(rev(res_tbl_lst), exp_dfs,
+index_calc <-  purrr::map2(res_tbl_lst[1:2], exp_dfs,
                            ~calc_vulnerability(exp_df = .y, vuln_df = .x))
 
 data.frame(Species = names(index_calc),

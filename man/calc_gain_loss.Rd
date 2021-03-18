@@ -2,7 +2,7 @@
 % Please edit documentation in R/calc_gain_loss.R
 \name{calc_gain_loss}
 \alias{calc_gain_loss}
-\title{Title}
+\title{Get the proportion of habitat gained and lost in range}
 \usage{
 calc_gain_loss(rast, poly, eer_pkg)
 }
@@ -13,5 +13,5 @@ calc_gain_loss(rast, poly, eer_pkg)
 
 }
 \description{
-Title
+Get the proportion of habitat gained and lost in range
 }
