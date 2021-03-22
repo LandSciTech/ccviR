@@ -21,7 +21,7 @@ plot_score_index <- function(b_c_score, d_score){
 
   levs <- rev(c("EV", "HV", "MV", "LV", "IE"))
 
-  comb_index_tbl <- comb_index_tbl %>% pivot_longer(-Dindex) %>%
+  comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
     transmute(Dindex,
               Bindex = name %>% stringr::str_remove("bc_") %>% toupper(),
               value = factor(value, levels = levs))
@@ -49,16 +49,3 @@ plot_score_index <- function(b_c_score, d_score){
     labs(x = "Sections B and C Score", y = "Section D Score", fill = "Index")
 }
 
-
-
-
-
-
-
-
-
-library(ggplot2)
-ggplot(comb_index_tbl, aes(Dindex, Bindex, fill = value))+
-  geom_tile()+
-  scale_fill_viridis_d()+
-  theme_classic()
