@@ -13,6 +13,9 @@ calc_prop_raster(
   eer_pkg = requireNamespace("exactextractr", quietly = TRUE)
 )
 }
+\arguments{
+\item{eer_pkg}{}
+}
 \description{
 Get the proportion of each class in a raster that overlaps a polygon
 }

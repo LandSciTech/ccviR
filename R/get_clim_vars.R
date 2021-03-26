@@ -1,6 +1,8 @@
 #' Load climate variables
 #'
 #' Load climate variables that will be the same across most species.
+#'
+#' @export
 
 get_clim_vars <- function(root_pth){
   pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$",

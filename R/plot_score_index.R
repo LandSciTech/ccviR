@@ -1,5 +1,6 @@
 #' make a visualization of the D score, B/C score and index
-
+#'
+#' @export
 plot_score_index <- function(b_c_score, d_score){
   score_pt <- data.frame(d_score = d_score, b_c_score = b_c_score)
 

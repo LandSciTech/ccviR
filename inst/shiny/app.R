@@ -5,8 +5,9 @@ library(shinyFiles)
 library(tmap)
 library(tidyr)
 library(ggplot2)
-devtools::load_all()
-#library(ccviR)
+library(dplyr)
+#devtools::load_all()
+library(ccviR)
 
 # which fields are mandatory
 fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
@@ -415,7 +416,7 @@ server <- function(input, output, session) {
   # made the getVolumes function hang forever because it was looking for
   # drives that were no longer connected. Now it will give an error
   R.utils::withTimeout({
-    volumes <- c(wd = "C:/Users/endicotts/Documents/Ilona/ccviR/data",
+    volumes <- c(wd = getShinyOption("file_dir"),
                  Home = fs::path_home(),
                  getVolumes()())
   }, timeout = 10, onTimeout = "error")
@@ -505,50 +506,45 @@ server <- function(input, output, session) {
   })
 
 
-  # Show map when load button clicked (seems like parent expressions don't run
-  # # until child is visible)
-   observeEvent(input$loadSpatial, {
-  #   shinyjs::show("range_map")
-  #   shinyjs::show("spat_res")
-     # load spatial data
-     clim_vars <<- reactive({
-       root_pth <- parseDirPath(volumes, input$clim_var_dir)
+  # load spatial data
+  clim_vars <- reactive({
+    root_pth <- parseDirPath(volumes, input$clim_var_dir)
 
-       clim_vars <- get_clim_vars(root_pth)
+    clim_vars <- get_clim_vars(root_pth)
 
-     })
-
-     range_poly <<- reactive({
-       sf::st_read(parseFilePaths(volumes,
-                                  input$range_poly_pth)$datapath,
-                   agr = "constant", quiet = TRUE)
-     })
-
-     nonbreed_poly <<- reactive({
-       pth <- parseFilePaths(volumes,
-                             input$nonbreed_poly_pth)$datapath
-       if(!isTruthy(pth)){
-         return(NULL)
-       }
-       sf::st_read(pth, agr = "constant", quiet = TRUE)
-     })
-
-     assess_poly <<- reactive({
-       sf::st_read(parseFilePaths(volumes,
-                                  input$assess_poly_pth)$datapath,
-                   agr = "constant", quiet = TRUE)
-     })
-
-     hs_rast <<- reactive({
-       pth <- parseFilePaths(volumes,
-                             input$hs_rast_pth)$datapath
-       if(!isTruthy(pth)){
-         return(NULL)
-       }
-
-       raster::raster(pth)
-     })
   })
+
+  range_poly <- reactive({
+    sf::st_read(parseFilePaths(volumes,
+                               input$range_poly_pth)$datapath,
+                agr = "constant", quiet = TRUE)
+  })
+
+  nonbreed_poly <- reactive({
+    pth <- parseFilePaths(volumes,
+                          input$nonbreed_poly_pth)$datapath
+    if(!isTruthy(pth)){
+      return(NULL)
+    }
+    sf::st_read(pth, agr = "constant", quiet = TRUE)
+  })
+
+  assess_poly <- reactive({
+    sf::st_read(parseFilePaths(volumes,
+                               input$assess_poly_pth)$datapath,
+                agr = "constant", quiet = TRUE)
+  })
+
+  hs_rast <- reactive({
+    pth <- parseFilePaths(volumes,
+                          input$hs_rast_pth)$datapath
+    if(!isTruthy(pth)){
+      return(NULL)
+    }
+
+    raster::raster(pth)
+  })
+
 
   # Make map
   output$range_map <- tmap::renderTmap({
@@ -673,10 +669,10 @@ server <- function(input, output, session) {
   output$ind_score_plt <- renderPlot({
     b_c_score <- case_when(index_res()$n_b_factors < 3 ~ NA_real_,
                            index_res()$n_c_factors < 10 ~ NA_real_,
-                           TRUE ~ b_c_score)
+                           TRUE ~ index_res()$b_c_score)
 
     d_score <- case_when(index_res()$n_d_factors < 1 ~ 0,
-                         TRUE ~ d_score)
+                         TRUE ~ index_res()$d_score)
 
     # if b_c is IE no plot if d is IE set to 0 but still plot
     if(is.na(b_c_score)){
@@ -741,4 +737,6 @@ server <- function(input, output, session) {
 
 }
 
-shinyApp(ui, server)
+shinyApp(ui, server,
+         options = list(launch.browser = getShinyOption("launch.browser"),
+                        port = getShinyOption("port")))
