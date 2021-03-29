@@ -32,7 +32,9 @@ labelMandatory <- function(label) {
 
 # format multiple values from checkbox
 getMultValues <- function(x, nm){
-  x <- ifelse(is.null(x), -1, x)
+  if(is.null(x)){
+    x <- -1
+  }
   x <- as.numeric(x)
 
   df <- data.frame(Code = nm, Value1 = x[1], Value2 = x[2], Value3 = x[3],
@@ -403,7 +405,9 @@ ui <-  fluidPage(
         column(6,
                div(id = "indplt",
                    br(), br(), br(), br(),
-                   plotOutput("ind_score_plt")))
+                   plotOutput("ind_score_plt"),
+                   verbatimTextOutput("test_vulnQ"),
+                   tableOutput("vuln_df_tbl")))
       )
     )
 )
@@ -638,6 +642,20 @@ server <- function(input, output, session) {
     as_tibble(data)
   })
 
+  output$test_vulnQ <- renderPrint({
+    print(input[["B1"]] %>% str())
+    x <- ifelse(is.null(input[["B1"]]), -1, input[["B1"]])
+    print(x)
+    x <- as.numeric(x)
+    print(x)
+
+    df <- data.frame(Code = "B1", Value1 = x[1], Value2 = x[2], Value3 = x[3],
+                     Value4 = x[4], stringsAsFactors = FALSE)
+    print(df)
+    })
+
+  output$vuln_df_tbl <- renderTable(vuln_df() %>% arrange(Code))
+
   index_res <- reactive({
     z_df <- data.frame(Code = c("Z2", "Z3"),
                       Value1 = as.numeric(c(input$cave, input$mig)))
@@ -687,8 +705,9 @@ server <- function(input, output, session) {
     ggplot2::quickplot(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
                        y = frequency,
                        data = index_res()$index_conf,
-                       geom = "col", xlab = "Index", ylab = "Frequency",
-                       main = "Monte Carlo Simulation Results")+
+                       geom = "col", xlab = "Index", ylab = "Proportion of Runs",
+                       main = "Monte Carlo Simulation Results",
+                       ylim = c(NA, 1))+
      ggplot2::theme_classic()
   })
 
