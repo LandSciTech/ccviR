@@ -659,7 +659,7 @@ server <- function(input, output, session) {
               TRUE ~ "Insufficient Evidence")
     })
   output$n_factors <- renderTable({
-    tibble(Section = c("Section A", "Section B", "Section C"),
+    tibble(Section = c("Section B", "Section C", "Section D"),
            `Number of factors with data` = c(index_res()$n_b_factors,
                                              index_res()$n_c_factors,
                                              index_res()$n_d_factors),
