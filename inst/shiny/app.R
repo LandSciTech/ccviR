@@ -406,6 +406,7 @@ ui <-  fluidPage(
                div(id = "indplt",
                    br(), br(), br(), br(),
                    plotOutput("ind_score_plt"),
+                   textOutput("slr"),
                    verbatimTextOutput("test_vulnQ"),
                    tableOutput("vuln_df_tbl")))
       )
@@ -655,7 +656,7 @@ server <- function(input, output, session) {
   #   print(df)
   #   })
   #
-  output$vuln_df_tbl <- renderTable(index_res()$vuln_df %>% arrange(Code))
+  # output$vuln_df_tbl <- renderTable(index_res()$vuln_df %>% arrange(Code))
 
   index_res <- reactive({
     z_df <- data.frame(Code = c("Z2", "Z3"),
@@ -683,6 +684,15 @@ server <- function(input, output, session) {
                                              index_res()$n_c_factors,
                                              index_res()$n_d_factors),
            `Number of factors` = c(4L, 16L, 4L))
+  })
+
+  output$slr <- renderText({
+    if(!index_res()$slr_vuln){
+      return(NULL)
+    }
+    paste0("The index value for this species was increased to ",
+           "'Extremely Vulnerable' becasue it is vulnerable to rising ",
+           "sea levels and has significant dispersal barriers")
   })
 
   output$ind_score_plt <- renderPlot({

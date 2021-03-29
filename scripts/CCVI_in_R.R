@@ -110,7 +110,7 @@ index_from_excel <- res_tbl %>% select(Species, Index:Confidence)
 
 res_tbl_lst <- split(res_tbl2, f = res_tbl2$Species)
 
-exp_dfs <- read.csv("data/outputs/AMCO_NA_CAN_USA.csv") %>%
+exp_dfs <- read.csv("../CCVI_analysis/data/outputs/AMCO_NA_CAN_USA.csv") %>%
   mutate_at(vars(-contains("MAT"), -contains("CMD"), -contains("CCEI"),
                  -species, -scale), ~NA) %>%
   split(.$scale)
