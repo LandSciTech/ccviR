@@ -333,7 +333,7 @@ ui <-  fluidPage(
                        shinyjs::hidden(
                          div(
                            id = "plant_only2",
-                           checkboxGroupInput("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are “unknown”).",
+                           checkboxGroupInput("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
                                               choiceNames = valueNms[2:4],
                                               choiceValues = valueOpts[2:4],
                                               inline = TRUE)
