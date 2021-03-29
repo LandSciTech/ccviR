@@ -642,19 +642,20 @@ server <- function(input, output, session) {
     as_tibble(data)
   })
 
-  output$test_vulnQ <- renderPrint({
-    print(input[["B1"]] %>% str())
-    x <- ifelse(is.null(input[["B1"]]), -1, input[["B1"]])
-    print(x)
-    x <- as.numeric(x)
-    print(x)
-
-    df <- data.frame(Code = "B1", Value1 = x[1], Value2 = x[2], Value3 = x[3],
-                     Value4 = x[4], stringsAsFactors = FALSE)
-    print(df)
-    })
-
-  output$vuln_df_tbl <- renderTable(vuln_df() %>% arrange(Code))
+  # Useful for testing
+  # output$test_vulnQ <- renderPrint({
+  #   print(input[["B1"]] %>% str())
+  #   x <- ifelse(is.null(input[["B1"]]), -1, input[["B1"]])
+  #   print(x)
+  #   x <- as.numeric(x)
+  #   print(x)
+  #
+  #   df <- data.frame(Code = "B1", Value1 = x[1], Value2 = x[2], Value3 = x[3],
+  #                    Value4 = x[4], stringsAsFactors = FALSE)
+  #   print(df)
+  #   })
+  #
+  output$vuln_df_tbl <- renderTable(index_res()$vuln_df %>% arrange(Code))
 
   index_res <- reactive({
     z_df <- data.frame(Code = c("Z2", "Z3"),
