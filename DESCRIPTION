@@ -29,5 +29,6 @@ Imports:
     R.utils,
     fs
 Suggests: 
-    gdalUtils
+    gdalUtils,
+    testthat (>= 2.1.0)
 RoxygenNote: 7.0.2

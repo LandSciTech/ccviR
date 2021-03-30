@@ -313,7 +313,7 @@ ui <-  fluidPage(
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
                                         inline = TRUE),
-                     checkboxGroupInput("C4f", "4f) Forms part of an interspecific interaction not covered by 4a-f.",
+                     checkboxGroupInput("C4g", "4g) Forms part of an interspecific interaction not covered by 4a-f.",
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
                                         inline = TRUE),
