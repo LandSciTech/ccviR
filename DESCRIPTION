@@ -19,8 +19,15 @@ Imports:
     tidyr,
     shiny,
     stringr,
-    units
-Suggests: 
+    units,
     exactextractr,
+    shinyFiles,
+    shinyjs,
+    tmap,
+    ggplot2,
+    shinycssloaders,
+    R.utils,
+    fs
+Suggests: 
     gdalUtils
 RoxygenNote: 7.0.2
