@@ -39,14 +39,14 @@ plot_score_index <- function(b_c_score, d_score){
                                  TRUE ~ "LV")) %>%
     left_join(comb_index_tbl, by = c(d_index = "Dindex", b_c_index = "Bindex"))
 
-  ggplot(score_tbl, aes(b_c_score, d_score, fill = value))+
-    geom_tile(alpha = 0.6)+
-    coord_cartesian(xlim = c(0, b_c_score_lim), ylim = c(0, d_score_lim))+
-    scale_fill_viridis_d()+
-    theme_classic()+
-    geom_point(data = score_pt, aes(b_c_score, d_score),
+  ggplot2::ggplot(score_tbl, ggplot2::aes(b_c_score, d_score, fill = value))+
+    ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0)+
+    ggplot2::coord_cartesian(xlim = c(0, b_c_score_lim), ylim = c(0, d_score_lim))+
+    ggplot2::scale_fill_viridis_d()+
+    ggplot2::theme_classic()+
+    ggplot2::geom_point(data = score_pt, ggplot2::aes(b_c_score, d_score),
                shape = 4, stroke = 3,
                inherit.aes = FALSE)+
-    labs(x = "Sections B and C Score", y = "Section D Score", fill = "Index")
+    ggplot2::labs(x = "Sections B and C Score", y = "Section D Score", fill = "Index")
 }
 
