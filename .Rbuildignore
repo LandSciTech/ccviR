@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 data\*
 documents\*
+^data-raw$

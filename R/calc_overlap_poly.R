@@ -16,8 +16,8 @@ calc_overlap_poly <- function(poly1, poly2, var_name){
     out <- tibble(x = 0) %>% purrr::set_names(var_name)
     return(out)
   } else {
-    int1_2 <- st_area(int1_2) %>% units::drop_units()
-    area1 <- st_area(poly1) %>% units::drop_units()
+    int1_2 <- st_area(int1_2) %>% units::set_units(NULL)
+    area1 <- st_area(poly1) %>% units::set_units(NULL)
     prop_area <- int1_2/area1 * 100
     out <- tibble(x = prop_area) %>% purrr::set_names(var_name)
     return(out)

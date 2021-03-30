@@ -37,7 +37,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
     not_overlap <- data.frame(perc_non_breed_not_over_ccei = NA_real_)
   } else {
-    non_breed_poly <- st_crop(non_breed_poly, c(xmin = -180, ymin = -85, xmax = -20, ymax = 180))
+    #non_breed_poly <- st_crop(non_breed_poly, c(xmin = -180, ymin = -85, xmax = -20, ymax = 180))
     ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
                                      val_range = 1:4,
                                      eer_pkg)
@@ -62,9 +62,11 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   if(is.null(clim_vars_lst$ptn)){
     ptn_perc <- data.frame(PTN = NA_real_)
   } else {
-    ptn_perc <- calc_overlap_poly(range_poly %>%
-                                    st_transform(st_crs(clim_vars_lst$ptn)),
-                                  clim_vars_lst$ptn, "PTN")
+    if(st_crs(range_poly) != st_crs(clim_vars_lst$ptn)){
+      clim_vars_lst$ptn <- clim_vars_lst$ptn %>%
+        st_transform(st_crs(range_poly))
+    }
+    ptn_perc <- calc_overlap_poly(range_poly, clim_vars_lst$ptn, "PTN")
   }
 
   # Historical Hydrological niche
@@ -88,7 +90,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   }
 
   # Range size
-  range_size <- tibble(range_size = st_area(range_poly) %>% units::drop_units())
+  range_size <- tibble(range_size = st_area(range_poly) %>% units::set_units(NULL))
 
 
   outs <- lst(mat_classes, cmd_classes, ccei_classes, not_overlap, htn_classes,

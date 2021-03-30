@@ -39,7 +39,7 @@ perc_not_overlap <- function(rast, poly, var_name){
 
   area_overlap <- cells_overlap * area_cell *1000000
 
-  poly_area <- st_area(poly) %>% units::drop_units()
+  poly_area <- st_area(poly) %>% units::set_units(NULL)
 
   prop_area <- (poly_area - area_overlap)/poly_area * 100
 
