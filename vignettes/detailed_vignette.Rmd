@@ -1,0 +1,26 @@
+---
+title: "Explanation of the ccviR package and app"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Explanation of the ccviR package and app}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ccviR)
+```
+## Climate data
+Two climate variable are required to carry out the CCVI process and four other  climate variables are optional. The required variables are the exposure of the species to changes in temperature and changes in moisture and are used to complete Section A of the NatrueServe CCVI. The change in temperature/moisture must be classified into the six categories used in the NatureServe Guidelines page 20 with 1 being the class with the greatest change and 6 the class with the least change. 
+
+Optional climate variables can be used to answer questions in Section C of the NatureServe CCVI and migratory exposure to climate change. The variables include data on the historical thermal niche (HTN), the physiological thermal niche (PTN), Historical Hydrological niche, and climate change exposure index (CCEI). 
+
+### Historical thermal niche (HTN)
+Is the amount of variation in temperature that the species has experienced and is classified into 4 classes based on the thresholds on page 30 of the NatureServe

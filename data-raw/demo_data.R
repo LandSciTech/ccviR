@@ -37,7 +37,7 @@ values(HS_rast) <- c(sample(c(1:7, 1, 1, 1, 1), 3000, replace = TRUE),
                      sample(c(1:7, 7, 7, 7, 7), 3000, replace = TRUE))
 
 # Should be a polygon of areas with special temperature regime
-PTN <- st_polygon(list(matrix(c(0.5, 0.5, 1,
+PTN_poly <- st_polygon(list(matrix(c(0.5, 0.5, 1,
                                 1, 0, 1, 0.5, 0.5),
                               ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
@@ -113,5 +113,25 @@ vuln_df$Value1[1:15] <- c(0,0, 0,0,0,0, -1, -1, -1, -1, 0, 0, 0, 0, 0)
 vuln_df$Value1[26:29] <- c(-1, -1, -1, -1)
 
 res <- calc_vulnerability(spat_res, vuln_df)
+
+# save the data to extdata so that it can be used with the app for a demo
+clim_dat <- lst(MAT_rast, CMD_rast, CCEI_rast, HTN_rast, PTN_poly, MAP_rast)
+
+sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly, HS_rast,
+              assess_poly)
+
+write_fun <- function(x, nm, dir){
+  if(is(x, "Raster")){
+    writeRaster(x, paste0(dir, nm, ".tif"))
+  }
+  if(is(x, "sf")){
+    st_write(x, paste0(dir, nm, ".shp"))
+  }
+}
+
+purrr::walk2(clim_dat, names(clim_dat), write_fun,
+             dir = "inst/extdata/clim_files/")
+purrr::walk2(sp_dat, names(sp_dat), write_fun,
+             dir = "inst/extdata/")
 
 usethis::use_data("demo_data")
