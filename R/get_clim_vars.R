@@ -5,8 +5,8 @@
 #' @export
 
 get_clim_vars <- function(root_pth){
-  pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$",
-            "MWMT.*tif$", "PTN.*shp$")
+  pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
+            "MWMT.*tif$|HTN.*tif$", "PTN.*shp$")
   err <- c(T, T, F, F, F, F)
 
   clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y)) %>%
@@ -45,6 +45,7 @@ load_clim <- function(pth){
       if(nrow(out) > 1){
         out <- st_union(out) %>% st_as_sf()
       }
+      return(out)
     } else {
       out <- raster::raster(pth)
     }
