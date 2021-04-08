@@ -102,8 +102,10 @@ ui <-  fluidPage(
     div(id = "header",
         h1("An app to run the NatureServe CCVI process"),
         strong(
-          span("Created by Sarah Endicott"),
-          HTML("&bull;"),
+          span("App developer: Sarah Endicott"), HTML("&bull;"),
+          span("Project lead: Ilona Naujokaitis-Lewis"), HTML("&bull;"),
+          span("With support from: ECCC"),
+          br(),
           span("Code"),
           a("on GitHub", href = "https://github.com/see24/ccviR"),
           HTML("&bull;"),
@@ -391,7 +393,8 @@ ui <-  fluidPage(
                  id = "formData",
                  h3("Results"),
                  strong("Climate Change Vulnerability Index: "),
-                 shinycssloaders::withSpinner(textOutput("index")),
+                 br(),
+                 h4(shinycssloaders::withSpinner(htmlOutput("index"))),
                  br(), br(),
                  tableOutput("n_factors"),
                  strong("Confidence in index: "),
@@ -404,9 +407,10 @@ ui <-  fluidPage(
                )),
         column(6,
                div(id = "indplt",
-                   br(), br(), br(), br(),
+                   br(), br(), br(), br(), br(),
                    plotOutput("ind_score_plt"),
                    textOutput("slr"),
+                   plotOutput("q_score_plt"),
                    verbatimTextOutput("test_vulnQ"),
                    tableOutput("vuln_df_tbl")))
       )
@@ -671,12 +675,21 @@ server <- function(input, output, session) {
 
   output$index <- renderText({
     ind <- index_res()$index
-    case_when(ind == "IE" ~ "Insufficient Evidence",
+    col <- case_when(ind == "IE" ~ "grey",
+                     ind == "EV" ~ "red",
+                     ind == "HV" ~ "orange",
+                     ind == "MV" ~ "yellow",
+                     ind == "LV" ~ "green",
+                     TRUE ~ "grey")
+    ind <- case_when(ind == "IE" ~ "Insufficient Evidence",
               ind == "EV" ~ "Extremely Vulnerable",
               ind == "HV" ~ "Highly Vulnerable",
               ind == "MV" ~ "Moderately Vulnerable",
               ind == "LV" ~ "Less Vulnerable",
               TRUE ~ "Insufficient Evidence")
+
+    paste("<font color=", col, "><b>", ind, "</b></font>")
+
     })
   output$n_factors <- renderTable({
     tibble(Section = c("Section B", "Section C", "Section D"),
@@ -691,7 +704,7 @@ server <- function(input, output, session) {
       return(NULL)
     }
     paste0("The index value for this species was increased to ",
-           "'Extremely Vulnerable' becasue it is vulnerable to rising ",
+           "'Extremely Vulnerable' because it is vulnerable to rising ",
            "sea levels and has significant dispersal barriers")
   })
 
@@ -721,6 +734,11 @@ server <- function(input, output, session) {
                        ylim = c(NA, 1))+
      ggplot2::theme_classic()
   })
+
+  # TODO: make this prettier and uncomment
+  # output$q_score_plt <- renderPlot({
+  #   plot_q_score(index_res()$vuln_df)
+  # })
 
   out_data <- reactive({
     vuln_df <- index_res()$vuln_df %>%
