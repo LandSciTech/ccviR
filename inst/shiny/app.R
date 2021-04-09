@@ -434,10 +434,17 @@ ui <-  fluidPage(
                                         choiceNames = valueNms[2:4],
                                         choiceValues = valueOpts[2:4],
                                         inline = TRUE),
-                     actionButton("submitVuln", "Submit", class = "btn-primary")
+                     actionButton("submitVuln", "Next", class = "btn-primary")
                  )
           )
         )
+      ),
+        tabPanel(
+          "Spatial Vulnerability Questions",
+          fluidRow(
+            column(12,
+                   # move vuln qs with spatial to here with option to adjust results
+                   tmapOutput("C2ai_map")))
       ),
       # Results #===================================
       tabPanel(
