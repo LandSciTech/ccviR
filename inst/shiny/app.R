@@ -54,6 +54,41 @@ poly_nms <- list(`Assessment area`= "assess_poly",
                  `Non-breeding range` = "nonbreed_poly",
                  `Physiological thermal niche` = "ptn")
 
+# function to make maps
+make_map <- function(poly1, rast = NULL, poly2 = NULL,
+                     poly1_nm = "Range", poly2_nm = NULL,
+                     rast_nm = NULL, rast_style = "cat"){
+
+  # tried adding a line break to legend but doesn't work in interactive map
+  poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
+  rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
+
+  if(is.null(poly2)){
+    out <-  tm_shape(rast)+
+      tm_raster(title = rast_nm, style = rast_style)+
+      tm_shape(poly1)+
+      tm_borders()+
+      tm_add_legend("fill", labels = c(poly1_nm),
+                    col = c("black"))
+  } else if(is.null(rast)){
+    out <- tm_shape(poly1)+
+      tm_borders()+
+      tm_shape(poly2)+
+      tm_borders(col = "red")+
+      tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
+                    col = c("black", "red"))
+  } else {
+    out <-  tm_shape(rast)+
+      tm_raster(title = rast_nm)+
+      tm_shape(poly1)+
+      tm_borders()+
+      tm_shape(poly2)+
+      tm_borders(col = "red")+
+      tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
+                    col = c("black", "red"))
+  }
+  return(out)
+}
 # get current Epoch time
 epochTime <- function() {
   return(as.integer(Sys.time()))
@@ -137,12 +172,14 @@ ui <-  fluidPage(
                )
         )),
         # Spatial Analysis #============
-        tabPanel(
-          "Spatial Data Analysis",
-          column(4,
+      tabPanel(
+        "Spatial Data Analysis",
+        fluidRow(
+          column(12,
                  div(
                    id = "spatial",
                    h3("Spatial data analysis"),
+                   h4("Required spatial datasets"),
                    labelMandatory(strong("Folder location of climate data:")),
                    shinyDirButton("clim_var_dir", "Choose a folder",
                                   "Folder location of climate data"),
@@ -172,22 +209,39 @@ ui <-  fluidPage(
                    br(),
                    strong("Click Load to explore map or Next to proceed"),
                    br(),
-                   actionButton("loadSpatial", "Load", class = "btn-primary"),
-                   actionButton("next2", "Next", class = "btn-primary"),
-                   br(), br()
+                   actionButton("loadSpatial", "Load", class = "btn-primary")
+
+
+
+
                  )
-          ),
-          column(8, div(
-                     id = "range_map",
-                     h2("Range map"),
-                     br(),
-                     selectInput("rast_plot", "Raster to plot", rast_nms),
-                     selectInput("poly_plot", "Polygon to plot", poly_nms),
-                     br(),
-                     tmap::tmapOutput("range_map")
-                   )
-                 )
+          )
         ),
+        fluidRow(
+          column(
+            6,
+            div(
+              id = "texp_map",
+              h3("Temperature exposure"),
+              tmap::tmapOutput("texp_map"),
+              tableOutput("texp_tbl")
+            )
+          ),
+          column(
+              6,
+              div(
+                id = "cmd_map",
+                h3("Moisture exposure"),
+                tmap::tmapOutput("cmd_map"),
+                tableOutput("cmd_tbl")
+              )
+          )
+        ),
+        fluidRow(
+          actionButton("next2", "Next", class = "btn-primary"),
+          br(), br()
+        )
+      ),
       # Section B questions #=================
       tabPanel(
         "Vulnerability Questions",
@@ -554,46 +608,74 @@ server <- function(input, output, session) {
     raster::raster(pth)
   })
 
-
-  # Make map
-  output$range_map <- tmap::renderTmap({
-    req(input$loadSpatial)
-
-    if(input$rast_plot %in% c(names(clim_vars()))){
-      rast <- clim_vars()[[input$rast_plot]]
-    } else {
-      rast <- hs_rast()
-    }
-
-    poly <- switch(input$poly_plot,
-      nonbreed_poly = nonbreed_poly(),
-      assess_poly = assess_poly(),
-      ptn = clim_vars()[["ptn"]]
-    )
-
-    # tried adding a line break to legend but doesn't work in interactive map
-    poly_nm <- names(poly_nms)[which(poly_nms == input$poly_plot)]
-    rast_nm <- names(rast_nms)[which(rast_nms == input$rast_plot)]
-
-    tm_shape(rast)+
-      tm_raster(title = rast_nm)+
-      tm_shape(range_poly())+
-      tm_borders()+
-      tm_shape(poly,)+
-      tm_borders(col = "red")+
-      tm_add_legend("fill", labels = c("Range", poly_nm),
-                    col = c("black", "red"))
-  })
-
-
   # run spatial calculations
-  spat_res <- eventReactive(input$next2,{
+  spat_res <- eventReactive(input$loadSpatial,{
     run_spatial(range_poly = range_poly(),
                 non_breed_poly = nonbreed_poly(),
                 scale_poly = assess_poly(),
                 hs_rast = hs_rast(),
                 clim_vars_lst = clim_vars(),
                 eer_pkg = TRUE)
+  })
+
+
+  # Make maps
+  output$texp_map <- tmap::renderTmap({
+    req(input$loadSpatial)
+
+    make_map(range_poly(), clim_vars()$mat, rast_nm = "mat")
+  })
+
+  output$cmd_map <- tmap::renderTmap({
+    req(input$loadSpatial)
+
+    make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd")
+  })
+
+  output$texp_tbl <- renderTable({
+    exp_df <-  spat_res() %>%
+      mutate(temp_exp = case_when(
+        MAT_1 > 50 ~ 2.4,
+        sum(MAT_1, MAT_2, na.rm = TRUE) >= 75 ~ 2,
+        sum(MAT_1, MAT_2, MAT_3, na.rm = TRUE) >= 60 ~ 1.6,
+        sum(MAT_1, MAT_2, MAT_3, MAT_4, na.rm = TRUE) >= 40 ~ 1.2,
+        sum(MAT_1, MAT_2, MAT_3, MAT_4, MAT_5, na.rm = TRUE) >= 20 ~ 0.8,
+        TRUE ~ 0.4
+      ),
+      temp_exp_cave = temp_exp / ifelse(input$cave == 1, 3, 1)) %>%
+      select(contains("MAT"), temp_exp_cave) %>%
+      rename_at(vars(contains("MAT")),
+                ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
+      rename(`Exposure Multiplier` = temp_exp_cave) %>%
+      pivot_longer(cols = contains("Class"),
+                   names_to = "Change Class", values_to = "Proportion of Range") %>%
+      transmute(`Change Class`, `Proportion of Range`,
+                `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
+                                          rep("", n() - 1)))
+
+  })
+
+  output$cmd_tbl <- renderTable({
+    exp_df <-  spat_res() %>%
+      mutate(moist_exp = case_when(
+        CMD_1 >= 80 ~ 2,
+        sum(CMD_1, CMD_2, na.rm = TRUE) >= 64 ~ 1.67,
+        sum(CMD_1, CMD_2, CMD_3, na.rm = TRUE) >= 48 ~ 1.33,
+        sum(CMD_1, CMD_2, CMD_3, CMD_4, na.rm = TRUE) >= 32 ~ 1,
+        sum(CMD_1, CMD_2, CMD_3, CMD_4, CMD_5, na.rm = TRUE) >= 16 ~ 0.67,
+        TRUE ~ 0.33
+      ),
+      moist_exp_cave = moist_exp / ifelse(input$cave == 1, 3, 1)) %>%
+      select(contains("CMD"), moist_exp_cave) %>%
+      rename_at(vars(contains("CMD")),
+                ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
+      rename(`Exposure Multiplier` = moist_exp_cave) %>%
+      pivot_longer(cols = contains("Class"),
+                   names_to = "Change Class", values_to = "Proportion of Range") %>%
+      transmute(`Change Class`, `Proportion of Range`,
+                `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
+                                          rep("", n() - 1)))
+
   })
 
   # When next button is clicked move to next panel
