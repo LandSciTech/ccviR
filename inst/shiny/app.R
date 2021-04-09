@@ -439,12 +439,22 @@ ui <-  fluidPage(
           )
         )
       ),
+      # Spatial Vulnerability Questions #================================
         tabPanel(
           "Spatial Vulnerability Questions",
           fluidRow(
             column(12,
-                   # move vuln qs with spatial to here with option to adjust results
-                   tmapOutput("C2ai_map")))
+                   div(
+                     id = "C2ai",
+                     h3("2a) Predicted sensitivity to changes in temperature:"),
+                     br(),
+                     strong("i)historical hydrological niche."),br(),
+                     tmapOutput("C2ai_map", width = "50%"),
+                     tableOutput("C2ai_tbl"),
+                     uiOutput("C2ai_box")
+                   )
+            )
+          )
       ),
       # Results #===================================
       tabPanel(
@@ -724,8 +734,43 @@ server <- function(input, output, session) {
 
   # When next button is clicked move to next panel
   observeEvent(input$submitVuln, {
-    updateTabsetPanel(session, "tabset", selected = "Results")
+    updateTabsetPanel(session, "tabset",
+                      selected = "Spatial Vulnerabiliy Questions")
   })
+
+  # Spatial Vulerability Questions #========================
+  output$C2ai_map <- renderTmap({
+    req(input$submitVuln)
+
+    make_map(range_poly(), rast = clim_vars()$htn, rast_nm = "htn")
+  })
+
+  output$C2ai_tbl <- renderTable({
+    exp_df <-  spat_res() %>%
+      select(contains("HTN")) %>%
+      rename_at(vars(contains("HTN")),
+                ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
+      pivot_longer(cols = contains("Class"),
+                   names_to = "Change Class", values_to = "Proportion of Range") %>%
+      transmute(`Change Class`, `Proportion of Range`)
+  })
+
+  output$C2ai_box <- renderUI({
+    box_val <- spat_res() %>%
+      mutate(C2ai = case_when(HTN_4 > 10 ~ 0,
+                              HTN_3 > 10 ~ 1,
+                              HTN_2 > 10 ~ 2,
+                              HTN_1 > 10 ~ 3,
+                              is.na(HTN_1) ~ NA_real_)) %>%
+      pull(C2ai)
+
+    checkboxGroupInput("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       inline = TRUE)
+  })
+
 
   # Calculate Index value #================================
 
