@@ -446,9 +446,10 @@ ui <-  fluidPage(
             column(12,
                    div(
                      id = "C2ai",
-                     h3("2a) Predicted sensitivity to changes in temperature:"),
+                     h4("2a) Predicted sensitivity to changes in temperature:"),
                      br(),
-                     strong("i)historical hydrological niche."),br(),
+                     strong("i) Historical hydrological niche."),
+                     br(),br(),
                      tmapOutput("C2ai_map", width = "50%"),
                      tableOutput("C2ai_tbl"),
                      uiOutput("C2ai_box")
