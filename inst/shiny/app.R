@@ -419,7 +419,7 @@ ui <-  fluidPage(
             div(
               id = "C2ai",
               h4("Predicted sensitivity to temperature and moisture changes:"),
-              strong("2a) i) Historical hydrological niche."),
+              strong("2a) i) Historical thermal niche."),
               br(),br(),
               div(id = "missing_htn",
                   HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
