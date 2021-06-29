@@ -4,7 +4,14 @@
 \alias{wrap_gdalwarp}
 \title{Title}
 \usage{
-wrap_gdalwarp(rast, ref_crs, out_path, overwrite = FALSE, ...)
+wrap_gdalwarp(
+  rast,
+  ref_crs,
+  out_path,
+  overwrite = FALSE,
+  resamp_method = "near",
+  ...
+)
 }
 \arguments{
 \item{...}{}

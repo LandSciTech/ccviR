@@ -1,6 +1,5 @@
-# run the GIS related functions to get inputs to index calculator for 1 scale
-# and species
-#' Title
+
+#' Run the spatial analysis functions to get inputs to index calculator
 #'
 #' @param species_nm
 #' @param scale_nm
@@ -22,6 +21,12 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                                                    quietly = TRUE)){
   message("performing spatial analysis")
 
+  # Check polygon inputs have only one feature and if not union
+  range_poly <- check_polys(range_poly)
+  scale_poly <- check_polys(scale_poly)
+  non_breed_poly <- check_polys(non_breed_poly)
+  clim_vars_lst$ptn <- check_polys(clim_vars_lst$ptn)
+
   # Section A - Exposure to Local Climate Change: #====
 
   # Temperature
@@ -37,7 +42,14 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
     not_overlap <- data.frame(perc_non_breed_not_over_ccei = NA_real_)
   } else {
-    #non_breed_poly <- st_crop(non_breed_poly, c(xmin = -180, ymin = -85, xmax = -20, ymax = 180))
+
+    if(is(non_breed_poly, "sfc")){
+      non_breed_poly <- sf::st_as_sf(non_breed_poly)
+    }
+    if(nrow(non_breed_poly) > 1){
+      non_breed_poly <- sf::st_union(non_breed_poly) %>% sf::st_as_sf()
+    }
+
     ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
                                      val_range = 1:4,
                                      eer_pkg)
@@ -105,4 +117,19 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   out <- bind_cols(mat_classes, cmd_classes, ccei_classes, not_overlap, htn_classes,
                    ptn_perc, range_MAP, mod_resp_CC, range_size)
+}
+
+
+# helper function to check input polys
+check_polys <- function(poly){
+  if(is.null(poly)){
+    return(poly)
+  }
+  if(!is(poly, "sf")){
+    poly <- sf::st_as_sf(poly)
+  }
+  if(nrow(poly) > 1){
+    poly <- sf::st_union(poly) %>% sf::st_as_sf()
+  }
+  return(poly)
 }

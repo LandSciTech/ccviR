@@ -12,7 +12,8 @@
 #' @export
 #'
 #' @examples
-wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE, ...){
+wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE,
+                          resamp_method = "near", ...){
   if(!requireNamespace("gdalUtils", quietly = TRUE)){
     stop("package gdalUtils is required for this function. Call" ,
          "install.packages(\"gdalUtils\") to install it.")
@@ -20,5 +21,7 @@ wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE, ...){
   input <- raster(rast)
   src_crs <- input %>% raster::crs() %>% .@projargs
   gdalUtils::gdalwarp(rast, out_path, src_crs, ref_crs,
-                      overwrite = overwrite, ...)
+                      overwrite = overwrite,
+                      r = resamp_method,
+                      ...)
 }

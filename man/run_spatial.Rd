@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_spatial.R
 \name{run_spatial}
 \alias{run_spatial}
-\title{Title}
+\title{Run the spatial analysis functions to get inputs to index calculator}
 \usage{
 run_spatial(
   range_poly,
@@ -20,5 +20,5 @@ run_spatial(
 
 }
 \description{
-Title
+Run the spatial analysis functions to get inputs to index calculator
 }
