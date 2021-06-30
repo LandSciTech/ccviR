@@ -15,11 +15,11 @@
 #' @export
 #'
 #' @examples
-prep_exp <- function(rast_norm, rast_fut, file_nm, do_reproj = TRUE,
+prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
                      overwrite = FALSE){
   rast_delta <-  rast_norm - rast_fut
 
-  if(do_reproj){
+  if(reproject){
     ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
     # project raster to WGS84 and save to file_nm
@@ -52,49 +52,92 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, do_reproj = TRUE,
 }
 
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
-                          map, mwmt, mcmt, in_folder, out_folder){
+                          map, mwmt, mcmt, in_folder, out_folder,
+                          reproject = TRUE, overwrite = FALSE){
 
-  # TODO: Format to use in and out folder. Change out names to CAPS. Figure out
-  # if we should match Sarah O's intervals for reclassing
+  # TODO: Format to use in (optionally) and out folder. Change out names to
+  # CAPS. Figure out if we should match Sarah O's intervals for reclassing.
+  # Add validation to check that the file has a crs etc.
 
-  prep_exp(mat_norm, mat_fut, "data/clim_files/SE_version/mat_reclass.tif")
+  mat_norm <- raster::raster(list.files(in_folder,
+                                        pattern = "MAT.asc",
+                                        full.names = TRUE))
+  mat_fut <- raster::raster(list.files(in_folder,
+                                       pattern = "MAT_\\d.*asc",
+                                       full.names = TRUE))
 
-  prep_exp(cmd_norm, cmd_fut, "data/clim_files/SE_version/cmd_reclass.tif")
+  prep_exp(mat_norm, mat_fut, file.path(out_folder,"MAT_reclass.tif"),
+           reproject = reproject)
 
+  rm(mat_fut, mat_norm)
+
+  cmd_norm <- raster::raster(list.files(in_folder,
+                                        pattern = "CMD.asc",
+                                        full.names = TRUE))
+  cmd_fut <- raster::raster(list.files(in_folder,
+                                       pattern = "CMD_\\d.*asc",
+                                       full.names = TRUE))
+
+  prep_exp(cmd_norm, cmd_fut, file.path(out_folder,"CMD_reclass.tif"),
+           reproject = reproject)
+
+  rm(cmd_fut, cmd_norm)
 
   # Prepare other climate variables
   # CCEI
-  ccei <- raster::raster("data/clim_files/raw/ccei.img")
+  ccei <- raster::raster(list.files(in_folder,
+                                    pattern = "ccei.img",
+                                    full.names = TRUE))
 
   brs <- c(0, 4, 5, 7, 25)
 
   rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
   ccei_reclass <- raster::reclassify(ccei, rcl_tbl)
 
-  raster::writeRaster(ccei_reclass, "data/clim_files/SE_version/ccei_reclass.tif")
+  raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"))
+  rm(ccei_reclass, rcl_tbl, brs, ccei)
 
   # MAP
-  ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  if(reproject){
+    ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
-  # project raster to WGS84 and save to file_nm
-  wrap_gdalwarp("data/clim_files/raw/MAP.asc", ref_crs,
-                "data/clim_files/SE_version/map.tif",
-                resamp_method = "bilinear")
+    # project raster to WGS84 and save to file_nm
+    wrap_gdalwarp(list.files(in_folder,
+                             pattern = "MAP.asc",
+                             full.names = TRUE), ref_crs,
+                  file.path(out_folder, "MAP.tif"),
+                  resamp_method = "bilinear")
+  } else {
+    map <- raster::raster(list.files(in_folder,
+                                     pattern = "MAP.asc",
+                                     full.names = TRUE))
+    writeRaster(map, file.path(out_folder, "MAP.tif"))
+    rm(map)
+  }
+
 
   # MWMT - MCMT
 
-  mwmt <- raster::raster("data/clim_files/raw/MWMT.asc")
-  mcmt <- raster::raster("data/clim_files/raw/MCMT.asc")
+  mwmt <- raster::raster(list.files(in_folder,
+                                    pattern = "MWMT.asc",
+                                    full.names = TRUE))
+  mcmt <- raster::raster(list.files(in_folder,
+                                    pattern = "MCMT.asc",
+                                    full.names = TRUE))
 
   dif_mt <- mwmt-mcmt
 
-  ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  rm(mwmt, mcmt)
 
-  # project raster to WGS84
-  dif_mt <- wrap_gdalwarp(raster::filename(dif_mt), ref_crs,
-                          raster::rasterTmpFile(),
-                          resamp_method = "bilinear",
-                          output_Raster = TRUE)
+  if(reproject){
+    ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+    # project raster to WGS84
+    dif_mt <- wrap_gdalwarp(raster::filename(dif_mt), ref_crs,
+                            raster::rasterTmpFile(),
+                            resamp_method = "bilinear",
+                            output_Raster = TRUE)
+  }
 
   brs <- c(-1, 20.8, 26.3, 31.8, 50)
 
@@ -102,6 +145,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
 
   dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl)
 
-  raster::writeRaster(dif_mt_reclass, "data/clim_files/SE_version/mwmt_mcmt_reclass.tif")
+  raster::writeRaster(dif_mt_reclass,
+                      file.path(out_folder, "MWMT_MCMT_reclass.tif"))
 
 }
