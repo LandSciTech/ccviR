@@ -133,3 +133,9 @@ check_polys <- function(poly){
   }
   return(poly)
 }
+
+check_trim <- function(rast){
+  # TODO
+  do_trim <- sum(!is.na(rast[1:10,]))
+  climderive::trim_ras()
+}

@@ -546,6 +546,7 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "tabset",
                       selected = "Spatial Data Analysis"
     )
+    shinyjs::runjs("window.scrollTo(0, 0)")
   })
 
   observe({
@@ -725,6 +726,7 @@ server <- function(input, output, session) {
     updateTabsetPanel(session, "tabset",
                       selected = "Vulnerability Questions"
     )
+    shinyjs::runjs("window.scrollTo(0, 0)")
   })
 
   # # Do spatial analysis Should spatial analysis results be displayed interactively?
@@ -1083,6 +1085,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
   observeEvent(input$nextVuln, {
     updateTabsetPanel(session, "tabset",
                       selected = "Spatial Vulnerability Questions")
+    shinyjs::runjs("window.scrollTo(0, 0)")
   })
 
   # Spatial Vulnerability Questions #========================
@@ -1284,6 +1287,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
     updateTabsetPanel(session, "tabset",
                       selected = "Results"
     )
+    shinyjs::runjs("window.scrollTo(0, 0)")
   })
 
   # Calculate Index value #================================

@@ -56,6 +56,13 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 #' Prepare data from raw to form needed for app including reclassifying and
 #' reprojecting (optional)
 #'
+#' File names required in in_folder:
+#' mat_norm: MAT.asc mean annual temperaturefor the historical normal period
+#' mat_fut: MAT_2050.asc mean annual temperature for the future under climate change it can be any number eg 2050, 2100
+#' cmd_norm: CMD.asc climate moisture deficit for the historical normal period
+#' cmd_fut: CMD_2050.asc climate moisture deficit for the future under climate change it can be any number eg 2050, 2100
+#' ccei: CCEI.img Climate Change Exposure Index from NatureServe website
+#'
 #' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt filepaths to find
 #'   data if in_folder is not given
 #' @param in_folder filepath where files are stored. Files must be named
