@@ -51,13 +51,30 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 
 }
 
+#' Prepare data from raw to form needed for app
+#'
+#' Prepare data from raw to form needed for app including reclassifying and
+#' reprojecting (optional)
+#'
+#' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt filepaths to find
+#'   data if in_folder is not given
+#' @param in_folder filepath where files are stored. Files must be named
+#'   according to the convention described in details
+#' @param out_folder
+#' @param reproject
+#' @param overwrite
+#'
+#' @return
+#' @export
+#'
+#' @examples
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
                           map, mwmt, mcmt, in_folder, out_folder,
                           reproject = TRUE, overwrite = FALSE){
 
-  # TODO: Format to use in (optionally) and out folder. Change out names to
-  # CAPS. Figure out if we should match Sarah O's intervals for reclassing.
-  # Add validation to check that the file has a crs etc.
+  # TODO: Format to use in (optionally) and out folder. Figure out if we should
+  # match Sarah O's intervals for reclassing. Add validation to check that the
+  # file has a crs etc.
 
   mat_norm <- raster::raster(list.files(in_folder,
                                         pattern = "MAT.asc",
@@ -67,7 +84,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
                                        full.names = TRUE))
 
   prep_exp(mat_norm, mat_fut, file.path(out_folder,"MAT_reclass.tif"),
-           reproject = reproject)
+           reproject = reproject, overwrite = overwrite)
 
   rm(mat_fut, mat_norm)
 
@@ -79,7 +96,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
                                        full.names = TRUE))
 
   prep_exp(cmd_norm, cmd_fut, file.path(out_folder,"CMD_reclass.tif"),
-           reproject = reproject)
+           reproject = reproject, overwrite = overwrite)
 
   rm(cmd_fut, cmd_norm)
 
@@ -94,7 +111,9 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
   rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
   ccei_reclass <- raster::reclassify(ccei, rcl_tbl)
 
-  raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"))
+  raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"),
+                      overwrite = overwrite)
+
   rm(ccei_reclass, rcl_tbl, brs, ccei)
 
   # MAP
@@ -111,7 +130,8 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
     map <- raster::raster(list.files(in_folder,
                                      pattern = "MAP.asc",
                                      full.names = TRUE))
-    writeRaster(map, file.path(out_folder, "MAP.tif"))
+    raster::writeRaster(map, file.path(out_folder, "MAP.tif"),
+                        overwrite = overwrite)
     rm(map)
   }
 
@@ -146,6 +166,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
   dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl)
 
   raster::writeRaster(dif_mt_reclass,
-                      file.path(out_folder, "MWMT_MCMT_reclass.tif"))
+                      file.path(out_folder, "MWMT_MCMT_reclass.tif"),
+                      overwrite = overwrite)
 
 }
