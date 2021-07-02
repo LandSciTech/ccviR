@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_data_prep.R
 \name{run_prep_data}
 \alias{run_prep_data}
-\title{prepare data from raw to form needed for app}
+\title{Prepare data from raw to form needed for app}
 \usage{
 run_prep_data(
   mat_norm,
@@ -20,11 +20,26 @@ run_prep_data(
 )
 }
 \arguments{
+\item{mat_norm, mat_fut, cmd_norm, cmd_fut, ccei, map, mwmt, mcmt}{filepaths to find
+data if in_folder is not given}
+
+\item{in_folder}{filepath where files are stored. Files must be named
+according to the convention described in details}
+
 \item{overwrite}{}
 }
 \value{
 
 }
 \description{
-prepare data from raw to form needed for app
+Prepare data from raw to form needed for app including reclassifying and
+reprojecting (optional)
+}
+\details{
+File names required in in_folder:
+mat_norm: MAT.asc mean annual temperaturefor the historical normal period
+mat_fut: MAT_2050.asc mean annual temperature for the future under climate change it can be any number eg 2050, 2100
+cmd_norm: CMD.asc climate moisture deficit for the historical normal period
+cmd_fut: CMD_2050.asc climate moisture deficit for the future under climate change it can be any number eg 2050, 2100
+ccei: CCEI.img Climate Change Exposure Index from NatureServe website
 }

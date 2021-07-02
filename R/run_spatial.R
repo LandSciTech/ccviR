@@ -134,8 +134,54 @@ check_polys <- function(poly){
   return(poly)
 }
 
+# a funtion to trim NAs off rasters. There is a version raster::trim but it is
+# really slow this version might have issues if the raster is really big
+trim_ras <- function (ras, filename = "", overwrite = FALSE){
+  NA_mat <- is.na(raster::as.matrix(ras))
+  colnotNA <- which(colSums(NA_mat) != raster::nrow(ras))
+  rownotNA <- which(rowSums(NA_mat) != raster::ncol(ras))
+  ext <- raster::extent(ras, rownotNA[1], rownotNA[length(rownotNA)],
+                        colnotNA[1], colnotNA[length(colnotNA)])
+  out <- raster::crop(ras, ext, filename = filename, overwrite = overwrite)
+}
+
+#' Trim NAs from raster copied from raster package internal .memtrimlayer in
+#' raster::trim. This is not memory safe but raster::trim takes over an hour
+#' while this takes ~30s
+#' @param x
+#'
+#' @param padding
+#' @param values
+#' @param filename
+#' @param ...
+#'
+#' @export
+trim_ras <- function(r, padding=0, values=NA, filename="", ...) {
+  x <- raster::as.matrix(r)
+  if (all(is.na(values))) {
+    rows <- rowSums(is.na(x))
+    cols <- colSums(is.na(x))
+  } else {
+    rows <- apply(x, 1, function(i) sum(i %in% values))
+    cols <- apply(x, 2, function(i) sum(i %in% values))
+  }
+  rows <- which(rows != ncol(x))
+  if (length(rows)==0) { 	stop("only NA values found") }
+  cols <- which(cols != nrow(x))
+
+  rows <- pmin(pmax(1, c(min(rows) - padding, max(rows + padding))), nrow(r))
+  cols <- pmin(pmax(1, c(min(cols) - padding, max(cols + padding))), ncol(r))
+
+  e <- raster::extent(r, rows[1], rows[2], cols[1], cols[2])
+  raster::crop(r, e, filename=filename, ...)
+}
+
+#' @export
 check_trim <- function(rast){
-  # TODO
   do_trim <- sum(!is.na(rast[1:10,]))
-  climderive::trim_ras()
+  if(do_trim == 0){
+    message("doing trim")
+    rast <- trim_ras(rast)
+  }
+  return(rast)
 }

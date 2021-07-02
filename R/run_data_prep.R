@@ -75,32 +75,79 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 #' @export
 #'
 #' @examples
-run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
-                          map, mwmt, mcmt, in_folder, out_folder,
+run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
+                          map = NULL, mwmt = NULL, mcmt = NULL, in_folder = NULL, out_folder,
                           reproject = TRUE, overwrite = FALSE){
 
-  # TODO: Format to use in (optionally) and out folder. Figure out if we should
-  # match Sarah O's intervals for reclassing. Add validation to check that the
-  # file has a crs etc.
+  # TODO: Figure out if we should match Sarah O's intervals for reclassing.
 
-  mat_norm <- raster::raster(list.files(in_folder,
-                                        pattern = "MAT.asc",
-                                        full.names = TRUE))
-  mat_fut <- raster::raster(list.files(in_folder,
-                                       pattern = "MAT_\\d.*asc",
-                                       full.names = TRUE))
+  if(!is.null(in_folder)){
+    mat_norm <- list.files(in_folder, pattern = "MAT.asc", full.names = TRUE)
+
+    mat_fut <- list.files(in_folder, pattern = "MAT_\\d.*asc", full.names = TRUE)
+
+    cmd_norm <-list.files(in_folder, pattern = "CMD.asc", full.names = TRUE)
+
+    cmd_fut <- list.files(in_folder, pattern = "CMD_\\d.*asc", full.names = TRUE)
+
+    if(any(lengths(list(mat_norm, mat_fut, cmd_norm, cmd_fut)) == 0)){
+      stop("mat_norm, mat_fut, cmd_norm, cmd_fut must all be present in in_folder",
+           call. = FALSE)
+    }
+
+    ccei <- list.files(in_folder, pattern = "ccei.img", full.names = TRUE)
+
+    map_pth <- list.files(in_folder, pattern = "MAP.asc", full.names = TRUE)
+
+    mwmt <- list.files(in_folder, pattern = "MWMT.asc", full.names = TRUE)
+
+    mcmt <- list.files(in_folder, pattern = "MCMT.asc", full.names = TRUE)
+  }
+
+  mat_norm <- raster::raster(mat_norm)
+
+  mat_fut <- raster::raster(mat_fut)
+
+  cmd_norm <- raster::raster(cmd_norm)
+
+  cmd_fut <- raster::raster(cmd_fut)
+
+  if(!is.null(ccei) && length(ccei) > 0){
+    ccei <- raster::raster(ccei)
+  } else {
+    ccei <- NULL
+  }
+
+  if(!is.null(map) && length(map) > 0){
+    map_pth <- map
+  } else {
+    map_pth <- NULL
+  }
+
+  if(!is.null(mwmt) && length(mwmt) > 0){
+    mwmt <- raster::raster(mwmt)
+  } else {
+    mwmt <- NULL
+  }
+
+  if(!is.null(mcmt) && length(mcmt) > 0){
+    mcmt <- raster::raster(mcmt)
+  } else {
+    mcmt <- NULL
+  }
+
+  # check for crs
+  purrr::map(purrr::compact(list(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
+                  map, mwmt, mcmt)), check_crs)
+
+  message("processing MAT")
 
   prep_exp(mat_norm, mat_fut, file.path(out_folder,"MAT_reclass.tif"),
            reproject = reproject, overwrite = overwrite)
 
   rm(mat_fut, mat_norm)
 
-  cmd_norm <- raster::raster(list.files(in_folder,
-                                        pattern = "CMD.asc",
-                                        full.names = TRUE))
-  cmd_fut <- raster::raster(list.files(in_folder,
-                                       pattern = "CMD_\\d.*asc",
-                                       full.names = TRUE))
+  message("processing CMD")
 
   prep_exp(cmd_norm, cmd_fut, file.path(out_folder,"CMD_reclass.tif"),
            reproject = reproject, overwrite = overwrite)
@@ -108,72 +155,74 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
   rm(cmd_fut, cmd_norm)
 
   # Prepare other climate variables
-  # CCEI
-  ccei <- raster::raster(list.files(in_folder,
-                                    pattern = "ccei.img",
-                                    full.names = TRUE))
+  if(!is.null(ccei)){
+    # CCEI
+    message("processing CCEI")
+    brs <- c(0, 4, 5, 7, 25)
 
-  brs <- c(0, 4, 5, 7, 25)
+    rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
+    ccei_reclass <- raster::reclassify(ccei, rcl_tbl)
 
-  rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
-  ccei_reclass <- raster::reclassify(ccei, rcl_tbl)
+    raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"),
+                        overwrite = overwrite)
 
-  raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"),
-                      overwrite = overwrite)
+    rm(ccei_reclass, rcl_tbl, brs, ccei)
+  }
 
-  rm(ccei_reclass, rcl_tbl, brs, ccei)
 
   # MAP
-  if(reproject){
-    ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+  if(!is.null(map_pth)){
+    message("processing MAP")
 
-    # project raster to WGS84 and save to file_nm
-    wrap_gdalwarp(list.files(in_folder,
-                             pattern = "MAP.asc",
-                             full.names = TRUE), ref_crs,
-                  file.path(out_folder, "MAP.tif"),
-                  resamp_method = "bilinear")
-  } else {
-    map <- raster::raster(list.files(in_folder,
-                                     pattern = "MAP.asc",
-                                     full.names = TRUE))
-    raster::writeRaster(map, file.path(out_folder, "MAP.tif"),
-                        overwrite = overwrite)
-    rm(map)
+    if(reproject){
+      ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+      # project raster to WGS84 and save to file_nm
+      wrap_gdalwarp(map_pth, ref_crs,
+                    file.path(out_folder, "MAP.tif"),
+                    resamp_method = "bilinear")
+    } else {
+      map <- raster::raster(map_pth)
+      raster::writeRaster(map, file.path(out_folder, "MAP.tif"),
+                          overwrite = overwrite)
+      rm(map)
+    }
   }
-
 
   # MWMT - MCMT
+  if(!is.null(mwmt) && !is.null(mcmt)){
+    message("processing MWMT and MCMT")
+    dif_mt <- mwmt-mcmt
 
-  mwmt <- raster::raster(list.files(in_folder,
-                                    pattern = "MWMT.asc",
-                                    full.names = TRUE))
-  mcmt <- raster::raster(list.files(in_folder,
-                                    pattern = "MCMT.asc",
-                                    full.names = TRUE))
+    rm(mwmt, mcmt)
 
-  dif_mt <- mwmt-mcmt
+    if(reproject){
+      ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
-  rm(mwmt, mcmt)
+      # project raster to WGS84
+      dif_mt <- wrap_gdalwarp(raster::filename(dif_mt), ref_crs,
+                              raster::rasterTmpFile(),
+                              resamp_method = "bilinear",
+                              output_Raster = TRUE)
+    }
 
-  if(reproject){
-    ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+    brs <- c(-1, 20.8, 26.3, 31.8, 50)
 
-    # project raster to WGS84
-    dif_mt <- wrap_gdalwarp(raster::filename(dif_mt), ref_crs,
-                            raster::rasterTmpFile(),
-                            resamp_method = "bilinear",
-                            output_Raster = TRUE)
+    rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
+
+    dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl)
+
+    raster::writeRaster(dif_mt_reclass,
+                        file.path(out_folder, "MWMT_MCMT_reclass.tif"),
+                        overwrite = overwrite)
   }
 
-  brs <- c(-1, 20.8, 26.3, 31.8, 50)
+}
 
-  rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
-
-  dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl)
-
-  raster::writeRaster(dif_mt_reclass,
-                      file.path(out_folder, "MWMT_MCMT_reclass.tif"),
-                      overwrite = overwrite)
-
+check_crs <- function(rast){
+  if(is.na(raster::crs(rast))){
+    stop("the raster ", raster::filename(rast),
+         " has no CRS. Please provide a file with CRS information",
+         call. = FALSE)
+  }
 }

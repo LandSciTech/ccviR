@@ -648,7 +648,7 @@ server <- function(input, output, session) {
       return(NULL)
     }
 
-    raster::raster(pth)
+    check_trim(raster::raster(pth))
   })
 
   # run spatial calculations

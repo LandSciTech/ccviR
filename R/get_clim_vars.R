@@ -55,6 +55,8 @@ load_clim <- function(pth){
     stop(cond)
   })
 
+  out <- check_trim(out)
+
   out
 
 }
