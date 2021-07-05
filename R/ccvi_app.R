@@ -23,14 +23,6 @@ ccvi_app <- function(...){
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
   valueOpts <- c(3, 2, 1, 0)
 
-  # add an asterisk to an input label
-  labelMandatory <- function(label) {
-    tagList(
-      label,
-      span("*", class = "mandatory_star")
-    )
-  }
-
   # format multiple values from checkbox
   getMultValues <- function(x, nm){
     if(is.null(x)){
