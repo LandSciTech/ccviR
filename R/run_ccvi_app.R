@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples if(interactive()){
-#' run_ccvi_app()
+#' run_ccvi_app("demo")
 #' }
 run_ccvi_app <- function(file_dir = getwd(),
                          launch.browser = TRUE,
@@ -22,8 +22,8 @@ run_ccvi_app <- function(file_dir = getwd(),
 
   shiny::shinyOptions(file_dir = file_dir, launch.browser = launch.browser,
                       port = port)
-  source(system.file("shiny/app.R", package = "ccviR"), local = TRUE,
-         chdir = TRUE)$value
+
+  ccvi_app()
 
   #
   # app_path <- system.file("shiny", package = "ccviR")
