@@ -14,9 +14,15 @@ get_file_ui <- function(id, title, mandatory = FALSE){
     label <- strong(title, ": ")
   }
   div(label,
-      shinyFilesButton(id, "Choose file",
+      shinyFiles::shinyFilesButton(id, "Choose file",
                        title, multiple = FALSE),
       verbatimTextOutput(id, placeholder = TRUE),
       br())
 }
 
+# output file paths
+file_pth_txt <- function(volumes, in_pth){
+  renderText({
+    shinyFiles::parseFilePaths(volumes, in_pth)$datapath
+  })
+}

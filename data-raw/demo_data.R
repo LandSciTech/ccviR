@@ -68,7 +68,7 @@ spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
                         non_breed_poly = nonbreed_poly,
                         clim_vars_lst = list(mat = MAT_rast, cmd = CMD_rast,
                                              ccei = CCEI_rast, htn = HTN_rast,
-                                             ptn = PTN, map = MAP_rast),
+                                             ptn = PTN_poly, map = MAP_rast),
                                              hs_rast = mask(HS_rast, rng_poly_high))
 
 make_vuln_df <- function(val1, val2 = NA, cave = 0 , mig = 0){
@@ -134,4 +134,36 @@ purrr::walk2(clim_dat, names(clim_dat), write_fun,
 purrr::walk2(sp_dat, names(sp_dat), write_fun,
              dir = "inst/extdata/")
 
+# make raw versions to use for testing data_prep
+
+MAT <- HTN_rast
+MAT_2050 <- MAT_rast
+
+CMD <- HTN_rast
+CMD_2050 <- CMD_rast
+
+MAP <- MAP_rast
+
+CCEI <- MAP_rast
+
+MWMT <- MAT_rast
+
+MCMT <- HTN_rast
+
+clim_dat2 <- lst(MAT, MAT_2050, CMD, CMD_2050, MAP, MWMT, MCMT, CCEI)
+
+clim_dat2 <- purrr:::map(clim_dat2, ~`crs<-`(.x, value = "+proj=longlat +datum=WGS84"))
+
+purrr::walk2(clim_dat2[1:7], names(clim_dat2[1:7]), write_fun,
+             dir = "inst/extdata/clim_files/raw/")
+
+writeRaster(clim_dat2[[8]], paste0("inst/extdata/clim_files/raw/", "CCEI", ".img"))
+
+run_prep_data(in_folder = "inst/extdata/clim_files/raw",
+              out_folder = "inst/extdata/clim_files/processed/",
+              reproject = F, overwrite = T)
+
+prep_exp(MAT, MAT_2050, file_nm = "inst/extdata/clim_files/processed/MAT_reclass.tif",
+         reproject = F)
+MAT - MAT_2050
 usethis::use_data("demo_data")

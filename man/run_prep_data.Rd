@@ -9,11 +9,11 @@ run_prep_data(
   mat_fut,
   cmd_norm,
   cmd_fut,
-  ccei,
-  map,
-  mwmt,
-  mcmt,
-  in_folder,
+  ccei = NULL,
+  map = NULL,
+  mwmt = NULL,
+  mcmt = NULL,
+  in_folder = NULL,
   out_folder,
   reproject = TRUE,
   overwrite = FALSE
@@ -37,9 +37,12 @@ reprojecting (optional)
 }
 \details{
 File names required in in_folder:
-mat_norm: MAT.asc mean annual temperaturefor the historical normal period
+mat_norm: MAT.asc mean annual temperature for the historical normal period
 mat_fut: MAT_2050.asc mean annual temperature for the future under climate change it can be any number eg 2050, 2100
 cmd_norm: CMD.asc climate moisture deficit for the historical normal period
 cmd_fut: CMD_2050.asc climate moisture deficit for the future under climate change it can be any number eg 2050, 2100
 ccei: CCEI.img Climate Change Exposure Index from NatureServe website
+map: MAP.asc mean annual precipitation for the historical normal period
+mwmt: MWMT.asc mean warmest month temperature for the historical normal period
+mcmt: MCMT.asc mean coldest month temperature for the historical normal period
 }

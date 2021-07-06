@@ -85,26 +85,26 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   # TODO: Figure out if we should match Sarah O's intervals for reclassing.
 
   if(!is.null(in_folder)){
-    mat_norm <- list.files(in_folder, pattern = "MAT.asc", full.names = TRUE)
+    mat_norm <- list.files(in_folder, pattern = "MAT....$", full.names = TRUE)
 
-    mat_fut <- list.files(in_folder, pattern = "MAT_\\d.*asc", full.names = TRUE)
+    mat_fut <- list.files(in_folder, pattern = "MAT_\\d.*", full.names = TRUE)
 
-    cmd_norm <-list.files(in_folder, pattern = "CMD.asc", full.names = TRUE)
+    cmd_norm <-list.files(in_folder, pattern = "CMD....$", full.names = TRUE)
 
-    cmd_fut <- list.files(in_folder, pattern = "CMD_\\d.*asc", full.names = TRUE)
+    cmd_fut <- list.files(in_folder, pattern = "CMD_\\d.*", full.names = TRUE)
 
     if(any(lengths(list(mat_norm, mat_fut, cmd_norm, cmd_fut)) == 0)){
       stop("mat_norm, mat_fut, cmd_norm, cmd_fut must all be present in in_folder",
            call. = FALSE)
     }
 
-    ccei <- list.files(in_folder, pattern = "ccei.img", full.names = TRUE)
+    ccei <- list.files(in_folder, pattern = "CCEI.img$", full.names = TRUE)
 
-    map_pth <- list.files(in_folder, pattern = "MAP.asc", full.names = TRUE)
+    map <- list.files(in_folder, pattern = "MAP....$", full.names = TRUE)
 
-    mwmt <- list.files(in_folder, pattern = "MWMT.asc", full.names = TRUE)
+    mwmt <- list.files(in_folder, pattern = "MWMT....$", full.names = TRUE)
 
-    mcmt <- list.files(in_folder, pattern = "MCMT.asc", full.names = TRUE)
+    mcmt <- list.files(in_folder, pattern = "MCMT....$", full.names = TRUE)
   }
 
   mat_norm <- raster::raster(mat_norm)
@@ -141,7 +141,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   # check for crs
   purrr::map(purrr::compact(list(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
-                  map, mwmt, mcmt)), check_crs)
+                                 mwmt, mcmt)), check_crs)
 
   message("processing MAT")
 
@@ -186,6 +186,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                     resamp_method = "bilinear")
     } else {
       map <- raster::raster(map_pth)
+      check_crs(map)
       raster::writeRaster(map, file.path(out_folder, "MAP.tif"),
                           overwrite = overwrite)
       rm(map)

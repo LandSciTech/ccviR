@@ -22,6 +22,6 @@ Run this function to launch the app.
 }
 \examples{
 if(interactive()){
-run_ccvi_app()
+run_ccvi_app("demo")
 }
 }
