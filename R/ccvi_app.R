@@ -23,18 +23,6 @@ ccvi_app <- function(...){
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
   valueOpts <- c(3, 2, 1, 0)
 
-  # Name of input data layers for mapping
-  rast_nms <- list(Temperature = "mat",
-                   Precipitation = "map",
-                   Moisture = "cmd",
-                   `Climate change exposure index` = "ccei",
-                   `Historical thermal niche` = "htn",
-                   `Habitat suitability` = "hs_rast")
-
-  poly_nms <- list(`Assessment area`= "assess_poly",
-                   `Non-breeding range` = "nonbreed_poly",
-                   `Physiological thermal niche` = "ptn")
-
   # CSS to use in the app
   appCSS <-
     ".mandatory_star { color: red; }
@@ -63,9 +51,62 @@ ccvi_app <- function(...){
           HTML("&bull;"),
           a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"))
     ),
-    # Species Info #===============
+
     tabsetPanel(
       id = "tabset",
+      # Introduction #===============
+      tabPanel(
+        "Welcome",
+        tabsetPanel(
+          id = "welcome", type = "hidden",
+          tabPanelBody("instructions",
+            fluidPage(
+              h2("Welcome"),
+              p("This app provides a new interface for the Climate Change Vulnerability Index created by ",
+                a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
+                "that automates the spatial analysis needed to inform the index"),
+              h3("Preparing to use the app"),
+
+              p(strong("Step 0: "),"The first time you use the app ",
+                "you will need to prepare the climate data used in the app."),
+              actionButton("prep_data", "Prepare Climate Data", class = "btn-primary"),
+              br(), br(),
+              p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
+                tags$ul(
+                  tags$li(labelMandatory("Species range polygon")),
+                  tags$li(labelMandatory("Assessment area polygon")),
+                  tags$li("Non-breeding range polygon"),
+                  tags$li("Projected habitat change raster classified as",
+                          " 1 = lost, 2-6 = maintained and 7 = gained"),
+                  tags$li("Physiological thermal niche (PTN) polygon. ",
+                          "PTN polygon should include cool or cold environments ",
+                          "that the species occupies that may be lost or reduced ",
+                          "in the assessment area as a result of climate change."))),
+              p(strong("Step 2: "), "Acquire species-specific sensitivity and life history data.",
+                "Including information about dispersal and movement ability, ",
+                "temperature/precipitation regime, dependence on disturbance events, ",
+                "relationship with ice or snow-cover habitats, physical",
+                " specificity to geological features or their derivatives, ",
+                "interactions with other species including diet and pollinator ",
+                "specificity, genetic variation, and phenological response to ",
+                "changing seasons. Recognizing that some of this information is",
+                " unknown for many species, the Index is designed such that only",
+                " 10 of the 19 sensitivity factors require input in order to ",
+                "obtain an overall Index score."),
+              actionButton("start", "Start", class = "btn-primary")
+            ),
+          ),
+          tabPanelBody("data_prep",
+            data_prep_ui("data_prep_mod"),
+            shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
+                                                            placeholder = TRUE)),
+            actionButton("data_done", "Finished", class = "btn-primary")
+
+          )
+        )
+
+      ),
+      # Species Info #===============
       tabPanel(
         "Species Information",
         column(
@@ -126,7 +167,7 @@ ccvi_app <- function(...){
                                "Habitat suitability raster file", multiple = FALSE),
               verbatimTextOutput("hs_rast_pth", placeholder = TRUE),
               br(),
-              strong("Click Load to explore map or Next to proceed"),
+              strong("Click Load to begin spatial analysis"),
               br(),
               actionButton("loadSpatial", "Load", class = "btn-primary")
             )
@@ -136,9 +177,9 @@ ccvi_app <- function(...){
           column(
             6,
             div(
-              id = "texp_map",
+              id = "texp_map_div",
               h3("Temperature exposure"),
-              tmap::tmapOutput("texp_map"),
+              shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
               tableOutput("texp_tbl")
             )
           ),
@@ -342,7 +383,7 @@ ccvi_app <- function(...){
                   HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
                   br(),
                   br()),
-              tmapOutput("map_C2ai", width = "50%"),
+              shinycssloaders::withSpinner(tmapOutput("map_C2ai", width = "50%")),
               tableOutput("tbl_C2ai"),
               uiOutput("box_C2ai")
             ),
@@ -433,6 +474,25 @@ ccvi_app <- function(...){
 
   # Server #========================
   server <- function(input, output, session) {
+
+    prepped_data <- data_prep_server("data_prep_mod")
+
+    output$data_prep_msg <- renderText(prepped_data())
+
+    observeEvent(input$prep_data, {
+      updateTabsetPanel(session, "welcome", selected = "data_prep")
+    })
+
+    observeEvent(input$data_done, {
+      updateTabsetPanel(session, "welcome", selected = "instructions")
+    })
+
+    observeEvent(input$start, {
+      updateTabsetPanel(session, "tabset",
+                        selected = "Species Information"
+      )
+      shinyjs::runjs("window.scrollTo(0, 0)")
+    })
 
     # start up Note this time out is because when I disconnected from VPN it
     # made the getVolumes function hang forever because it was looking for
@@ -569,7 +629,8 @@ ccvi_app <- function(...){
     })
 
     # run spatial calculations
-    spat_res <- eventReactive(input$loadSpatial,{
+    spat_res <- reactive({
+      req(input$loadSpatial)
       run_spatial(range_poly = range_poly(),
                   non_breed_poly = nonbreed_poly(),
                   scale_poly = assess_poly(),
@@ -645,11 +706,6 @@ ccvi_app <- function(...){
       )
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
-
-    # # Do spatial analysis Should spatial analysis results be displayed interactively?
-    # output$spat_res <- DT::renderDataTable({
-    #   spat_res()
-    # })
 
     # Vulnerability Qs #===============
     # Show guidelines with additional info for each section

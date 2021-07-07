@@ -38,6 +38,18 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                      poly1_nm = "Range", poly2_nm = NULL,
                      rast_nm = NULL, rast_style = "cat"){
 
+  # Name of input data layers for mapping
+  rast_nms <- list(Temperature = "mat",
+                   Precipitation = "map",
+                   Moisture = "cmd",
+                   `Climate change exposure index` = "ccei",
+                   `Historical thermal niche` = "htn",
+                   `Habitat suitability` = "hs_rast")
+
+  poly_nms <- list(`Assessment area`= "assess_poly",
+                   `Non-breeding range` = "nonbreed_poly",
+                   `Physiological thermal niche` = "ptn")
+
   # tried adding a line break to legend but doesn't work in interactive map
   poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
   rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
