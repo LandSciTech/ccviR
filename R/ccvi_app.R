@@ -23,18 +23,6 @@ ccvi_app <- function(...){
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
   valueOpts <- c(3, 2, 1, 0)
 
-  # format multiple values from checkbox
-  getMultValues <- function(x, nm){
-    if(is.null(x)){
-      x <- -1
-    }
-    x <- as.numeric(x)
-
-    df <- data.frame(Code = nm, Value1 = x[1], Value2 = x[2], Value3 = x[3],
-                     Value4 = x[4], stringsAsFactors = FALSE)
-
-  }
-
   # Name of input data layers for mapping
   rast_nms <- list(Temperature = "mat",
                    Precipitation = "map",
@@ -46,70 +34,6 @@ ccvi_app <- function(...){
   poly_nms <- list(`Assessment area`= "assess_poly",
                    `Non-breeding range` = "nonbreed_poly",
                    `Physiological thermal niche` = "ptn")
-
-  # function to make maps
-  make_map <- function(poly1, rast = NULL, poly2 = NULL,
-                       poly1_nm = "Range", poly2_nm = NULL,
-                       rast_nm = NULL, rast_style = "cat"){
-
-    # tried adding a line break to legend but doesn't work in interactive map
-    poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
-    rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
-
-    if(is.null(poly2)){
-      out <-  tm_shape(rast)+
-        tm_raster(title = rast_nm, style = rast_style)+
-        tm_shape(poly1)+
-        tm_borders()+
-        tm_add_legend("fill", labels = c(poly1_nm),
-                      col = c("black"))
-    } else if(is.null(rast)){
-      out <- tm_shape(poly1)+
-        tm_borders()+
-        tm_shape(poly2)+
-        tm_borders(col = "red")+
-        tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                      col = c("black", "red"))
-    } else {
-      out <-  tm_shape(rast)+
-        tm_raster(title = rast_nm)+
-        tm_shape(poly1)+
-        tm_borders()+
-        tm_shape(poly2)+
-        tm_borders(col = "red")+
-        tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                      col = c("black", "red"))
-    }
-    return(out)
-  }
-  # get current Epoch time
-  epochTime <- function() {
-    return(as.integer(Sys.time()))
-  }
-
-  # get a formatted string of the timestamp (exclude colons as they are invalid
-  # characters in Windows filenames)
-  humanTime <- function() {
-    format(Sys.time(), "%Y%m%d-%H%M%OS")
-  }
-
-  # save the results to a file
-  saveData <- function(data, fileName) {
-    write.csv(x = data, file = file.path(responsesDir, fileName),
-              row.names = FALSE, quote = TRUE)
-  }
-
-  # load all responses into a data.frame
-  # loadData <- function() {
-  #   files <- list.files(file.path(responsesDir), full.names = TRUE)
-  #   data <- lapply(files, read.csv, stringsAsFactors = FALSE)
-  #   #data <- dplyr::rbind_all(data)
-  #   data <- do.call(rbind, data)
-  #   data
-  # }
-
-  # directory where responses get stored
-  responsesDir <- file.path("responses")
 
   # CSS to use in the app
   appCSS <-
