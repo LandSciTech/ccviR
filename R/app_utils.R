@@ -55,28 +55,28 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
 
   if(is.null(poly2)){
-    out <-  tm_shape(rast)+
-      tm_raster(title = rast_nm, style = rast_style)+
-      tm_shape(poly1)+
-      tm_borders()+
-      tm_add_legend("fill", labels = c(poly1_nm),
-                    col = c("black"))
+    out <-  tmap::tm_shape(rast)+
+      tmap::tm_raster(title = rast_nm, style = rast_style)+
+      tmap::tm_shape(poly1)+
+      tmap::tm_borders()+
+      tmap::tm_add_legend("fill", labels = c(poly1_nm),
+                          col = c("black"))
   } else if(is.null(rast)){
-    out <- tm_shape(poly1)+
-      tm_borders()+
-      tm_shape(poly2)+
-      tm_borders(col = "red")+
-      tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                    col = c("black", "red"))
+    out <- tmap::tm_shape(poly1)+
+      tmap::tm_borders()+
+      tmap::tm_shape(poly2)+
+      tmap::tm_borders(col = "red")+
+      tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
+                          col = c("black", "red"))
   } else {
-    out <-  tm_shape(rast)+
-      tm_raster(title = rast_nm)+
-      tm_shape(poly1)+
-      tm_borders()+
-      tm_shape(poly2)+
-      tm_borders(col = "red")+
-      tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                    col = c("black", "red"))
+    out <-  tmap::tm_shape(rast)+
+      tmap::tm_raster(title = rast_nm)+
+      tmap::tm_shape(poly1)+
+      tmap::tm_borders()+
+      tmap::tm_shape(poly2)+
+      tmap::tm_borders(col = "red")+
+      tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
+                          col = c("black", "red"))
   }
   return(out)
 }

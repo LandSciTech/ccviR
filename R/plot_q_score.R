@@ -3,9 +3,9 @@
 #' Will help to visualize what factors are influencing index
 #'
 plot_q_score <- function(vuln_df){
-  ggplot(vuln_df, aes(Code, score))+
-    geom_col()+
-    geom_point(aes(y = exp), fill = "red")+
-    theme_bw()+
-    ylim(0,NA)
+  ggplot2::ggplot(vuln_df, aes(Code, score))+
+    ggplot2::geom_col()+
+    ggplot2::geom_point(aes(y = exp), fill = "red")+
+    ggplot2::theme_classic()+
+    ggplot2::ylim(0,NA)
 }

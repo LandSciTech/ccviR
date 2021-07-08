@@ -1,15 +1,23 @@
 # based on example app: https://github.com/daattali/shiny-server/blob/master/mimic-google-form/app.R
 # and blog post explaining it: https://deanattali.com/2015/06/14/mimicking-google-form-shiny/
-ccvi_app <- function(...){
-  library(shiny)
-  library(shinyFiles)
-  library(tmap)
-  library(tidyr)
-  library(ggplot2)
-  library(dplyr)
-  #devtools::load_all()
-  library(ccviR)
 
+
+
+#' Title
+#'
+#' @param ...
+#'
+#' @return
+#'
+#' @import shiny
+#' @import dplyr
+#' @import sf
+#' @import shinyFiles
+#' @importFrom raster raster crs
+#' @export
+#'
+#' @examples
+ccvi_app <- function(...){
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
 
@@ -383,7 +391,7 @@ ccvi_app <- function(...){
                   HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
                   br(),
                   br()),
-              shinycssloaders::withSpinner(tmapOutput("map_C2ai", width = "50%")),
+              shinycssloaders::withSpinner(tmap::tmapOutput("map_C2ai", width = "50%")),
               tableOutput("tbl_C2ai"),
               uiOutput("box_C2ai")
             ),
@@ -395,7 +403,7 @@ ccvi_app <- function(...){
                   HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
                   br(),
                   br()),
-              tmapOutput("map_C2aii", width = "50%"),
+              tmap::tmapOutput("map_C2aii", width = "50%"),
               tableOutput("tbl_C2aii"),
               uiOutput("box_C2aii")
             ),
@@ -407,7 +415,7 @@ ccvi_app <- function(...){
                   HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
                   br(),
                   br()),
-              tmapOutput("map_C2bi", width = "50%"),
+              tmap::tmapOutput("map_C2bi", width = "50%"),
               tableOutput("tbl_C2bi"),
               uiOutput("box_C2bi")
             ),
@@ -421,7 +429,7 @@ ccvi_app <- function(...){
                   HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
                   br(),
                   br()),
-              tmapOutput("map_D2_3", width = "50%"),
+              tmap::tmapOutput("map_D2_3", width = "50%"),
               tableOutput("tbl_D2_3"),
               strong("2) Modeled future (2050) change in population or range size."),
               uiOutput("box_D2"),
@@ -668,7 +676,7 @@ ccvi_app <- function(...){
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
         rename(`Exposure Multiplier` = temp_exp_cave) %>%
-        pivot_longer(cols = contains("Class"),
+        tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Change Class", values_to = "Proportion of Range") %>%
         transmute(`Change Class`, `Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
@@ -691,7 +699,7 @@ ccvi_app <- function(...){
         rename_at(vars(contains("CMD")),
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
         rename(`Exposure Multiplier` = moist_exp_cave) %>%
-        pivot_longer(cols = contains("Class"),
+        tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Change Class", values_to = "Proportion of Range") %>%
         transmute(`Change Class`, `Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
@@ -1074,7 +1082,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       }
     })
 
-    output$map_C2ai <- renderTmap({
+    output$map_C2ai <- tmap::renderTmap({
       req(input$nextVuln)
       req(clim_vars()$htn)
 
@@ -1086,7 +1094,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
         select(contains("HTN")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
-        pivot_longer(cols = contains("Class"),
+        tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Change Class", values_to = "Proportion of Range") %>%
         transmute(`Change Class`, `Proportion of Range`)
     })
@@ -1119,7 +1127,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       }
     })
 
-    output$map_C2aii <- renderTmap({
+    output$map_C2aii <- tmap::renderTmap({
       req(input$nextVuln)
       req(clim_vars()$ptn)
 
@@ -1129,7 +1137,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
     output$tbl_C2aii <- renderTable({
       exp_df <-  spat_res() %>%
         select(contains("PTN")) %>%
-        pivot_longer(cols = contains("PTN"),
+        tidyr::pivot_longer(cols = contains("PTN"),
                      names_to = "Variable", values_to = "Proportion of Range")
     })
 
@@ -1161,7 +1169,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       }
     })
 
-    output$map_C2bi <- renderTmap({
+    output$map_C2bi <- tmap::renderTmap({
       req(input$nextVuln)
       req(clim_vars()$map)
 
@@ -1204,7 +1212,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       }
     })
 
-    output$map_D2_3 <- renderTmap({
+    output$map_D2_3 <- tmap::renderTmap({
       req(input$nextVuln)
       req(hs_rast())
 
@@ -1372,13 +1380,13 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
         arrange(Code) %>%
         mutate_all(as.character) %>%
         tidyr::unite(Value, Value1:Value4, na.rm = TRUE, sep = ", ") %>%
-        pivot_wider(names_from = "Code", values_from = "Value")
+        tidyr::pivot_wider(names_from = "Code", values_from = "Value")
 
       spat_df <- spat_res()
 
       conf_df <- index_res()$index_conf %>%
         mutate(index = paste0("MC_freq_", index)) %>%
-        pivot_wider(names_from = "index", values_from = "frequency")
+        tidyr::pivot_wider(names_from = "index", values_from = "frequency")
 
       data.frame(species_name = input$species_name,
                  common_name = input$common_name,

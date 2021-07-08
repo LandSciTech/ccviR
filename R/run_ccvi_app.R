@@ -25,7 +25,4 @@ run_ccvi_app <- function(file_dir = getwd(),
 
   ccvi_app()
 
-  #
-  # app_path <- system.file("shiny", package = "ccviR")
-  # return(shiny::runApp(app_path, launch.browser = launch.browser, port = port))
 }

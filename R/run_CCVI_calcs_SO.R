@@ -28,9 +28,7 @@
 #'
 #' @examples
 #'
-#' @import dplyr
-#' @import sf
-#' @importFrom raster raster crs
+
 run_CCVI_calcs_SO <- function(species_nm, scale_nm, root_pth, force_crs = TRUE,
                            eer_pkg = requireNamespace("exactextractr",
                                                       quietly = TRUE)){
