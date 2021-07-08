@@ -27,7 +27,8 @@ Imports:
     ggplot2,
     shinycssloaders,
     R.utils,
-    fs
+    fs,
+    plotly
 Suggests: 
     gdalUtils,
     testthat (>= 2.1.0),

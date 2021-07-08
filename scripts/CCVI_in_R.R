@@ -50,7 +50,7 @@ sum_rasts <- raster::calc(ras_stk, function(x){ sum(x == 1, na.rm = TRUE)},
 cmd <- raster("data/clim_files/CMD_delta_reclass_NA_WGS84.tif")
 mat <- raster("data/clim_files/MAT_delta_100_reclass_NA.tif")
 
-qtm(cmd) %>% tmap_leaflet()
+qtm(cmd) %>% tmap::tmap_leaflet()
 
 # Exposure Spatial processing #===============================================
 # Run CCVI exposure for one species

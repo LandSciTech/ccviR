@@ -14,6 +14,7 @@
 #' @import sf
 #' @import shinyFiles
 #' @importFrom raster raster crs
+#' @importFrom tmap tmap_leaflet
 #' @export
 #'
 #' @examples
@@ -470,7 +471,7 @@ ccvi_app <- function(...){
             br(), br(), br(), br(), br(),
             plotOutput("ind_score_plt"),
             textOutput("slr"),
-            plotOutput("q_score_plt"),
+            plotly::plotlyOutput("q_score_plt"),
             verbatimTextOutput("test_vulnQ"),
             tableOutput("vuln_df_tbl")
           )
@@ -1311,7 +1312,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       col <- case_when(ind == "IE" ~ "grey",
                        ind == "EV" ~ "red",
                        ind == "HV" ~ "orange",
-                       ind == "MV" ~ "yellow",
+                       ind == "MV" ~ "#FFC125",
                        ind == "LV" ~ "green",
                        TRUE ~ "grey")
       ind <- case_when(ind == "IE" ~ "Insufficient Evidence",
@@ -1369,9 +1370,9 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
     })
 
     # TODO: make this prettier and uncomment
-    # output$q_score_plt <- renderPlot({
-    #   plot_q_score(index_res()$vuln_df)
-    # })
+    output$q_score_plt <- plotly::renderPlotly({
+      plot_q_score(index_res()$vuln_df)
+    })
 
     out_data <- reactive({
       vuln_df <- index_res()$vuln_df %>%

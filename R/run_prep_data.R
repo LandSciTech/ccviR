@@ -83,28 +83,49 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           reproject = TRUE, overwrite = FALSE){
 
   # TODO: Figure out if we should match Sarah O's intervals for reclassing.
+  ext_accept <- c(".asc", ".tif", ".nc", ".grd", ".img")
+
+  make_pat <- function(x, ext_accept){
+    paste0(x, ext_accept, collapse = "|")
+  }
 
   if(!is.null(in_folder)){
-    mat_norm <- list.files(in_folder, pattern = "MAT....$", full.names = TRUE)
+    mat_norm <- list.files(in_folder,
+                           pattern = paste0("MAT", ext_accept, collapse = "|"),
+                           full.names = TRUE)
 
-    mat_fut <- list.files(in_folder, pattern = "MAT_\\d.*", full.names = TRUE)
+    mat_fut <- list.files(in_folder,
+                          pattern = paste0("MAT_\\d.*", ext_accept, collapse = "|"),
+                          full.names = TRUE)
 
-    cmd_norm <-list.files(in_folder, pattern = "CMD....$", full.names = TRUE)
+    cmd_norm <-list.files(in_folder,
+                          pattern = paste0("CMD", ext_accept, collapse = "|"),
+                          full.names = TRUE)
 
-    cmd_fut <- list.files(in_folder, pattern = "CMD_\\d.*", full.names = TRUE)
+    cmd_fut <- list.files(in_folder,
+                          pattern = paste0("CMD_\\d.*", ext_accept, collapse = "|"),
+                          full.names = TRUE)
 
     if(any(lengths(list(mat_norm, mat_fut, cmd_norm, cmd_fut)) == 0)){
       stop("mat_norm, mat_fut, cmd_norm, cmd_fut must all be present in in_folder",
            call. = FALSE)
     }
 
-    ccei <- list.files(in_folder, pattern = "CCEI.img$", full.names = TRUE)
+    ccei <- list.files(in_folder,
+                       pattern = paste0("CCEI", ext_accept, collapse = "|"),
+                       full.names = TRUE)
 
-    map <- list.files(in_folder, pattern = "MAP....$", full.names = TRUE)
+    map <- list.files(in_folder,
+                      pattern = paste0("MAP", ext_accept, collapse = "|"),
+                      full.names = TRUE)
 
-    mwmt <- list.files(in_folder, pattern = "MWMT....$", full.names = TRUE)
+    mwmt <- list.files(in_folder,
+                       pattern = paste0("MWMT", ext_accept, collapse = "|"),
+                       full.names = TRUE)
 
-    mcmt <- list.files(in_folder, pattern = "MCMT....$", full.names = TRUE)
+    mcmt <- list.files(in_folder,
+                       pattern = paste0("MCMT", ext_accept, collapse = "|"),
+                       full.names = TRUE)
   }
 
   mat_norm <- raster::raster(mat_norm)
