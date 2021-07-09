@@ -20,6 +20,16 @@ get_file_ui <- function(id, title, mandatory = FALSE){
       br())
 }
 
+check_comment_ui <- function(id, label, ...){
+  div(id = paste0(id, "div"),
+      checkboxGroupInput(id, label, inline = TRUE, ...),
+      #decrease whitespace b/w elements
+      div(style = "margin-top: -1.5em"),
+      textAreaInput(paste0("com", id), label = NULL, placeholder = "Comments")
+  )
+
+}
+
 # format multiple values from checkbox
 getMultValues <- function(x, nm){
   if(is.null(x)){

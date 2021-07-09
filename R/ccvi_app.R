@@ -223,25 +223,19 @@ ccvi_app <- function(...){
               h4("Evaluate for specific geographical area under consideration"),
               h5("Factors that influence vulnerability"),
               actionButton("guideB", "Show guidelines"),
-
-              checkboxGroupInput("B1", "1) Exposure to sea level rise:",
+              check_comment_ui("B1", "1) Exposure to sea level rise:",
+                               choiceNames = valueNms,
+                               choiceValues = valueOpts),
+              check_comment_ui("B2a", "2a) Distribution relative to natural barriers",
                                  choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
-
-              checkboxGroupInput("B2a", "2a) Distribution relative to natural barriers",
+                                 choiceValues = valueOpts),
+              check_comment_ui("B2b", "2b) Distribution relative to anthropogenic barriers",
                                  choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
-              checkboxGroupInput("B2b", "2b) Distribution relative to anthropogenic barriers",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
+                                 choiceValues = valueOpts),
 
-              checkboxGroupInput("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
+              check_comment_ui("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE)
+                                 choiceValues = valueOpts[2:4])
             )
           )
         ),
@@ -253,80 +247,66 @@ ccvi_app <- function(...){
               id = "secC",
               h4("Section C: Sensitivity and Adaptive Capacity"),
               actionButton("guideC", "Show guidelines"),
-              checkboxGroupInput("C1", "1) Dispersal and movements",
+              check_comment_ui("C1", "1) Dispersal and movements",
                                  choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
+                                 choiceValues = valueOpts),
 
               strong("2b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
 
-              checkboxGroupInput("C2bii", "ii) physiological hydrological niche.",
+              check_comment_ui("C2bii", "ii) physiological hydrological niche.",
                                  choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
+                                 choiceValues = valueOpts),
 
-              checkboxGroupInput("C2c", "2c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
+              check_comment_ui("C2c", "2c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
-              checkboxGroupInput("C2d", "2d) Dependence on ice, ice-edge, or snow-cover habitats.",
+                                 choiceValues = valueOpts[2:4]),
+              check_comment_ui("C2d", "2d) Dependence on ice, ice-edge, or snow-cover habitats.",
                                  choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
+                                 choiceValues = valueOpts),
 
-              checkboxGroupInput("C3", "3) Restriction to uncommon landscape/geological features or derivatives.",
+              check_comment_ui("C3", "3) Restriction to uncommon landscape/geological features or derivatives.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
-              checkboxGroupInput("C4a", "4a) Dependence on other species to generate required habitat.",
+                                 choiceValues = valueOpts[2:4]),
+              check_comment_ui("C4a", "4a) Dependence on other species to generate required habitat.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
+                                 choiceValues = valueOpts[2:4]),
               shinyjs::hidden(
                 div(
                   id = "animal_only",
-                  checkboxGroupInput("C4b", "4b) Dietary versatility (animals only).",
+                  check_comment_ui("C4b", "4b) Dietary versatility (animals only).",
                                      choiceNames = valueNms[2:4],
-                                     choiceValues = valueOpts[2:4],
-                                     inline = TRUE)
+                                     choiceValues = valueOpts[2:4])
                 )
               ),
               shinyjs::hidden(
                 div(
                   id = "plant_only",
-                  checkboxGroupInput("C4c", "4c) Pollinator versatility (plants only).",
+                  check_comment_ui("C4c", "4c) Pollinator versatility (plants only).",
                                      choiceNames = valueNms[2:4],
-                                     choiceValues = valueOpts[2:4],
-                                     inline = TRUE)
+                                     choiceValues = valueOpts[2:4])
                 )
               ),
-              checkboxGroupInput("C4d", "4d) Dependence on other species for propagule dispersal.",
+              check_comment_ui("C4d", "4d) Dependence on other species for propagule dispersal.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
-              checkboxGroupInput("C4e", "4e) Sensitivity to pathogens or natural enemies.",
+                                 choiceValues = valueOpts[2:4]),
+              check_comment_ui("C4e", "4e) Sensitivity to pathogens or natural enemies.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
-              checkboxGroupInput("C4f", "4f) Sensitivity to competition from native or non-native species.",
+                                 choiceValues = valueOpts[2:4]),
+              check_comment_ui("C4f", "4f) Sensitivity to competition from native or non-native species.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
-              checkboxGroupInput("C4g", "4g) Forms part of an interspecific interaction not covered by 4a-f.",
+                                 choiceValues = valueOpts[2:4]),
+              check_comment_ui("C4g", "4g) Forms part of an interspecific interaction not covered by 4a-f.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
+                                 choiceValues = valueOpts[2:4]),
 
-              checkboxGroupInput("C5a", "5a) Measured genetic variation.",
+              check_comment_ui("C5a", "5a) Measured genetic variation.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
+                                 choiceValues = valueOpts[2:4]),
               conditionalPanel(
                 "input.C5a == ''",
-                checkboxGroupInput("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
+                check_comment_ui("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
                                    choiceNames = valueNms[2:4],
-                                   choiceValues = valueOpts[2:4],
-                                   inline = TRUE),
+                                   choiceValues = valueOpts[2:4]),
 
               ),
               conditionalPanel(
@@ -334,18 +314,16 @@ ccvi_app <- function(...){
                 shinyjs::hidden(
                   div(
                     id = "plant_only2",
-                    checkboxGroupInput("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+                    check_comment_ui("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
                                        choiceNames = valueNms[2:4],
-                                       choiceValues = valueOpts[2:4],
-                                       inline = TRUE)
+                                       choiceValues = valueOpts[2:4])
                   )
                 )
               ),
 
-              checkboxGroupInput("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
+              check_comment_ui("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE)
+                                 choiceValues = valueOpts[2:4])
             )
           )
         ),
@@ -359,15 +337,13 @@ ccvi_app <- function(...){
               h5("(Optional; May apply across the range of a species)"),
               actionButton("guideD", "Show guidelines"),
 
-              checkboxGroupInput("D1", "1) Documented response to recent climate change. ",
+              check_comment_ui("D1", "1) Documented response to recent climate change. ",
                                  choiceNames = valueNms,
-                                 choiceValues = valueOpts,
-                                 inline = TRUE),
+                                 choiceValues = valueOpts),
 
-              checkboxGroupInput("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
+              check_comment_ui("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
                                  choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4],
-                                 inline = TRUE),
+                                 choiceValues = valueOpts[2:4]),
               actionButton("nextVuln", "Next", class = "btn-primary"),
               br(), br()
             )
@@ -483,7 +459,16 @@ ccvi_app <- function(...){
 
   # Server #========================
   server <- function(input, output, session) {
+    # start up Note this time out is because when I disconnected from VPN it
+    # made the getVolumes function hang forever because it was looking for
+    # drives that were no longer connected. Now it will give an error
+    R.utils::withTimeout({
+      volumes <- c(wd = getShinyOption("file_dir"),
+                   Home = fs::path_home(),
+                   getVolumes()())
+    }, timeout = 10, onTimeout = "error")
 
+    # Data Preparation #============================
     prepped_data <- data_prep_server("data_prep_mod")
 
     output$data_prep_msg <- renderText(prepped_data())
@@ -502,16 +487,6 @@ ccvi_app <- function(...){
       )
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
-
-    # start up Note this time out is because when I disconnected from VPN it
-    # made the getVolumes function hang forever because it was looking for
-    # drives that were no longer connected. Now it will give an error
-    R.utils::withTimeout({
-      volumes <- c(wd = getShinyOption("file_dir"),
-                   Home = fs::path_home(),
-                   getVolumes()())
-    }, timeout = 10, onTimeout = "error")
-
 
     # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
@@ -1109,11 +1084,10 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
                                 is.na(HTN_1) ~ NA_real_)) %>%
         pull(C2ai)
 
-      checkboxGroupInput("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
-                         selected = box_val,
-                         inline = TRUE)
+                         selected = box_val)
     })
 
     # C2aii
@@ -1151,11 +1125,10 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
                                  TRUE ~ 0)) %>%
         pull(C2aii)
 
-      checkboxGroupInput("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
-                         selected = box_val,
-                         inline = TRUE)
+                         selected = box_val)
     })
 
     # C2bi
@@ -1194,11 +1167,10 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
                                 TRUE ~ 0)) %>%
         pull(C2bi)
 
-      checkboxGroupInput("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
-                         selected = box_val,
-                         inline = TRUE)
+                         selected = box_val)
     })
 
     # D2 and D3
@@ -1235,11 +1207,10 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
                               TRUE ~ 0)) %>%
         pull(D2)
 
-      checkboxGroupInput("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
-                         selected = box_val,
-                         inline = TRUE)
+                         selected = box_val)
     })
 
     output$box_D3 <- renderUI({
@@ -1257,11 +1228,10 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
                               TRUE ~ 0)) %>%
         pull(D3)
 
-      checkboxGroupInput("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
-                         selected = box_val,
-                         inline = TRUE)
+                         selected = box_val)
     })
 
     # When submit button is clicked move to next panel
@@ -1281,6 +1251,16 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       as_tibble(data)
     })
 
+    # gather comments
+    coms_df <- reactive({
+      req(input$submitSpatVuln)
+      com_ins <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*")
+
+      data <- purrr::map_df(com_ins,
+                            ~data.frame(Code = stringr::str_remove(.x, "com"),
+                                        Comment = input[[.x]]))
+    })
+
     # Useful for testing
     # output$test_vulnQ <- renderPrint({
     #   print(input[["B1"]] %>% str())
@@ -1294,7 +1274,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
     #   print(df)
     #   })
     #
-    # output$vuln_df_tbl <- renderTable(index_res()$vuln_df %>% arrange(Code))
+    # output$vuln_df_tbl <- renderTable(coms_df() %>% arrange(Code))
 
     index_res <- reactive({
       z_df <- data.frame(Code = c("Z2", "Z3"),
@@ -1374,6 +1354,7 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       plot_q_score(index_res()$vuln_df)
     })
 
+    # Make csv
     out_data <- reactive({
       vuln_df <- index_res()$vuln_df %>%
         select(Code, contains("Value")) %>%
@@ -1381,7 +1362,13 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
         arrange(Code) %>%
         mutate_all(as.character) %>%
         tidyr::unite(Value, Value1:Value4, na.rm = TRUE, sep = ", ") %>%
-        tidyr::pivot_wider(names_from = "Code", values_from = "Value")
+        left_join(coms_df(), by = "Code") %>%
+        tidyr::pivot_wider(names_from = "Code",
+                           values_from = c("Comment","Value")) %>%
+        rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
+                           stringr::str_extract(.x, "^.*(?=_)")) %>%
+                     stringr::str_remove("_Value")) %>%
+        select(order(colnames(.)))
 
       spat_df <- spat_res()
 
