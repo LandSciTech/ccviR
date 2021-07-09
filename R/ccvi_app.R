@@ -190,6 +190,16 @@ ccvi_app <- function(...){
               h3("Temperature exposure"),
               shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
               tableOutput("texp_tbl")
+            ),
+            div(
+              id = "ccei_exp",
+              h3("Migratory exposure - Climate change exposure index"),
+              div(id = "missing_ccei",
+                  HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
+                  br(),
+                  br()),
+              tmap::tmapOutput("ccei_map"),
+              tableOutput("tbl_ccei")
             )
           ),
           column(
@@ -420,36 +430,62 @@ ccvi_app <- function(...){
       # Results #===================================
       tabPanel(
         "Results",
-        column(
-          6,
+        fluidPage(
           div(
             id = "formData",
             h3("Results"),
-            strong("Climate Change Vulnerability Index: "),
-            br(),
+
+            p("The Climate Change Vulnerability Index for",
+              strong(textOutput("species_name", inline = TRUE)), "is:"),
             h4(shinycssloaders::withSpinner(htmlOutput("index"))),
-            br(), br(),
+            br(),
+
+            p("The climate exposure in the migratory range is:"),
+            h5(htmlOutput("mig_exp")),
+
+            h4("Data completeness"),
             tableOutput("n_factors"),
-            strong("Confidence in index: "),
-            textOutput("conf_index"),
-            plotOutput("conf_graph", width = 300, height = 200),
+
+            h4("Confidence in index"),
+            p("When multiple values are selected for any of the vulnerability ",
+              "factors the average of the values is used to calculate the ",
+              "overall index. To test the uncertainty in the result a Monte Carlo ",
+              "simulation with 1000 runs is carried out. In each simulation run ",
+              "one of the selected values is chosen at randon and the index is ",
+              "calculated. The confidence reflects whether the range of values ",
+              "selected for vulnerability factors affects the final index."),
+            p("Confidence in the index is:",
+              textOutput("conf_index", inline = TRUE)),
+            plotOutput("conf_graph", width = 300, height = 200)
+          ),
+          div(
+            id = "indplt",
+            br(),
+            h4("Factors contributing to index value"),
+            p("The CCVI is calculated by combining the index calculated based on ",
+              "exposure, indirect exposure, and sensitivity with the index ",
+              "calculated based on documented or modeled responses to climate change. ",
+              "The plot below demonstrates which of these had the strongest",
+              "influence on the overall calculated index"),
+            plotOutput("ind_score_plt", width = 400, height = 300),
+            textOutput("slr"),
+            br(), br(),
+            p("The score for each vulnerability factor is determined by the ",
+              "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
+              "multiplied by the exposure multiplier for temperature or moisture,
+              whichever is most relevant to that factor. These scores are summed ",
+              "to determine the index. The plot below demonstrates which factors ",
+              "had the highest scores and how exposure impacted the score."),
+            plotly::plotlyOutput("q_score_plt", width = 700),
+
+            # helpful for testing
+            # verbatimTextOutput("test_vulnQ"),
+            # tableOutput("vuln_df_tbl"),
             br(), br(),
             downloadButton("downloadData", "Download results as csv"),
             br(), br(),
             actionButton("restart", "Assess another species",
                          class = "btn-primary")
-          )
-        ),
-        column(
-          6,
-          div(
-            id = "indplt",
-            br(), br(), br(), br(), br(),
-            plotOutput("ind_score_plt"),
-            textOutput("slr"),
-            plotly::plotlyOutput("q_score_plt"),
-            verbatimTextOutput("test_vulnQ"),
-            tableOutput("vuln_df_tbl")
           )
         )
       )
@@ -631,6 +667,25 @@ ccvi_app <- function(...){
       make_map(range_poly(), clim_vars()$mat, rast_nm = "mat")
     })
 
+    observe({
+      req(input$loadSpatial)
+      if(isTruthy(clim_vars()$ccei)){
+        shinyjs::hide("missing_ccei")
+        shinyjs::show("ccei_exp")
+      } else {
+        shinyjs::hide("ccei_exp")
+        shinyjs::show("missing_ccei")
+      }
+    })
+
+    output$ccei_map <- tmap::renderTmap({
+      req(input$loadSpatial)
+      message(print(nonbreed_poly()))
+      message(print(clim_vars()$ccei))
+
+      make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei")
+    })
+
     output$cmd_map <- tmap::renderTmap({
       req(input$loadSpatial)
 
@@ -676,11 +731,22 @@ ccvi_app <- function(...){
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
         rename(`Exposure Multiplier` = moist_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
-                     names_to = "Change Class", values_to = "Proportion of Range") %>%
+                     names_to = "Change Class",
+                     values_to = "Proportion of Range") %>%
         transmute(`Change Class`, `Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
                                             rep("", n() - 1)))
 
+    })
+
+    output$tbl_ccei <- renderTable({
+      exp_df <-  spat_res() %>%
+        select(contains("CCEI")) %>%
+        rename_at(vars(contains("CCEI")),
+                  ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
+        tidyr::pivot_longer(cols = contains("Class"),
+                            names_to = "Change Class",
+                            values_to = "Proportion of Range")
     })
 
     # When next button is clicked move to next panel
@@ -1283,10 +1349,11 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       vuln_df <- bind_rows(vuln_df(), z_df) %>%
         mutate(Species = input$species_name)
 
-      index <- calc_vulnerability(spat_res(), vuln_df)
+      index <- calc_vulnerability(spat_res(), vuln_df, input$tax_grp)
       index
     })
 
+    output$species_name <- renderText(input$species_name)
     output$index <- renderText({
       ind <- index_res()$index
       col <- case_when(ind == "IE" ~ "grey",
@@ -1305,12 +1372,23 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
       paste("<font color=", col, "><b>", ind, "</b></font>")
 
     })
+    output$mig_exp <- renderText({
+      ind <- index_res()$mig_exp
+
+      col <- case_when(ind == "N/A" ~ "grey",
+                       ind == "High" ~ "orange",
+                       ind == "Moderate" ~ "#FFC125",
+                       ind == "Low" ~ "green",
+                       TRUE ~ "grey")
+
+      paste("<font color=", col, "><b>", ind, "</b></font>")
+    })
+
     output$n_factors <- renderTable({
       tibble(Section = c("Section B", "Section C", "Section D"),
-             `Number of factors with data` = c(index_res()$n_b_factors,
-                                               index_res()$n_c_factors,
-                                               index_res()$n_d_factors),
-             `Number of factors` = c(4L, 16L, 4L))
+             `Factors completed` = c(paste0(index_res()$n_b_factors, "/4"),
+                                     paste0(index_res()$n_c_factors, "/16"),
+                                     paste0(index_res()$n_d_factors, "/4")))
     })
 
     output$slr <- renderText({
@@ -1401,7 +1479,10 @@ range; OR it may benefit from mitigation-related land use changes.</div>")
     )
 
     observeEvent(input$restart,{
-      shinyjs::refresh()
+      updateTabsetPanel(session, "tabset",
+                        selected = "Species Information"
+      )
+      shinyjs::runjs("window.scrollTo(0, 0)")
     })
 
   }
