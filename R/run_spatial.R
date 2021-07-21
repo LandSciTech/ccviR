@@ -36,7 +36,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD", eer_pkg)
 
   # Migratory Exposure
-  if(is.null(non_breed_poly)){
+  if(is.null(non_breed_poly) || is.null(clim_vars_lst$ccei)){
     ccei_classes <- rep(NA_real_, 4) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(paste0("CCEI_", 1:4))
 

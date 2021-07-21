@@ -9,14 +9,14 @@ plot_q_score <- function(vuln_df){
                              is.na(score) ~ 0,
                              TRUE ~ score))
 
-  plot_ly(vuln_df, hoverinfo = list("text", "y")) %>%
-    add_bars(x = ~Code, y = ~score, name = "Score",
+  plotly::plot_ly(vuln_df, hoverinfo = list("text", "y")) %>%
+    plotly::add_bars(x = ~Code, y = ~score, name = "Score",
              text = ~Question,
              hovertemplate = "%{text}: <br> Score: %{y}<extra></extra>") %>%
-    add_markers(x = ~Code, y = ~exp, name = "Exposure\nMultiplier",
+    plotly::add_markers(x = ~Code, y = ~exp, name = "Exposure\nMultiplier",
                 text = ~Question,
                 hovertemplate = "%{text}: <br> Exposure Multiplier: %{y}<extra></extra>") %>%
-    layout(xaxis = list(title = "Question"), yaxis = list(title = "Score"))
+    plotly::layout(xaxis = list(title = "Question"), yaxis = list(title = "Score"))
 }
 
 
