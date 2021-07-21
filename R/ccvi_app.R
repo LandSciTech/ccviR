@@ -326,7 +326,7 @@ ccvi_app <- function(...){
                 shinyjs::hidden(
                   div(
                     id = "plant_only2",
-                    check_comment_ui("C5b", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+                    check_comment_ui("C5c", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
                                        choiceNames = valueNms[2:4],
                                        choiceValues = valueOpts[2:4])
                   )
@@ -687,8 +687,6 @@ ccvi_app <- function(...){
 
     output$ccei_map <- tmap::renderTmap({
       req(input$loadSpatial)
-      message(print(nonbreed_poly()))
-      message(print(clim_vars()$ccei))
 
       make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei")
     })
