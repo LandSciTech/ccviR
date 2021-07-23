@@ -662,8 +662,7 @@ ccvi_app <- function(...){
                   non_breed_poly = nonbreed_poly(),
                   scale_poly = assess_poly(),
                   hs_rast = hs_rast(),
-                  clim_vars_lst = clim_vars(),
-                  eer_pkg = TRUE)
+                  clim_vars_lst = clim_vars())
     })
 
 

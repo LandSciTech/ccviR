@@ -8,7 +8,6 @@
 #' @param scale_poly
 #' @param hs_rast
 #' @param clim_vars_lst
-#' @param eer_pkg
 #'
 #' @return
 #' @export
@@ -16,9 +15,7 @@
 #' @examples
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL,
-                        hs_rast = NULL,
-                        eer_pkg = requireNamespace("exactextractr",
-                                                   quietly = TRUE)){
+                        hs_rast = NULL){
   message("performing spatial analysis")
 
   # Check polygon inputs have only one feature and if not union
@@ -30,14 +27,14 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   # Section A - Exposure to Local Climate Change: #====
 
   # Temperature
-  mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT", eer_pkg)
+  mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT")
   if(sum(mat_classes, na.rm = T) < 99){
     stop("The range polygon does not fully overlap the supplied temperature ",
          "raster.", call. = FALSE)
   }
 
   # Moisture
-  cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD", eer_pkg)
+  cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD")
   if(sum(cmd_classes, na.rm = T) < 99){
     stop("The range polygon does not fully overlap the supplied moisture ",
          "raster.", call. = FALSE)
@@ -52,8 +49,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   } else {
 
     ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
-                                     val_range = 1:4,
-                                     eer_pkg)
+                                     val_range = 1:4)
 
     not_overlap <- perc_not_overlap(clim_vars_lst$ccei, non_breed_poly,
                                     "perc_non_breed_not_over_ccei")
@@ -73,7 +69,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
       purrr::set_names(paste0("HTN_", 1:4))
   } else {
     htn_classes <- calc_prop_raster(clim_vars_lst$htn, range_poly, "HTN",
-                                    val_range = 1:4, eer_pkg)
+                                    val_range = 1:4)
   }
 
 
@@ -92,8 +88,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   if(is.null(clim_vars_lst$map)){
     range_MAP <- data.frame(MAP_max = NA_real_, MAP_min = NA_real_)
   } else {
-    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP",
-                                     eer_pkg)
+    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP")
   }
 
 
@@ -104,12 +99,11 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   } else {
 
-    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, eer_pkg)
+    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly)
     if(sum(mod_resp_CC, na.rm = T) == 0){
       stop("The assessment area polygon does not overlap the supplied habitat suitability ",
            "raster.", call. = FALSE)
     }
-
   }
 
   # Range size
