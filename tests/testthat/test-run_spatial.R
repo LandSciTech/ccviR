@@ -29,9 +29,48 @@ test_that("spatial runs with all data or optional data",{
 })
 
 test_that("Nonoverlaping poly and raster",{
-  # use nonbreed as assessment area
-  res <- run_spatial(nonbreed, assess, clim_vars[1:2])
+  # use nonbreed as range - no overlap - should not be allowed
+  expect_error(run_spatial(nonbreed, assess, clim_vars[1:2]),
+               "does not fully overlap")
 
-  calc_vulnerability(res, vuln, "Bird")
+  # use nonbreed as assess - no overlap - should not be allowed
+  # assess area does not overlap range doesn't affect calcs but is not expected.
+  # Is it worth testing for that? Does affect hs calcs
+  # No error
+  expect_is(run_spatial(rng_high, nonbreed, clim_vars[1:2]), "data.frame")
+  # error
+  expect_error(run_spatial(rng_high, nonbreed, clim_vars[1:2], hs_rast = hs),
+               "does not overlap")
+
+  # nonbreed is allowed to only partially overlap CCEI but should there be a
+  # warning if below a certain threshold based on what Sarah O did 40%
+  nonbreed_lt40 <- mutate(nonbreed, geometry = geometry + 0.2) %>%
+    st_set_crs(st_crs(nonbreed))
+
+  expect_warning(run_spatial(rng_high, assess, clim_vars[c(1:2, 4)],
+              non_breed_poly = nonbreed_lt40),
+              "does not overlap")
+
+  # not allowed to not overlap at all
+  expect_error(run_spatial(rng_high, assess, clim_vars[c(1:2, 4)],
+                           non_breed_poly = rng_high),
+               "does not overlap")
+})
+
+test_that("Non matching crs are handled reasonably", {
+  # The crs is different and as a result they don't overlap
+  rng_high_lccset <- st_set_crs(rng_high, value = "+proj=lcc +lon_0=-90 +lat_1=33 +lat_2=45")
+  expect_error(run_spatial(rng_high_lccset, assess, clim_vars[1:2]),
+               "does not fully overlap")
+
+  # the crs is different but they do overlap
+  rng_high_lcctrans <- st_transform(rng_high, crs = "+proj=lcc +lon_0=-90 +lat_1=33 +lat_2=45")
+  expect_message(res <- run_spatial(rng_high_lcctrans, assess, clim_vars[1:2]),
+                 "Polygons were transformed")
+
+  # make sure results are the same after transformed
+  res2 <- run_spatial(rng_high, assess, clim_vars[1:2])
+  expect_equal(as.numeric(res[1,-28]), as.numeric(res2[1,-28]))
+  # the range size is different after transforming but I think that is expected
 
 })

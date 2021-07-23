@@ -31,19 +31,32 @@ perc_not_overlap <- function(rast, poly, var_name){
 
   # Another option using mask will be less accurate near the poles but is much
   # faster
-  r_crop <- raster::crop(rast, poly)
+  tryCatch(
+    error = function(cnd){
+      if(conditionMessage(cnd) == "extents do not overlap"){
+        stop("The nonbreeding range polygon does not overlap the supplied CCEI raster",
+             call. = FALSE)
+      }
+    },
+    r_crop <- raster::crop(rast, poly)
+  )
+
   r_mask <- raster::mask(r_crop, poly, updatevalue = NA, updateNA= TRUE)
   cells_overlap <- raster::freq(r_mask, useNA = "no")[,2] %>% sum()
+  # area in km2
   area_cell <- raster::area(r_mask, na.rm = TRUE) %>%
     raster::cellStats("mean")
 
+  # convert to m2
   area_overlap <- cells_overlap * area_cell *1000000
 
+  # area in m2
   poly_area <- st_area(poly) %>% units::set_units(NULL)
 
-  prop_area <- (poly_area - area_overlap)/poly_area * 100
+  # percent area not overlaping
+  perc_area <- (poly_area - area_overlap)/poly_area * 100
 
-  out <- tibble(x = prop_area) %>% purrr::set_names(var_name)
+  out <- tibble(x = perc_area) %>% purrr::set_names(var_name)
   return(out)
 
 }

@@ -12,7 +12,16 @@
 calc_gain_loss <- function(rast, poly,
                            eer_pkg){
   if(eer_pkg){
-    out <- exactextractr::exact_extract(rast, poly, progress = FALSE)
+    withCallingHandlers(
+      warning = function(cnd){
+        if(grepl("transformed to raster", conditionMessage(cnd))){
+          message("Polygons were transformed to have CRS matching raster")
+          invokeRestart("muffleWarning")
+        }
+      },
+      out <- exactextractr::exact_extract(rast, poly, progress = FALSE)
+    )
+
     out <- out[[1]]
 
   } else {

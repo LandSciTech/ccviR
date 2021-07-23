@@ -12,7 +12,15 @@ calc_prop_raster <- function(rast, poly, var_name, scope, val_range = 1:6,
                              eer_pkg = requireNamespace("exactextractr",
                                                         quietly = TRUE)){
   if(eer_pkg){
-    out <- exactextractr::exact_extract(rast, poly, progress = FALSE)
+    withCallingHandlers(
+      warning = function(cnd){
+        if(grepl("transformed to raster", conditionMessage(cnd))){
+          message("Polygons were transformed to have CRS matching raster")
+          invokeRestart("muffleWarning")
+        }
+      },
+      out <- exactextractr::exact_extract(rast, poly, progress = FALSE)
+    )
     out <- out[[1]] %>%
       filter(!is.na(value)) %>%
       mutate(value = factor(value, levels = val_range)) %>%
