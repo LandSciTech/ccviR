@@ -686,6 +686,8 @@ ccvi_app <- function(...){
 
     output$ccei_map <- tmap::renderTmap({
       req(input$loadSpatial)
+      req(clim_vars()$ccei)
+      req(nonbreed_poly())
 
       make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei")
     })
