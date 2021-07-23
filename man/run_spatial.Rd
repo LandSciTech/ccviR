@@ -9,12 +9,11 @@ run_spatial(
   scale_poly,
   clim_vars_lst,
   non_breed_poly = NULL,
-  hs_rast = NULL,
-  eer_pkg = requireNamespace("exactextractr", quietly = TRUE)
+  hs_rast = NULL
 )
 }
 \arguments{
-\item{eer_pkg}{}
+\item{clim_vars_lst}{}
 }
 \value{
 
