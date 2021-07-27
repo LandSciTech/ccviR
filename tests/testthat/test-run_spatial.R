@@ -74,3 +74,26 @@ test_that("Non matching crs are handled reasonably", {
   # the range size is different after transforming but I think that is expected
 
 })
+
+test_that("Multiple polygons are merged", {
+  rng_high2 <- st_sfc(st_polygon(list(matrix(c(0, 0.75, 0.6, 0.75, 0.6,
+                                        1, 0, 1, 0, 0.75),
+                                      ncol = 2, byrow = TRUE))),
+                      st_polygon(list(matrix(c(0.5, 0.75, 1, 0.75, 1,
+                                               1, 0.5, 1, 0.5, 0.75),
+                                             ncol = 2, byrow = TRUE)))) %>%
+    st_sf() %>% st_set_crs(4326)
+
+  res1 <- run_spatial(rng_high, assess, clim_vars[1:2])
+  res2 <- run_spatial(rng_high2, assess, clim_vars[1:2])
+
+  res1$range_size - res2$range_size
+
+  expect_equal(as.numeric(res1[1,-28]), as.numeric(res2[1,-28]))
+  # the range size is different but I think it is just an issue with my
+  # polygons being made from scratch
+
+})
+
+
+
