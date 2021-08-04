@@ -46,6 +46,7 @@ ccvi_app <- function(...){
   ui <-  fluidPage(
     shinyjs::useShinyjs(),
     shinyjs::inlineCSS(appCSS),
+    shinyFeedback::useShinyFeedback(),
     title = "ccviR app",
 
     div(id = "header",
@@ -178,7 +179,8 @@ ccvi_app <- function(...){
               br(),
               strong("Click Load to begin spatial analysis"),
               br(),
-              actionButton("loadSpatial", "Load", class = "btn-primary")
+              actionButton("loadSpatial", "Load", class = "btn-primary"),
+              verbatimTextOutput("spat_error")
             )
           )
         ),
@@ -442,11 +444,13 @@ ccvi_app <- function(...){
 
             p("The Climate Change Vulnerability Index for",
               strong(textOutput("species_name", inline = TRUE)), "is:"),
-            h4(shinycssloaders::withSpinner(htmlOutput("index"))),
+            shinycssloaders::withSpinner(htmlOutput("index")),
+            plotly::plotlyOutput("ind_gauge", inline = TRUE, height = "100px"),
             br(),
-
+            br(),
             p("The climate exposure in the migratory range is:"),
             h5(htmlOutput("mig_exp")),
+            plotly::plotlyOutput("mig_exp_gauge", inline = TRUE, height = "100px"),
             br(),
 
             h4("Data completeness"),
@@ -624,8 +628,15 @@ ccvi_app <- function(...){
         root_pth <- parseDirPath(volumes, input$clim_var_dir)
       }
 
-      clim_vars <- get_clim_vars(root_pth)
+      try(clim_vars <- get_clim_vars(root_pth))
 
+    })
+    output$clim_var_dir <- renderText({
+      if(is(clim_vars(), "try-error")){
+        stop(conditionMessage(attr(clim_vars(), "condition")))
+      } else {
+        output$clim_var_dir
+      }
     })
 
     range_poly <- reactive({
@@ -687,17 +698,28 @@ ccvi_app <- function(...){
     # run spatial calculations
     spat_res <- reactive({
       req(input$loadSpatial)
-      run_spatial(range_poly = range_poly(),
-                  non_breed_poly = nonbreed_poly(),
-                  scale_poly = assess_poly(),
-                  hs_rast = hs_rast(),
-                  clim_vars_lst = clim_vars())
+      tryCatch({
+        run_spatial(range_poly = range_poly(),
+                    non_breed_poly = nonbreed_poly(),
+                    scale_poly = assess_poly(),
+                    hs_rast = hs_rast(),
+                    clim_vars_lst = clim_vars())
+      },
+      error = function(cnd) conditionMessage(cnd))
+
     })
 
+    output$spat_error <- renderText({
+      if(is.character(spat_res())){
+        stop(spat_res(), call. = FALSE)
+      } else {
+        NULL
+      }
+    })
 
     # Make maps
     output$texp_map <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(!is.character(spat_res()))
 
       make_map(range_poly(), clim_vars()$mat, rast_nm = "mat")
     })
@@ -714,7 +736,7 @@ ccvi_app <- function(...){
     })
 
     output$ccei_map <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(!is.character(spat_res()))
       req(clim_vars()$ccei)
       req(nonbreed_poly())
 
@@ -722,12 +744,13 @@ ccvi_app <- function(...){
     })
 
     output$cmd_map <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(!is.character(spat_res()))
 
       make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd")
     })
 
     output$texp_tbl <- renderTable({
+      req(!is.character(spat_res()))
       exp_df <-  spat_res() %>%
         mutate(temp_exp = case_when(
           MAT_1 > 50 ~ 2.4,
@@ -751,6 +774,7 @@ ccvi_app <- function(...){
     })
 
     output$cmd_tbl <- renderTable({
+      req(!is.character(spat_res()))
       exp_df <-  spat_res() %>%
         mutate(moist_exp = case_when(
           CMD_1 >= 80 ~ 2,
@@ -775,6 +799,7 @@ ccvi_app <- function(...){
     })
 
     output$tbl_ccei <- renderTable({
+      req(!is.character(spat_res()))
       exp_df <-  spat_res() %>%
         select(contains("CCEI", ignore.case = FALSE)) %>%
         rename_at(vars(contains("CCEI")),
@@ -1068,10 +1093,16 @@ ccvi_app <- function(...){
       ind <- index_res()$index
       col <- case_when(ind == "IE" ~ "grey",
                        ind == "EV" ~ "red",
-                       ind == "HV" ~ "orange",
+                       ind == "HV" ~ "darkorange",
                        ind == "MV" ~ "#FFC125",
                        ind == "LV" ~ "green",
                        TRUE ~ "grey")
+      def <- case_when(ind == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an Index score.",
+                       ind == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.",
+                       ind == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.",
+                       ind == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
+                       ind == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.",
+                       TRUE ~ "")
       ind <- case_when(ind == "IE" ~ "Insufficient Evidence",
                        ind == "EV" ~ "Extremely Vulnerable",
                        ind == "HV" ~ "Highly Vulnerable",
@@ -1079,19 +1110,30 @@ ccvi_app <- function(...){
                        ind == "LV" ~ "Less Vulnerable",
                        TRUE ~ "Insufficient Evidence")
 
-      paste("<font color=", col, "><b>", ind, "</b></font>")
+      paste("<h4><font color=", col, "><b>", ind, ":</b></font></h4>",
+            p(def))
 
     })
+
+
+    output$ind_gauge <- plotly::renderPlotly({
+      plt_index_gauge(index_res()$index)
+    })
+
     output$mig_exp <- renderText({
       ind <- index_res()$mig_exp
 
       col <- case_when(ind == "N/A" ~ "grey",
-                       ind == "High" ~ "orange",
-                       ind == "Moderate" ~ "#FFC125",
+                       ind == "High" ~ "red",
+                       ind == "Moderate" ~ "darkorange",
                        ind == "Low" ~ "green",
                        TRUE ~ "grey")
 
       paste("<font color=", col, "><b>", ind, "</b></font>")
+    })
+
+    output$mig_exp_gauge <- plotly::renderPlotly({
+      plt_mig_exp_gauge(index_res()$mig_exp)
     })
 
     output$n_factors <- renderTable({

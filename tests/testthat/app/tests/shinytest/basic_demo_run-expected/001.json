@@ -718,7 +718,7 @@
       }
     },
     "index": "<font color= red ><b> Extremely Vulnerable <\/b><\/font>",
-    "mig_exp": "<font color= orange ><b> High <\/b><\/font>",
+    "mig_exp": "<font color= darkorange ><b> High <\/b><\/font>",
     "n_factors": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Section <\/th> <th style='text-align: left;'> Factors completed <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Section B <\/td> <td> 4/4 <\/td> <\/tr>\n  <tr> <td> Section C <\/td> <td> 16/16 <\/td> <\/tr>\n  <tr> <td> Section D <\/td> <td> 4/4 <\/td> <\/tr>\n   <\/tbody> <\/table>",
     "nonbreed_poly_pth": "",
     "q_score_plt": {
