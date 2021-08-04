@@ -28,21 +28,25 @@ test_that("trimming happens", {
   na_rast <- clim_vars[[1]]
   na_rast <- setValues(na_rast, NA_real_) %>% shift(dy = 1)
 
-  na_rast <- merge(na_rast, clim_vars[[1]])
+  na_rast <- raster::merge(na_rast, clim_vars[[1]])
 
+  # copy MAT
   dir.create(file.path(file_dir, "temp"))
   file.copy(file.path(file_dir, "clim_files/MAT_rast.tif"),
             file.path(file_dir, "temp/MAT_rast.tif"))
+  # remove MAT
   file.remove(file.path(file_dir, "clim_files/MAT_rast.tif"))
 
+  # replace MAT
   writeRaster(na_rast, file.path(file_dir, "clim_files/MAT_rast_na.tif"))
 
   expect_message({
     clim_vars2 <- get_clim_vars(file.path(file_dir, "clim_files"))
   }, "doing trim" )
 
-  file.copy(file.path(file_dir, "temp/MAT_rast.tif"),
-            file.path(file_dir, "clim_files/MAT_rast.tif"))
+  # return MAT
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_rast.tif"),
+                        file.path(file_dir, "clim_files/MAT_rast.tif")))
 
   expect_equal(values(clim_vars[[1]]),
                values(clim_vars2[[1]]))
@@ -53,7 +57,7 @@ test_that("error when two files or missing files",{
   expect_error(get_clim_vars(file.path(file_dir, "clim_files")),
                "More than one file")
 
-  #remove na_rast from previous version
+  #remove MAT na_rast from previous test
   file.remove(file.path(file_dir, "clim_files/MAT_rast_na.tif"))
 
   # missing MAT
@@ -61,8 +65,9 @@ test_that("error when two files or missing files",{
   expect_error(get_clim_vars(file.path(file_dir, "clim_files")),
                "There is no file in")
 
-  file.copy(file.path(file_dir, "temp/MAT_rast.tif"),
-            file.path(file_dir, "clim_files/MAT_rast.tif"))
+  # return MAT
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_rast.tif"),
+                        file.path(file_dir, "clim_files/MAT_rast.tif")))
 
   # other files are allowed to be missing
   file.copy(file.path(file_dir, "clim_files/HTN_rast.tif"),
@@ -71,10 +76,10 @@ test_that("error when two files or missing files",{
 
   expect_null(get_clim_vars(file.path(file_dir, "clim_files"))$htn)
 
-  file.copy(file.path(file_dir, "temp/HTN_rast.tif"),
-            file.path(file_dir, "clim_files/HTN_rast.tif"))
+  expect_true(file.copy(file.path(file_dir, "temp/HTN_rast.tif"),
+            file.path(file_dir, "clim_files/HTN_rast.tif")))
 
   })
 
 # remove the temp directory
-unlink(file.path(file_dir, "temp"), recursive = TRUE)
+#unlink(file.path(file_dir, "temp"), recursive = TRUE)
