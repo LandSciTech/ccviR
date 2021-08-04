@@ -618,21 +618,38 @@ ccvi_app <- function(...){
 
     # load spatial data
     clim_vars <- reactive({
-      root_pth <- parseDirPath(volumes, input$clim_var_dir)
+      if (isTRUE(getOption("shiny.testmode"))) {
+        root_pth <- system.file("extdata/clim_files", package = "ccviR")
+      } else {
+        root_pth <- parseDirPath(volumes, input$clim_var_dir)
+      }
 
       clim_vars <- get_clim_vars(root_pth)
 
     })
 
     range_poly <- reactive({
-      sf::st_read(parseFilePaths(volumes,
-                                 input$range_poly_pth)$datapath,
-                  agr = "constant", quiet = TRUE)
+      if (isTRUE(getOption("shiny.testmode"))) {
+        sf::st_read(system.file("extdata/rng_poly_high.shp",
+                                package = "ccviR"),
+                    agr = "constant", quiet = TRUE)
+      } else {
+        sf::st_read(parseFilePaths(volumes,
+                                   input$range_poly_pth)$datapath,
+                    agr = "constant", quiet = TRUE)
+      }
+
     })
 
     nonbreed_poly <- reactive({
-      pth <- parseFilePaths(volumes,
-                            input$nonbreed_poly_pth)$datapath
+      if (isTRUE(getOption("shiny.testmode"))) {
+        pth <- system.file("extdata/nonbreed_poly.shp",
+                           package = "ccviR")
+      } else {
+        pth <- parseFilePaths(volumes,
+                              input$nonbreed_poly_pth)$datapath
+      }
+
       if(!isTruthy(pth)){
         return(NULL)
       }
@@ -640,14 +657,26 @@ ccvi_app <- function(...){
     })
 
     assess_poly <- reactive({
-      sf::st_read(parseFilePaths(volumes,
-                                 input$assess_poly_pth)$datapath,
-                  agr = "constant", quiet = TRUE)
+      if (isTRUE(getOption("shiny.testmode"))) {
+        sf::st_read(system.file("extdata/assess_poly.shp",
+                                package = "ccviR"),
+                    agr = "constant", quiet = TRUE)
+      } else {
+        sf::st_read(parseFilePaths(volumes,
+                                   input$assess_poly_pth)$datapath,
+                    agr = "constant", quiet = TRUE)
+      }
     })
 
     hs_rast <- reactive({
-      pth <- parseFilePaths(volumes,
-                            input$hs_rast_pth)$datapath
+      if (isTRUE(getOption("shiny.testmode"))) {
+        pth <- system.file("extdata/HS_rast.tif",
+                           package = "ccviR")
+      } else {
+        pth <- parseFilePaths(volumes,
+                              input$hs_rast_pth)$datapath
+      }
+
       if(!isTruthy(pth)){
         return(NULL)
       }

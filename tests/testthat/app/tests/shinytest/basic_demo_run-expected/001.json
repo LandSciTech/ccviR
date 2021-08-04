@@ -1,0 +1,1503 @@
+{
+  "output": {
+    "assess_poly_pth": "",
+    "ccei_map": {
+      "x": {
+        "options": {
+          "crs": {
+            "crsClass": "L.CRS.EPSG3857",
+            "code": null,
+            "proj4def": null,
+            "projectedBounds": null,
+            "options": {
+
+            }
+          }
+        },
+        "calls": [
+          {
+            "method": "createMapPane",
+            "args": [
+              "tmap401",
+              401
+            ]
+          },
+          {
+            "method": "createMapPane",
+            "args": [
+              "tmap402",
+              402
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "Esri.WorldGrayCanvas",
+              null,
+              "Esri.WorldGrayCanvas",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "OpenStreetMap",
+              null,
+              "OpenStreetMap",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "Esri.WorldTopoMap",
+              null,
+              "Esri.WorldTopoMap",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addRasterImage",
+            "args": [
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABLklEQVR4nO3dIQ7CQBRF0bbp8tgoeygCj0Qg2QUJpsiCwc4V56zgJTfz7cz767JPZCyjB/BLkBhBYgSJESRGkBhBYgSJESRGkBhBYgSJESRGkBhBYtbRA0r2x3n0hGktjODgZMUIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAx63vbRm/gixcSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxCS+PLpfn6MnZMy307KPHsHByYoRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEYQ+OcDGqMQgRJAERMAAAAASUVORK5CYII=",
+              [
+                [
+                  0,
+                  0
+                ],
+                [
+                  -1.00998613654284,
+                  1.0000380657339
+                ]
+              ],
+              1,
+              null,
+              "tmap401",
+              "rast"
+            ]
+          },
+          {
+            "method": "addLegend",
+            "args": [
+              {
+                "colors": [
+                  "#FFF7BD",
+                  "#FECF66",
+                  "#F88B22",
+                  "#CC4C02"
+                ],
+                "labels": [
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                ],
+                "na_color": null,
+                "na_label": "NA",
+                "opacity": 1,
+                "position": "topright",
+                "type": "unknown",
+                "title": "Climate change exposure index",
+                "extra": null,
+                "layerId": "legend401",
+                "className": "info legend",
+                "group": "rast"
+              }
+            ]
+          },
+          {
+            "method": "addPolygons",
+            "args": [
+              [
+                [
+                  [
+                    {
+                      "lng": [
+                        0,
+                        1,
+                        1,
+                        0,
+                        0
+                      ],
+                      "lat": [
+                        0,
+                        0,
+                        -0.25,
+                        -0.25,
+                        0
+                      ]
+                    }
+                  ]
+                ]
+              ],
+              "X1",
+              "poly1",
+              {
+                "interactive": false,
+                "className": "",
+                "pane": "tmap402",
+                "stroke": true,
+                "color": "#666666",
+                "weight": 1,
+                "opacity": 1,
+                "fill": true,
+                "fillOpacity": 0,
+                "dashArray": "none",
+                "smoothFactor": 1,
+                "noClip": false
+              },
+              null,
+              null,
+              null,
+              {
+                "interactive": false,
+                "permanent": false,
+                "direction": "auto",
+                "opacity": 1,
+                "offset": [
+                  0,
+                  0
+                ],
+                "textsize": "10px",
+                "textOnly": false,
+                "className": "",
+                "sticky": true
+              },
+              null
+            ]
+          },
+          {
+            "method": "addLegend",
+            "args": [
+              {
+                "colors": [
+                  "#000000"
+                ],
+                "labels": [
+                  "Range"
+                ],
+                "na_color": null,
+                "na_label": "NA",
+                "opacity": 1,
+                "position": "topright",
+                "type": "unknown",
+                "title": "",
+                "extra": null,
+                "layerId": "legend NA",
+                "className": "info legend",
+                "group": null
+              }
+            ]
+          },
+          {
+            "method": "addLayersControl",
+            "args": [
+              [
+                "Esri.WorldGrayCanvas",
+                "OpenStreetMap",
+                "Esri.WorldTopoMap"
+              ],
+              [
+                "rast",
+                "poly1"
+              ],
+              {
+                "collapsed": true,
+                "autoZIndex": true,
+                "position": "topleft"
+              }
+            ]
+          }
+        ],
+        "limits": {
+          "lat": [
+            -1.00998613654284,
+            0
+          ],
+          "lng": [
+            0,
+            1.0000380657339
+          ]
+        },
+        "fitBounds": [
+          -1,
+          0,
+          0,
+          1,
+          [
+
+          ]
+        ]
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "leaflet-providers",
+          "version": "1.9.0",
+          "src": {
+            "href": "leaflet-providers-1.9.0"
+          },
+          "meta": null,
+          "script": "leaflet-providers_1.9.0.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "leaflet-providers-plugin",
+          "version": "2.0.3",
+          "src": {
+            "href": "leaflet-providers-plugin-2.0.3"
+          },
+          "meta": null,
+          "script": "leaflet-providers-plugin.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    },
+    "clim_var_dir": "",
+    "cmd_map": {
+      "x": {
+        "options": {
+          "crs": {
+            "crsClass": "L.CRS.EPSG3857",
+            "code": null,
+            "proj4def": null,
+            "projectedBounds": null,
+            "options": {
+
+            }
+          }
+        },
+        "calls": [
+          {
+            "method": "createMapPane",
+            "args": [
+              "tmap401",
+              401
+            ]
+          },
+          {
+            "method": "createMapPane",
+            "args": [
+              "tmap402",
+              402
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "Esri.WorldGrayCanvas",
+              null,
+              "Esri.WorldGrayCanvas",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "OpenStreetMap",
+              null,
+              "OpenStreetMap",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "Esri.WorldTopoMap",
+              null,
+              "Esri.WorldTopoMap",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addRasterImage",
+            "args": [
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABKklEQVR4nO3ToY1CQQBFUSDTfzn0sBCCwpENDrUFLOZjB4OdK86p4CU3b7/9n7YdGYfVA/gkSIwgMYLECBIjSIwgMYLECBIztr/L6g1MPCRGkBhBYgSJESRGkBhBYgSJESRGkBhBYgSJESRGkBhBYgSJESRGkBhBYsbufly9gYmHxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0jMeP3cVm9g4iExgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEjMe1+fqDUw8JEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFixvn3tXoDEw+JESRGkBhBYgSJESRGkBhBYgSBb943ehCvhvuKPQAAAABJRU5ErkJggg==",
+              [
+                [
+                  1.00003807065288,
+                  0
+                ],
+                [
+                  -0.00994959645227047,
+                  1.00003806573389
+                ]
+              ],
+              1,
+              null,
+              "tmap401",
+              "rast"
+            ]
+          },
+          {
+            "method": "addLegend",
+            "args": [
+              {
+                "colors": [
+                  "#FFF9CA",
+                  "#FEE697",
+                  "#FEC24D",
+                  "#F88B22",
+                  "#D85A09",
+                  "#A33803"
+                ],
+                "labels": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6"
+                ],
+                "na_color": null,
+                "na_label": "NA",
+                "opacity": 1,
+                "position": "topright",
+                "type": "unknown",
+                "title": "Moisture",
+                "extra": null,
+                "layerId": "legend401",
+                "className": "info legend",
+                "group": "rast"
+              }
+            ]
+          },
+          {
+            "method": "addPolygons",
+            "args": [
+              [
+                [
+                  [
+                    {
+                      "lng": [
+                        0,
+                        0,
+                        1,
+                        1,
+                        0
+                      ],
+                      "lat": [
+                        0.75,
+                        1,
+                        1,
+                        0.75,
+                        0.75
+                      ]
+                    }
+                  ]
+                ]
+              ],
+              "X1",
+              "poly1",
+              {
+                "interactive": false,
+                "className": "",
+                "pane": "tmap402",
+                "stroke": true,
+                "color": "#666666",
+                "weight": 1,
+                "opacity": 1,
+                "fill": true,
+                "fillOpacity": 0,
+                "dashArray": "none",
+                "smoothFactor": 1,
+                "noClip": false
+              },
+              null,
+              null,
+              null,
+              {
+                "interactive": false,
+                "permanent": false,
+                "direction": "auto",
+                "opacity": 1,
+                "offset": [
+                  0,
+                  0
+                ],
+                "textsize": "10px",
+                "textOnly": false,
+                "className": "",
+                "sticky": true
+              },
+              null
+            ]
+          },
+          {
+            "method": "addLegend",
+            "args": [
+              {
+                "colors": [
+                  "#000000"
+                ],
+                "labels": [
+                  "Range"
+                ],
+                "na_color": null,
+                "na_label": "NA",
+                "opacity": 1,
+                "position": "topright",
+                "type": "unknown",
+                "title": "",
+                "extra": null,
+                "layerId": "legend NA",
+                "className": "info legend",
+                "group": null
+              }
+            ]
+          },
+          {
+            "method": "addLayersControl",
+            "args": [
+              [
+                "Esri.WorldGrayCanvas",
+                "OpenStreetMap",
+                "Esri.WorldTopoMap"
+              ],
+              [
+                "rast",
+                "poly1"
+              ],
+              {
+                "collapsed": true,
+                "autoZIndex": true,
+                "position": "topleft"
+              }
+            ]
+          }
+        ],
+        "limits": {
+          "lat": [
+            -0.00994959645227047,
+            1.00003807065288
+          ],
+          "lng": [
+            0,
+            1.00003806573389
+          ]
+        },
+        "fitBounds": [
+          0,
+          0,
+          1,
+          1,
+          [
+
+          ]
+        ]
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "leaflet-providers",
+          "version": "1.9.0",
+          "src": {
+            "href": "leaflet-providers-1.9.0"
+          },
+          "meta": null,
+          "script": "leaflet-providers_1.9.0.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "leaflet-providers-plugin",
+          "version": "2.0.3",
+          "src": {
+            "href": "leaflet-providers-plugin-2.0.3"
+          },
+          "meta": null,
+          "script": "leaflet-providers-plugin.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    },
+    "cmd_tbl": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Change Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th> <th style='text-align: left;'> Exposure Multiplier <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Class 1 <\/td> <td align=\"right\"> 40.00 <\/td> <td> 1.67 <\/td> <\/tr>\n  <tr> <td> Class 2 <\/td> <td align=\"right\"> 60.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 3 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 4 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 5 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 6 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n   <\/tbody> <\/table>",
+    "conf_graph": {
+      "src": "[image data sha1: e3f72013c7e207d8cb378e9224beb839b98aefb1]",
+      "width": 300,
+      "height": 200,
+      "alt": "Plot object",
+      "coordmap": {
+        "panels": [
+          {
+            "panel": 1,
+            "row": 1,
+            "col": 1,
+            "panel_vars": {
+
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "domain": {
+              "left": 0.4,
+              "right": 5.6,
+              "bottom": -0.05,
+              "top": 1.05,
+              "discrete_limits": {
+                "x": [
+                  "EV",
+                  "HV",
+                  "MV",
+                  "LV",
+                  "IE"
+                ]
+              }
+            },
+            "mapping": {
+              "x": "factor(index, levels = c(\"EV\", \"HV\", \"MV\", \"LV\", \"IE\"))",
+              "y": "frequency"
+            },
+            "range": {
+              "left": 42.1506708812786,
+              "right": 294.52044977169,
+              "bottom": 165.849232143836,
+              "top": 24.958891630137
+            }
+          }
+        ],
+        "dims": {
+          "width": 300,
+          "height": 200
+        }
+      }
+    },
+    "conf_index": "Very High",
+    "hs_rast_pth": "",
+    "ind_score_plt": {
+      "src": "[image data sha1: b39e77dac594f8e07733ca6b7cfa61b01e248e2b]",
+      "width": 400,
+      "height": 300,
+      "alt": "Plot object",
+      "coordmap": {
+        "panels": [
+          {
+            "panel": 1,
+            "row": 1,
+            "col": 1,
+            "panel_vars": {
+
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "domain": {
+              "left": -2.12675,
+              "right": 44.66175,
+              "bottom": -0.4,
+              "top": 8.4
+            },
+            "mapping": {
+              "x": "b_c_score",
+              "y": "d_score",
+              "fill": "value"
+            },
+            "range": {
+              "left": 29.1506776438356,
+              "right": 336.843203460411,
+              "bottom": 265.849226452055,
+              "top": 5.4794502283105
+            }
+          }
+        ],
+        "dims": {
+          "width": 400,
+          "height": 300
+        }
+      }
+    },
+    "index": "<font color= red ><b> Extremely Vulnerable <\/b><\/font>",
+    "mig_exp": "<font color= orange ><b> High <\/b><\/font>",
+    "n_factors": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Section <\/th> <th style='text-align: left;'> Factors completed <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Section B <\/td> <td> 4/4 <\/td> <\/tr>\n  <tr> <td> Section C <\/td> <td> 16/16 <\/td> <\/tr>\n  <tr> <td> Section D <\/td> <td> 4/4 <\/td> <\/tr>\n   <\/tbody> <\/table>",
+    "nonbreed_poly_pth": "",
+    "q_score_plt": {
+      "x": {
+        "layout": {
+          "margin": {
+            "b": 40,
+            "l": 60,
+            "t": 25,
+            "r": 10
+          },
+          "xaxis": {
+            "domain": [
+              0,
+              1
+            ],
+            "automargin": true,
+            "title": "Question",
+            "type": "category",
+            "categoryorder": "array",
+            "categoryarray": [
+              "B1",
+              "B2a",
+              "B2b",
+              "B3",
+              "C1",
+              "C2ai",
+              "C2aii",
+              "C2bi",
+              "C2bii",
+              "C2c",
+              "C2d",
+              "C3",
+              "C4a",
+              "C4b",
+              "C4c",
+              "C4d",
+              "C4e",
+              "C4f",
+              "C4g",
+              "C5a",
+              "C5b",
+              "C5c",
+              "C6",
+              "D1",
+              "D2",
+              "D3",
+              "D4"
+            ]
+          },
+          "yaxis": {
+            "domain": [
+              0,
+              1
+            ],
+            "automargin": true,
+            "title": "Score"
+          },
+          "hovermode": "closest",
+          "showlegend": true
+        },
+        "source": "A",
+        "config": {
+          "showSendToCloud": false
+        },
+        "data": [
+          {
+            "hoverinfo": [
+              "text",
+              "y"
+            ],
+            "x": [
+              "C2bii",
+              "B2a",
+              "C4e",
+              "C5b",
+              "C3",
+              "C4d",
+              "C2d",
+              "D4",
+              "C1",
+              "D1",
+              "C4g",
+              "C5c",
+              "C4c",
+              "B1",
+              "C4a",
+              "C4f",
+              "C6",
+              "C2c",
+              "C5a",
+              "B3",
+              "B2b",
+              "C4b",
+              "C2ai",
+              "C2aii",
+              "C2bi",
+              "D2",
+              "D3"
+            ],
+            "y": [
+              3.34,
+              1.835,
+              1.835,
+              0,
+              0,
+              1.835,
+              1.835,
+              1,
+              1.835,
+              2,
+              1.835,
+              0,
+              0,
+              1,
+              0,
+              1.835,
+              1.835,
+              0,
+              0,
+              1.835,
+              1.835,
+              1.835,
+              4,
+              4,
+              5.01,
+              1,
+              0
+            ],
+            "type": "bar",
+            "name": "Score",
+            "text": [
+              " Physiological hydrological niche",
+              " Natural barriers",
+              " Sensitivity to pathogens or natural enemies",
+              " Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\")",
+              " Restriction to uncommon landscape/geological features or derivatives",
+              " Dependence on other species for propagule dispersal",
+              " Dependence on ice, ice-edge, or snow-cover habitats",
+              " Occurrence of protected areas in modeled future (2050) distribution",
+              " Dispersal and movements",
+              " Documented response to recent climate change",
+              " Forms part of an interspecific interaction not covered by 5a-f",
+              " Reproductive system (plants only; use only if c5a and c5b are “unknown”)",
+              " Pollinator versatility (plants only)",
+              " Exposure to sea level rise",
+              " Dependence on other species to generate required habitat",
+              " Sensitivity to competition from native or non-native species",
+              " Phenological response to changing seasonal temperature and precipitation dynamics",
+              " Dependence on a specific disturbance regime likely to be impacted by climate change",
+              " Measured genetic variation",
+              " Predicted impact of land use changes resulting from human responses to climate change",
+              " Anthropogenic barriers",
+              " Dietary versatility (animals only)",
+              " Historical thermal niche",
+              " Physiological thermal niche",
+              " Historical hydrological niche",
+              " Modeled future (2050) change in population or range size",
+              " Overlap of modeled future (2050) range with current range"
+            ],
+            "hovertemplate": [
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>",
+              "%{text}: <br> Score: %{y}<extra><\/extra>"
+            ],
+            "marker": {
+              "color": "rgba(31,119,180,1)",
+              "line": {
+                "color": "rgba(31,119,180,1)"
+              }
+            },
+            "error_y": {
+              "color": "rgba(31,119,180,1)"
+            },
+            "error_x": {
+              "color": "rgba(31,119,180,1)"
+            },
+            "xaxis": "x",
+            "yaxis": "y",
+            "frame": null
+          },
+          {
+            "hoverinfo": [
+              "text",
+              "y"
+            ],
+            "x": [
+              "C2bii",
+              "B2a",
+              "C4e",
+              "C5b",
+              "C3",
+              "C4d",
+              "C2d",
+              "D4",
+              "C1",
+              "D1",
+              "C4g",
+              "C5c",
+              "C4c",
+              "B1",
+              "C4a",
+              "C4f",
+              "C6",
+              "C2c",
+              "C5a",
+              "B3",
+              "B2b",
+              "C4b",
+              "C2ai",
+              "C2aii",
+              "C2bi",
+              "D2",
+              "D3"
+            ],
+            "y": [
+              1.67,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1,
+              1.835,
+              1,
+              1.835,
+              1.835,
+              1.835,
+              1,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              2,
+              2,
+              1.67,
+              1,
+              1
+            ],
+            "type": "scatter",
+            "mode": "markers",
+            "name": "Exposure<br />Multiplier",
+            "text": [
+              " Physiological hydrological niche",
+              " Natural barriers",
+              " Sensitivity to pathogens or natural enemies",
+              " Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\")",
+              " Restriction to uncommon landscape/geological features or derivatives",
+              " Dependence on other species for propagule dispersal",
+              " Dependence on ice, ice-edge, or snow-cover habitats",
+              " Occurrence of protected areas in modeled future (2050) distribution",
+              " Dispersal and movements",
+              " Documented response to recent climate change",
+              " Forms part of an interspecific interaction not covered by 5a-f",
+              " Reproductive system (plants only; use only if c5a and c5b are “unknown”)",
+              " Pollinator versatility (plants only)",
+              " Exposure to sea level rise",
+              " Dependence on other species to generate required habitat",
+              " Sensitivity to competition from native or non-native species",
+              " Phenological response to changing seasonal temperature and precipitation dynamics",
+              " Dependence on a specific disturbance regime likely to be impacted by climate change",
+              " Measured genetic variation",
+              " Predicted impact of land use changes resulting from human responses to climate change",
+              " Anthropogenic barriers",
+              " Dietary versatility (animals only)",
+              " Historical thermal niche",
+              " Physiological thermal niche",
+              " Historical hydrological niche",
+              " Modeled future (2050) change in population or range size",
+              " Overlap of modeled future (2050) range with current range"
+            ],
+            "hovertemplate": [
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
+              "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>"
+            ],
+            "marker": {
+              "color": "rgba(255,127,14,1)",
+              "line": {
+                "color": "rgba(255,127,14,1)"
+              }
+            },
+            "error_y": {
+              "color": "rgba(255,127,14,1)"
+            },
+            "error_x": {
+              "color": "rgba(255,127,14,1)"
+            },
+            "line": {
+              "color": "rgba(255,127,14,1)"
+            },
+            "xaxis": "x",
+            "yaxis": "y",
+            "frame": null
+          }
+        ],
+        "highlight": {
+          "on": "plotly_click",
+          "persistent": false,
+          "dynamic": false,
+          "selectize": false,
+          "opacityDim": 0.2,
+          "selected": {
+            "opacity": 1
+          },
+          "debounce": 0
+        },
+        "shinyEvents": [
+          "plotly_hover",
+          "plotly_click",
+          "plotly_selected",
+          "plotly_relayout",
+          "plotly_brushed",
+          "plotly_brushing",
+          "plotly_clickannotation",
+          "plotly_doubleclick",
+          "plotly_deselect",
+          "plotly_afterplot",
+          "plotly_sunburstclick"
+        ],
+        "base_url": "https://plot.ly"
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "setprototypeof",
+          "version": "0.1",
+          "src": {
+            "href": "setprototypeof-0.1"
+          },
+          "meta": null,
+          "script": "setprototypeof.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "typedarray",
+          "version": "0.1",
+          "src": {
+            "href": "typedarray-0.1"
+          },
+          "meta": null,
+          "script": "typedarray.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "1.11.3",
+          "src": {
+            "href": "jquery-1.11.3"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.0.0",
+          "src": {
+            "href": "crosstalk-1.0.0"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "plotly-htmlwidgets-css",
+          "version": "1.52.2",
+          "src": {
+            "href": "plotly-htmlwidgets-css-1.52.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "plotly-htmlwidgets.css",
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "plotly-main",
+          "version": "1.52.2",
+          "src": {
+            "href": "plotly-main-1.52.2"
+          },
+          "meta": null,
+          "script": "plotly-latest.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        }
+      ]
+    },
+    "range_poly_pth": "",
+    "slr": "",
+    "species_name": "Bubo ",
+    "tbl_ccei": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Change Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Class 1 <\/td> <td align=\"right\"> 66.68 <\/td> <\/tr>\n  <tr> <td> Class 2 <\/td> <td align=\"right\"> 33.32 <\/td> <\/tr>\n  <tr> <td> Class 3 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td> Class 4 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n   <\/tbody> <\/table>",
+    "texp_map": {
+      "x": {
+        "options": {
+          "crs": {
+            "crsClass": "L.CRS.EPSG3857",
+            "code": null,
+            "proj4def": null,
+            "projectedBounds": null,
+            "options": {
+
+            }
+          }
+        },
+        "calls": [
+          {
+            "method": "createMapPane",
+            "args": [
+              "tmap401",
+              401
+            ]
+          },
+          {
+            "method": "createMapPane",
+            "args": [
+              "tmap402",
+              402
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "Esri.WorldGrayCanvas",
+              null,
+              "Esri.WorldGrayCanvas",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "OpenStreetMap",
+              null,
+              "OpenStreetMap",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addProviderTiles",
+            "args": [
+              "Esri.WorldTopoMap",
+              null,
+              "Esri.WorldTopoMap",
+              {
+                "minZoom": 0,
+                "maxZoom": 18,
+                "tileSize": 256,
+                "subdomains": "abc",
+                "errorTileUrl": "",
+                "tms": false,
+                "noWrap": false,
+                "zoomOffset": 0,
+                "zoomReverse": false,
+                "opacity": 1,
+                "zIndex": 1,
+                "detectRetina": false,
+                "pane": "tilePane"
+              }
+            ]
+          },
+          {
+            "method": "addRasterImage",
+            "args": [
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABKklEQVR4nO3ToY1CQQBFUSDTfzn0sBCCwpENDrUFLOZjB4OdK86p4CU3b7/9n7YdGYfVA/gkSIwgMYLECBIjSIwgMYLECBIztr/L6g1MPCRGkBhBYgSJESRGkBhBYgSJESRGkBhBYgSJESRGkBhBYgSJESRGkBhBYsbufly9gYmHxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0iMIDGCxAgSI0jMeP3cVm9g4iExgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEjMe1+fqDUw8JEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFixvn3tXoDEw+JESRGkBhBYgSJESRGkBhBYgSBb943ehCvhvuKPQAAAABJRU5ErkJggg==",
+              [
+                [
+                  1.00003807065288,
+                  0
+                ],
+                [
+                  -0.00994959645227047,
+                  1.00003806573389
+                ]
+              ],
+              1,
+              null,
+              "tmap401",
+              "rast"
+            ]
+          },
+          {
+            "method": "addLegend",
+            "args": [
+              {
+                "colors": [
+                  "#FFF9CA",
+                  "#FEE697",
+                  "#FEC24D",
+                  "#F88B22",
+                  "#D85A09",
+                  "#A33803"
+                ],
+                "labels": [
+                  "1",
+                  "2",
+                  "3",
+                  "4",
+                  "5",
+                  "6"
+                ],
+                "na_color": null,
+                "na_label": "NA",
+                "opacity": 1,
+                "position": "topright",
+                "type": "unknown",
+                "title": "Temperature",
+                "extra": null,
+                "layerId": "legend401",
+                "className": "info legend",
+                "group": "rast"
+              }
+            ]
+          },
+          {
+            "method": "addPolygons",
+            "args": [
+              [
+                [
+                  [
+                    {
+                      "lng": [
+                        0,
+                        0,
+                        1,
+                        1,
+                        0
+                      ],
+                      "lat": [
+                        0.75,
+                        1,
+                        1,
+                        0.75,
+                        0.75
+                      ]
+                    }
+                  ]
+                ]
+              ],
+              "X1",
+              "poly1",
+              {
+                "interactive": false,
+                "className": "",
+                "pane": "tmap402",
+                "stroke": true,
+                "color": "#666666",
+                "weight": 1,
+                "opacity": 1,
+                "fill": true,
+                "fillOpacity": 0,
+                "dashArray": "none",
+                "smoothFactor": 1,
+                "noClip": false
+              },
+              null,
+              null,
+              null,
+              {
+                "interactive": false,
+                "permanent": false,
+                "direction": "auto",
+                "opacity": 1,
+                "offset": [
+                  0,
+                  0
+                ],
+                "textsize": "10px",
+                "textOnly": false,
+                "className": "",
+                "sticky": true
+              },
+              null
+            ]
+          },
+          {
+            "method": "addLegend",
+            "args": [
+              {
+                "colors": [
+                  "#000000"
+                ],
+                "labels": [
+                  "Range"
+                ],
+                "na_color": null,
+                "na_label": "NA",
+                "opacity": 1,
+                "position": "topright",
+                "type": "unknown",
+                "title": "",
+                "extra": null,
+                "layerId": "legend NA",
+                "className": "info legend",
+                "group": null
+              }
+            ]
+          },
+          {
+            "method": "addLayersControl",
+            "args": [
+              [
+                "Esri.WorldGrayCanvas",
+                "OpenStreetMap",
+                "Esri.WorldTopoMap"
+              ],
+              [
+                "rast",
+                "poly1"
+              ],
+              {
+                "collapsed": true,
+                "autoZIndex": true,
+                "position": "topleft"
+              }
+            ]
+          }
+        ],
+        "limits": {
+          "lat": [
+            -0.00994959645227047,
+            1.00003807065288
+          ],
+          "lng": [
+            0,
+            1.00003806573389
+          ]
+        },
+        "fitBounds": [
+          0,
+          0,
+          1,
+          1,
+          [
+
+          ]
+        ]
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "leaflet-providers",
+          "version": "1.9.0",
+          "src": {
+            "href": "leaflet-providers-1.9.0"
+          },
+          "meta": null,
+          "script": "leaflet-providers_1.9.0.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "leaflet-providers-plugin",
+          "version": "2.0.3",
+          "src": {
+            "href": "leaflet-providers-plugin-2.0.3"
+          },
+          "meta": null,
+          "script": "leaflet-providers-plugin.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    },
+    "texp_tbl": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Change Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th> <th style='text-align: left;'> Exposure Multiplier <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Class 1 <\/td> <td align=\"right\"> 40.00 <\/td> <td> 2 <\/td> <\/tr>\n  <tr> <td> Class 2 <\/td> <td align=\"right\"> 60.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 3 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 4 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 5 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n  <tr> <td> Class 6 <\/td> <td align=\"right\"> 0.00 <\/td> <td>  <\/td> <\/tr>\n   <\/tbody> <\/table>"
+  }
+}
