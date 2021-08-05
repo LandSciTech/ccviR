@@ -48,7 +48,8 @@ ccvi_app <- function(...){
     shinyjs::inlineCSS(appCSS),
     shinyFeedback::useShinyFeedback(),
     title = "ccviR app",
-
+    tags$head(tags$style(type = "text/css",
+                         ".container-fluid {  max-width: 950px; /* or 950px */}")),
     div(id = "header",
         h1("An app to run the NatureServe CCVI process"),
         strong(
@@ -72,9 +73,12 @@ ccvi_app <- function(...){
           tabPanelBody("instructions",
             fluidPage(
               h2("Welcome"),
-              p("This app provides a new interface for the Climate Change Vulnerability Index created by ",
+              p("This app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
                 a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
-                "that automates the spatial analysis needed to inform the index"),
+                "that automates the spatial analysis needed to inform the index. ",
+                "The app is based on version 3.02 of the NatureServe CCVI. ",
+                "For detialed instructions on how to use the index see the NatureServe ",
+                a("Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf")),
               h3("Preparing to use the app"),
 
               p(strong("Step 0: "),"The first time you use the app ",
@@ -103,11 +107,23 @@ ccvi_app <- function(...){
                 " unknown for many species, the Index is designed such that only",
                 " 10 of the 19 sensitivity factors require input in order to ",
                 "obtain an overall Index score."),
-              actionButton("start", "Start", class = "btn-primary")
+              actionButton("start", "Start", class = "btn-primary"),
+              h3("References"),
+              p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
+                " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
+                "animal vulnerability to climate change. Pages 129-150 in ",
+                "Wildlife Conservation in a Changing Climate, edited by J. ",
+                "Brodie, E. Post, and D. Doak. University of Chicago Press, ",
+                "Chicago, IL."),
+              p("Young, B. E., N. S. Dubois, and E. L. Rowland. 2015. Using the",
+                " Climate Change Vulnerability Index to inform adaptation ",
+                "planning: lessons, innovations, and next steps. Wildlife ",
+                "Society Bulletin 39:174-181.")
             ),
           ),
           tabPanelBody("data_prep",
             data_prep_ui("data_prep_mod"),
+            br(),
             shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
                                                             placeholder = TRUE)),
             actionButton("data_done", "Finished", class = "btn-primary")
@@ -154,6 +170,7 @@ ccvi_app <- function(...){
               shinyDirButton("clim_var_dir", "Choose a folder",
                              "Folder location of climate data"),
               verbatimTextOutput("clim_var_dir", placeholder = TRUE),
+              verbatimTextOutput("clim_var_error"),
               br(),
               labelMandatory(strong("Range polygon shapefile:")),
               shinyFilesButton("range_poly_pth", "Choose file",
@@ -439,7 +456,7 @@ ccvi_app <- function(...){
         fluidPage(
           div(
             id = "formData",
-            style = 'width:800px;',
+            #style = 'width:800px;',
             h3("Results"),
 
             p("The Climate Change Vulnerability Index for",
@@ -470,7 +487,7 @@ ccvi_app <- function(...){
           ),
           div(
             id = "indplt",
-            style = 'width:800px;',
+            #style = 'width:800px;',
             br(),
             h4("Factors contributing to index value"),
             p("The CCVI is calculated by combining the index calculated based on ",
@@ -628,16 +645,12 @@ ccvi_app <- function(...){
         root_pth <- parseDirPath(volumes, input$clim_var_dir)
       }
 
-      try(clim_vars <- get_clim_vars(root_pth))
+      req(root_pth)
+
+      clim_vars <- try(get_clim_vars(root_pth))
 
     })
-    output$clim_var_dir <- renderText({
-      if(is(clim_vars(), "try-error")){
-        stop(conditionMessage(attr(clim_vars(), "condition")))
-      } else {
-        output$clim_var_dir
-      }
-    })
+
 
     range_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
@@ -698,6 +711,7 @@ ccvi_app <- function(...){
     # run spatial calculations
     spat_res <- reactive({
       req(input$loadSpatial)
+      req(clim_vars())
       tryCatch({
         run_spatial(range_poly = range_poly(),
                     non_breed_poly = nonbreed_poly(),
@@ -709,11 +723,15 @@ ccvi_app <- function(...){
 
     })
 
+    output$clim_var_error <- renderText({
+      if(is(clim_vars(), "try-error")){
+        stop(conditionMessage(attr(clim_vars(), "condition")))
+      }
+    })
+
     output$spat_error <- renderText({
       if(is.character(spat_res())){
         stop(spat_res(), call. = FALSE)
-      } else {
-        NULL
       }
     })
 

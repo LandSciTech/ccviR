@@ -142,7 +142,7 @@
                 "title": "Climate change exposure index",
                 "extra": null,
                 "layerId": "legend401",
-                "className": "info legend",
+                "className": "info legend rast",
                 "group": "rast"
               }
             ]
@@ -294,9 +294,9 @@
         },
         {
           "name": "leaflet-providers-plugin",
-          "version": "2.0.3",
+          "version": "2.0.4.1",
           "src": {
-            "href": "leaflet-providers-plugin-2.0.3"
+            "href": "leaflet-providers-plugin-2.0.4.1"
           },
           "meta": null,
           "script": "leaflet-providers-plugin.js",
@@ -309,6 +309,7 @@
       ]
     },
     "clim_var_dir": "",
+    "clim_var_error": "",
     "cmd_map": {
       "x": {
         "options": {
@@ -454,7 +455,7 @@
                 "title": "Moisture",
                 "extra": null,
                 "layerId": "legend401",
-                "className": "info legend",
+                "className": "info legend rast",
                 "group": "rast"
               }
             ]
@@ -606,9 +607,9 @@
         },
         {
           "name": "leaflet-providers-plugin",
-          "version": "2.0.3",
+          "version": "2.0.4.1",
           "src": {
-            "href": "leaflet-providers-plugin-2.0.3"
+            "href": "leaflet-providers-plugin-2.0.4.1"
           },
           "meta": null,
           "script": "leaflet-providers-plugin.js",
@@ -674,8 +675,228 @@
     },
     "conf_index": "Very High",
     "hs_rast_pth": "",
+    "ind_gauge": {
+      "x": {
+        "layout": {
+          "height": 100,
+          "margin": {
+            "b": 40,
+            "l": 60,
+            "t": 25,
+            "r": 10
+          },
+          "hovermode": "closest",
+          "showlegend": false
+        },
+        "source": "A",
+        "config": {
+          "showSendToCloud": false,
+          "displayModeBar": false,
+          "displaylogo": false,
+          "staticPlot": true
+        },
+        "data": [
+          {
+            "mode": "gauge",
+            "domain": {
+              "x": [
+                0,
+                1
+              ],
+              "y": [
+                0,
+                1
+              ]
+            },
+            "gauge": {
+              "shape": "bullet",
+              "axis": {
+                "range": [
+                  0,
+                  100
+                ],
+                "ticks": "",
+                "tickmode": "array",
+                "tickvals": [
+                  10,
+                  30,
+                  50,
+                  70,
+                  90
+                ],
+                "ticktext": [
+                  "Insufficient<br />Evidence",
+                  "Less<br />Vulnerable",
+                  "Moderately<br />Vulnerable",
+                  "Highly<br />Vulnerable",
+                  "Extremely<br />Vulnerable"
+                ]
+              },
+              "threshold": {
+                "line": {
+                  "width": 5
+                },
+                "thickness": 2,
+                "value": 90
+              },
+              "bgcolor": "white",
+              "steps": [
+                {
+                  "range": [
+                    0,
+                    20
+                  ],
+                  "color": "grey"
+                },
+                {
+                  "range": [
+                    20,
+                    40
+                  ],
+                  "color": "green"
+                },
+                {
+                  "range": [
+                    40,
+                    60
+                  ],
+                  "color": "#FFC125"
+                },
+                {
+                  "range": [
+                    60,
+                    80
+                  ],
+                  "color": "darkorange"
+                },
+                {
+                  "range": [
+                    80,
+                    100
+                  ],
+                  "color": "red"
+                }
+              ]
+            },
+            "type": "indicator",
+            "frame": null
+          }
+        ],
+        "highlight": {
+          "on": "plotly_click",
+          "persistent": false,
+          "dynamic": false,
+          "selectize": false,
+          "opacityDim": 0.2,
+          "selected": {
+            "opacity": 1
+          },
+          "debounce": 0
+        },
+        "shinyEvents": [
+          "plotly_hover",
+          "plotly_click",
+          "plotly_selected",
+          "plotly_relayout",
+          "plotly_brushed",
+          "plotly_brushing",
+          "plotly_clickannotation",
+          "plotly_doubleclick",
+          "plotly_deselect",
+          "plotly_afterplot",
+          "plotly_sunburstclick"
+        ],
+        "base_url": "https://plot.ly"
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "setprototypeof",
+          "version": "0.1",
+          "src": {
+            "href": "setprototypeof-0.1"
+          },
+          "meta": null,
+          "script": "setprototypeof.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "typedarray",
+          "version": "0.1",
+          "src": {
+            "href": "typedarray-0.1"
+          },
+          "meta": null,
+          "script": "typedarray.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.1.1",
+          "src": {
+            "href": "crosstalk-1.1.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "plotly-htmlwidgets-css",
+          "version": "1.57.1",
+          "src": {
+            "href": "plotly-htmlwidgets-css-1.57.1"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "plotly-htmlwidgets.css",
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "plotly-main",
+          "version": "1.57.1",
+          "src": {
+            "href": "plotly-main-1.57.1"
+          },
+          "meta": null,
+          "script": "plotly-latest.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        }
+      ]
+    },
     "ind_score_plt": {
-      "src": "[image data sha1: b39e77dac594f8e07733ca6b7cfa61b01e248e2b]",
+      "src": "[image data sha1: 6d2967958f3e1da11e0c68174f611e9296150efc]",
       "width": 400,
       "height": 300,
       "alt": "Plot object",
@@ -717,8 +938,219 @@
         }
       }
     },
-    "index": "<font color= red ><b> Extremely Vulnerable <\/b><\/font>",
-    "mig_exp": "<font color= darkorange ><b> High <\/b><\/font>",
+    "index": "<h4><font color= red ><b> Extremely Vulnerable :<\/b><\/font><\/h4> <p>Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.<\/p>",
+    "mig_exp": "<font color= red ><b> High <\/b><\/font>",
+    "mig_exp_gauge": {
+      "x": {
+        "layout": {
+          "height": 100,
+          "margin": {
+            "b": 40,
+            "l": 60,
+            "t": 25,
+            "r": 10
+          },
+          "hovermode": "closest",
+          "showlegend": false
+        },
+        "source": "A",
+        "config": {
+          "showSendToCloud": false,
+          "displayModeBar": false,
+          "displaylogo": false,
+          "staticPlot": true
+        },
+        "data": [
+          {
+            "mode": "gauge",
+            "domain": {
+              "x": [
+                0,
+                1
+              ],
+              "y": [
+                0,
+                1
+              ]
+            },
+            "gauge": {
+              "shape": "bullet",
+              "axis": {
+                "range": [
+                  0,
+                  100
+                ],
+                "ticks": "",
+                "tickmode": "array",
+                "tickvals": [
+                  13.5,
+                  38.5,
+                  63.5,
+                  88.5
+                ],
+                "ticktext": [
+                  "Not<br />Applicable",
+                  "Low",
+                  "Moderate",
+                  "High"
+                ]
+              },
+              "threshold": {
+                "line": {
+                  "width": 5
+                },
+                "thickness": 2,
+                "value": 88.5
+              },
+              "bgcolor": "white",
+              "steps": [
+                {
+                  "range": [
+                    0,
+                    25
+                  ],
+                  "color": "grey"
+                },
+                {
+                  "range": [
+                    25,
+                    50
+                  ],
+                  "color": "green"
+                },
+                {
+                  "range": [
+                    50,
+                    75
+                  ],
+                  "color": "darkorange"
+                },
+                {
+                  "range": [
+                    75,
+                    100
+                  ],
+                  "color": "red"
+                }
+              ]
+            },
+            "type": "indicator",
+            "frame": null
+          }
+        ],
+        "highlight": {
+          "on": "plotly_click",
+          "persistent": false,
+          "dynamic": false,
+          "selectize": false,
+          "opacityDim": 0.2,
+          "selected": {
+            "opacity": 1
+          },
+          "debounce": 0
+        },
+        "shinyEvents": [
+          "plotly_hover",
+          "plotly_click",
+          "plotly_selected",
+          "plotly_relayout",
+          "plotly_brushed",
+          "plotly_brushing",
+          "plotly_clickannotation",
+          "plotly_doubleclick",
+          "plotly_deselect",
+          "plotly_afterplot",
+          "plotly_sunburstclick"
+        ],
+        "base_url": "https://plot.ly"
+      },
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "setprototypeof",
+          "version": "0.1",
+          "src": {
+            "href": "setprototypeof-0.1"
+          },
+          "meta": null,
+          "script": "setprototypeof.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "typedarray",
+          "version": "0.1",
+          "src": {
+            "href": "typedarray-0.1"
+          },
+          "meta": null,
+          "script": "typedarray.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.1.1",
+          "src": {
+            "href": "crosstalk-1.1.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "plotly-htmlwidgets-css",
+          "version": "1.57.1",
+          "src": {
+            "href": "plotly-htmlwidgets-css-1.57.1"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "plotly-htmlwidgets.css",
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "plotly-main",
+          "version": "1.57.1",
+          "src": {
+            "href": "plotly-main-1.57.1"
+          },
+          "meta": null,
+          "script": "plotly-latest.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        }
+      ]
+    },
     "n_factors": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Section <\/th> <th style='text-align: left;'> Factors completed <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Section B <\/td> <td> 4/4 <\/td> <\/tr>\n  <tr> <td> Section C <\/td> <td> 16/16 <\/td> <\/tr>\n  <tr> <td> Section D <\/td> <td> 4/4 <\/td> <\/tr>\n   <\/tbody> <\/table>",
     "nonbreed_poly_pth": "",
     "q_score_plt": {
@@ -1129,37 +1561,35 @@
         },
         {
           "name": "jquery",
-          "version": "1.11.3",
+          "version": "3.5.1",
           "src": {
-            "href": "jquery-1.11.3"
+            "href": "jquery-3.5.1"
           },
           "meta": null,
           "script": "jquery.min.js",
           "stylesheet": null,
           "head": null,
           "attachment": null,
-          "package": null,
           "all_files": true
         },
         {
           "name": "crosstalk",
-          "version": "1.0.0",
+          "version": "1.1.1",
           "src": {
-            "href": "crosstalk-1.0.0"
+            "href": "crosstalk-1.1.1"
           },
           "meta": null,
           "script": "js/crosstalk.min.js",
           "stylesheet": "css/crosstalk.css",
           "head": null,
           "attachment": null,
-          "package": null,
           "all_files": true
         },
         {
           "name": "plotly-htmlwidgets-css",
-          "version": "1.52.2",
+          "version": "1.57.1",
           "src": {
-            "href": "plotly-htmlwidgets-css-1.52.2"
+            "href": "plotly-htmlwidgets-css-1.57.1"
           },
           "meta": null,
           "script": null,
@@ -1170,9 +1600,9 @@
         },
         {
           "name": "plotly-main",
-          "version": "1.52.2",
+          "version": "1.57.1",
           "src": {
-            "href": "plotly-main-1.52.2"
+            "href": "plotly-main-1.57.1"
           },
           "meta": null,
           "script": "plotly-latest.min.js",
@@ -1185,6 +1615,7 @@
     },
     "range_poly_pth": "",
     "slr": "",
+    "spat_error": "",
     "species_name": "Bubo ",
     "tbl_ccei": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Change Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> Class 1 <\/td> <td align=\"right\"> 66.68 <\/td> <\/tr>\n  <tr> <td> Class 2 <\/td> <td align=\"right\"> 33.32 <\/td> <\/tr>\n  <tr> <td> Class 3 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td> Class 4 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n   <\/tbody> <\/table>",
     "texp_map": {
@@ -1332,7 +1763,7 @@
                 "title": "Temperature",
                 "extra": null,
                 "layerId": "legend401",
-                "className": "info legend",
+                "className": "info legend rast",
                 "group": "rast"
               }
             ]
@@ -1484,9 +1915,9 @@
         },
         {
           "name": "leaflet-providers-plugin",
-          "version": "2.0.3",
+          "version": "2.0.4.1",
           "src": {
-            "href": "leaflet-providers-plugin-2.0.3"
+            "href": "leaflet-providers-plugin-2.0.4.1"
           },
           "meta": null,
           "script": "leaflet-providers-plugin.js",
