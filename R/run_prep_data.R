@@ -21,9 +21,13 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 
   if(reproject){
     ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-
+    file_in <- raster::filename(rast_delta)
+    if(file_in == ""){
+      file_in <- raster::rasterTmpFile()
+      raster::writeRaster(rast_delta, file_in)
+    }
     # project raster to WGS84 and save to file_nm
-    rast_delta <- wrap_gdalwarp(raster::filename(rast_delta), ref_crs,
+    rast_delta <- wrap_gdalwarp(file_in, ref_crs,
                                 overwrite = overwrite,
                                 raster::rasterTmpFile(),
                                 resamp_method = "bilinear",
@@ -81,51 +85,65 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           map = NULL, mwmt = NULL, mcmt = NULL, in_folder = NULL, out_folder,
                           reproject = TRUE, overwrite = FALSE){
+  if(length(out_folder) == 0 || missing(out_folder)){
+    stop("out_folder is missing with no default")
+  }
 
   # TODO: Figure out if we should match Sarah O's intervals for reclassing.
   ext_accept <- c(".asc", ".tif", ".nc", ".grd", ".img")
 
   make_pat <- function(x, ext_accept){
-    paste0(x, ext_accept, collapse = "|")
+    paste0(x, ext_accept, "$", collapse = "|")
   }
 
   if(!is.null(in_folder)){
     mat_norm <- list.files(in_folder,
-                           pattern = paste0("MAT", ext_accept, collapse = "|"),
+                           pattern = make_pat("MAT", ext_accept),
                            full.names = TRUE)
 
     mat_fut <- list.files(in_folder,
-                          pattern = paste0("MAT_\\d.*", ext_accept, collapse = "|"),
+                          pattern = make_pat("MAT_\\d.*", ext_accept),
                           full.names = TRUE)
 
     cmd_norm <-list.files(in_folder,
-                          pattern = paste0("CMD", ext_accept, collapse = "|"),
+                          pattern = make_pat("CMD", ext_accept),
                           full.names = TRUE)
 
     cmd_fut <- list.files(in_folder,
-                          pattern = paste0("CMD_\\d.*", ext_accept, collapse = "|"),
+                          pattern = make_pat("CMD_\\d.*", ext_accept),
                           full.names = TRUE)
 
-    if(any(lengths(list(mat_norm, mat_fut, cmd_norm, cmd_fut)) == 0)){
-      stop("mat_norm, mat_fut, cmd_norm, cmd_fut must all be present in in_folder",
-           call. = FALSE)
+    missing <- purrr::map_lgl(lst(mat_norm, mat_fut, cmd_norm, cmd_fut),
+                               ~length(.x) == 0)
+    if(any(missing)){
+      stop("None of the files in ", in_folder,
+           " matches the expected filename for ",
+           paste0(names(missing)[which(missing)], sep = ", "), call. = FALSE)
     }
 
     ccei <- list.files(in_folder,
-                       pattern = paste0("CCEI", ext_accept, collapse = "|"),
+                       pattern = make_pat("CCEI", ext_accept),
                        full.names = TRUE)
 
     map <- list.files(in_folder,
-                      pattern = paste0("MAP", ext_accept, collapse = "|"),
+                      pattern = make_pat("MAP", ext_accept),
                       full.names = TRUE)
 
     mwmt <- list.files(in_folder,
-                       pattern = paste0("MWMT", ext_accept, collapse = "|"),
+                       pattern = make_pat("MWMT", ext_accept),
                        full.names = TRUE)
 
     mcmt <- list.files(in_folder,
-                       pattern = paste0("MCMT", ext_accept, collapse = "|"),
+                       pattern = make_pat("MCMT", ext_accept),
                        full.names = TRUE)
+  }
+  too_long <- purrr::map_lgl(lst(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
+                                 map, mwmt, mcmt),
+                             ~length(.x) > 1)
+  if(any(too_long)){
+    stop("more than one file in ", in_folder,
+         " matches the expected filename for ",
+         paste0(names(too_long)[which(too_long)], sep = ", "), call. = FALSE)
   }
 
   mat_norm <- raster::raster(mat_norm)
@@ -224,8 +242,14 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     if(reproject){
       ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
+      file_in <- raster::filename(dif_mt)
+      if(file_in == ""){
+        file_in <- raster::rasterTmpFile()
+        raster::writeRaster(dif_mt, file_in)
+      }
+
       # project raster to WGS84
-      dif_mt <- wrap_gdalwarp(raster::filename(dif_mt), ref_crs,
+      dif_mt <- wrap_gdalwarp(file_in, ref_crs,
                               raster::rasterTmpFile(),
                               resamp_method = "bilinear",
                               output_Raster = TRUE)
@@ -241,6 +265,8 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                         file.path(out_folder, "MWMT_MCMT_reclass.tif"),
                         overwrite = overwrite)
   }
+  message("finished processing")
+  return("")
 
 }
 

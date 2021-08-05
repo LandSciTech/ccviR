@@ -1,21 +1,6 @@
-
-
-
 #' Data prep module
 #'
-#' @param file_dir
-#' @param launch.browser
-#' @param port
-#' @param ...
-#'
-#' @return
-#'
-
-#'
-#'
-#' @examples
-
-  # UI #========================================================================
+# UI #========================================================================
   data_prep_ui <- function(id){
     fluidPage(
       # shinyjs::useShinyjs(),
@@ -28,7 +13,7 @@
         "the ensemble data for SSP2-4.5 2050s for the future. ",
         "Save the downloaded data in a folder you can easily find."),
 
-      p(strong("Step 2: "), "Prepare the cliamte data for use in the app.",
+      p(strong("Step 2: "), "Prepare the climate data for use in the app.",
         "Climate data can be added by selecting file paths for each file",
         " or selecting a folder that contains all the files with standard names"),
 
@@ -85,8 +70,6 @@
       checkboxInput(NS(id, "reproj"), "Should the outputs be reprojected to WGS84?"),
 
       actionButton(NS(id, "submit"), "Submit", class = "btn-primary"),
-
-
     )
   }
 
@@ -193,8 +176,9 @@
     })
 
     reactive({
-      req(prep_done())
-      "Processing Complete"
+      if(prep_done() == ""){
+        "Processing Complete"
+      }
     })
 
 
