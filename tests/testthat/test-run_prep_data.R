@@ -64,6 +64,7 @@ test_that("error for missing files, works without optional files",{
   # remove MAT
   file.remove(file.path(pth_base, "raw/CCEI.img"))
 
+
   expect_true({
     run_prep_data(in_folder = file.path(pth_base, "raw"),
                   out_folder = file.path(pth_base, "processed"),
