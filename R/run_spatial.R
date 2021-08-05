@@ -14,7 +14,7 @@
 #'
 #' @examples
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
-                        non_breed_poly = NULL,
+                        non_breed_poly = NULL, ptn_poly = NULL,
                         hs_rast = NULL){
   message("performing spatial analysis")
 
@@ -22,7 +22,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   range_poly <- check_polys(range_poly)
   scale_poly <- check_polys(scale_poly)
   non_breed_poly <- check_polys(non_breed_poly)
-  clim_vars_lst$ptn <- check_polys(clim_vars_lst$ptn)
+  ptn_poly <- check_polys(ptn_poly)
 
   # Section A - Exposure to Local Climate Change: #====
 
@@ -74,14 +74,13 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
 
   # Physiological Thermal niche
-  if(is.null(clim_vars_lst$ptn)){
+  if(is.null(ptn_poly)){
     ptn_perc <- data.frame(PTN = NA_real_)
   } else {
-    if(st_crs(range_poly) != st_crs(clim_vars_lst$ptn)){
-      clim_vars_lst$ptn <- clim_vars_lst$ptn %>%
-        st_transform(st_crs(range_poly))
+    if(st_crs(range_poly) != st_crs(ptn_poly)){
+      ptn_poly <- st_transform(ptn_poly, st_crs(range_poly))
     }
-    ptn_perc <- calc_overlap_poly(range_poly, clim_vars_lst$ptn, "PTN")
+    ptn_perc <- calc_overlap_poly(range_poly, ptn_poly, "PTN")
   }
 
   # Historical Hydrological niche

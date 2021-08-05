@@ -12,15 +12,17 @@ assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
                   quiet = TRUE) %>% st_set_crs(4326)
 rng_high <- st_read(file.path(file_dir, "rng_poly_high.shp"), agr = "constant",
                     quiet = TRUE) %>% st_set_crs(4326)
+ptn <- st_read(file.path(file_dir, "PTN_poly.shp"), agr = "constant",
+                    quiet = TRUE) %>% st_set_crs(4326)
 hs <- raster(file.path(file_dir, "HS_rast.tif")) %>%
   `crs<-`(value = "+proj=longlat +datum=WGS84 +no_defs")
 
-clim_vars[1:5] <- purrr::map(clim_vars[1:5],
-                              ~`crs<-`(.x, value = "+proj=longlat +datum=WGS84 +no_defs"))
-clim_vars[[6]] <- st_set_crs(clim_vars[[6]], 4326)
+clim_vars <- purrr::map(clim_vars,
+                        ~`crs<-`(.x, value = "+proj=longlat +datum=WGS84 +no_defs"))
+
 
 test_that("spatial runs with all data or optional data",{
-  res <- run_spatial(rng_high, assess, clim_vars, nonbreed, hs)
+  res <- run_spatial(rng_high, assess, clim_vars, nonbreed, ptn, hs)
   expect_false(anyNA(res))
 
   # with only required data
