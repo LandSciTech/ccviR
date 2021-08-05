@@ -4,10 +4,10 @@
 \alias{calc_gain_loss}
 \title{Get the proportion of habitat gained and lost in range}
 \usage{
-calc_gain_loss(rast, poly, eer_pkg)
+calc_gain_loss(rast, poly)
 }
 \arguments{
-\item{eer_pkg}{}
+\item{poly}{}
 }
 \value{
 

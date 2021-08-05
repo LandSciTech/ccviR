@@ -8,7 +8,6 @@
 #' @param scale_poly
 #' @param hs_rast
 #' @param clim_vars_lst
-#' @param eer_pkg
 #'
 #' @return
 #' @export
@@ -16,9 +15,7 @@
 #' @examples
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL,
-                        hs_rast = NULL,
-                        eer_pkg = requireNamespace("exactextractr",
-                                                   quietly = TRUE)){
+                        hs_rast = NULL){
   message("performing spatial analysis")
 
   # Check polygon inputs have only one feature and if not union
@@ -30,10 +27,18 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   # Section A - Exposure to Local Climate Change: #====
 
   # Temperature
-  mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT", eer_pkg)
+  mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT")
+  if(sum(mat_classes, na.rm = T) < 99){
+    stop("The range polygon does not fully overlap the supplied temperature ",
+         "raster.", call. = FALSE)
+  }
 
   # Moisture
-  cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD", eer_pkg)
+  cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD")
+  if(sum(cmd_classes, na.rm = T) < 99){
+    stop("The range polygon does not fully overlap the supplied moisture ",
+         "raster.", call. = FALSE)
+  }
 
   # Migratory Exposure
   if(is.null(non_breed_poly) || is.null(clim_vars_lst$ccei)){
@@ -43,19 +48,17 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     not_overlap <- data.frame(perc_non_breed_not_over_ccei = NA_real_)
   } else {
 
-    if(is(non_breed_poly, "sfc")){
-      non_breed_poly <- sf::st_as_sf(non_breed_poly)
-    }
-    if(nrow(non_breed_poly) > 1){
-      non_breed_poly <- sf::st_union(non_breed_poly) %>% sf::st_as_sf()
-    }
-
     ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
-                                     val_range = 1:4,
-                                     eer_pkg)
+                                     val_range = 1:4)
 
     not_overlap <- perc_not_overlap(clim_vars_lst$ccei, non_breed_poly,
                                     "perc_non_breed_not_over_ccei")
+    if(not_overlap[1,1] > 60){
+      warning(round(not_overlap[1,1], 2), "% of the nonbreeding range polygon does not",
+              " overlap the CCEI raster. Migratory exposure index only reflects ",
+              "conditions in the area of overlap",
+              call. = FALSE)
+    }
   }
 
   # Section C - Sensitivity and Adaptive Capacity: #====
@@ -66,7 +69,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
       purrr::set_names(paste0("HTN_", 1:4))
   } else {
     htn_classes <- calc_prop_raster(clim_vars_lst$htn, range_poly, "HTN",
-                                    val_range = 1:4, eer_pkg)
+                                    val_range = 1:4)
   }
 
 
@@ -85,8 +88,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   if(is.null(clim_vars_lst$map)){
     range_MAP <- data.frame(MAP_max = NA_real_, MAP_min = NA_real_)
   } else {
-    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP",
-                                     eer_pkg)
+    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP")
   }
 
 
@@ -97,8 +99,11 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   } else {
 
-    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, eer_pkg)
-
+    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly)
+    if(sum(mod_resp_CC, na.rm = T) == 0){
+      stop("The assessment area polygon does not overlap the supplied habitat suitability ",
+           "raster.", call. = FALSE)
+    }
   }
 
   # Range size
@@ -117,6 +122,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   out <- bind_cols(mat_classes, cmd_classes, ccei_classes, not_overlap, htn_classes,
                    ptn_perc, range_MAP, mod_resp_CC, range_size)
+  return(out)
 }
 
 
@@ -134,54 +140,3 @@ check_polys <- function(poly){
   return(poly)
 }
 
-# a funtion to trim NAs off rasters. There is a version raster::trim but it is
-# really slow this version might have issues if the raster is really big
-trim_ras <- function (ras, filename = "", overwrite = FALSE){
-  NA_mat <- is.na(raster::as.matrix(ras))
-  colnotNA <- which(colSums(NA_mat) != raster::nrow(ras))
-  rownotNA <- which(rowSums(NA_mat) != raster::ncol(ras))
-  ext <- raster::extent(ras, rownotNA[1], rownotNA[length(rownotNA)],
-                        colnotNA[1], colnotNA[length(colnotNA)])
-  out <- raster::crop(ras, ext, filename = filename, overwrite = overwrite)
-}
-
-#' Trim NAs from raster copied from raster package internal .memtrimlayer in
-#' raster::trim. This is not memory safe but raster::trim takes over an hour
-#' while this takes ~30s
-#' @param x
-#'
-#' @param padding
-#' @param values
-#' @param filename
-#' @param ...
-#'
-#' @export
-trim_ras <- function(r, padding=0, values=NA, filename="", ...) {
-  x <- raster::as.matrix(r)
-  if (all(is.na(values))) {
-    rows <- rowSums(is.na(x))
-    cols <- colSums(is.na(x))
-  } else {
-    rows <- apply(x, 1, function(i) sum(i %in% values))
-    cols <- apply(x, 2, function(i) sum(i %in% values))
-  }
-  rows <- which(rows != ncol(x))
-  if (length(rows)==0) { 	stop("only NA values found") }
-  cols <- which(cols != nrow(x))
-
-  rows <- pmin(pmax(1, c(min(rows) - padding, max(rows + padding))), nrow(r))
-  cols <- pmin(pmax(1, c(min(cols) - padding, max(cols + padding))), ncol(r))
-
-  e <- raster::extent(r, rows[1], rows[2], cols[1], cols[2])
-  raster::crop(r, e, filename=filename, ...)
-}
-
-#' @export
-check_trim <- function(rast){
-  do_trim <- sum(!is.na(rast[1:10,]))
-  if(do_trim == 0){
-    message("doing trim")
-    rast <- trim_ras(rast)
-  }
-  return(rast)
-}

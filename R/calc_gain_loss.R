@@ -3,24 +3,24 @@
 #'
 #' @param rast
 #' @param poly
-#' @param eer_pkg
 #'
 #' @return
 #' @export
 #'
 #' @examples
-calc_gain_loss <- function(rast, poly,
-                           eer_pkg){
-  if(eer_pkg){
+calc_gain_loss <- function(rast, poly){
+
+  withCallingHandlers(
+    warning = function(cnd){
+      if(grepl("transformed to raster", conditionMessage(cnd))){
+        message("Polygons were transformed to have CRS matching raster")
+        invokeRestart("muffleWarning")
+      }
+    },
     out <- exactextractr::exact_extract(rast, poly, progress = FALSE)
-    out <- out[[1]]
+  )
 
-  } else {
-    out <- raster::extract(rast, poly,  df = TRUE) %>%
-      purrr::set_names("ID", "value")
-
-    out <- out %>% mutate(coverage_fraction = 1)
-  }
+  out <- out[[1]]
 
   out <- out %>% group_by(value) %>%
     summarise(coverage_fraction = sum(coverage_fraction)) %>%

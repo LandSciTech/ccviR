@@ -166,4 +166,4 @@ run_prep_data(in_folder = "inst/extdata/clim_files/raw",
 prep_exp(MAT, MAT_2050, file_nm = "inst/extdata/clim_files/processed/MAT_reclass.tif",
          reproject = F)
 MAT - MAT_2050
-usethis::use_data("demo_data")
+

@@ -33,6 +33,7 @@ Suggests:
     gdalUtils,
     testthat (>= 2.1.0),
     knitr,
-    rmarkdown
-RoxygenNote: 7.0.2
+    rmarkdown,
+    shinytest
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr

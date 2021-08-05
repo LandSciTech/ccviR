@@ -4,17 +4,10 @@
 \alias{calc_prop_raster}
 \title{Get the proportion of each class in a raster that overlaps a polygon}
 \usage{
-calc_prop_raster(
-  rast,
-  poly,
-  var_name,
-  scope,
-  val_range = 1:6,
-  eer_pkg = requireNamespace("exactextractr", quietly = TRUE)
-)
+calc_prop_raster(rast, poly, var_name, scope, val_range = 1:6)
 }
 \arguments{
-\item{eer_pkg}{}
+\item{val_range}{}
 }
 \description{
 Get the proportion of each class in a raster that overlaps a polygon

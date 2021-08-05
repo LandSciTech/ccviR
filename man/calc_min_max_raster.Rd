@@ -4,15 +4,10 @@
 \alias{calc_min_max_raster}
 \title{Title}
 \usage{
-calc_min_max_raster(
-  rast,
-  poly,
-  var_name,
-  eer_pkg = requireNamespace("exactextractr", quietly = TRUE)
-)
+calc_min_max_raster(rast, poly, var_name)
 }
 \arguments{
-\item{eer_pkg}{}
+\item{var_name}{}
 }
 \value{
 
