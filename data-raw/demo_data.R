@@ -115,10 +115,10 @@ vuln_df$Value1[26:29] <- c(-1, -1, -1, -1)
 res <- calc_vulnerability(spat_res, vuln_df)
 
 # save the data to extdata so that it can be used with the app for a demo
-clim_dat <- lst(MAT_rast, CMD_rast, CCEI_rast, HTN_rast, PTN_poly, MAP_rast)
+clim_dat <- lst(MAT_rast, CMD_rast, CCEI_rast, HTN_rast, MAP_rast)
 
 sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly, HS_rast,
-              assess_poly)
+              assess_poly, PTN_poly)
 
 write_fun <- function(x, nm, dir){
   if(is(x, "Raster")){

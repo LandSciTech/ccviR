@@ -26,7 +26,7 @@ ccvi_app <- function(...){
 
   # File path ids to use with file choose
   filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
-                   "hs_rast_pth")
+                   "hs_rast_pth", "ptn_poly_pth")
 
   # Input options
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
@@ -193,6 +193,11 @@ ccvi_app <- function(...){
               shinyFilesButton("hs_rast_pth", "Choose file",
                                "Habitat suitability raster file", multiple = FALSE),
               verbatimTextOutput("hs_rast_pth", placeholder = TRUE),
+              br(),
+              strong("Physiological thermal niche file"),
+              shinyFilesButton("ptn_poly_pth", "Choose file",
+                               "Physiological thermal niche file", multiple = FALSE),
+              verbatimTextOutput("ptn_poly_pth", placeholder = TRUE),
               br(),
               strong("Click Load to begin spatial analysis"),
               br(),
@@ -635,6 +640,9 @@ ccvi_app <- function(...){
     output$hs_rast_pth <- renderText({
       parseFilePaths(volumes, input$hs_rast_pth)$datapath
     })
+    output$ptn_poly_pth <- renderText({
+      parseFilePaths(volumes, input$ptn_poly_pth)$datapath
+    })
 
 
     # load spatial data
@@ -708,6 +716,18 @@ ccvi_app <- function(...){
       check_trim(raster::raster(pth))
     })
 
+    ptn_poly <- reactive({
+      if (isTRUE(getOption("shiny.testmode"))) {
+        sf::st_read(system.file("extdata/ptn_poly.shp",
+                                package = "ccviR"),
+                    agr = "constant", quiet = TRUE)
+      } else {
+        sf::st_read(parseFilePaths(volumes,
+                                   input$ptn_poly_pth)$datapath,
+                    agr = "constant", quiet = TRUE)
+      }
+    })
+
     # run spatial calculations
     spat_res <- reactive({
       req(input$loadSpatial)
@@ -717,6 +737,7 @@ ccvi_app <- function(...){
                     non_breed_poly = nonbreed_poly(),
                     scale_poly = assess_poly(),
                     hs_rast = hs_rast(),
+                    ptn_poly = ptn_poly(),
                     clim_vars_lst = clim_vars())
       },
       error = function(cnd) conditionMessage(cnd))
@@ -912,7 +933,7 @@ ccvi_app <- function(...){
     # C2aii
     observe({
       req(input$nextVuln)
-      if(isTruthy(clim_vars()$ptn)){
+      if(isTruthy(ptn_poly())){
         shinyjs::hide("missing_ptn")
         shinyjs::show("map_C2aii")
       } else {
@@ -923,9 +944,9 @@ ccvi_app <- function(...){
 
     output$map_C2aii <- tmap::renderTmap({
       req(input$nextVuln)
-      req(clim_vars()$ptn)
+      req(ptn_poly())
 
-      make_map(poly1 = range_poly(), poly2 = clim_vars()$ptn, poly2_nm = "ptn")
+      make_map(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
     })
 
     output$tbl_C2aii <- renderTable({
