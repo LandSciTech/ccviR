@@ -28,7 +28,12 @@ Imports:
     shinycssloaders,
     R.utils,
     fs,
-    plotly
+    plotly,
+    shinyFeedback,
+    rgdal,
+    methods,
+    stats,
+    utils
 Suggests: 
     gdalUtils,
     testthat (>= 2.1.0),
