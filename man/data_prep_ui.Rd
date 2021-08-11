@@ -6,12 +6,6 @@
 \usage{
 data_prep_ui(id)
 }
-\arguments{
-\item{...}{}
-}
-\value{
-
-}
 \description{
 Data prep module
 }

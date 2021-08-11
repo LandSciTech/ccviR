@@ -718,14 +718,14 @@ ccvi_app <- function(...){
 
     ptn_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        sf::st_read(system.file("extdata/ptn_poly.shp",
-                                package = "ccviR"),
-                    agr = "constant", quiet = TRUE)
+        pth <- system.file("extdata/ptn_poly.shp", package = "ccviR")
       } else {
-        sf::st_read(parseFilePaths(volumes,
-                                   input$ptn_poly_pth)$datapath,
-                    agr = "constant", quiet = TRUE)
+        pth <- parseFilePaths(volumes, input$ptn_poly_pth)$datapath
       }
+      if(!isTruthy(pth)){
+        return(NULL)
+      }
+      sf::st_read(pth, agr = "constant", quiet = TRUE)
     })
 
     # run spatial calculations

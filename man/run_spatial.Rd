@@ -9,6 +9,7 @@ run_spatial(
   scale_poly,
   clim_vars_lst,
   non_breed_poly = NULL,
+  ptn_poly = NULL,
   hs_rast = NULL
 )
 }
