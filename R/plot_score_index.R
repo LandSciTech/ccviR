@@ -41,7 +41,7 @@ plot_score_index <- function(b_c_score, d_score){
 
   ggplot2::ggplot(score_tbl, ggplot2::aes(b_c_score, d_score, fill = value))+
     ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0)+
-    ggplot2::coord_cartesian(xlim = c(0, b_c_score_lim), ylim = c(0, d_score_lim))+
+    ggplot2::coord_fixed(xlim = c(0, b_c_score_lim), ylim = c(0, d_score_lim))+
     ggplot2::scale_fill_manual(values = c("#008000", "#FFC125", "#FF8C00", "#FF0000"))+
     ggplot2::theme_classic()+
     ggplot2::geom_point(data = score_pt, ggplot2::aes(b_c_score, d_score),
