@@ -516,6 +516,7 @@ ccvi_app <- function(...){
             # tableOutput("vuln_df_tbl"),
             br(), br(),
             downloadButton("downloadData", "Download results as csv"),
+            downloadButton("downloadDefs", "Download column definitions"),
             br(), br(),
             actionButton("restart", "Assess another species",
                          class = "btn-primary")
@@ -1276,6 +1277,15 @@ ccvi_app <- function(...){
       },
       content = function(file) {
         write.csv(out_data(), file, row.names = FALSE)
+      }
+    )
+
+    output$downloadDefs <- downloadHandler(
+      filename = "CCVI_column_definitions_results.csv",
+      content = function(file) {
+        out <- read.csv(system.file("extdata/column_definitions_results.csv",
+                                    package = "ccviR"))
+        write.csv(out, file, row.names = FALSE)
       }
     )
 
