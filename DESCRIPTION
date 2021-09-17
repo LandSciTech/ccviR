@@ -1,6 +1,6 @@
 Package: ccviR
 Title: NatureServe CCVI in R
-Version: 0.0.0.9000
+Version: 0.0.0.9002
 Authors@R: person(given = "Sarah",
   family = "Endicott",
   role = c("aut", "cre"),
@@ -28,7 +28,12 @@ Imports:
     shinycssloaders,
     R.utils,
     fs,
-    plotly
+    plotly,
+    shinyFeedback,
+    rgdal,
+    methods,
+    stats,
+    utils
 Suggests: 
     gdalUtils,
     testthat (>= 2.1.0),

@@ -61,7 +61,10 @@ test_that("Nonoverlaping poly and raster",{
 
 test_that("Non matching crs are handled reasonably", {
   # The crs is different and as a result they don't overlap
-  rng_high_lccset <- st_set_crs(rng_high, value = "+proj=lcc +lon_0=-90 +lat_1=33 +lat_2=45")
+  expect_warning({
+    rng_high_lccset <- st_set_crs(rng_high, value = "+proj=lcc +lon_0=-90 +lat_1=33 +lat_2=45")
+  })
+
   expect_error(run_spatial(rng_high_lccset, assess, clim_vars[1:2]),
                "does not fully overlap")
 

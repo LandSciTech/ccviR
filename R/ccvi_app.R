@@ -718,14 +718,14 @@ ccvi_app <- function(...){
 
     ptn_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        sf::st_read(system.file("extdata/ptn_poly.shp",
-                                package = "ccviR"),
-                    agr = "constant", quiet = TRUE)
+        pth <- system.file("extdata/ptn_poly.shp", package = "ccviR")
       } else {
-        sf::st_read(parseFilePaths(volumes,
-                                   input$ptn_poly_pth)$datapath,
-                    agr = "constant", quiet = TRUE)
+        pth <- parseFilePaths(volumes, input$ptn_poly_pth)$datapath
       }
+      if(!isTruthy(pth)){
+        return(NULL)
+      }
+      sf::st_read(pth, agr = "constant", quiet = TRUE)
     })
 
     # run spatial calculations
@@ -805,12 +805,15 @@ ccvi_app <- function(...){
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
         rename(`Exposure Multiplier` = temp_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
-                     names_to = "Change Class", values_to = "Proportion of Range") %>%
-        transmute(`Change Class`, `Proportion of Range`,
+                     names_to = "Exposure Class", values_to = "Proportion of Range") %>%
+        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "High - 1") %>%
+                    stringr::str_replace("Class 6", "Low - 6") %>%
+                    stringr::str_remove("Class"),
+                  `Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
                                             rep("", n() - 1)))
 
-    })
+    }, align = "r")
 
     output$cmd_tbl <- renderTable({
       req(!is.character(spat_res()))
@@ -829,13 +832,15 @@ ccvi_app <- function(...){
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
         rename(`Exposure Multiplier` = moist_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
-                     names_to = "Change Class",
-                     values_to = "Proportion of Range") %>%
-        transmute(`Change Class`, `Proportion of Range`,
+                            names_to = "Exposure Class", values_to = "Proportion of Range") %>%
+        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "High - 1") %>%
+                    stringr::str_replace("Class 6", "Low - 6") %>%
+                    stringr::str_remove("Class"),
+                  `Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
                                             rep("", n() - 1)))
 
-    })
+    }, align = "r")
 
     output$tbl_ccei <- renderTable({
       req(!is.character(spat_res()))
@@ -844,9 +849,12 @@ ccvi_app <- function(...){
         rename_at(vars(contains("CCEI")),
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
-                            names_to = "Change Class",
-                            values_to = "Proportion of Range")
-    })
+                            names_to = "Exposure Class", values_to = "Proportion of Range") %>%
+        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "High - 1") %>%
+                    stringr::str_replace("Class 4", "Low - 4") %>%
+                    stringr::str_remove("Class"),
+                  `Proportion of Range`)
+    }, align = "r")
 
     # When next button is clicked move to next panel
     observeEvent(input$next2, {
@@ -911,9 +919,11 @@ ccvi_app <- function(...){
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
-                     names_to = "Change Class", values_to = "Proportion of Range") %>%
-        transmute(`Change Class`, `Proportion of Range`)
-    })
+                     names_to = "Temperature Variation Class", values_to = "Proportion of Range") %>%
+        transmute(`Temperature Variation Class` = stringr::str_replace(`Temperature Variation Class`, "Class 1", "Low - 1") %>%
+                    stringr::str_replace("Class 4", "High - 4") %>%
+                    stringr::str_remove("Class"), `Proportion of Range`)
+    }, align = "r")
 
     output$box_C2ai <- renderUI({
       box_val <- spat_res() %>%

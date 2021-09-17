@@ -43,6 +43,10 @@ perc_not_overlap <- function(rast, poly, var_name){
 
   r_mask <- raster::mask(r_crop, poly, updatevalue = NA, updateNA= TRUE)
   cells_overlap <- raster::freq(r_mask, useNA = "no")[,2] %>% sum()
+  if(cells_overlap[1] == 0){
+    stop("The nonbreeding range polygon does not overlap the supplied CCEI raster",
+         call. = FALSE)
+  }
   # area in km2
   area_cell <- raster::area(r_mask, na.rm = TRUE) %>%
     raster::cellStats("mean")
