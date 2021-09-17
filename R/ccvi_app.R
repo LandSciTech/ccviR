@@ -496,11 +496,11 @@ ccvi_app <- function(...){
             br(),
             h4("Factors contributing to index value"),
             p("The CCVI is calculated by combining the index calculated based on ",
-              "exposure, indirect exposure, and sensitivity with the index ",
-              "calculated based on documented or modeled responses to climate change. ",
+              "exposure, indirect exposure, and sensitivity (sections B and C) with the index ",
+              "calculated based on documented or modeled responses to climate change (section D). ",
               "The plot below demonstrates which of these had the strongest",
               "influence on the overall calculated index"),
-            plotOutput("ind_score_plt", width = 400, height = 300),
+            plotOutput("ind_score_plt", width = 400, height = 200),
             textOutput("slr"),
             br(), br(),
             p("The score for each vulnerability factor is determined by the ",
@@ -733,15 +733,17 @@ ccvi_app <- function(...){
     spat_res <- reactive({
       req(input$loadSpatial)
       req(clim_vars())
-      tryCatch({
-        run_spatial(range_poly = range_poly(),
-                    non_breed_poly = nonbreed_poly(),
-                    scale_poly = assess_poly(),
-                    hs_rast = hs_rast(),
-                    ptn_poly = ptn_poly(),
-                    clim_vars_lst = clim_vars())
-      },
-      error = function(cnd) conditionMessage(cnd))
+      isolate({
+        tryCatch({
+          run_spatial(range_poly = range_poly(),
+                      non_breed_poly = nonbreed_poly(),
+                      scale_poly = assess_poly(),
+                      hs_rast = hs_rast(),
+                      ptn_poly = ptn_poly(),
+                      clim_vars_lst = clim_vars())
+        },
+        error = function(cnd) conditionMessage(cnd))
+      })
 
     })
 
@@ -761,12 +763,12 @@ ccvi_app <- function(...){
     output$texp_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
 
-      make_map(range_poly(), clim_vars()$mat, rast_nm = "mat")
+      make_map(isolate(range_poly()), clim_vars()$mat, rast_nm = "mat")
     })
 
     observe({
       req(input$loadSpatial)
-      if(isTruthy(clim_vars()$ccei) && isTruthy(nonbreed_poly())){
+      if(isTruthy(clim_vars()$ccei) && isTruthy(isolate(nonbreed_poly()))){
         shinyjs::hide("missing_ccei")
         shinyjs::show("ccei_exp")
       } else {
@@ -778,15 +780,15 @@ ccvi_app <- function(...){
     output$ccei_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
       req(clim_vars()$ccei)
-      req(nonbreed_poly())
+      req(isolate(nonbreed_poly()))
 
-      make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei")
+      make_map(isolate(nonbreed_poly()), clim_vars()$ccei, rast_nm = "ccei")
     })
 
     output$cmd_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
 
-      make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd")
+      make_map(isolate(range_poly()), clim_vars()$cmd, rast_nm = "cmd")
     })
 
     output$texp_tbl <- renderTable({
@@ -911,7 +913,7 @@ ccvi_app <- function(...){
       req(input$nextVuln)
       req(clim_vars()$htn)
 
-      make_map(range_poly(), rast = clim_vars()$htn, rast_nm = "htn")
+      make_map(isolate(range_poly()), rast = clim_vars()$htn, rast_nm = "htn")
     })
 
     output$tbl_C2ai <- renderTable({
@@ -957,7 +959,7 @@ ccvi_app <- function(...){
       req(input$nextVuln)
       req(ptn_poly())
 
-      make_map(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
+      make_map(poly1 = isolate(range_poly()), poly2 = ptn_poly(), poly2_nm = "ptn")
     })
 
     output$tbl_C2aii <- renderTable({
@@ -998,7 +1000,7 @@ ccvi_app <- function(...){
       req(input$nextVuln)
       req(clim_vars()$map)
 
-      make_map(poly1 = range_poly(), rast = clim_vars()$map, rast_nm = "map",
+      make_map(poly1 = isolate(range_poly()), rast = clim_vars()$map, rast_nm = "map",
                rast_style = "pretty")
     })
 
@@ -1040,7 +1042,7 @@ ccvi_app <- function(...){
       req(input$nextVuln)
       req(hs_rast())
 
-      make_map(poly1 = range_poly(), rast = hs_rast(), rast_nm = "hs_rast")
+      make_map(poly1 = isolate(range_poly()), rast = hs_rast(), rast_nm = "hs_rast")
     })
 
     output$tbl_D2_3 <- renderTable({
@@ -1097,9 +1099,11 @@ ccvi_app <- function(...){
 
     # Gather all the form inputs
     vuln_df <- eventReactive(input$submitSpatVuln, {
-      vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
-      data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
-      as_tibble(data)
+      isolate({
+        vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
+        data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
+        as_tibble(data)
+      })
     })
 
     # gather comments
