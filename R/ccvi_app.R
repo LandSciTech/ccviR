@@ -853,8 +853,8 @@ ccvi_app <- function(...){
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                             names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "High - 1") %>%
-                    stringr::str_replace("Class 4", "Low - 4") %>%
+        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "Low - 1") %>%
+                    stringr::str_replace("Class 4", "High - 4") %>%
                     stringr::str_remove("Class"),
                   `Proportion of Range`)
     }, align = "r")
