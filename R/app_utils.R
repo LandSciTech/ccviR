@@ -46,7 +46,7 @@ getMultValues <- function(x, nm){
 # function to make maps (Uses some external objects, could be improved)
 make_map <- function(poly1, rast = NULL, poly2 = NULL,
                      poly1_nm = "Range", poly2_nm = NULL,
-                     rast_nm = NULL, rast_style = "cat"){
+                     rast_nm = NULL, rast_style = "cat", rast_lbl = NULL){
 
   # Name of input data layers for mapping
   rast_nms <- list(Temperature = "mat",
@@ -60,13 +60,20 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                    `Non-breeding range` = "nonbreed_poly",
                    `Physiological thermal niche` = "ptn")
 
+  if(rast_nm == "hs_rast"){
+    pal = c("grey", "#FF0000", "#FFC125", "#008000")
+  } else {
+    pal = NULL
+  }
+
   # tried adding a line break to legend but doesn't work in interactive map
   poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
   rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
 
   if(is.null(poly2)){
     out <-  tmap::tm_shape(rast)+
-      tmap::tm_raster(title = rast_nm, style = rast_style)+
+      tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
+                      palette = pal)+
       tmap::tm_shape(poly1)+
       tmap::tm_borders()+
       tmap::tm_add_legend("fill", labels = c(poly1_nm),

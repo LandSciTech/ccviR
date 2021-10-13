@@ -77,7 +77,7 @@ ccvi_app <- function(...){
                 a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
                 "that automates the spatial analysis needed to inform the index. ",
                 "The app is based on version 3.02 of the NatureServe CCVI. ",
-                "For detialed instructions on how to use the index see the NatureServe ",
+                "For detailed instructions on how to use the index see the NatureServe ",
                 a("Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf")),
               h3("Preparing to use the app"),
 
@@ -1038,11 +1038,19 @@ ccvi_app <- function(...){
       }
     })
 
+    hs_rast2 <- reactive({
+      rast <- raster::reclassify(hs_rast(),
+                                 rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3),
+                                              ncol = 2))
+    })
+
     output$map_D2_3 <- tmap::renderTmap({
       req(input$nextVuln)
-      req(hs_rast())
+      req(hs_rast2())
 
-      make_map(poly1 = isolate(range_poly()), rast = hs_rast(), rast_nm = "hs_rast")
+      make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
+               rast_nm = "hs_rast",
+               rast_lbl = c("Not suitable", "Lost", "Maintained", "Gained"))
     })
 
     output$tbl_D2_3 <- renderTable({
