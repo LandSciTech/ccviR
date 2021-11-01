@@ -32,9 +32,9 @@ values(MAP_rast) <- c(rep(seq(1, 100), 50),
 # 7 is gain, 1 is lost, rest is maint, is assessed over the whole assessment
 # area so should be 0 or NA outside range
 HS_rast <- rast
-values(HS_rast) <- c(sample(c(1:7, 1, 1, 1, 1), 3000, replace = TRUE),
-                     sample(c(1:7), 4000, replace = TRUE),
-                     sample(c(1:7, 7, 7, 7, 7), 3000, replace = TRUE))
+values(HS_rast) <- c(sample(c(0:7, 1, 1, 1, 1), 3000, replace = TRUE),
+                     sample(c(0:7), 4000, replace = TRUE),
+                     sample(c(0:7, 7, 7, 7, 7), 3000, replace = TRUE))
 
 # Should be a polygon of areas with special temperature regime
 PTN_poly <- st_polygon(list(matrix(c(0.5, 0.5, 1,

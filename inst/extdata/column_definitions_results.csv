@@ -1,0 +1,52 @@
+Column Name,Definition
+species_name,Scientific name of the species
+common_name,Common name of the species
+geo_location,Geographic area assessed
+assessor,Name of the assessor
+taxonomic_group,Taxonomic group of the species
+migratory,Whether the species is migratory and exposure data for the migratory range that lies outside of the assessment area was provided
+cave_grnd_water,Whether the species is an obligate of caves or groundwater systems
+CCVI_index,Calculated CCVI index
+CCVI_conf_index,Level of confidence in the CCVI index result. This is based on the proportion of Monte Carlo results that had different index values
+mig_exposure,Index of migratory exposure
+b_c_score,"Total score from sections B and C the indirect exposure, sensitivity and adaptive capacity questions"
+d_score,Total score from section D the modelled response to climate change section
+MC_freq_*,The proportion of Monte Carlo runs with each CCVI index result
+MAT_#,The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
+CMD_#,The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
+CCEI_#,The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 1 indicates high exposure while Class 4 indicates low exposure 
+perc_non_breed_not_over_ccei,The precentage of the non-breeding range that does not overlap with the CCEI raster data 
+HTN_#,The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest
+PTN,The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change
+MAP_max/min,The maximum and minimum historical mean annual precipitation in the species' range
+perc_lost/gain/maintained ,The percentage of the species' range that is predicted to be lost/gained/maintained under future climate conditions
+range_size,The area of the species' range in m2
+,
+,"Answers to each question plus any comments. -1) No selection, 0) Neutral, 1) Somewhat increase, 2) Increase, 3) Greatly increase. If there are 2 numbers then two boxes were checked and the average of the scores was used in the total score"
+B1,  1) Exposure to sea level rise 
+B2a,    a) Natural barriers
+B2b,    b) Anthropogenic barriers
+B3,  3) Predicted impact of land use changes resulting from human responses to climate change
+C1,  1) Dispersal and movements 
+C2ai,i) historical thermal niche
+C2aii,ii) physiological thermal niche
+C2bi,i) historical hydrological niche
+C2bii,ii) physiological hydrological niche
+C2c,    c) Dependence on a specific disturbance regime likely to be impacted by climate change
+C2d,"    d) Dependence on ice, ice-edge, or snow-cover habitats"
+C3,  3) Restriction to uncommon landscape/geological features or derivatives
+C4a,    a) Dependence on other species to generate required habitat
+C4b,    b) Dietary versatility (animals only)
+C4c,    c) Pollinator versatility (plants only)
+C4d,    d) Dependence on other species for propagule dispersal
+C4e,    e) Sensitivity to pathogens or natural enemies
+C4f,    f) Sensitivity to competition from native or non-native species
+C4g,    g) Forms part of an interspecific interaction not covered by 5a-f
+C5a,    a) Measured genetic variation 
+C5b,"    b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is ""unknown"")"
+C5c,    c) Reproductive system (plants only; use only if C5a and C5b are “unknown”) 
+C6,  6) Phenological response to changing seasonal temperature and precipitation dynamics
+D1,  1) Documented response to recent climate change 
+D2,  2) Modeled future (2050) change in population or range size 
+D3,  3) Overlap of modeled future (2050) range with current range
+D4,  4) Occurrence of protected areas in modeled future (2050) distribution
