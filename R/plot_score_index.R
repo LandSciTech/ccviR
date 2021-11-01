@@ -47,6 +47,7 @@ plot_score_index <- function(b_c_score, d_score){
     ggplot2::geom_point(data = score_pt, ggplot2::aes(b_c_score, d_score),
                shape = 4, stroke = 3,
                inherit.aes = FALSE)+
-    ggplot2::labs(x = "Sections B and C Score", y = "Section D Score", fill = "Index")
+    ggplot2::labs(x = "Exposure x Sensitivity and Adaptive Capacity",
+                  y = "Modelled Response to Climate Change", fill = "Index")
 }
 

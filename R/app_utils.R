@@ -60,10 +60,12 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                    `Non-breeding range` = "nonbreed_poly",
                    `Physiological thermal niche` = "ptn")
 
-  if(rast_nm == "hs_rast"){
-    pal = c("grey", "#FF0000", "#FFC125", "#008000")
-  } else {
-    pal = NULL
+  if(!is.null(rast_nm)){
+    if(rast_nm == "hs_rast"){
+      pal = c("grey", "#FF0000", "#FFC125", "#008000")
+    } else {
+      pal = NULL
+    }
   }
 
   # tried adding a line break to legend but doesn't work in interactive map
