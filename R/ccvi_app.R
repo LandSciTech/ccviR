@@ -3,7 +3,7 @@
 
 
 
-#' Title
+#' Create the ccviR Shiny application
 #'
 #' @param ...
 #'
@@ -107,6 +107,14 @@ ccvi_app <- function(...){
                 " unknown for many species, the Index is designed such that only",
                 " 10 of the 19 sensitivity factors require input in order to ",
                 "obtain an overall Index score."),
+              h3("Start assessment"),
+              br(),
+              strong("Optional: Load data from a previous assessment"),
+              p("Select the file where the previous assessment was saved"),
+              shinyFilesButton("preload_file", "Choose file",
+                               "Previous assessment file", multiple = FALSE),
+              verbatimTextOutput("preload_file_pth", placeholder = TRUE),
+              br(),
               actionButton("start", "Start", class = "btn-primary"),
               h3("References"),
               p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
