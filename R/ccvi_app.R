@@ -1318,7 +1318,7 @@ ccvi_app <- function(...){
 
   }
 
-  shinyApp(ui, server,
+  shinyApp(ui, server, enableBookmarking = "server",
            options = list(launch.browser = getShinyOption("launch.browser"),
                           port = getShinyOption("port")))
 }
