@@ -15,7 +15,9 @@
 
       p(strong("Step 2: "), "Prepare the climate data for use in the app.",
         "Climate data can be added by selecting file paths for each file",
-        " or selecting a folder that contains all the files with standard names"),
+        " or selecting a folder that contains all the files with standard names.",
+        " For the output folder make sure to choose a location that is easy to find again",
+        " because you will use the prepared climate data to calculate the index."),
 
       selectInput(NS(id, "data_as"), "Provide data as:",
                   list(`Individual file paths` = "paths",
@@ -24,23 +26,24 @@
       shinyjs::hidden(
         div(
           id = NS(id, "folder_input"),
-          labelMandatory(strong("Folder location of climate data:")),
+          labelMandatory(strong("Folder location of raw climate data:")),
           shinyFiles::shinyDirButton(NS(id, "clim_var_dir"), "Choose a folder",
-                                     "Folder location of climate data"),
+                                     "Folder location of raw climate data"),
           verbatimTextOutput(NS(id, "clim_var_dir"), placeholder = TRUE),
           br(),
           strong("File names in folder"),
           tags$ul(
-            tags$li(labelMandatory("MAT.asc: mean annual temperature for the historical normal period")),
-            tags$li(labelMandatory("MAT_2050.asc: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100")),
-            tags$li(labelMandatory("CMD.asc: climate moisture deficit for the historical normal period")),
-            tags$li(labelMandatory("CMD_2050.asc: climate moisture deficit for the future under climate change it can be any number eg 2050, 2100")),
-            tags$li("CCEI.img: Climate Change Exposure Index from NatureServe website"),
-            tags$li("MAP.asc: mean annual precipitation for the historical normal period"),
-            tags$li("MWMT.asc: mean warmest month temperature for the historical normal period"),
-            tags$li("MCMT.asc: mean coldest month temperature for the historical normal period")
+            tags$li(labelMandatory("MAT: mean annual temperature for the historical normal period")),
+            tags$li(labelMandatory("MAT_2050: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100")),
+            tags$li(labelMandatory("CMD: climate moisture deficit for the historical normal period")),
+            tags$li(labelMandatory("CMD_2050: climate moisture deficit for the future under climate change it can be any number eg 2050, 2100")),
+            tags$li("CCEI: Climate Change Exposure Index from NatureServe website"),
+            tags$li("MAP: mean annual precipitation for the historical normal period"),
+            tags$li("MWMT: mean warmest month temperature for the historical normal period"),
+            tags$li("MCMT: mean coldest month temperature for the historical normal period")
 
-          )
+          ),
+          p('Accepted filetypes are ".asc", ".tif", ".nc", ".grd" and ".img"')
         )
       ),
       div(
@@ -57,7 +60,7 @@
       ),
       div(
         id = NS(id, "folder_output"),
-        labelMandatory(strong("Output folder location")),
+        labelMandatory(strong("Output folder location of prepared climate data")),
         shinyFiles::shinyDirButton(NS(id, "out_folder"), "Choose a folder",
                                    "Output folder location"),
         verbatimTextOutput(NS(id, "out_folder"), placeholder = TRUE),
@@ -69,7 +72,7 @@
 
       checkboxInput(NS(id, "reproj"), "Should the outputs be reprojected to WGS84?"),
 
-      actionButton(NS(id, "submit"), "Submit", class = "btn-primary"),
+      actionButton(NS(id, "submit"), "Process", class = "btn-primary"),
     )
   }
 
