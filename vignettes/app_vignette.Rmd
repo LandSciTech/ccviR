@@ -14,34 +14,45 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Introduction
-The ccviR app is an interactive application designed to offer a user-friendly and simple interface for using the [NatureServe Climate Change Vulnerability Index](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) to identify species that are vulnerable to climate change. Effective use of the NatureServe CCVI tool requires some GIS analysis followed by entering the results of that analysis and answers to vulnerability questions into an Excel spreadsheet which then calculates the corresponding index. With this app we combine these two steps into one, using R to do the spatial analysis and calculate the index based on user inputs entered through a Shiny application. 
-
-The ccviR app uses the ccviR package to calculate the NatureServe CCVI index based on user inputs but users familiar with R could use the ccviR package directly to investigate different aspects of the NatureServe CCVI algorithm. However, this vignette will only focus on using the app.
-
-## Installation
-The package can be installed by:  
-
-1. Cloning the github [repo](https://github.com/see24/ccviR) to an RStudio project. [Instructions](https://happygitwithr.com/existing-github-first.html#new-rstudio-project-via-git-clone) (you only have to do part 16.2)
-    i. If that doesn’t work save the R and inst folders in an RStudio project folder named ccviR, then go to step 2  
-2. Running devtools::install() in the r console of that project
-
-
-## Preparing the data
-Before launching the ccviR app users will need to ensure that they have the appropriate data ready for the CCVI calculations. Climate exposure data has been provided with the app and can be downloaded from [Google Drive](https://drive.google.com/drive/folders/1YqtPpzzXvGVRI3BHg-yuKrhJL0rFnSGH?usp=sharing). This contains data for climate change exposure based on anticipated change in temperature and moisture, and the climate change exposure index (CCEI) for the non-breeding range; and sensitivity based on variation in temperature and precipitation. A shapefile can be added to this dataset to represent the physiological thermal niche of the species. 
-
-In addition to climate data the user must supply polygon shapefiles of the species' range and the area being assessed. The user may optionally also provide a shapefile of non-breeding range for migratory species, and a habitat suitability raster showing change in the species range under climate change such that 1 represents habitat lost, 7 represents habitat gained, and 2-6 represent habitat maintained. 
-
-This data should be saved under one directory with the climate data in a sub-directory that does not contain any other files. 
-
 ## Launching the app
 The app is launched by calling `run_ccvi_app()` which will launch the app in the users default internet browser with file selection being relative to the current working directory. To run the app with data stored in a different folder you can call `run_ccvi_app()` with the folder path as the first argument. For example if all of the data is stored in a subdirectory named "data" of the RStudio project where I am calling the function I would call `run_ccvi_app("data")` to avoid having to open the data folder every time I select a file. In addition the ccviR package includes a demo data set that can be used to test out the app, to use this data set call `run_ccvi_app("demo")`. 
 
-## Using the app
-The first tab contains information about the species being assessed. Once all mandatory fields are filled in click next. The second tab is where the data will be loaded and displayed on an interactive map. All data in the climate data folder will be loaded and the names must match those in the demo dataset. Other files must be selected individually. Click Load to view the data on an interactive map and a table showing the exposure multiplier derived from the temperature and moisture data. The third tab includes all information on the species vulnerability to climate change and is based on expert knowledge and characteristics of the species. Users should use the NatureServe CCVI [guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) to interpret each question. If the answer to a question is unknown leave the question blank. The next tab includes the vulnerability questions that are answered through spatial analysis of the data provided. For each question a map will show the data and a table will show the information extracted. The appropriate checkbox will be filled in based on the NatureServe guidelines, however a user may check or uncheck a box if they would like to adjust the value. If the data for the spatial analysis was not provided the map will be blank and the user may answer the question based on expert knowledge or leave it blank. The final tab shows the results of the climate change vulnerability index and some information about what factors had the most impact on the calculated index.  
+## Preparing the data
+The first time you use the app you will need to prepare the climate data used in the app. There is a tool with in the app that has instructions for how to do this. You will download a climate data set with bioclimatic variables for two time periods and then tell the app where this is stored and where to store the prepared data. The app will use the raw climate data that you have downloaded to create the inputs that are used in the app which are classified versions of the climate data. 
 
+
+## Using the app
+The first tab contains information about the species being assessed. Once all mandatory fields are filled in click next. The second tab is where the data will be loaded and displayed on an interactive map. The climate data is loaded by selecting the location where you have stored the prepared climate data. Other files must be selected individually. Click Load to view the data on an interactive map and a table showing the exposure multiplier derived from the temperature and moisture data. The third tab includes questions on the species vulnerability to climate change that can be answered based on expert knowledge and/or a literature review. The NatureServe CCVI [guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) explain how to interpret each question and are provided as a pop-up in the app or can be downloaded as a pdf. If the answer to a question is unknown leave the question blank, more than one box can be checked to reflect uncertainty and comments can be included to explain your choice. The next tab includes the vulnerability questions that are answered through spatial analysis of the data provided. For each question a map will show the data and a table will show the information extracted. The appropriate checkbox will be filled in based on the NatureServe guidelines, however a user may check or uncheck a box if they would like to adjust the value. If the data for the spatial analysis was not provided the map will be blank and the user may answer the question based on expert knowledge or leave it blank. The final tab shows the results of the climate change vulnerability index and some information about what factors had the most impact on the calculated index.  
+
+## Run a demonstration
+Before using the app to assess a real species we recommend walking through the app with the demo data set provided. Run the code below to get started.
 
 ```{r setup, eval=FALSE}
 library(ccviR)
 run_ccvi_app("demo")
 ```
+
+### Preparing the data
+To start we will process the example climate data by clicking the Prepare Climate Data button. This opens a new tab. In this case we don't need to download the data because we are using the demo data. So you can start by selecting the folder location of raw climate data. In the file selector window expand the "clim_files" folder by clicking the arrow and select the "raw" folder. Note the names of the files on the right hand side, when you download the real climate data you will need to re-name the files to match this naming structure or select the files individually. Click "Select" to close the window. Do the same for the output folder, this time selecting the "processed" folder.  Check the "Should existing files in the output folder be overwritten?" box. Then click "Process". A loading symbol will appear and when it is finished a message saying "Processing complete" will appear. This will take longer for the real climate data that covers all or North America so you will need to wait until it is finished before moving on. When it is done click "Finished" to go back to the Welcome page. The next time you use the app you can go straight onto Step 1 without preparing the climate data because it is stored on your computer in the output folder that you selected.
+
+For a real species you will then need to think about and acquire the data described in Steps 1 and 2 on the Welcome page but for the demonstration we go ahead and press "Start" to begin calculating the index.
+
+### Species information
+On the page you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Bird". See the NatureServe Guidelines to better understand the meaning of the two check boxes at the end. For the demonstration check the box for migratory species. Click "Next".
+
+### Spatial data analysis
+On this tab you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. Select the folder location of the climate data prepared in the previous step ie "clim_files > processed". Then select the range polygon for the species by selecting the file "rng_poly_high.shp". Select the assessment area by selecting the "asssess_poly.shp" file. Select the "nonbreed_poly.shp" for the non- breeding range. Select "HS_rast.tif" for the projected habitat change raster. And finally select "PTN_poly.shp" for the physiological thermal niche. The meanings of these different files is explained on the Welcome page. Then click "Load". A loading symbol will appear while the data is being processed. Then interactive maps of climate change exposure will be displayed. Here you can see that our demonstration data has increasing exposure further north and that our species range polygon is in the northern quarter of the area. The real climate data will cover all of North America. The exposure maps are classified into 6 classes and the proportion to the species range in each class is displayed in the table. The exposure multiplier is determined by the level of exposure and is used to modify the sensitivity and adaptive capacity components of the index based on exposure to climate change. A similar analysis is done for the non-breeding range of the species, see the NatureServe guidelines for a full description of how the migratory exposure index is calculated. Once you have finished exploring the maps click "Next".
+
+### Vulnerability questions
+Vulnerability questions are detailed questions that the index uses to score the species' indirect exposure, sensitivity, adaptive capacity and modeled or documented responses to climate change. Descriptions of how to interpret and score the questions are available in the NatureServe guidelines which are included as a pop-up if you click the "Show guidelines" button. Some vulnerability questions are answered based on an analysis of spatial data and these questions are dealt with on the next tab. For the demonstration you can select any check box that you want for each question, try a few different versions and see how it affects the result! Click "Next" to go to the next tap
+
+### Spatial Vulnerability Questions
+This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed. For the demonstration leave the check boxes as they are and then click "Next". 
+
+### Results
+
+The final page gives the resulting index value and tables and graphs that explain how the index value was determined. These are explained in the app. Once you are finished with reviewing the results you can save the data as a csv file.
+
+
+
+
