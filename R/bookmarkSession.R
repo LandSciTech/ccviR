@@ -15,7 +15,7 @@ ui <- function(request) {
   )
 }
 
-server <-  function(input, output, session) {
+save_bookmark <- function(input, output, session){
   latestBookmarkURL <- reactiveVal()
 
   onBookmarked(
@@ -93,7 +93,12 @@ server <-  function(input, output, session) {
     runjs(sprintf("window.location = '%s';", restoreURL))
 
   })
+}
 
+
+server <-  function(input, output, session) {
+
+save_bookmark(input, output, session)
 }
 
 shinyApp(ui, server, enableBookmarking = "server")
