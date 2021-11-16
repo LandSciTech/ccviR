@@ -1,21 +1,40 @@
-library(shiny)
-library(shinyjs)
-library(utils)
-library(tools)
-library(stringi)
+#' Save a local bookmark of the session
+#'
+#' Modified from this stackoverflow answer: https://stackoverflow.com/a/68253464/3277050
+#'
+#' @param input
+#' @param output
+#' @param session
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+#' library(shiny)
+#'
+#' ui <- function(request) {
+#'   fluidPage(
+#'     shinyjs::useShinyjs(),
+#'     textInput("control_label", "This controls some of the labels:", "LABEL TEXT"),
+#'     numericInput("inNumber", "Number input:", min = 1, max = 20, value = 5, step = 0.5 ),
+#'     radioButtons("inRadio", "Radio buttons:", c("label 1" = "option1", "label 2" = "option2", "label 3" = "option3")),
+#'     fileInput("restore_bookmark", "Restore Session", multiple = FALSE, accept = ".rds"),
+#'     actionButton("save_inputs", 'Save Session', icon = icon("download"))
+#'   )
+#' }
+#'
+#'
+#' server <-  function(input, output, session) {
+#'
+#' save_bookmark(input, output, session)
+#' load_bookmark(input, output, session, "restore_bookmark")
+#' }
+#'
+#' shinyApp(ui, server, enableBookmarking = "server")
 
-ui <- function(request) {
-  fluidPage(
-    useShinyjs(),
-    textInput("control_label", "This controls some of the labels:", "LABEL TEXT"),
-    numericInput("inNumber", "Number input:", min = 1, max = 20, value = 5, step = 0.5 ),
-    radioButtons("inRadio", "Radio buttons:", c("label 1" = "option1", "label 2" = "option2", "label 3" = "option3")),
-    fileInput("restore_bookmark", "Restore Session", multiple = FALSE, accept = ".rds"),
-    actionButton("save_inputs", 'Save Session', icon = icon("download"))
-  )
-}
 
-save_bookmark <- function(input, output, session){
+save_bookmark <- function(input, output, session, save_id){
   latestBookmarkURL <- reactiveVal()
 
   onBookmarked(
@@ -28,7 +47,7 @@ save_bookmark <- function(input, output, session){
     showNotification(paste("Restored session:", basename(state$dir)), duration = 10, type = "message")
   })
 
-  observeEvent(input$save_inputs, {
+  observeEvent(input[[save_id]], {
     showModal(modalDialog(
       title = "Session Name",
       textInput("session_name", "Please enter a session name (optional):"),
@@ -49,7 +68,7 @@ save_bookmark <- function(input, output, session){
         tmp_session_name <- sub("\\.rds$", "", input$session_name)
 
         # "Error: Invalid state id" when using special characters - removing them:
-        tmp_session_name <- stri_replace_all(tmp_session_name, "", regex = "[^[:alnum:]]")
+        tmp_session_name <- stringr::str_replace_all(tmp_session_name, "[^[:alnum:]]", "")
         # TODO: check if a valid filename is provided (e.g. via library(shinyvalidate)) for better user feedback
 
         tmp_session_name <- paste0(tmp_session_name, ".rds")
@@ -69,11 +88,13 @@ save_bookmark <- function(input, output, session){
       to = file)
     }
   )
+}
 
+load_bookmark <- function(input, output, session, restore_id){
   # LOAD SESSION
-  observeEvent(input$restore_bookmark, {
+  observeEvent(input[[restore_id]], {
 
-    sessionName <- file_path_sans_ext(input$restore_bookmark$name)
+    sessionName <- fs::path_ext_remove(input[[restore_id]]$name)
     targetPath <- file.path(".", "shiny_bookmarks", sessionName, "input.rds")
 
     if (!dir.exists(dirname(targetPath))) {
@@ -82,7 +103,7 @@ save_bookmark <- function(input, output, session){
 
     # copy the bookmark to where shiny expects it to be
     file.copy(
-      from = input$restore_bookmark$datapath,
+      from = input[[restore_id]]$datapath,
       to = targetPath,
       overwrite = TRUE
     )
@@ -90,15 +111,7 @@ save_bookmark <- function(input, output, session){
     restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, "/?_state_id_=", sessionName)
 
     # redirect user to restoreURL
-    runjs(sprintf("window.location = '%s';", restoreURL))
+    shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
 
   })
 }
-
-
-server <-  function(input, output, session) {
-
-save_bookmark(input, output, session)
-}
-
-shinyApp(ui, server, enableBookmarking = "server")
