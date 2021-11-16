@@ -144,7 +144,8 @@ CMD_2050 <- CMD_rast
 
 MAP <- MAP_rast
 
-CCEI <- MAP_rast
+CCEI <- CCEI_rast
+CCEI[] <- values(MAP_rast)/100
 
 MWMT <- MAT_rast
 
