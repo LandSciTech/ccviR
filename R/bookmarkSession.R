@@ -108,10 +108,21 @@ load_bookmark <- function(input, output, session, restore_id){
       overwrite = TRUE
     )
 
-    restoreURL <- paste0(session$clientData$url_protocol, "//", session$clientData$url_hostname, ":", session$clientData$url_port, "/?_state_id_=", sessionName)
+    restoreURL <- paste0(session$clientData$url_protocol, "//",
+                         session$clientData$url_hostname, ":",
+                         session$clientData$url_port, "/?_state_id_=",
+                         sessionName)
 
     # redirect user to restoreURL
     shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
+
+    # showModal instead of redirecting the user
+    # showModal(modalDialog(
+    #     title = "Restore Session",
+    #     "The session data was uploaded to the server. Please visit:",
+    #     tags$a(restoreURL, href = restoreURL),
+    #     "to restore the session"
+    # ))
 
   })
 }
