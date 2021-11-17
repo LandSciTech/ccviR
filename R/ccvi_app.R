@@ -27,6 +27,7 @@ ccvi_app <- function(...){
   # File path ids to use with file choose
   filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
                    "hs_rast_pth", "ptn_poly_pth")
+  names(filePathIds) <- filePathIds
 
   # Input options
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
@@ -638,35 +639,36 @@ ccvi_app <- function(...){
 
     # Find file paths
     shinyDirChoose(input, "clim_var_dir", root = volumes)
-    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input, filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
+    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input,
+               filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
+
+    # parse file paths
+    clim_dir_pth <- reactive({parseDirPath(volumes, input$clim_var_dir)})
+
+    file_pths <- reactive({
+      purrr::map(filePathIds, ~{
+          parseFilePaths(volumes, input[[.x]])$datapath
+      })
+    })
 
     # output file paths
     output$clim_var_dir_out <- renderText({
-      parseDirPath(volumes, input$clim_var_dir)
-    })
-    output$range_poly_pth_out <- renderText({
-      parseFilePaths(volumes, input$range_poly_pth)$datapath
-    })
-    output$nonbreed_poly_pth_out <- renderText({
-      parseFilePaths(volumes, input$nonbreed_poly_pth)$datapath
-    })
-    output$assess_poly_pth_out <- renderText({
-      parseFilePaths(volumes, input$assess_poly_pth)$datapath
-    })
-    output$hs_rast_pth_out <- renderText({
-      parseFilePaths(volumes, input$hs_rast_pth)$datapath
-    })
-    output$ptn_poly_pth_out <- renderText({
-      parseFilePaths(volumes, input$ptn_poly_pth)$datapath
+      clim_dir_pth()
     })
 
+    observe({
+      purrr::walk2(file_pths(), filePathIds, ~{
+        out_name <- paste0(.y, "_out")
+        output[[out_name]] <- renderText({.x})
+      })
+    })
 
     # load spatial data
     clim_vars <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         root_pth <- system.file("extdata/clim_files", package = "ccviR")
       } else {
-        root_pth <- parseDirPath(volumes, input$clim_var_dir)
+        root_pth <- clim_dir_pth()
       }
 
       req(root_pth)
@@ -675,15 +677,13 @@ ccvi_app <- function(...){
 
     })
 
-
     range_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/rng_poly_high.shp",
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
-        sf::st_read(parseFilePaths(volumes,
-                                   input$range_poly_pth)$datapath,
+        sf::st_read(file_pths()$range_poly_pth,
                     agr = "constant", quiet = TRUE)
       }
 
@@ -694,8 +694,7 @@ ccvi_app <- function(...){
         pth <- system.file("extdata/nonbreed_poly.shp",
                            package = "ccviR")
       } else {
-        pth <- parseFilePaths(volumes,
-                              input$nonbreed_poly_pth)$datapath
+        pth <- file_pths()$nonbreed_poly_pth
       }
 
       if(!isTruthy(pth)){
@@ -710,8 +709,7 @@ ccvi_app <- function(...){
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
-        sf::st_read(parseFilePaths(volumes,
-                                   input$assess_poly_pth)$datapath,
+        sf::st_read(file_pths()$assess_poly_pth,
                     agr = "constant", quiet = TRUE)
       }
     })
@@ -721,8 +719,7 @@ ccvi_app <- function(...){
         pth <- system.file("extdata/HS_rast.tif",
                            package = "ccviR")
       } else {
-        pth <- parseFilePaths(volumes,
-                              input$hs_rast_pth)$datapath
+        pth <- file_pths()$hs_rast_pth
       }
 
       if(!isTruthy(pth)){
@@ -736,7 +733,7 @@ ccvi_app <- function(...){
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/ptn_poly.shp", package = "ccviR")
       } else {
-        pth <- parseFilePaths(volumes, input$ptn_poly_pth)$datapath
+        pth <- file_pths()$ptn_poly_pth
       }
       if(!isTruthy(pth)){
         return(NULL)
@@ -1322,30 +1319,41 @@ ccvi_app <- function(...){
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
 
+    # Bookmarking #=============================================================
+
     save_bookmark(input, output, session, "save_inputs")
 
-    # exclude map and plotly input vals that might be causing trouble
-    ExcludedIDs <- reactiveVal(value = NULL)
-    IncludedIDs <- reactiveVal(value = NULL)
+    # Need to explicitly save and restore reactive values.
+    onBookmark(fun = function(state){
+      state$values$file_pths <- file_pths()
+    })
+
+    onRestore(fun = function(state){
+      file_pths <- reactive({state$values$file_pths})
+    })
+
+    # exclude shiny file choose and map and plotly input vals that might be
+    # causing trouble
+    # ExcludedIDs <- reactiveVal(value = NULL)
+    # IncludedIDs <- reactiveVal(value = NULL)
 
     observe({
-
       patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir"),
                               collapse = "|")
 
       toExclude <- grep(patsToExclude, names(input), value = TRUE)
 
       setBookmarkExclude(toExclude)
-      ExcludedIDs(toExclude)
-      IncludedIDs(setdiff(names(input), toExclude))
+      # ExcludedIDs(toExclude)
+      # IncludedIDs(setdiff(names(input), toExclude))
     })
-
-    output$ExcludedIDsOut <- renderText({
-      paste("ExcludedIDs:", paste(ExcludedIDs(), collapse = ", "))
-    })
-    output$IncludedIDsOut <- renderText({
-      paste("IncludedIDs:", paste(IncludedIDs(), collapse = ", "))
-    })
+#
+#     output$ExcludedIDsOut <- renderText({
+#       paste("ExcludedIDs:", paste(ExcludedIDs(), collapse = ", "))
+#     })
+#     output$IncludedIDsOut <- renderText({
+#       paste("IncludedIDs:", paste(IncludedIDs(), collapse = ", "))
+#     })
 
   }
 
