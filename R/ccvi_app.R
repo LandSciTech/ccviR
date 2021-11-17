@@ -1329,22 +1329,11 @@ ccvi_app <- function(...){
     IncludedIDs <- reactiveVal(value = NULL)
 
     observe({
-      toExclude <- "bookmarkBtn"
 
-      plotlyExclude <- names(input)[purrr::map_lgl(input, is, "shinyActionButtonValue") %>% which()]
-      if(length(plotlyExclude) > 0){
-        toExclude <- c(toExclude, plotlyExclude)
-      }
+      patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir"),
+                              collapse = "|")
 
-      mapExclude <- grep("map", names(input), value = TRUE)
-      if(length(mapExclude) > 0){
-        toExclude <- c(toExclude, mapExclude)
-      }
-
-      btnExclude <- grep("map", names(input), value = TRUE)
-      if(length(mapExclude) > 0){
-        toExclude <- c(toExclude, btnExclude)
-      }
+      toExclude <- grep(patsToExclude, names(input), value = TRUE)
 
       setBookmarkExclude(toExclude)
       ExcludedIDs(toExclude)
