@@ -112,10 +112,7 @@ ccvi_app <- function(...){
                            h3("Start assessment"),
                            br(),
                            strong("Optional: Load data from a previous assessment"),
-                           p("Select the file where the previous assessment was saved"),
-                           fileInput("restore_bookmark", "Restore Session", multiple = FALSE, accept = ".rds"),
-                           br(),
-                           actionButton("start", "Start", class = "btn-primary"),
+                           load_bookmark_ui("load"),
                            h3("References"),
                            p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
                              " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
@@ -530,9 +527,7 @@ ccvi_app <- function(...){
                            class = "btn-primary"),
               br(),
               br(),
-              actionButton("save_inputs", 'Save Session', icon = icon("download")),
-              textOutput("ExcludedIDsOut"),
-              textOutput("IncludedIDsOut")
+              save_bookmark_ui("save")
             )
           )
         )
@@ -572,7 +567,7 @@ ccvi_app <- function(...){
     })
 
     # restore a previous session
-    load_bookmark(input, output, session, "restore_bookmark")
+    load_bookmark_server("load", volumes)
 
     # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
@@ -1321,7 +1316,16 @@ ccvi_app <- function(...){
 
     # Bookmarking #=============================================================
 
-    save_bookmark(input, output, session, "save_inputs")
+    # this part is not allowed to be inside the module
+    latestBookmarkURL <- reactiveVal()
+
+    onBookmarked(
+      fun = function(url) {
+        latestBookmarkURL(parseQueryString(url))
+      }
+    )
+
+    save_bookmark_server("save", latestBookmarkURL(), volumes)
 
     # Need to explicitly save and restore reactive values.
     onBookmark(fun = function(state){
