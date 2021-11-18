@@ -22,7 +22,7 @@ ccvi_app <- function(...){
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
 
-  fieldsMandatory2 <- c("clim_var_dir", "range_poly_pth", "assess_poly_pth")
+  fieldsMandatory2 <- c("range_poly_pth", "assess_poly_pth")
 
   # File path ids to use with file choose
   filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
@@ -112,7 +112,11 @@ ccvi_app <- function(...){
                            h3("Start assessment"),
                            br(),
                            strong("Optional: Load data from a previous assessment"),
+                           br(),
                            load_bookmark_ui("load"),
+                           br(),
+                           br(),
+                           actionButton("start", "Start", class = "btn-primary"),
                            h3("References"),
                            p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
                              " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
@@ -204,9 +208,10 @@ ccvi_app <- function(...){
                                  "Physiological thermal niche file", multiple = FALSE),
                 verbatimTextOutput("ptn_poly_pth_out", placeholder = TRUE),
                 br(),
-                strong("Click Load to begin spatial analysis"),
+                strong("Click Run to begin the spatial analysis or to re-run it",
+                       " after changing inputs"),
                 br(),
-                actionButton("loadSpatial", "Load", class = "btn-primary"),
+                actionButton("loadSpatial", "Run", class = "btn-primary"),
                 verbatimTextOutput("spat_error")
               )
             )
@@ -385,7 +390,7 @@ ccvi_app <- function(...){
                 check_comment_ui("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                actionButton("nextVuln", "Next", class = "btn-primary"),
+                actionButton("next3", "Next", class = "btn-primary"),
                 br(), br()
               )
             )
@@ -456,7 +461,7 @@ ccvi_app <- function(...){
                 strong("3) Overlap of modeled future (2050) range with current range"),
                 uiOutput("box_D3")
               ),
-              actionButton("submitSpatVuln", "Submit", class = "btn-primary")
+              actionButton("next4", "Next", class = "btn-primary")
             )
           )
         ),
@@ -467,8 +472,9 @@ ccvi_app <- function(...){
             div(
               id = "formData",
               #style = 'width:800px;',
+              h4("Calculate or re-calculate the index"),
+              actionButton("calcIndex", "Calculate", class = "btn-primary"),
               h3("Results"),
-
               p("The Climate Change Vulnerability Index for",
                 strong(textOutput("species_name", inline = TRUE)), "is:"),
               shinycssloaders::withSpinner(htmlOutput("index")),
@@ -623,7 +629,7 @@ ccvi_app <- function(...){
       mandatoryFilled2 <-
         vapply(fieldsMandatory2,
                function(x) {
-                 isTruthy(input[[x]])
+                 isTruthy(file_pths()[[x]]) & isTruthy(clim_dir_pth())
                },
                logical(1))
       mandatoryFilled2 <- all(mandatoryFilled2)
@@ -657,23 +663,12 @@ ccvi_app <- function(...){
           if(!is.null(restored$yes)){
             return(file_pths_restore()[[.x]])
           }
-            message("returning NULL")
             return(NULL)
           } else {
-          message("returning from input")
           return(parseFilePaths(volumes, input[[.x]])$datapath)
         }
 
       })
-    })
-
-    observe({
-      cat("file_pths")
-      print(file_pths())
-      cat("file_pths_restore")
-      print(file_pths_restore())
-      cat("clim_dir_pth\n")
-      print(clim_dir_pth())
     })
 
     # output file paths
@@ -919,7 +914,7 @@ ccvi_app <- function(...){
     })
 
     # When next button is clicked move to next panel
-    observeEvent(input$nextVuln, {
+    observeEvent(input$next3, {
       updateTabsetPanel(session, "tabset",
                         selected = "Spatial Vulnerability Questions")
       shinyjs::runjs("window.scrollTo(0, 0)")
@@ -928,7 +923,7 @@ ccvi_app <- function(...){
     # Spatial Vulnerability Questions #========================
     # C2ai
     observe({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       if(isTruthy(clim_vars()$htn)){
         shinyjs::hide("missing_htn")
         shinyjs::show("map_C2ai")
@@ -947,7 +942,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2ai <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       req(clim_vars()$htn)
 
       make_map(isolate(range_poly()), rast = clim_vars()$htn, rast_nm = "htn")
@@ -982,7 +977,7 @@ ccvi_app <- function(...){
 
     # C2aii
     observe({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       if(isTruthy(ptn_poly())){
         shinyjs::hide("missing_ptn")
         shinyjs::show("map_C2aii")
@@ -993,7 +988,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2aii <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       req(ptn_poly())
 
       make_map(poly1 = isolate(range_poly()), poly2 = ptn_poly(), poly2_nm = "ptn")
@@ -1023,7 +1018,7 @@ ccvi_app <- function(...){
 
     # C2bi
     observe({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       if(isTruthy(clim_vars()$map)){
         shinyjs::hide("missing_map")
         shinyjs::show("map_C2bi")
@@ -1034,7 +1029,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2bi <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       req(clim_vars()$map)
 
       make_map(poly1 = isolate(range_poly()), rast = clim_vars()$map, rast_nm = "map",
@@ -1065,7 +1060,7 @@ ccvi_app <- function(...){
 
     # D2 and D3
     observe({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       if(isTruthy(hs_rast())){
         shinyjs::hide("missing_hs")
         shinyjs::show("map_D2_3")
@@ -1075,6 +1070,7 @@ ccvi_app <- function(...){
       }
     })
 
+    #reclassify raster with 0:7 where 1 is loss, and 7 is gain to 0:3
     hs_rast2 <- reactive({
       rast <- raster::reclassify(hs_rast(),
                                  rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3),
@@ -1082,7 +1078,7 @@ ccvi_app <- function(...){
     })
 
     output$map_D2_3 <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(input$loadSpatial)
       req(hs_rast2())
 
       make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
@@ -1133,7 +1129,7 @@ ccvi_app <- function(...){
     })
 
     # When submit button is clicked move to next panel
-    observeEvent(input$submitSpatVuln, {
+    observeEvent(input$next4, {
       updateTabsetPanel(session, "tabset",
                         selected = "Results"
       )
@@ -1143,7 +1139,7 @@ ccvi_app <- function(...){
     # Calculate Index value #================================
 
     # Gather all the form inputs
-    vuln_df <- eventReactive(input$submitSpatVuln, {
+    vuln_df <- eventReactive(input$calcIndex, {
       isolate({
         vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
         data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
@@ -1153,7 +1149,7 @@ ccvi_app <- function(...){
 
     # gather comments
     coms_df <- reactive({
-      req(input$submitSpatVuln)
+      req(input$calcIndex)
       com_ins <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*")
 
       data <- purrr::map_df(com_ins,
@@ -1368,12 +1364,10 @@ ccvi_app <- function(...){
     clim_dir_pth_restore <- reactiveVal()
 
     onRestore(fun = function(state){
-      message("OnRestore happens")
+      message("Restoring session")
       file_pths_restore(state$values$file_pths)
       clim_dir_pth_restore (state$values$clim_dir)
       restored$yes <- TRUE
-
-      print(file_pths_restore())
     })
 
     # exclude shiny file choose and map and plotly input vals that might be
