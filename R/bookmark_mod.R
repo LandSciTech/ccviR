@@ -2,17 +2,7 @@
 
 #Saving #=======================================================================
 save_bookmark_ui <- function(id){
-  fluidPage(
-    strong("Choose location to save progess"),
-    br(),
-    shinyDirButton(NS(id, "save_dir"), "Location to create folder",
-                   "Location to create folder"),
-    br(),
-    textInput(NS(id, "new_dir_name"),
-              "Choose a name for the new folder that will be created"),
-    br(),
-    actionButton(NS(id, "save_action"), "Save")
-  )
+  actionButton(NS(id, "start_save"), "Save")
 }
 
 save_bookmark_server <- function(id, latestBookmarkURL, volumes){
@@ -27,9 +17,30 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
                        duration = 10, type = "message")
     })
 
-    setBookmarkExclude(c("save_dir"))
+    setBookmarkExclude(c("save_dir", "start_save", "save_action", "new_dir_name"))
+
+    observeEvent(input$start_save, {
+      showModal(
+        modalDialog(
+          strong("Choose location to save progess"),
+          br(),
+          shinyDirButton(NS(id, "save_dir"), "Location to create folder",
+                         "Location to create folder"),
+          br(),
+          textInput(NS(id, "new_dir_name"),
+                    "Choose a name for the new folder that will be created"),
+          br(),
+          footer = tagList(
+            actionButton(NS(id, "save_action"), "Save"),
+            modalButton("Cancel")
+          ),
+          title = "Save assessment progress"
+        )
+      )
+    })
 
     observeEvent(input$save_action, {
+      removeModal()
       session$doBookmark()
       if (input$new_dir_name != "") {
 
@@ -45,6 +56,8 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
       # create the new directory in the chosen location
       new_dir <- fs::dir_create(fs::path(save_dir_pth(), tmp_session_name))
 
+      message("Saving session")
+
       # move the files from where shiny saves them to where the user can find them
       fs::dir_copy(path = fs::path(".", "shiny_bookmarks", req(latestBookmarkURL)),
                new_path = new_dir,
@@ -56,13 +69,7 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
 
 # Load #=======================================================================
 load_bookmark_ui <- function(id){
-  fluidPage(
-    strong("Select the folder where the app was saved"),
-    br(),
-    shinyDirButton(NS(id, "load_dir"), "Select Folder",
-                   "Location of folder with previous state"),
-    actionButton(NS(id, "load_action"), "Load")
-  )
+  actionButton(NS(id, "start_load"), "Load")
 }
 
 load_bookmark_server <- function(id, volumes){
@@ -70,7 +77,23 @@ load_bookmark_server <- function(id, volumes){
     shinyDirChoose(input, "load_dir", root = volumes)
     load_dir_pth <- reactive(parseDirPath(volumes, input$load_dir))
 
-    setBookmarkExclude(c("load_dir"))
+    setBookmarkExclude(c("load_dir", "load_action", "start_load"))
+
+    observeEvent(input$start_load, {
+      showModal(
+        modalDialog(
+          strong("Select the folder where the app was saved"),
+          br(),
+          shinyDirButton(NS(id, "load_dir"), "Select Folder",
+                         "Location of folder with previous state"),
+          footer = tagList(
+            actionButton(NS(id, "load_action"), "Load"),
+            modalButton("Cancel")
+          ),
+          title = "Load existing assessment"
+        )
+      )
+    })
 
     # LOAD SESSION
     observeEvent(input$load_action, {
@@ -91,6 +114,8 @@ load_bookmark_server <- function(id, volumes){
                            session$clientData$url_hostname, ":",
                            session$clientData$url_port, "/?_state_id_=",
                            sessionName)
+
+      removeModal()
 
       # redirect user to restoreURL
       shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
