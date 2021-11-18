@@ -1348,6 +1348,8 @@ ccvi_app <- function(...){
     onBookmarked(
       fun = function(url) {
         latestBookmarkURL(parseQueryString(url))
+        showNotification("Session saved",
+                         duration = 10, type = "message")
       }
     )
 

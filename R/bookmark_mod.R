@@ -22,6 +22,11 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
     observeEvent(input$start_save, {
       showModal(
         modalDialog(
+          p("The app session is saved using two files, input.rds and values.rds",
+            "You will provide a location and name for a new folder that will",
+            " be created to store these files. Make sure you choose a name",
+            "and location that will be easy to find when you want to load the ",
+            "saved inputs."),
           strong("Choose location to save progess"),
           br(),
           shinyDirButton(NS(id, "save_dir"), "Location to create folder",
@@ -39,30 +44,39 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
       )
     })
 
+    iv <- shinyvalidate::InputValidator$new()
+    iv$add_rule("new_dir_name", shinyvalidate::sv_optional())
+    iv$add_rule("new_dir_name",
+               shinyvalidate::sv_regex("[^[:alnum:]]",
+                                       paste0("Please choose a name with only",
+                                              " letters or numbers and no spaces"),
+                                       invert = TRUE))
+
     observeEvent(input$save_action, {
-      removeModal()
-      session$doBookmark()
-      if (input$new_dir_name != "") {
-
-        # "Error: Invalid state id" when using special characters - removing them:
-        tmp_session_name <- stringr::str_replace_all(input$new_dir_name,
-                                                     "[^[:alnum:]]", "")
-        # TODO: check if a valid filename is provided (e.g. via
-        # library(shinyvalidate)) for better user feedback
-
+      if (!iv$is_valid()) {
+        iv$enable()
       } else {
-        tmp_session_name <- paste(req(latestBookmarkURL))
+        removeModal()
+        session$doBookmark()
+        if (input$new_dir_name != "") {
+
+          # "Error: Invalid state id" when using special characters - removing them:
+          tmp_session_name <- stringr::str_replace_all(input$new_dir_name,
+                                                       "[^[:alnum:]]", "")
+
+        } else {
+          tmp_session_name <- paste(req(latestBookmarkURL))
+        }
+        # create the new directory in the chosen location
+        new_dir <- fs::dir_create(fs::path(save_dir_pth(), tmp_session_name))
+
+        message("Saving session")
+
+        # move the files from where shiny saves them to where the user can find them
+        fs::dir_copy(path = fs::path(".", "shiny_bookmarks", req(latestBookmarkURL)),
+                     new_path = new_dir,
+                     overwrite = TRUE)
       }
-      # create the new directory in the chosen location
-      new_dir <- fs::dir_create(fs::path(save_dir_pth(), tmp_session_name))
-
-      message("Saving session")
-
-      # move the files from where shiny saves them to where the user can find them
-      fs::dir_copy(path = fs::path(".", "shiny_bookmarks", req(latestBookmarkURL)),
-               new_path = new_dir,
-               overwrite = TRUE)
-
     }, ignoreInit = TRUE)
   })
 }
