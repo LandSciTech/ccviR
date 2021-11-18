@@ -637,13 +637,43 @@ ccvi_app <- function(...){
     purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input,
                filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
 
+
     # parse file paths
-    clim_dir_pth <- reactive({parseDirPath(volumes, input$clim_var_dir)})
+    clim_dir_pth <- reactive({
+      if(is.integer(input$clim_var_dir)){
+        if(!is.null(restored$yes)){
+          return(clim_dir_pth_restore())
+        }
+          return(NULL)
+      } else {
+        return(parseDirPath(volumes, input$clim_var_dir))
+      }
+      })
+
 
     file_pths <- reactive({
       purrr::map(filePathIds, ~{
-          parseFilePaths(volumes, input[[.x]])$datapath
+        if(is.integer(input[[.x]])){
+          if(!is.null(restored$yes)){
+            return(file_pths_restore()[[.x]])
+          }
+            message("returning NULL")
+            return(NULL)
+          } else {
+          message("returning from input")
+          return(parseFilePaths(volumes, input[[.x]])$datapath)
+        }
+
       })
+    })
+
+    observe({
+      cat("file_pths")
+      print(file_pths())
+      cat("file_pths_restore")
+      print(file_pths_restore())
+      cat("clim_dir_pth\n")
+      print(clim_dir_pth())
     })
 
     # output file paths
@@ -1330,10 +1360,20 @@ ccvi_app <- function(...){
     # Need to explicitly save and restore reactive values.
     onBookmark(fun = function(state){
       state$values$file_pths <- file_pths()
+      state$values$clim_dir <- clim_dir_pth()
     })
 
+    restored <- reactiveValues()
+    file_pths_restore <- reactiveVal()
+    clim_dir_pth_restore <- reactiveVal()
+
     onRestore(fun = function(state){
-      file_pths <- reactive({state$values$file_pths})
+      message("OnRestore happens")
+      file_pths_restore(state$values$file_pths)
+      clim_dir_pth_restore (state$values$clim_dir)
+      restored$yes <- TRUE
+
+      print(file_pths_restore())
     })
 
     # exclude shiny file choose and map and plotly input vals that might be

@@ -46,7 +46,7 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
       new_dir <- fs::dir_create(fs::path(save_dir_pth(), tmp_session_name))
 
       # move the files from where shiny saves them to where the user can find them
-      dir_copy(path = fs::path(".", "shiny_bookmarks", req(latestBookmarkURL)),
+      fs::dir_copy(path = fs::path(".", "shiny_bookmarks", req(latestBookmarkURL)),
                new_path = new_dir,
                overwrite = TRUE)
 
@@ -83,7 +83,7 @@ load_bookmark_server <- function(id, volumes){
       }
 
       # copy the bookmark to where shiny expects it to be
-      dir_copy(path = load_dir_pth(),
+      fs::dir_copy(path = load_dir_pth(),
                new_path = targetPath,
                overwrite = TRUE)
 
