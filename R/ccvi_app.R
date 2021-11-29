@@ -478,7 +478,7 @@ ccvi_app <- function(...){
               p("The Climate Change Vulnerability Index for",
                 strong(textOutput("species_name", inline = TRUE)), "is:"),
               shinycssloaders::withSpinner(htmlOutput("index")),
-              plotly::plotlyOutput("ind_gauge", inline = TRUE, height = "100px"),
+              plotly::plotlyOutput("ind_gauge", inline = FALSE, height = "100px"),
               br(),
               br(),
               p("The climate exposure in the migratory range is:"),
@@ -510,16 +510,18 @@ ccvi_app <- function(...){
                 "exposure, sensitivity and adabptive capacity with the index ",
                 "calculated based on documented or modelled responses to climate change. ",
                 "The plot below demonstrates which of these had the strongest",
-                "influence on the overall calculated index"),
+                "influence on the overall calculated index. A score of negative ",
+                "one indicates none of the factors in the modelled response to",
+                " climate change section were completed"),
               plotOutput("ind_score_plt", width = 600, height = 300),
               textOutput("slr"),
               br(), br(),
               p("The score for each vulnerability factor is determined by the ",
                 "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
-                "multiplied by the exposure multiplier for temperature or moisture,
-              whichever is most relevant to that factor. These scores are summed ",
-              "to determine the index. The plot below demonstrates which factors ",
-              "had the highest scores and how exposure impacted the score."),
+                "multiplied by the exposure multiplier for temperature or moisture,",
+                "whichever is most relevant to that factor. These scores are summed ",
+                "to determine the index. The plot below demonstrates which factors ",
+                "had the highest scores and how exposure impacted the score."),
               plotly::plotlyOutput("q_score_plt", width = 700),
 
               # helpful for testing
@@ -1140,11 +1142,9 @@ ccvi_app <- function(...){
 
     # Gather all the form inputs
     vuln_df <- eventReactive(input$calcIndex, {
-      isolate({
         vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
         data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
         as_tibble(data)
-      })
     })
 
     # gather comments
@@ -1252,14 +1252,11 @@ ccvi_app <- function(...){
                              index_res()$n_c_factors < 10 ~ NA_real_,
                              TRUE ~ index_res()$b_c_score)
 
-      d_score <- case_when(index_res()$n_d_factors < 1 ~ 0,
-                           TRUE ~ index_res()$d_score)
-
       # if b_c is IE no plot if d is IE set to 0 but still plot
       if(is.na(b_c_score)){
         return(NULL)
       } else {
-        plot_score_index(b_c_score, index_res()$d_score)
+        plot_score_index(b_c_score, index_res()$d_score, index_res()$n_d_factors)
       }
     })
 
