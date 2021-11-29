@@ -548,11 +548,19 @@ ccvi_app <- function(...){
     # start up Note this time out is because when I disconnected from VPN it
     # made the getVolumes function hang forever because it was looking for
     # drives that were no longer connected. Now it will give an error
-    R.utils::withTimeout({
+    timeout <- R.utils::withTimeout({
       volumes <- c(wd = getShinyOption("file_dir"),
                    Home = fs::path_home(),
                    getVolumes()())
-    }, timeout = 10, onTimeout = "error")
+    }, timeout = 20, onTimeout = "silent")
+
+    if(is.null(timeout)){
+      stop("The app is unable to access your files because you were connected",
+           " to the VPN and then disconnected. To fix this either reconnect to",
+           " the VPN or restart your computer and use the app with out connecting",
+           " to VPN. See issue https://github.com/see24/ccviR/issues/36 for more ",
+           "information", call. = FALSE)
+    }
 
     # Data Preparation #============================
     prepped_data <- data_prep_server("data_prep_mod")
