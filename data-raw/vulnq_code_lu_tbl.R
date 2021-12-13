@@ -9,4 +9,4 @@ vulnq_code_lu_tbl <- mutate_all(lu_tbl, stringr::str_trim) %>%
            stringr::str_to_sentence())
 
 
-usethis::use_data(vulnq_code_lu_tbl)
+usethis::use_data(vulnq_code_lu_tbl, overwrite = TRUE)
