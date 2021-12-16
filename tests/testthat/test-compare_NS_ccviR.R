@@ -24,6 +24,9 @@ library(stringr)
 library(purrr)
 library(readxl)
 
+# Number of examples to test
+N <- 200
+
 # 1 Create Table #================================
 # possible values of sensitivity factors
 valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral", "Unknown")
@@ -74,26 +77,26 @@ ccei_value_table <- expand.grid(Class_1 = 1:10*10, Class_2 = 1:10*10, Class_3 = 
   select(-total)
 
 # get random sample from tables
-N <- 2
-mat <- slice_sample(exp_value_table, n = N) %>%
+
+mat <- slice_sample(exp_value_table, n = N, replace = TRUE) %>%
   rename_with(~str_replace(.x, "Class", "MAT"))
-cmd <- slice_sample(exp_value_table, n = N) %>%
+cmd <- slice_sample(exp_value_table, n = N, replace = TRUE) %>%
   rename_with(~str_replace(.x, "Class", "CMD"))
-ccei <- slice_sample(ccei_value_table, n = N) %>%
+ccei <- slice_sample(ccei_value_table, n = N, replace = TRUE) %>%
   rename_with(~str_replace(.x, "Class", "CCEI"))
 
 exp_facts <- bind_cols(mat, cmd, ccei)
 
-vuln_facts <- map_dfc(vuln_value_table, ~sample(na.omit(.x), N))
+vuln_facts <- map_dfc(vuln_value_table, ~sample(na.omit(.x), N, replace = TRUE))
 
 # other factors
-cave <- sample(c(0,0,0,0,1), N)
-mig <- sample(c(0,0,0,0,1), N)
+cave <- sample(c(0,0,0,0,1), N, replace = TRUE)
+mig <- sample(c(0,0,0,0,1), N, replace = TRUE)
 
 taxa <- c("Vascular Plant", "Nonvascular Plant", "Lichen", "Invert-Insect",
           "Invert-Mollusk", "Invert-Other", "Fish", "Amphibian", "Reptile",
           "Mammal", "Bird") %>%
-  sample(N)
+  sample(N, replace = TRUE)
 
 sp_nm <- paste0("Species_", 1:N)
 
@@ -120,10 +123,10 @@ NS_table <- tibble(`Taxonomic Group` = taxa,
                        `-0.073` = pull(exp_facts, CMD_4),
                        `-0.05` = pull(exp_facts, CMD_5),
                        `>-0.028` = pull(exp_facts, CMD_6),
-                       `>7` = pull(exp_facts, CCEI_1),
-                       `6-7` = pull(exp_facts, CCEI_2),
-                       `4-5` = pull(exp_facts, CCEI_3),
-                       `2-3` = pull(exp_facts, CCEI_4))
+                       `>7` = pull(exp_facts, CCEI_4),
+                       `6-7` = pull(exp_facts, CCEI_3),
+                       `4-5` = pull(exp_facts, CCEI_2),
+                       `2-3` = pull(exp_facts, CCEI_1))
 
 # Need to convert vuln_facts to text abbreviations and add comment columns then
 # cbind on to above
@@ -160,8 +163,11 @@ exp_ccviR <- split(exp_ccviR, exp_ccviR$species)
 
 # 3) calculate the index #======================================================
 ## For NS
-# copy the table to clipboard
+# copy the table to clipboard *Only works for small number of rows
 write.table(NS_table, "clipboard", sep="\t", row.names=FALSE)
+
+#
+write.csv(NS_table, "tests/testthat/data/NS_table_in.csv")
 
 # open the excel file
 shell.exec(file.path(getwd(), "tests/testthat/data",
@@ -169,46 +175,54 @@ shell.exec(file.path(getwd(), "tests/testthat/data",
 
 # paste the table into the Results Table sheet, make sure the column names line
 # up and then remove the pasted ones. Select all the species names and click
-# Calculate Index from Table. Return to RStudio
+# Calculate Index from Table. When finished save the workbook and return to RStudio
 
 NS_results <- read_excel(file.path("tests/testthat/data",
                                    "For_Comparison_ccvi_release_3.02_1_jun_2016_0.xlsm"),
-                         sheet = "Results Table", range = "A5:CI200") %>%
+                         sheet = "Results Table", range = "A5:CI407") %>%
   filter(!is.na(Index)) %>%
   slice(-1) # remove first row which is a duplicate
 
 names(NS_results)[1:ncol(NS_table)] <- names(NS_table)
 
+NS_results <- select(NS_results, -contains("comment"))
+
 ## For ccviR
 ccviR_results <- map2(vuln_facts_ccviR, exp_ccviR,
                       ~calc_vulnerability(exp_df = .y, vuln_df = .x,
                                           tax_grp = .y$tax_grp))
-
+beepr::beep()
 # make into a table similar to NS_table
-ccviR_results_table <- tibble(Species = sp_nm,
+ccviR_results_table <- tibble(Species = names(ccviR_results),
                               Index = map_chr(ccviR_results, "index"),
                               `Migr Exp` = map_chr(ccviR_results, "mig_exp") %>%
                                 ifelse(. == "N/A", "--", .),
                               Confidence = map_chr(ccviR_results, "conf_index")%>%
                                 ifelse(. == "Very High", "VH", .) %>%
-                                ifelse(. == "Moderate", "Mod", .),
-                              B = map_chr(ccviR_results, "n_b_factors") %>%
-                                paste0("/4 factors"),
-                              C = map_chr(ccviR_results, "n_c_factors") %>%
-                                paste0("/16 factors"),
-                              D = map_chr(ccviR_results, "n_d_factors") %>%
-                                paste0("/4 factors"),
+                                ifelse(. == "Moderate", "Mod", .) %>%
+                                ifelse(. == "Insufficient Evidence", "—-", .),
+                              B = map_chr(ccviR_results, "n_b_factors"),
+                              C = map_chr(ccviR_results, "n_c_factors"),
+                              D = map_chr(ccviR_results, "n_d_factors"),
                               BC_Subscore = map_dbl(ccviR_results, "b_c_score"),
                               D_Subscore = map_dbl(ccviR_results, "d_score"))
 
 compare_table <- ccviR_results_table %>%
   mutate(method = "ccviR") %>%
-  bind_rows(mutate(NS_results, method = "NatureServe") %>%
+  bind_rows(mutate(NS_results, method = "NatureServe",
+                   B = str_remove(B, "/4 factors"),
+                   C = str_remove(C, "/.. factors"),
+                   D = str_remove(D, "/4 factors")) %>%
               select(names(ccviR_results_table), method)) %>%
-  mutate(across(where(is.numeric), as.character)) %>%
+  mutate(across(where(is.numeric), ~as.character(round(.x, 10)))) %>%
   pivot_longer(cols = -c(Species, method), names_to = "Variable", values_to = "Values") %>%
   pivot_wider(names_from = method, values_from = Values)
 
-mismatch <- filter(compare_table, ccviR != NatureServe)
+mismatch <- filter(compare_table, ccviR != NatureServe) %>%
+  separate(Species, c("Species", "ID")) %>%
+  mutate(ID = as.numeric(ID)) %>%
+  arrange(ID)
+
+mismatch %>% count(Variable)
 
 write.csv(mismatch, "tests/testthat/data/compare_result.csv")
