@@ -14,13 +14,6 @@ plot_score_index <- function(b_c_score, d_score, n_d_factors){
 
   b_c_score_lim <- ifelse(b_c_score > 20, b_c_score + 5, 20)
 
-  comb_index_tbl <- data.frame(Dindex = c("EV", "HV", "MV", "LV", "IE"),
-                               bc_ev = c("EV", "EV", "HV", "HV", "EV"),
-                               bc_hv = c("EV", "HV", "HV", "MV", "HV"),
-                               bc_mv = c("HV", "HV", "MV", "MV", "MV"),
-                               bc_lv = c("HV", "MV", "LV", "LV", "LV"),
-                               stringsAsFactors = FALSE)
-
   levs <- rev(c("EV", "HV", "MV", "LV", "IE"))
 
   comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
