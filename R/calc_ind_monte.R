@@ -23,10 +23,19 @@
 #'
 #' calc_ind_monte2(1)
 
-calc_ind_monte <- function(i){
+# sample samples 1:x if x has length 1
+sample.vec <- function(x, ...) {
+  if(length(x) == 1) {
+    return(x)
+  } else {
+    sample(x, ...)
+  }
+}
+
+calc_ind_monte <- function(vuln_df){
   vuln_df <- vuln_df %>%
     rowwise() %>%
-    mutate(val = sample(na.omit(c(Value1, Value2, Value3, Value4)), size = 1)) %>%
+    mutate(val = sample.vec(na.omit(c(Value1, Value2, Value3, Value4)), size = 1)) %>%
     ungroup() %>%
     mutate(score = ifelse(val < 0, 0, exp * val))
 
@@ -60,11 +69,11 @@ calc_ind_monte <- function(i){
                     select(val) %>%
                     max(na.rm = TRUE) >= 2)
 
-  col_bc_index <- which(comb_index_tbl$Dindex == b_c_index) + 1
-  row_d_index <- which(comb_index_tbl$Dindex == d_index)
+  col_bc_index <- which(ccviR::comb_index_tbl$Dindex == b_c_index) + 1
+  row_d_index <- which(ccviR::comb_index_tbl$Dindex == d_index)
 
   comb_index <- case_when( slr_vuln ~ "EV",
-                           TRUE ~ comb_index_tbl[row_d_index, col_bc_index])
+                           TRUE ~ ccviR::comb_index_tbl[row_d_index, col_bc_index])
   return(comb_index)
 
 }
