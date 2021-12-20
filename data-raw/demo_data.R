@@ -71,41 +71,7 @@ spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
                                              ptn = PTN_poly, map = MAP_rast),
                                              hs_rast = mask(HS_rast, rng_poly_high))
 
-make_vuln_df <- function(val1, val2 = NA, cave = 0 , mig = 0){
-  vuln_qs <- tribble(
-    ~Species, ~Code, ~Value1, ~Value2,
-    "test_sp", "Z2", cave, NA,
-    "test_sp", "Z3", mig, NA,
-    "test_sp", "B1", val1, val2,
-    "test_sp", "B2a", val1, val2,
-    "test_sp", "B2b", val1, val2,
-    "test_sp", "B3", val1, val2,
-    "test_sp", "C1", val1, val2,
-    "test_sp", "C2ai", val1, val2,
-    "test_sp", "C2aii", val1, val2,
-    "test_sp", "C2bi", val1, val2,
-    "test_sp", "C2bii", val1, val2,
-    "test_sp", "C2c", val1, val2,
-    "test_sp", "C2d", val1, val2,
-    "test_sp", "C3", val1, val2,
-    "test_sp", "C4a", val1, val2,
-    "test_sp", "C4b", val1, val2,
-    "test_sp", "C4c", -1, val2,
-    "test_sp", "C4d", val1, val2,
-    "test_sp", "C4e", val1, ifelse(is.na(val2), val2, -1),
-    "test_sp", "C4f", val1, val2,
-    "test_sp", "C4g", val1, val2,
-    "test_sp", "C5a", val1, val2,
-    "test_sp", "C5b", val1, val2,
-    "test_sp", "C5c", val1, val2,
-    "test_sp", "C6", val1, val2,
-    "test_sp", "D1", val1, val2,
-    "test_sp", "D2", val1, val2,
-    "test_sp", "D3", val1, val2,
-    "test_sp", "D4", val1, val2,
-  )
-  vuln_qs %>% mutate(Value3 = NA_real_, Value4 = NA_real_)
-}
+
 
 vuln_df <- make_vuln_df(0)
 

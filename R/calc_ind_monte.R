@@ -7,7 +7,7 @@
 #' @noRd
 #'
 #'
-#' vuln_df <- read.csv("../../CCVI_analysis/data/outputs/dummyvuln.csv", stringsAsFactors = FALSE)
+#' vuln_df <- utils::read.csv("../../CCVI_analysis/data/outputs/dummyvuln.csv", stringsAsFactors = FALSE)
 #'
 #' vuln_df <- vuln_df %>% mutate_at(vars(3:7), ~case_when(.x == "Inc" ~ 2,
 #'                                             .x == "SI" ~ 1,

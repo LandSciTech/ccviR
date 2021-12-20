@@ -39,7 +39,10 @@ Suggests:
     testthat (>= 2.1.0),
     knitr,
     rmarkdown,
-    shinytest
+    shinytest,
+    future,
+    furrr,
+    readxl
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Depends: 
