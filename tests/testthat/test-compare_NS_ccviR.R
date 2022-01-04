@@ -232,11 +232,6 @@ if(interactive()){
            index_res = map_chr(ccviR_results[paste0(Species, "_", ID)],
                            "index"))
 
-  mismatch %>% count(Variable)
-
-  # check which ones were slr_vuln
-  mismatch %>% count(slr_vuln)
-
   test_that("All differences are very small, or in Confidence for species with SLR see issue #11", {
 
     pass <- mismatch %>%
