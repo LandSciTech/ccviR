@@ -707,7 +707,7 @@ ccvi_app <- function(...){
 
     })
 
-    range_poly <- reactive({
+    range_poly_in <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/rng_poly_high.shp",
                                 package = "ccviR"),
@@ -772,12 +772,12 @@ ccvi_app <- function(...){
     })
 
     # run spatial calculations
-    spat_res <- reactive({
+    spat_res1 <- reactive({
       req(input$loadSpatial)
       req(clim_vars())
       isolate({
         tryCatch({
-          run_spatial(range_poly = range_poly(),
+          run_spatial(range_poly = range_poly_in(),
                       non_breed_poly = nonbreed_poly(),
                       scale_poly = assess_poly(),
                       hs_rast = hs_rast(),
@@ -789,6 +789,22 @@ ccvi_app <- function(...){
 
     })
 
+    range_poly <- reactive({
+      req(input$loadSpatial)
+      req(!is.character(spat_res1()))
+      spat_res1()$range_poly_assess
+    })
+    range_poly_clim <- reactive({
+      req(input$loadSpatial)
+      req(!is.character(spat_res1()))
+      spat_res1()$range_poly_clim
+    })
+    spat_res <- reactive({
+      req(input$loadSpatial)
+      req(!is.character(spat_res1()))
+      spat_res1()$spat_table
+    })
+
     output$clim_var_error <- renderText({
       if(is(clim_vars(), "try-error")){
         stop(conditionMessage(attr(clim_vars(), "condition")))
@@ -796,8 +812,8 @@ ccvi_app <- function(...){
     })
 
     output$spat_error <- renderText({
-      if(is.character(spat_res())){
-        stop(spat_res(), call. = FALSE)
+      if(is.character(spat_res1())){
+        stop(spat_res1(), call. = FALSE)
       }
     })
 
@@ -955,7 +971,7 @@ ccvi_app <- function(...){
       req(input$loadSpatial)
       req(clim_vars()$htn)
 
-      make_map(isolate(range_poly()), rast = clim_vars()$htn, rast_nm = "htn")
+      make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn")
     })
 
     output$tbl_C2ai <- renderTable({
@@ -1042,7 +1058,7 @@ ccvi_app <- function(...){
       req(input$loadSpatial)
       req(clim_vars()$map)
 
-      make_map(poly1 = isolate(range_poly()), rast = clim_vars()$map, rast_nm = "map",
+      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map, rast_nm = "map",
                rast_style = "pretty")
     })
 

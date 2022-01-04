@@ -70,9 +70,12 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 #' mwmt: MWMT mean warmest month temperature for the historical normal period
 #' mcmt: MCMT mean coldest month temperature for the historical normal period
 #' Accepted filetypes are ".asc", ".tif", ".nc", ".grd" and ".img"
+#' clim_poly: An optional shapefile with a polygon of the range of the climate
+#' data. It will be created from the climate data if it is missing but it is
+#' faster to provide it.
 #'
-#' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt filepaths to find
-#'   data if in_folder is not given
+#' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt,clim_poly
+#'   filepaths to find data if in_folder is not given
 #' @param in_folder filepath where files are stored. Files must be named
 #'   according to the convention described in details
 #' @param out_folder
@@ -84,7 +87,8 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
 #'
 #' @examples
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
-                          map = NULL, mwmt = NULL, mcmt = NULL, in_folder = NULL, out_folder,
+                          map = NULL, mwmt = NULL, mcmt = NULL, clim_poly,
+                          in_folder = NULL, out_folder,
                           reproject = TRUE, overwrite = FALSE){
   if(length(out_folder) == 0 || missing(out_folder)){
     stop("out_folder is missing with no default")
@@ -137,9 +141,13 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     mcmt <- list.files(in_folder,
                        pattern = make_pat("MCMT", ext_accept),
                        full.names = TRUE)
+
+    clim_poly <- list.files(in_folder,
+                       pattern = make_pat("clim_poly", ".shp"),
+                       full.names = TRUE)
   }
   too_long <- purrr::map_lgl(lst(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
-                                 map, mwmt, mcmt),
+                                 map, mwmt, mcmt, clim_poly),
                              ~length(.x) > 1)
   if(any(too_long)){
     stop("more than one file in ", in_folder,
@@ -177,6 +185,12 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     mcmt <- raster::raster(mcmt)
   } else {
     mcmt <- NULL
+  }
+
+  if(!is.null(clim_poly) && length(clim_poly) > 0){
+    clim_poly <- raster::raster(clim_poly)
+  } else {
+    clim_poly <- NULL
   }
 
   # check for crs
@@ -266,6 +280,24 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                         file.path(out_folder, "MWMT_MCMT_reclass.tif"),
                         overwrite = overwrite)
   }
+
+  # Climate data polygon boundary
+  if(is.null(clim_poly)){
+    # make polygon boundary from raster data
+    message("creating clim_poly from raster data")
+    mat <- raster::raster(file.path(out_folder,"MAT_reclass.tif"))
+    mat <- raster::extend(mat, c(100,100), snap = "out")
+
+    clim_bound <- raster::rasterToContour(is.na(mat), levels = 1)
+
+    clim_poly <- clim_bound %>% sf::st_as_sf() %>%
+      sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
+      sf::st_union() %>%
+      sf::st_buffer(dist = 2 * raster::xres(mat))
+
+  }
+  sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
+
   message("finished processing")
   return("")
 

@@ -6,12 +6,12 @@
 
 get_clim_vars <- function(root_pth){
   pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
-            "MWMT.*tif$|HTN.*tif$")
-  err <- c(T, T, F, F, F)
+            "MWMT.*tif$|HTN.*tif$", "clim_poly.*shp")
+  err <- c(T, T, F, F, F, T)
 
   clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y)) %>%
     purrr::map(load_clim) %>%
-    purrr::set_names(c("mat", "cmd", "map", "ccei", "htn"))
+    purrr::set_names(c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
 }
 
 check_clim <- function(root_pth, pattern, error){

@@ -4,11 +4,7 @@
 #' @param rast
 #' @param poly
 #' @param var_name
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @noRd
 perc_not_overlap <- function(rast, poly, var_name){
   # # First check if poly is 100% inside rast extent and if so assume full overlap
   # rast_bbox <- st_bbox(rast) %>% st_as_sfc()

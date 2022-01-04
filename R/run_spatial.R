@@ -9,7 +9,10 @@
 #' @param hs_rast
 #' @param clim_vars_lst
 #'
-#' @return
+#' @return a list with elements: \code{spat_table} the results of the spatial
+#'   analysis, \code{range_poly_assess} the range polygon clipped to the
+#'   assessment area, and \code{range_poly_clim} the range polygon clipped to
+#'   the extent of the climate data.
 #' @export
 #'
 #' @examples
@@ -18,12 +21,19 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         hs_rast = NULL){
   message("performing spatial analysis")
 
-  # Check polygon inputs have only one feature and if not union
-  range_poly <- check_polys(range_poly)
-  scale_poly <- check_polys(scale_poly)
-  non_breed_poly <- check_polys(non_breed_poly)
-  ptn_poly <- check_polys(ptn_poly)
+  # Check polygon inputs have only one feature and if not union and crs
+  crs_use <- sf::st_crs(clim_vars_lst$mat)
+  range_poly <- check_polys(range_poly, crs_use)
+  scale_poly <- check_polys(scale_poly, crs_use)
+  non_breed_poly <- check_polys(non_breed_poly, crs_use)
+  ptn_poly <- check_polys(ptn_poly, crs_use)
+  clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use)
 
+  # Clip range to climate data polygon and to scale poly
+
+  range_poly_clim <- st_intersection(range_poly, clim_poly)
+
+  range_poly <- st_intersection(range_poly, scale_poly)
   # Section A - Exposure to Local Climate Change: #====
 
   # Temperature
@@ -68,7 +78,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     htn_classes <- rep(NA_real_, 4) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(paste0("HTN_", 1:4))
   } else {
-    htn_classes <- calc_prop_raster(clim_vars_lst$htn, range_poly, "HTN",
+    htn_classes <- calc_prop_raster(clim_vars_lst$htn, range_poly_clim, "HTN",
                                     val_range = 1:4)
   }
 
@@ -87,7 +97,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   if(is.null(clim_vars_lst$map)){
     range_MAP <- data.frame(MAP_max = NA_real_, MAP_min = NA_real_)
   } else {
-    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly, "MAP")
+    range_MAP <- calc_min_max_raster(clim_vars_lst$map, range_poly_clim, "MAP")
   }
 
 
@@ -119,14 +129,17 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
          " variables have multiple rows. Check polygon inputs have only one feature")
   }
 
-  out <- bind_cols(mat_classes, cmd_classes, ccei_classes, not_overlap, htn_classes,
-                   ptn_perc, range_MAP, mod_resp_CC, range_size)
+  out <- list(spat_table = bind_cols(mat_classes, cmd_classes, ccei_classes,
+                                     not_overlap, htn_classes, ptn_perc,
+                                     range_MAP, mod_resp_CC, range_size),
+              range_poly_assess = range_poly,
+              range_poly_clim = range_poly_clim)
   return(out)
 }
 
 
 # helper function to check input polys
-check_polys <- function(poly){
+check_polys <- function(poly, rast_crs){
   if(is.null(poly)){
     return(poly)
   }
@@ -136,6 +149,8 @@ check_polys <- function(poly){
   if(nrow(poly) > 1){
     poly <- sf::st_union(poly) %>% sf::st_as_sf()
   }
+
+  poly <- sf::st_transform(poly, rast_crs)
   return(poly)
 }
 
