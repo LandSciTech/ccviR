@@ -1,13 +1,16 @@
 
 #' Run the spatial analysis functions to get inputs to index calculator
 #'
-#' @param species_nm
-#' @param scale_nm
 #' @param range_poly
-#' @param non_breed_poly
 #' @param scale_poly
-#' @param hs_rast
 #' @param clim_vars_lst
+#' @param non_breed_poly
+#' @param ptn_poly
+#' @param hs_rast
+#' @param hs_rcl a matrix used to classify the raster into 0: not suitable, 1:
+#'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
+#'   details on the matrix format
+#'
 #'
 #' @return a list with elements: \code{spat_table} the results of the spatial
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
@@ -18,7 +21,7 @@
 #' @examples
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
-                        hs_rast = NULL){
+                        hs_rast = NULL, hs_rcl = NULL){
   message("performing spatial analysis")
 
   # Check polygon inputs have only one feature and if not union and crs
@@ -116,6 +119,8 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
       purrr::set_names(c("perc_lost", "perc_gain", "perc_maint"))
 
   } else {
+
+    hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl)
 
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly)
     if(sum(mod_resp_CC, na.rm = T) == 0){

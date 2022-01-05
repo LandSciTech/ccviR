@@ -8,33 +8,13 @@
 #' @export
 #'
 #' @examples
-calc_gain_loss <- function(rast, poly){
+calc_gain_loss <- function(rast, poly, var_name){
 
-  withCallingHandlers(
-    warning = function(cnd){
-      if(grepl("transformed to raster", conditionMessage(cnd))){
-        message("Polygons were transformed to have CRS matching raster")
-        invokeRestart("muffleWarning")
-      }
-    },
-    out <- exactextractr::exact_extract(rast, poly, progress = FALSE)
-  )
-
-  out <- out[[1]]
-
-  out <- out %>% group_by(value) %>%
-    summarise(coverage_fraction = sum(coverage_fraction)) %>%
-    filter(!is.na(value), value > 0) %>%
-    mutate(gain_loss = case_when(value == 1 ~ "lost",
-                                 value > 1 & value < 7 ~ "maint",
-                                 value == 7 ~ "gain") %>%
-             factor(levels = c("gain", "lost", "maint"))) %>%
-    group_by(gain_loss, .drop = FALSE) %>%
-    summarise(coverage_fraction = sum(coverage_fraction)) %>%
-    tidyr::pivot_wider(names_from = gain_loss, values_from = coverage_fraction) %>%
-    transmute(perc_lost = (lost/(lost + maint) * 100) %>% round(3),
-              perc_gain = (gain/(lost + maint) * 100) %>% round(3),
-              perc_maint = (maint/(lost+maint) * 100) %>% round(3))
+  out <- calc_prop_raster(rast, poly, var_name = "HS", val_range = 0:3,
+                          digits = 10) %>%
+    transmute(perc_lost = (HS_1/(HS_1 + HS_2) * 100) %>% round(3),
+              perc_gain = (HS_3/(HS_1 + HS_2) * 100) %>% round(3),
+              perc_maint = (HS_2/(HS_1 + HS_2) * 100) %>% round(3))
 
   return(out)
 }
