@@ -120,7 +120,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   } else {
 
-    hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl)
+    hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
 
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly)
     if(sum(mod_resp_CC, na.rm = T) == 0){

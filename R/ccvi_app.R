@@ -192,6 +192,11 @@ ccvi_app <- function(...){
                                  multiple = FALSE),
                 verbatimTextOutput("assess_poly_pth_out", placeholder = TRUE),
                 br(),
+                strong("Physiological thermal niche file"),
+                shinyFilesButton("ptn_poly_pth", "Choose file",
+                                 "Physiological thermal niche file", multiple = FALSE),
+                verbatimTextOutput("ptn_poly_pth_out", placeholder = TRUE),
+                br(),
                 strong("Non-breeding Range polygon shapefile"),
                 shinyFilesButton("nonbreed_poly_pth", "Choose file",
                                  "Non-breeding Range polygon shapefile",
@@ -203,11 +208,26 @@ ccvi_app <- function(...){
                                  "Projected habitat change raster file", multiple = FALSE),
                 verbatimTextOutput("hs_rast_pth_out", placeholder = TRUE),
                 br(),
-                strong("Physiological thermal niche file"),
-                shinyFilesButton("ptn_poly_pth", "Choose file",
-                                 "Physiological thermal niche file", multiple = FALSE),
-                verbatimTextOutput("ptn_poly_pth_out", placeholder = TRUE),
-                br(),
+                conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
+                                 strong("Classification of habitat suitability raster"),
+                                 p("Enter the range of values in the raster corresponding to ",
+                                   "lost, maintained, gained and not suitable habitat. "),
+                                 strong("Lost: "),
+                                 tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
+                                 tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
+                                 br(),
+                                 strong("Maintained: "),
+                                 tags$div(numericInput("maint_from", "From", 2), style="display:inline-block"),
+                                 tags$div(numericInput("maint_to", "To", 6), style="display:inline-block"),
+                                 br(),
+                                 strong("Gained: "),
+                                 tags$div(numericInput("gain_from", "From", 7), style="display:inline-block"),
+                                 tags$div(numericInput("gain_to", "To", 7), style="display:inline-block"),
+                                 br(),
+                                 strong("Not Suitable: "),
+                                 tags$div(numericInput("ns_from", "From", 0), style="display:inline-block"),
+                                 tags$div(numericInput("ns_to", "To", 0), style="display:inline-block")
+                                 ),
                 strong("Click Run to begin the spatial analysis or to re-run it",
                        " after changing inputs"),
                 br(),
@@ -771,6 +791,13 @@ ccvi_app <- function(...){
       sf::st_read(pth, agr = "constant", quiet = TRUE)
     })
 
+    # assemble hs_rcl matrix
+    hs_rcl_mat <- reactive({matrix(c(input$lost_from, input$lost_to, 1,
+                                     input$maint_from, input$maint_to, 2,
+                                     input$gain_from, input$gain_to, 3,
+                                     input$ns_from, input$ns_to, 0),
+                                   byrow = TRUE, ncol = 3)})
+
     # run spatial calculations
     spat_res1 <- reactive({
       req(input$loadSpatial)
@@ -782,7 +809,8 @@ ccvi_app <- function(...){
                       scale_poly = assess_poly(),
                       hs_rast = hs_rast(),
                       ptn_poly = ptn_poly(),
-                      clim_vars_lst = clim_vars())
+                      clim_vars_lst = clim_vars(),
+                      hs_rcl = hs_rcl_mat())
         },
         error = function(cnd) conditionMessage(cnd))
       })
