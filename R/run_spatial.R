@@ -23,17 +23,26 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat)
-  range_poly <- check_polys(range_poly, crs_use)
-  scale_poly <- check_polys(scale_poly, crs_use)
-  non_breed_poly <- check_polys(non_breed_poly, crs_use)
-  ptn_poly <- check_polys(ptn_poly, crs_use)
-  clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use)
+  range_poly <- check_polys(range_poly, crs_use, "range polygon")
+  scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
+  non_breed_poly <- check_polys(non_breed_poly, crs_use, "non-breeding range polygon")
+  ptn_poly <- check_polys(ptn_poly, crs_use, "PTN polygon")
+  clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
 
   # Clip range to climate data polygon and to scale poly
 
   range_poly_clim <- st_intersection(range_poly, clim_poly)
+  if(nrow(range_poly_clim) == 0){
+    stop("The range polygon does not overlap with the climate data extent polygon.",
+         call. = FALSE)
+  }
 
   range_poly <- st_intersection(range_poly, scale_poly)
+  if(nrow(range_poly) == 0){
+    stop("The range polygon does not overlap with the assessment area polygon.",
+         call. = FALSE)
+  }
+
   # Section A - Exposure to Local Climate Change: #====
 
   # Temperature
@@ -139,12 +148,22 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
 
 # helper function to check input polys
-check_polys <- function(poly, rast_crs){
+check_polys <- function(poly, rast_crs, var_name){
   if(is.null(poly)){
     return(poly)
   }
   if(!is(poly, "sf")){
     poly <- sf::st_as_sf(poly)
+  }
+
+  if(!all(sf::st_is_valid(poly))){
+    poly <- sf::st_make_valid(poly)
+
+    if(!all(sf::st_is_valid(poly))){
+      stop("The ", var_name, " is not valid. Check the polygon is ",
+           "correct or provide a different version",
+           call. = FALSE)
+    }
   }
   if(nrow(poly) > 1){
     poly <- sf::st_union(poly) %>% sf::st_as_sf()
