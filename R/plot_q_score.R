@@ -1,7 +1,38 @@
-#' Function to plot scores for each question
+#' Plot scores for each vulnerability question
 #'
-#' Will help to visualize what factors are influencing index
+#' Help to visualize what factors are influencing the index. Produces a plotly
+#' graphic where the bars are the total score for the factor after modifying it
+#' based on exposure and the dots are the exposure multiplier. Hover to see the
+#' name of the factor.
 #'
+#' @param vuln_df the \code{vuln_df} element of the result from
+#'   \code{\link{calc_vulnerability}}.
+#'
+#' @export
+#'
+#' @return plotly graph
+#'
+#' @examples
+#' base_pth <- system.file("extData", package = "ccviR")
+#'
+#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
+#'
+#' spat_res <- run_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
+#'   clim_vars_lst = clim_vars,
+#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast.tif")),
+#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
+#' )
+#'
+#' # vulnerability factor table with score 1 (somewhat increase vulnerability)
+#' # for all factors
+#' vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+#'
+#' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
+#'
+#' plot_q_score(index_vuln$vuln_df)
+
 plot_q_score <- function(vuln_df){
   vuln_df <- filter(vuln_df, !Code %in% c("Z2", "Z3")) %>%
     left_join(vulnq_code_lu_tbl, by = "Code") %>%

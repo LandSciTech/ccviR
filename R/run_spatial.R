@@ -1,13 +1,28 @@
 
-#' Run the spatial analysis functions to get inputs to index calculator
+#' Run the spatial analysis
 #'
-#' @param range_poly
-#' @param scale_poly
-#' @param clim_vars_lst
-#' @param non_breed_poly
-#' @param ptn_poly
-#' @param hs_rast
-#' @param hs_rcl a matrix used to classify the raster into 0: not suitable, 1:
+#' Run the required spatial analysis to create the \code{spat_df} input for
+#' \code{\link{calc_vulnerability}} and clip the range polygon to the
+#' appropriate scales.
+#'
+#' The range polygon will be clipped to the area overlapping the
+#' \code{scale_poly} and the also the the area overlapping the extent of the
+#' climate data polygon. The range within the assessment area in used to
+#' calculate all results except the historical thermal and hydrological niches
+#' for which the range within the extent of the climate data is used.
+#'
+#' @param range_poly an sf polygon object giving the species range.
+#' @param scale_poly an sf polygon object giving the area of the assessment
+#' @param clim_vars_lst a list of climate data, the result of
+#'   \code{\link{get_clim_vars}}
+#' @param non_breed_poly Optional. An sf polygon object giving the species range
+#'   in the non-breeding season.
+#' @param ptn_poly Optional. An sf polygon object giving the locations that are
+#'   considered part of the physiological thermal niche (See NatureServe
+#'   Guidelines for definition).
+#' @param hs_rast Optional. A raster with results from a model of the change in
+#'   habitat suitability caused by climate change.
+#' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 #'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
 #'   details on the matrix format
 #'
@@ -16,9 +31,37 @@
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
 #'   assessment area, and \code{range_poly_clim} the range polygon clipped to
 #'   the extent of the climate data.
+#'
+#'   \code{spat_table} contains the following columns:
+#'   \describe{
+#'     \item{MAT_#}{The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
+#'     \item{CMD_#}{The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
+#'     \item{CCEI_#}{The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 4 indicates high exposure while Class 1 indicates low exposure }
+#'     \item{perc_non_breed_not_over_ccei}{The precentage of the non-breeding range that does not overlap with the CCEI raster data}
+#'     \item{HTN_#}{The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest}
+#'     \item{PTN}{The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change}
+#'     \item{MAP_max/min}{The maximum and minimum historical mean annual precipitation in the species' range}
+#'     \item{perc_lost/gain/maintained}{The percentage of the species' range that is predicted to be lost/gained/maintained under future climate conditions}
+#'     \item{range_size}{The area of the species' range in m2}
+#'     }
+#'
 #' @export
 #'
 #' @examples
+#'
+#' base_pth <- system.file("extData", package = "ccviR")
+#'
+#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
+#'
+#' run_spatial(
+#'   range_poly = read_sf(file.path(base_pth, "rng_poly_high.shp")),
+#'   scale_poly = read_sf(file.path(base_pth, "assess_poly.shp")),
+#'   clim_vars_lst = clim_vars,
+#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast.tif")),
+#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
+#' )
+
+
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
                         hs_rast = NULL, hs_rcl = NULL){

@@ -2,19 +2,22 @@
 % Please edit documentation in R/get_clim_vars.R
 \name{trim_ras}
 \alias{trim_ras}
-\title{Trim NAs from raster copied from raster package internal .memtrimlayer in
-raster::trim. This is not memory safe but raster::trim takes over an hour
-while this takes ~30s}
+\title{Trim NAs from raster}
 \usage{
 trim_ras(r, padding = 0, values = NA, filename = "", ...)
 }
 \arguments{
-\item{...}{}
+\item{r}{raster to be trimmed}
 
-\item{x}{}
+\item{padding}{integer. Number of outer rows/columns to keep}
+
+\item{values}{numeric. Value(s) based on which a Raster* should be trimmed}
+
+\item{filename}{character. Optional output filename}
+
+\item{...}{If x is a Raster* object: additional arguments as for writeRaster}
 }
 \description{
-Trim NAs from raster copied from raster package internal .memtrimlayer in
-raster::trim. This is not memory safe but raster::trim takes over an hour
-while this takes ~30s
+Copied from raster package internal .memtrimlayer in raster::trim. This is
+not memory safe but raster::trim takes over an hour while this takes ~30s
 }

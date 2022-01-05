@@ -1,8 +1,23 @@
 #' Load climate variables
 #'
-#' Load climate variables that will be the same across most species.
+#' Load climate variables and store them in a list that can be used with
+#' \code{\link{run_spatial}}. The climate variables should first be prepared
+#' using \code{\link{run_prep_data}}.
+#'
+#' @param root_pth A folder location where all the climate data is stored. The
+#'   names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
+#'   "MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
+#'   three are required.
+#'
+#' @return A list of climate variables with names "mat", "cmd", "map", "ccei",
+#'   "htn", "clim_poly"
 #'
 #' @export
+#'
+#' @examples
+#' pth <- system.file("extData/clim_files/processed", package = "ccviR")
+#'
+#' get_clim_vars(pth)
 
 get_clim_vars <- function(root_pth){
   pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
@@ -12,6 +27,8 @@ get_clim_vars <- function(root_pth){
   clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y)) %>%
     purrr::map(load_clim) %>%
     purrr::set_names(c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
+
+  return(clim_vars)
 }
 
 check_clim <- function(root_pth, pattern, error){
@@ -60,15 +77,16 @@ load_clim <- function(pth){
   out
 
 }
-#' Trim NAs from raster copied from raster package internal .memtrimlayer in
-#' raster::trim. This is not memory safe but raster::trim takes over an hour
-#' while this takes ~30s
-#' @param x
+#' Trim NAs from raster
 #'
-#' @param padding
-#' @param values
-#' @param filename
-#' @param ...
+#' Copied from raster package internal .memtrimlayer in raster::trim. This is
+#' not memory safe but raster::trim takes over an hour while this takes ~30s
+#'
+#' @param r raster to be trimmed
+#' @param padding integer. Number of outer rows/columns to keep
+#' @param values numeric. Value(s) based on which a Raster* should be trimmed
+#' @param filename character. Optional output filename
+#' @param ... If x is a Raster* object: additional arguments as for writeRaster
 #'
 #' @export
 trim_ras <- function(r, padding=0, values=NA, filename="", ...) {
@@ -91,7 +109,6 @@ trim_ras <- function(r, padding=0, values=NA, filename="", ...) {
   raster::crop(r, e, filename=filename, ...)
 }
 
-#' @export
 check_trim <- function(rast){
   do_trim <- sum(!is.na(rast[1:10,]))
   if(do_trim == 0){

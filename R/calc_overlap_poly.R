@@ -5,10 +5,7 @@
 #' @param poly2
 #' @param var_name
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @noRd
 calc_overlap_poly <- function(poly1, poly2, var_name){
   int1_2 <- st_intersection(poly1, poly2)
 

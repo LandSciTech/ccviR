@@ -2,16 +2,10 @@
 % Please edit documentation in R/ccvi_app.R
 \name{ccvi_app}
 \alias{ccvi_app}
-\title{Title}
+\title{Create the ccviR Shiny application}
 \usage{
 ccvi_app(...)
 }
-\arguments{
-\item{...}{}
-}
-\value{
-
-}
 \description{
-Title
+Create the ccviR Shiny application
 }

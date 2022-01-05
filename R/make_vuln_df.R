@@ -7,16 +7,21 @@
 #' Increase, 2: Increase, 3: Greatly Increase.
 #'
 #' @param sp_nm Species name
-#' @param val1 A single number to fill the first column with the default -1 for
+#' @param val1 A single number to fill the first column with. The default -1 for
 #'   Unknown should be used in most cases.
 #' @param val2,val3,val4 Additional values. Use default NA
-#' @param cave 0 or 1 For whether the species is cave or ground water dependent. See Guidelines.
-#' @param mig 0 or 1 is the species migrtory
+#' @param cave 0 or 1 For whether the species is cave or ground water dependent.
+#'   See Guidelines.
+#' @param mig 0 or 1 is the species migratory?
 #'
-#' @return
+#' @return a data.frame that can be edited and used as input for \code{vuln_df}
+#'   in \code{\link{calc_vulnerability}}
+#'
 #' @export
 #'
 #' @examples
+#' make_vuln_df("sfa", cave = 1, mig = 0)
+
 make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
                          cave = 0 , mig = 0){
   vuln_qs <- tibble::tribble(
@@ -51,9 +56,9 @@ make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
     sp_nm, "D3",
     sp_nm, "D4",
   ) %>% mutate(Value1 = val1, Value2 = val2,
-                     Value3 = val3, Value4 = val3)
+                     Value3 = val3, Value4 = val4)
   vuln_qs$Value1[1] <- cave
   vuln_qs$Value1[2] <- mig
   vuln_qs
 }
-make_vuln_df("sfa", cave = 1, mig = 0)
+

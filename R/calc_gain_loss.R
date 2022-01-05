@@ -4,10 +4,7 @@
 #' @param rast
 #' @param poly
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @noRd
 calc_gain_loss <- function(rast, poly, var_name){
 
   out <- calc_prop_raster(rast, poly, var_name = "HS", val_range = 0:3,

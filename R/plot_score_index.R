@@ -1,6 +1,36 @@
-#' make a visualization of the D score, B/C score and index
+#' Visualize the D score, B/C score and index
+#'
+#' A graph to visualize where the result falls relative to the thresholds used
+#' to calculate index values and how the combination of the D score and B/C
+#' score affects the index value.
+#'
+#' @param b_c_score Total score in the B and C sections.
+#' @param d_score Total score in the D section
+#' @param n_d_factors Number of factors scored in the D section
+#'
+#' @return ggplot2 graph.
 #'
 #' @export
+#' @examples
+#' base_pth <- system.file("extData", package = "ccviR")
+#'
+#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
+#'
+#' spat_res <- run_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
+#'   clim_vars_lst = clim_vars,
+#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast.tif")),
+#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
+#' )
+#'
+#' # vulnerability factor table with score 1 (somewhat increase vulnerability)
+#' # for all factors
+#' vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+#'
+#' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
+#'
+#' plot_score_index(index_vuln$b_c_score, index_vuln$d_score, index_vuln$n_d_factors)
 plot_score_index <- function(b_c_score, d_score, n_d_factors){
   score_pt <- data.frame(d_score = ifelse(n_d_factors == 0, -1, d_score),
                          b_c_score = b_c_score)

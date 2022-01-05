@@ -1,13 +1,8 @@
 # based on example app: https://github.com/daattali/shiny-server/blob/master/mimic-google-form/app.R
 # and blog post explaining it: https://deanattali.com/2015/06/14/mimicking-google-form-shiny/
 
-
-
 #' Create the ccviR Shiny application
 #'
-#' @param ...
-#'
-#' @return
 #'
 #' @import shiny
 #' @import dplyr
@@ -15,9 +10,8 @@
 #' @import shinyFiles
 #' @importFrom raster raster crs
 #' @importFrom tmap tmap_leaflet
-#' @export
 #'
-#' @examples
+#' @noRD
 ccvi_app <- function(...){
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")

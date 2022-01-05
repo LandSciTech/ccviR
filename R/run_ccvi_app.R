@@ -2,7 +2,9 @@
 
 #' Launch the CCVI app
 #'
-#' Run this function to launch the app.
+#' Launch the ccviR app to calculate the NatureServe Climate Change
+#' Vulnerability Index. See \code{vignette("app_vignette", package = "ccviR")}
+#' for details on how to use the app.
 #'
 #' @param file_dir The directory to locate files from
 #' @param launch.browser logical. Run CCVI app in browser?
@@ -10,8 +12,11 @@
 #'
 #' @export
 #'
-#' @examples if(interactive()){
-#' run_ccvi_app("demo")
+#' @returns A shiny app.
+#'
+#' @examples
+#' if(interactive()){
+#'  run_ccvi_app("demo")
 #' }
 run_ccvi_app <- function(file_dir = getwd(),
                          launch.browser = TRUE,

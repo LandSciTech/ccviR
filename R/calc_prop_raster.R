@@ -5,7 +5,7 @@
 #' @param var_name
 #' @param val_range
 #'
-#' @export
+#' @noRd
 calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3){
   withCallingHandlers(
     warning = function(cnd){

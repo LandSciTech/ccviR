@@ -6,6 +6,23 @@
 \usage{
 get_clim_vars(root_pth)
 }
+\arguments{
+\item{root_pth}{A folder location where all the climate data is stored. The
+names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
+"MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
+three are required.}
+}
+\value{
+A list of climate variables with names "mat", "cmd", "map", "ccei",
+  "htn", "clim_poly"
+}
 \description{
-Load climate variables that will be the same across most species.
+Load climate variables and store them in a list that can be used with
+\code{\link{run_spatial}}. The climate variables should first be prepared
+using \code{\link{run_prep_data}}.
+}
+\examples{
+pth <- system.file("extData/clim_files/processed", package = "ccviR")
+
+get_clim_vars(pth)
 }

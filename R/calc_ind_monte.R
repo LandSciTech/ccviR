@@ -7,21 +7,6 @@
 #' @noRd
 #'
 #'
-#' vuln_df <- utils::read.csv("../../CCVI_analysis/data/outputs/dummyvuln.csv", stringsAsFactors = FALSE)
-#'
-#' vuln_df <- vuln_df %>% mutate_at(vars(3:7), ~case_when(.x == "Inc" ~ 2,
-#'                                             .x == "SI" ~ 1,
-#'                                             .x == "N" ~ 0,
-#'                                             .x == "U" ~ -1,
-#'                                             .x == "N/A" ~ NA_real_,
-#'                                             .x == "" ~ NA_real_,
-#'                                             .x == "1" ~ 1,
-#'                                             is.na(.x) ~ NA_real_,
-#'                                             TRUE ~ as.numeric(.x)))
-#' vuln_df <- mutate(vuln_df, Species = "test", exp = 1, score = Value1*exp)
-#'
-#'
-#' calc_ind_monte2(1)
 
 # sample samples 1:x if x has length 1
 sample.vec <- function(x, ...) {
