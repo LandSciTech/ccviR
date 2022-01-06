@@ -273,7 +273,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 #'
 #' @noRd
 prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
-                     overwrite = FALSE){
+                     overwrite = FALSE, type = "halfIQR"){
   rast_delta <-  rast_norm - rast_fut
 
   if(reproject){
@@ -291,27 +291,101 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
                                 output_Raster = TRUE)
   }
 
-  mean_delta <- round(raster::cellStats(rast_delta, "mean"), 2)
+  if(type == "halfIQR"){
+    sd_div <- 2
+    type <- "IQR"
+  } else if(type == "sd"){
+    sd_div <- 1
+  } else {
+    stop("type should be halfIQR or sd not", type, call. = FALSE)
+  }
 
-  std_delta <- round(raster::cellStats(rast_delta, "sd")/2, 2)
-
-  min_delta <- round(raster::cellStats(rast_delta, "min") -1, 2)
-
-  max_delta <- round(raster::cellStats(rast_delta, "max") +1, 2)
-
-  brs <- c(min_delta, mean_delta-2*std_delta, mean_delta-std_delta,
-           mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
-           max_delta)
-
-  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
-
-  rast_reclass <- raster::reclassify(rast_delta, rcl_tbl, file_nm,
-                                     overwrite = overwrite)
-
-  return(rcl_tbl)
+  # returns the rcl table and writes raster to disk
+  return(prep_from_delta(rast_delta, sd_div = sd_div, type = type,
+                         file_nm = file_nm, overwrite = overwrite))
 
 }
 
+#' Prepare exposure classes
+#'
+#' Classify the change in a climate variable into six categories.
+#'
+#' NatureServe uses the mean and the standard deviation to create classes in the
+#' US but uses the mean and 1/2 the standard deviation and then shifts the
+#' classes by one for temperature in Canada based on a visual interpretation of
+#' the classes. To make a more reproducible process I use 1/2 the interquartile
+#' range since it is more robust to outliers and skewed distributions.
+#'
+#' @param rast_delta raster of change in climate variable
+#' @param sd_div number to divide standard deviation or interquartile range by
+#' @param shift number of sd or IQRs to shift the breaks by can be 1 or -1
+#' @param type "sd" for the mean and standard deviation (similar to
+#'   NatureServe), "IQR" for the median and interquartile range (recommended),
+#'   or "quantile" for six evenly spaced quantiles (not recommended)
+#'
+#' @noRd
+prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
+                            file_nm, overwrite){
+
+  min_delta <- round(raster::cellStats(rast_delta, "min") -1, 3)
+
+  max_delta <- round(raster::cellStats(rast_delta, "max") +1, 3)
+
+  if(type == "sd"){
+    mean_delta <- round(raster::cellStats(rast_delta, "mean"), 3)
+
+    std_delta <- round(raster::cellStats(rast_delta, "sd")/sd_div, 3)
+
+    brs <- c(min_delta, mean_delta-3*std_delta, mean_delta-2*std_delta,
+             mean_delta-std_delta,
+             mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
+             mean_delta + 3*std_delta, max_delta)
+  } else if(type == "IQR"){
+    med_delta <- round(median(raster::sampleRegular(rast_delta, 1000000),
+                              na.rm = TRUE), 3)
+
+    iqr_delta <- round(IQR(raster::sampleRegular(rast_delta, 1000000),
+                           na.rm = TRUE)/sd_div, 3)
+
+    brs <- c(min_delta, med_delta-3*iqr_delta, med_delta-2*iqr_delta,
+             med_delta-iqr_delta,
+             med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
+             med_delta + 3*iqr_delta, max_delta)
+  } else if(type == "quantile"){
+    brs <- raster::quantile(rast_delta,
+                            probs = seq(0, 1, 1/6))
+    # make sure min and max included
+    brs[1] <- brs[1] - 1
+    brs[7] <- brs[7] + 1
+  } else {
+    stop("type must be one of sd, IQR or quantile not", type, call. = FALSE)
+  }
+
+  if(type == "quantile" && shift != 0){
+    stop("shift must be 0 when type is quantile", call. = FALSE)
+  }
+
+  if(shift == 0){
+    brs <- brs[c(1,3,4,5,6,7,9)]
+
+    if(brs[6] > brs[7]){
+      brs[7] <- brs[6]+1
+    }
+
+  } else if(shift == 1){
+    brs <- brs[c(1,4,5,6,7,8,9)]
+  } else if(shift == -1){
+    brs <- brs[c(1,2,3,4,5,6,9)]
+  } else {
+    stop("shift must be 0, 1 or -1 not", shift, call. = FALSE)
+  }
+
+  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
+
+  raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite)
+
+  return(rcl_tbl)
+}
 
 check_crs <- function(rast){
   if(is.na(raster::crs(rast))){
