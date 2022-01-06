@@ -137,14 +137,14 @@ run_prep_data(in_folder = "inst/extdata/clim_files/raw",
 rng_poly_high <- read_sf("inst/extdata/rng_poly_high.shp", agr = "constant")
 assess_poly <- read_sf("inst/extdata/assess_poly.shp", agr = "constant")
 HS_rast_high <- raster("inst/extdata/HS_rast_high.tif")
-
+PTN_poly <- read_sf("inst/extdata/PTN_poly.shp", agr = "constant")
+nonbreed_poly <- read_sf("inst/extdata/nonbreed_poly.shp", agr = "constant")
 
 spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
+                        ptn_poly = PTN_poly, non_breed_poly = nonbreed_poly,
                         hs_rast = HS_rast_high,
                         hs_rcl = matrix(c(c(0:7), c(0, 1, 2,2,2,2,2,3)), ncol = 2),
                         clim_vars_lst = get_clim_vars("inst/extdata/clim_files/processed/"))
-
-
 
 vuln_df <- make_vuln_df("sp_name", 0)
 

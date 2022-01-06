@@ -9,6 +9,18 @@
 calc_overlap_poly <- function(poly1, poly2, var_name){
   int1_2 <- st_intersection(poly1, poly2)
 
+  int1_2 <- st_set_agr(int1_2, "constant")
+
+  if(!all(sf::st_is_valid(int1_2))){
+    int1_2 <- sf::st_make_valid(int1_2)
+
+    if(!all(sf::st_is_valid(int1_2))){
+      stop("The intersection of", var_name, " is not valid. Check the polygon is ",
+           "correct or provide a different version",
+           call. = FALSE)
+    }
+  }
+
   if(nrow(int1_2) == 0){
     out <- tibble(x = 0) %>% purrr::set_names(var_name)
     return(out)
