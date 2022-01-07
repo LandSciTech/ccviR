@@ -11,7 +11,8 @@ make_vuln_df(
   val3 = NA,
   val4 = NA,
   cave = 0,
-  mig = 0
+  mig = 0,
+  use_spatial = TRUE
 )
 }
 \arguments{
@@ -26,6 +27,10 @@ Unknown should be used in most cases.}
 See Guidelines.}
 
 \item{mig}{0 or 1 is the species migratory?}
+
+\item{use_spatial}{if TRUE then values for factors that are calculated in
+\code{run_spatial} will be set to -1 for Unknown so that they do not
+override the results of the spatial analysis}
 }
 \value{
 a data.frame that can be edited and used as input for \code{vuln_df}
@@ -34,9 +39,10 @@ a data.frame that can be edited and used as input for \code{vuln_df}
 \description{
 Make an empty vulnerability factor table that can be filled in with the
 appropriate value for each vulnerability factor. The Code corresponds to the
-questions in the NatureServe spreadsheet. See the NatureServe Guidelines for
-detailed instructions. Values can be -1: Unknown, 0: Neutral, 1: Somewhat
-Increase, 2: Increase, 3: Greatly Increase.
+questions in the NatureServe Guidelines and Question is an abbreviated
+version of the question. See the NatureServe Guidelines for detailed
+instructions on how to score species. Values can be -1: Unknown, 0: Neutral,
+1: Somewhat Increase, 2: Increase, 3: Greatly Increase.
 }
 \examples{
 make_vuln_df("sfa", cave = 1, mig = 0)

@@ -51,7 +51,7 @@ a list with elements: \code{spat_table} the results of the spatial
     \item{HTN_#}{The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest}
     \item{PTN}{The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change}
     \item{MAP_max/min}{The maximum and minimum historical mean annual precipitation in the species' range}
-    \item{perc_lost/gain/maintained}{The percentage of the species' range that is predicted to be lost/gained/maintained under future climate conditions}
+    \item{perc_lost/gain/maintained}{The percentage of the assessment area that is predicted to be lost/gained/maintained under future climate conditions.}
     \item{range_size}{The area of the species' range in m2}
     }
 }

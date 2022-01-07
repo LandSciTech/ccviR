@@ -28,6 +28,7 @@
 
 make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
                          cave = 0, mig = 0, use_spatial = TRUE){
+
   vuln_qs <- tibble::tribble(
     ~Species, ~Code,
     sp_nm, "Z2",

@@ -26,7 +26,6 @@
 #'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
 #'   details on the matrix format
 #'
-#'
 #' @return a list with elements: \code{spat_table} the results of the spatial
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
 #'   assessment area, and \code{range_poly_clim} the range polygon clipped to
@@ -41,7 +40,7 @@
 #'     \item{HTN_#}{The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest}
 #'     \item{PTN}{The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change}
 #'     \item{MAP_max/min}{The maximum and minimum historical mean annual precipitation in the species' range}
-#'     \item{perc_lost/gain/maintained}{The percentage of the species' range that is predicted to be lost/gained/maintained under future climate conditions}
+#'     \item{perc_lost/gain/maintained}{The percentage of the assessment area that is predicted to be lost/gained/maintained under future climate conditions.}
 #'     \item{range_size}{The area of the species' range in m2}
 #'     }
 #'
@@ -66,6 +65,14 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
                         hs_rast = NULL, hs_rcl = NULL){
   message("performing spatial analysis")
+
+  clim_nms_dif <- setdiff(names(clim_vars_lst),
+                          c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
+
+  if(length(clim_nms_dif) > 0){
+    stop("clim_vars_lst has unexpected names: ", clim_nms_dif)
+  }
+
 
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat)
@@ -162,6 +169,10 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
       purrr::set_names(c("perc_lost", "perc_gain", "perc_maint"))
 
   } else {
+
+    if(is.null(hs_rcl)){
+      stop("hs_rcl is required when hs_rast is not NULL", call. = FALSE)
+    }
 
     hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
 

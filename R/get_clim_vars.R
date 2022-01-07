@@ -20,6 +20,10 @@
 #' get_clim_vars(pth)
 
 get_clim_vars <- function(root_pth){
+  if(!dir.exists(root_pth)){
+    stop("directory ", root_pth," does not exist", call. = FALSE)
+  }
+
   pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
             "MWMT.*tif$|HTN.*tif$", "clim_poly.*shp")
   err <- c(T, T, F, F, F, T)

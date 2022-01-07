@@ -51,6 +51,10 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     stop("out_folder is missing with no default")
   }
 
+  if(!dir.exists(out_folder)){
+    stop("out_folder does not exist", call. = FALSE)
+  }
+
   # TODO: Figure out if we should match Sarah O's intervals for reclassing.
   ext_accept <- c(".asc", ".tif", ".nc", ".grd", ".img")
 
@@ -59,6 +63,11 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   if(!is.null(in_folder)){
+
+    if(!dir.exists(in_folder)){
+      stop("in_folder does not exist", call. = FALSE)
+    }
+
     mat_norm <- list.files(in_folder,
                            pattern = make_pat("MAT", ext_accept),
                            full.names = TRUE)
