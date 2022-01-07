@@ -10,19 +10,19 @@ test_that("works with demo data",{
                 out_folder = file.path(pth_base, "processed"),
                 reproject = FALSE)
 
-  expect_length(list.files(file.path(pth_base, "processed")), 5)
+  expect_length(list.files(file.path(pth_base, "processed")), 9)
 
-  # to start delete contents of processed data
-  file.remove(list.files(file.path(pth_base, "processed"), full.names = TRUE))
+  # # to start delete contents of processed data
+  # file.remove(list.files(file.path(pth_base, "processed"), full.names = TRUE))
+  #
+  # # using in_folder and reproject TRUE
+  # run_prep_data(in_folder = file.path(pth_base, "raw"),
+  #               out_folder = file.path(pth_base, "processed"),
+  #               reproject = TRUE)
+  #
+  # expect_length(list.files(file.path(pth_base, "processed")), 9)
 
-  # using in_folder and reproject FALSE
-  run_prep_data(in_folder = file.path(pth_base, "raw"),
-                out_folder = file.path(pth_base, "processed"),
-                reproject = TRUE)
-
-  expect_length(list.files(file.path(pth_base, "processed")), 5)
-
-  # using filenames
+  # using filenames, ovrewrite and clim_poly file
   run_prep_data(mat_norm = file.path(pth_base, "raw/MAT.tif"),
                 mat_fut = file.path(pth_base, "raw/MAT_2050.tif"),
                 cmd_norm = file.path(pth_base, "raw/CMD.tif"),
@@ -31,11 +31,13 @@ test_that("works with demo data",{
                 mcmt = file.path(pth_base, "raw/MCMT.tif"),
                 mwmt = file.path(pth_base, "raw/MWMT.tif"),
                 ccei = file.path(pth_base, "raw/CCEI.img"),
+                clim_poly = file.path(system.file("extdata", package = "ccviR"),
+                                      "assess_poly.shp"),
                 out_folder = file.path(pth_base, "processed"),
                 overwrite = TRUE,
                 reproject = FALSE)
 
-  expect_length(list.files(file.path(pth_base, "processed")), 5)
+  expect_length(list.files(file.path(pth_base, "processed")), 9)
 
 })
 

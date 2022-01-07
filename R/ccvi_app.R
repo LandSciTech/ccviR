@@ -11,7 +11,7 @@
 #' @importFrom raster raster crs
 #' @importFrom tmap tmap_leaflet
 #'
-#' @noRD
+#' @noRd
 ccvi_app <- function(...){
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
@@ -759,7 +759,7 @@ ccvi_app <- function(...){
 
     hs_rast <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/HS_rast.tif",
+        pth <- system.file("extdata/HS_rast_high.tif",
                            package = "ccviR")
       } else {
         pth <- file_pths()$hs_rast_pth
@@ -1369,7 +1369,7 @@ ccvi_app <- function(...){
     output$downloadDefs <- downloadHandler(
       filename = "CCVI_column_definitions_results.csv",
       content = function(file) {
-        out <- read.csv(system.file("extdata/column_definitions_results.csv",
+        out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                     package = "ccviR"))
         write.csv(out, file, row.names = FALSE)
       }

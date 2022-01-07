@@ -48,15 +48,15 @@
 #'
 #' @examples
 #'
-#' base_pth <- system.file("extData", package = "ccviR")
+#' base_pth <- system.file("extdata", package = "ccviR")
 #'
 #' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
 #'
 #' run_spatial(
-#'   range_poly = read_sf(file.path(base_pth, "rng_poly_high.shp")),
-#'   scale_poly = read_sf(file.path(base_pth, "assess_poly.shp")),
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast.tif")),
+#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
 #'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
 #' )
 
@@ -70,9 +70,15 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                           c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
 
   if(length(clim_nms_dif) > 0){
-    stop("clim_vars_lst has unexpected names: ", clim_nms_dif)
+    stop("clim_vars_lst has unexpected names: ", clim_nms_dif, call. = FALSE)
   }
 
+  clim_nms_mis <- setdiff(c("mat", "cmd", "clim_poly"), names(clim_vars_lst))
+
+  if(length(clim_nms_mis) > 0){
+    stop("clim_vars_lst has missing required elements: ", clim_nms_mis,
+         call. = FALSE)
+  }
 
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat)
@@ -90,11 +96,17 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
          call. = FALSE)
   }
 
+  # sometimes intersection makes it invalid
+  range_poly_clim <- valid_or_error(range_poly_clim, "range_poly clim_poly intersection")
+
   range_poly <- st_intersection(range_poly, scale_poly) %>% st_set_agr("constant")
   if(nrow(range_poly) == 0){
     stop("The range polygon does not overlap with the assessment area polygon.",
          call. = FALSE)
   }
+
+  # sometimes intersection makes it invalid
+  range_poly <- valid_or_error(range_poly, "range_poly assessment area intersection")
 
   # Section A - Exposure to Local Climate Change: #====
 
@@ -215,15 +227,8 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
-  if(!all(sf::st_is_valid(poly))){
-    poly <- sf::st_make_valid(poly)
+  poly <- valid_or_error(poly, var_name)
 
-    if(!all(sf::st_is_valid(poly))){
-      stop("The ", var_name, " is not valid. Check the polygon is ",
-           "correct or provide a different version",
-           call. = FALSE)
-    }
-  }
   if(nrow(poly) > 1){
     poly <- sf::st_union(poly) %>% sf::st_as_sf()
   }

@@ -196,7 +196,7 @@ if(interactive()){
   ccviR_results <- future_map2(vuln_facts_ccviR, exp_ccviR,
                                ~calc_vulnerability(exp_df = .y, vuln_df = .x,
                                                    tax_grp = .y$tax_grp))
-  beepr::beep()
+
   # make into a table similar to NS_table
   ccviR_results_table <- tibble(Species = names(ccviR_results),
                                 Index = map_chr(ccviR_results, "index"),

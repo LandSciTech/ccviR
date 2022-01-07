@@ -44,7 +44,7 @@
 #'
 #' run_prep_data(in_folder = pth_in, out_folder = pth_out, overwrite = TRUE)
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
-                          map = NULL, mwmt = NULL, mcmt = NULL, clim_poly,
+                          map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
                           in_folder = NULL, out_folder,
                           reproject = FALSE, overwrite = FALSE){
   if(length(out_folder) == 0 || missing(out_folder)){
@@ -154,7 +154,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   if(!is.null(clim_poly) && length(clim_poly) > 0){
-    clim_poly <- raster::raster(clim_poly)
+    clim_poly <- sf::read_sf(clim_poly, agr = "constant")
   } else {
     clim_poly <- NULL
   }
@@ -350,10 +350,10 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
              mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
              mean_delta + 3*std_delta, max_delta)
   } else if(type == "IQR"){
-    med_delta <- round(median(raster::sampleRegular(rast_delta, 1000000),
+    med_delta <- round(stats::median(raster::sampleRegular(rast_delta, 1000000),
                               na.rm = TRUE), 3)
 
-    iqr_delta <- round(IQR(raster::sampleRegular(rast_delta, 1000000),
+    iqr_delta <- round(stats::IQR(raster::sampleRegular(rast_delta, 1000000),
                            na.rm = TRUE)/sd_div, 3)
 
     brs <- c(min_delta, med_delta-3*iqr_delta, med_delta-2*iqr_delta,

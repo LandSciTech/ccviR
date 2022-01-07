@@ -21,7 +21,7 @@
 #'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast.tif")),
+#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
 #'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
 #' )
 #'

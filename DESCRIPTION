@@ -33,7 +33,10 @@ Imports:
     rgdal,
     methods,
     stats,
-    utils
+    utils,
+    scales,
+    shinyvalidate,
+    tibble
 Suggests: 
     gdalUtils,
     testthat (>= 2.1.0),

@@ -58,7 +58,7 @@ run_prep_data(in_folder = file.path(data_pth, "clim_files/raw"),
 
 The prepared data will be saved in the output folder and can be used whenever the index is being calculated so this step only needs to be completed once.
 
-To demonstrate how the data is prepared the maps below show the change in mean annual temperature which is then classified into 6 categories based on 1/2 the interquartile range. 
+The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe. To demonstrate how the data is prepared the maps below show the change in mean annual temperature which is then classified into 6 categories. 
 
 ```{r}
 mat_norm <- raster(file.path(data_pth, "clim_files/raw/MAT.tif"))
@@ -114,7 +114,7 @@ spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
 
 ```
 
-We can look at how the spatial analysis was done by plotting the appropriate range polygon and climate data to see how they overlap. 
+We can look at how the spatial analysis was done by plotting the appropriate range polygon and climate data to see how they overlap.
 
 ```{r}
 plot(clim_dat$mat)
