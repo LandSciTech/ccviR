@@ -2,9 +2,10 @@
 #'
 #' Make an empty vulnerability factor table that can be filled in with the
 #' appropriate value for each vulnerability factor. The Code corresponds to the
-#' questions in the NatureServe spreadsheet. See the NatureServe Guidelines for
-#' detailed instructions. Values can be -1: Unknown, 0: Neutral, 1: Somewhat
-#' Increase, 2: Increase, 3: Greatly Increase.
+#' questions in the NatureServe Guidelines and Question is an abbreviated
+#' version of the question. See the NatureServe Guidelines for detailed
+#' instructions on how to score species. Values can be -1: Unknown, 0: Neutral,
+#' 1: Somewhat Increase, 2: Increase, 3: Greatly Increase.
 #'
 #' @param sp_nm Species name
 #' @param val1 A single number to fill the first column with. The default -1 for
@@ -13,6 +14,9 @@
 #' @param cave 0 or 1 For whether the species is cave or ground water dependent.
 #'   See Guidelines.
 #' @param mig 0 or 1 is the species migratory?
+#' @param use_spatial if TRUE then values for factors that are calculated in
+#'   \code{run_spatial} will be set to -1 for Unknown so that they do not
+#'   override the results of the spatial analysis
 #'
 #' @return a data.frame that can be edited and used as input for \code{vuln_df}
 #'   in \code{\link{calc_vulnerability}}
@@ -23,7 +27,7 @@
 #' make_vuln_df("sfa", cave = 1, mig = 0)
 
 make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
-                         cave = 0 , mig = 0){
+                         cave = 0, mig = 0, use_spatial = TRUE){
   vuln_qs <- tibble::tribble(
     ~Species, ~Code,
     sp_nm, "Z2",
@@ -57,8 +61,18 @@ make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
     sp_nm, "D4",
   ) %>% mutate(Value1 = val1, Value2 = val2,
                      Value3 = val3, Value4 = val4)
+
+  # add questions
+  vuln_qs <- vuln_qs %>% left_join(vulnq_code_lu_tbl, by = "Code") %>%
+    select(!matches("Value\\d"), everything()) %>%
+    mutate(Value1 = ifelse(!is.na(is_spatial) & is_spatial == 1 & use_spatial,
+                           -1, Value1))
+
   vuln_qs$Value1[1] <- cave
   vuln_qs$Value1[2] <- mig
-  vuln_qs
+  vuln_qs$Question[1] <- "Is the species an obligate of caves or groundwater systems"
+  vuln_qs$Question[2] <- "Is the species migratory"
+
+  return(vuln_qs)
 }
 

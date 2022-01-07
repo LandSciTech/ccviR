@@ -14,7 +14,7 @@ MAT <- rast
 values(MAT) <- seq(5, 10, length.out = 10000) %>%
   sort(decreasing = TRUE) %>% round()
 MAT_2050 <- MAT
-values(MAT_2050) <- seq(10, 20, length.out = 10000) %>%
+values(MAT_2050) <- seq(10, 30, length.out = 10000) %>%
   sort(decreasing = TRUE) %>% round()
 
 CMD <- MAT - 5

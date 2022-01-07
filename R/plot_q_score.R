@@ -34,8 +34,15 @@
 #' plot_q_score(index_vuln$vuln_df)
 
 plot_q_score <- function(vuln_df){
+
+  if(!"Question" %in% names(vuln_df)){
+    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code")
+  } else {
+    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code") %>%
+      rename(Question = "Question.y")
+  }
+
   vuln_df <- filter(vuln_df, !Code %in% c("Z2", "Z3")) %>%
-    left_join(vulnq_code_lu_tbl, by = "Code") %>%
     mutate(score = case_when(score < 0 ~ 0,
                              is.na(score) ~ 0,
                              TRUE ~ score))
