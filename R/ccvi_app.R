@@ -42,7 +42,6 @@ ccvi_app <- function(...){
     fluidPage(
       shinyjs::useShinyjs(),
       shinyjs::inlineCSS(appCSS),
-      shinyFeedback::useShinyFeedback(),
       title = "ccviR app",
       tags$head(tags$style(type = "text/css",
                            ".container-fluid {  max-width: 950px; /* or 950px */}")),
@@ -830,7 +829,7 @@ ccvi_app <- function(...){
     })
 
     output$clim_var_error <- renderText({
-      if(is(clim_vars(), "try-error")){
+      if(inherits(clim_vars(), "try-error")){
         stop(conditionMessage(attr(clim_vars(), "condition")))
       }
     })

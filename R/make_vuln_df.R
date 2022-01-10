@@ -1,4 +1,4 @@
-#' Make Vulnerability Table
+#' Make vulnerability table
 #'
 #' Make an empty vulnerability factor table that can be filled in with the
 #' appropriate value for each vulnerability factor. The Code corresponds to the
@@ -29,50 +29,20 @@
 make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
                          cave = 0, mig = 0, use_spatial = TRUE){
 
-  vuln_qs <- tibble::tribble(
-    ~Species, ~Code,
-    sp_nm, "Z2",
-    sp_nm, "Z3",
-    sp_nm, "B1",
-    sp_nm, "B2a",
-    sp_nm, "B2b",
-    sp_nm, "B3",
-    sp_nm, "C1",
-    sp_nm, "C2ai",
-    sp_nm, "C2aii",
-    sp_nm, "C2bi",
-    sp_nm, "C2bii",
-    sp_nm, "C2c",
-    sp_nm, "C2d",
-    sp_nm, "C3",
-    sp_nm, "C4a",
-    sp_nm, "C4b",
-    sp_nm, "C4c",
-    sp_nm, "C4d",
-    sp_nm, "C4e",
-    sp_nm, "C4f",
-    sp_nm, "C4g",
-    sp_nm, "C5a",
-    sp_nm, "C5b",
-    sp_nm, "C5c",
-    sp_nm, "C6",
-    sp_nm, "D1",
-    sp_nm, "D2",
-    sp_nm, "D3",
-    sp_nm, "D4",
-  ) %>% mutate(Value1 = val1, Value2 = val2,
-                     Value3 = val3, Value4 = val4)
+  cave_mig <- data.frame(Species = sp_nm, Code = c("Z2", "Z3"),
+                         Question = c("Is the species an obligate of caves or groundwater systems",
+                                      "Is the species migratory"),
+                         Value1 = c(cave, mig))
 
-  # add questions
-  vuln_qs <- vuln_qs %>% left_join(vulnq_code_lu_tbl, by = "Code") %>%
-    select(!matches("Value\\d"), everything()) %>%
+
+  vuln_qs <- ccviR::vulnq_code_lu_tbl %>%
+    mutate(Species = sp_nm,
+           Value1 = val1, Value2 = val2, Value3 = val3, Value4 = val4) %>%
     mutate(Value1 = ifelse(!is.na(is_spatial) & is_spatial == 1 & use_spatial,
                            -1, Value1))
+  vuln_qs <- bind_rows(cave_mig, vuln_qs) %>%
+    select(!matches("Value\\d"), everything())
 
-  vuln_qs$Value1[1] <- cave
-  vuln_qs$Value1[2] <- mig
-  vuln_qs$Question[1] <- "Is the species an obligate of caves or groundwater systems"
-  vuln_qs$Question[2] <- "Is the species migratory"
 
   return(vuln_qs)
 }

@@ -1,6 +1,6 @@
 #' Plot scores for each vulnerability question
 #'
-#' Help to visualize what factors are influencing the index. Produces a plotly
+#' A graph to help visualize what factors are influencing the index. Produces a plotly
 #' graphic where the bars are the total score for the factor after modifying it
 #' based on exposure and the dots are the exposure multiplier. Hover to see the
 #' name of the factor.
@@ -18,8 +18,8 @@
 #' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
 #'
 #' spat_res <- run_spatial(
-#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
-#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp"), agr = "constant"),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
 #'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
@@ -36,9 +36,9 @@
 plot_q_score <- function(vuln_df){
 
   if(!"Question" %in% names(vuln_df)){
-    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code")
+    vuln_df <- left_join(vuln_df, ccviR::vulnq_code_lu_tbl, by = "Code")
   } else {
-    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code") %>%
+    vuln_df <- left_join(vuln_df, ccviR::vulnq_code_lu_tbl, by = "Code") %>%
       rename(Question = "Question.y")
   }
 

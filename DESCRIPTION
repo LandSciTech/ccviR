@@ -29,14 +29,11 @@ Imports:
     R.utils,
     fs,
     plotly,
-    shinyFeedback,
     rgdal,
-    methods,
     stats,
     utils,
     scales,
-    shinyvalidate,
-    tibble
+    shinyvalidate
 Suggests: 
     gdalUtils,
     testthat (>= 2.1.0),

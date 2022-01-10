@@ -42,7 +42,7 @@ if(interactive()){
   multValueOpts <- expand.grid(valueOpts[1:4], valueOpts[1:4]) %>%
     filter(Var1 != Var2)
 
-  vuln_value_table <- vulnq_code_lu_tbl %>% select(Code) %>%
+  vuln_value_table <- ccviR::vulnq_code_lu_tbl %>% select(Code) %>%
     mutate(vals = list(multValueOpts)) %>%
     unnest(vals) %>%
     rowwise() %>%
@@ -52,7 +52,7 @@ if(interactive()){
     select(-Var1, -Var2) %>%
     distinct() %>%
     bind_rows(
-      expand.grid(vulnq_code_lu_tbl$Code, valueOpts) %>%
+      expand.grid(ccviR::vulnq_code_lu_tbl$Code, valueOpts) %>%
         mutate(var3 = Var2,
                Var2 = as.character(Var2)) %>%
         pivot_wider(names_from = "Var1", values_from = "Var2") %>%
@@ -60,7 +60,7 @@ if(interactive()){
     )
 
   # remove 3s from qs with max of 2
-  max2 <- filter(vulnq_code_lu_tbl, Max_Value == 2) %>% pull(Code)
+  max2 <- filter(ccviR::vulnq_code_lu_tbl, Max_Value == 2) %>% pull(Code)
 
   # NAs are omitted in sampling below
   vuln_value_table <- vuln_value_table %>%

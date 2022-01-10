@@ -13,7 +13,7 @@ run_prep_data(
   map = NULL,
   mwmt = NULL,
   mcmt = NULL,
-  clim_poly,
+  clim_poly = NULL,
   in_folder = NULL,
   out_folder,
   reproject = FALSE,

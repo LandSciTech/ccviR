@@ -46,7 +46,7 @@ plot_score_index <- function(b_c_score, d_score, n_d_factors){
 
   levs <- rev(c("EV", "HV", "MV", "LV", "IE"))
 
-  comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
+  comb_index_tbl <- ccviR::comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
     transmute(Dindex,
               Bindex = name %>% stringr::str_remove("bc_") %>% toupper(),
               value = factor(value, levels = levs))

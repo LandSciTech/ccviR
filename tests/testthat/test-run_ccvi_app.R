@@ -14,7 +14,7 @@ test_that("run_ccvi_app() works", {
 })
 
 # # To update a snapshot
-# snapshotUpdate('tests/testthat/app')
+# shinytest::snapshotUpdate('tests/testthat/app')
 
 # # To record a new test
 # shinytest::recordTest("tests/testthat/app")

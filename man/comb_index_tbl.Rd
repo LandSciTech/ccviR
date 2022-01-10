@@ -11,7 +11,7 @@ An object of class \code{data.frame} with 5 rows and 6 columns.
 comb_index_tbl
 }
 \description{
-A table for combining index scores from the sensitivity and modelled response
-to climate change sections
+A table for combining index scores from the sensitivity (B/C) and modelled response
+to climate change (D) sections
 }
 \keyword{datasets}

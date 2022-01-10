@@ -109,7 +109,7 @@ sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
               assess_poly, PTN_poly)
 
 write_fun <- function(x, nm, dir, crs_use){
-  if(is(x, "Raster")){
+  if(inherits(x, "Raster")){
     crs(x) <- crs_use
     if(nm == "CCEI"){
       writeRaster(x, paste0(dir, nm, ".img"), overwrite = TRUE)
@@ -117,7 +117,7 @@ write_fun <- function(x, nm, dir, crs_use){
       writeRaster(x, paste0(dir, nm, ".tif"), overwrite = TRUE)
     }
   }
-  if(is(x, "sf")){
+  if(inherits(x, "sf")){
     x <- st_set_crs(x, crs_use)
     write_sf(x, paste0(dir, nm, ".shp"))
   }

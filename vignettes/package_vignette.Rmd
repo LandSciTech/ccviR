@@ -15,25 +15,27 @@ knitr::opts_chunk$set(
 ```
 
 ## Introduction
-The ccviR package implements the (NatureServe Climate Change Vulnerability Index (CCVI))[https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index] in an R package and Shiny App. The app allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. It also enables easier sensitivity analysis of the Index. 
+The ccviR package implements the [NatureServe Climate Change Vulnerability Index (CCVI)](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) in an R package and Shiny App. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. It also enables easier sensitivity analysis of the Index. 
 
-The NatureServe CCVI is a trait based climate change vulnerability assessment framework that can also include observed and modeled responses to climate change. The NatureServe CCVI includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity and optionally incorporates the results of documented or modeled responses to climate change. Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change, which is used to determine an exposure multiplier. Sensitivity and adaptive capacity and responses to climate change are assessed by scoring vulnerability factors (23 and 4 respectively), on a scale from ‘neutral’ (0)  to ‘greatly increases vulnerability’ (3). Factors that cannot be answered can be left blank and contribute 0 to the total score, but if fewer than 13 are scored the index value can not be calculated. The sensitivity and adaptive capacity section scores are then multiplied by an exposure multiplier and summed, while the scores for the response to climate change section are simply summed. An index value is then determined for each section by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section (Young 2012, Young 2015). The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence if not enough factors of the CCVI are scored. For more detailed information on how the index works and how each factor is scored see the (NatureServe CCVI Guidelines)[https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf]
+The NatureServe CCVI is a trait based climate change vulnerability assessment framework that can also include observed and modeled responses to climate change. The NatureServe CCVI includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity and optionally incorporates the results of documented or modeled responses to climate change. Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change, which is used to determine an exposure multiplier. Sensitivity and adaptive capacity and responses to climate change are assessed by scoring vulnerability factors (23 and 4 respectively), on a scale from ‘neutral’ (0)  to ‘greatly increases vulnerability’ (3). Factors that cannot be answered can be left blank and contribute 0 to the total score, but if fewer than 13 are scored the index value can not be calculated. The sensitivity and adaptive capacity section scores are then multiplied by an exposure multiplier and summed, while the scores for the response to climate change section are simply summed. An index value is then determined for each section by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section (Young 2012, Young 2015). The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence if not enough factors of the CCVI are scored. For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf)
 
 ## Preparing the climate data
-Step 1: Acquire climate data. We recommend the climate data for North America from (AdaptWest)[https://adaptwest.databasin.org/pages/adaptwest-climatena/] but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 2050s for the future. Save the downloaded data in a folder you can easily find.
+Step 1: Acquire climate data. We recommend the climate data for North America from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/) but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 2050s for the future. Save the downloaded data in a folder you can easily find.
 
 Step 2: Prepare the climate data for use in the app. Climate data can be processed by providing file paths for each file or for a folder that contains all the files with standard names. For the output folder make sure to choose a location that is easy to find again because you will use the prepared climate data to calculate the index.
 
-File names in folder
-MAT: mean annual temperature for the historical normal period *
-MAT_2050: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100 *
-CMD: climate moisture deficit for the historical normal period *
-CMD_2050: climate moisture deficit for the future under climate change it can be any number eg 2050, 2100 *
-CCEI: Climate Change Exposure Index from NatureServe website
-MAP: mean annual precipitation for the historical normal period
-MWMT: mean warmest month temperature for the historical normal period
-MCMT: mean coldest month temperature for the historical normal period
-clim_poly: An optional shapefile with a polygon of the extent of the climate data. It will be created from the climate data if it is missing but it is faster to provide it.
+Standard names for input folder
+
+* MAT: mean annual temperature for the historical normal period (required)
+* MAT_2050: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100 (required)
+* CMD: climate moisture deficit for the historical normal period (required)
+* CMD_2050: climate moisture deficit for the future under climate change it can be any number eg 2050, 2100 (required)
+* CCEI: Climate Change Exposure Index from NatureServe website
+* MAP: mean annual precipitation for the historical normal period
+* MWMT: mean warmest month temperature for the historical normal period
+* MCMT: mean coldest month temperature for the historical normal period
+* clim_poly: An optional shapefile with a polygon of the extent of the climate data. It will be created from the climate data if it is missing but it is faster to provide it.
+
 Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
 
 An example data set has been provided with the app that we will use in the examples below. 
@@ -58,7 +60,7 @@ run_prep_data(in_folder = file.path(data_pth, "clim_files/raw"),
 
 The prepared data will be saved in the output folder and can be used whenever the index is being calculated so this step only needs to be completed once.
 
-The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe. To demonstrate how the data is prepared the maps below show the change in mean annual temperature which is then classified into 6 categories. 
+The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe. To demonstrate how the data is prepared the maps below use the demo data set to show the change in mean annual temperature which is then classified into 6 categories. 
 
 ```{r}
 mat_norm <- raster(file.path(data_pth, "clim_files/raw/MAT.tif"))
@@ -75,11 +77,12 @@ plot(mat_classified)
 
 ## Load species specific spatial data
 The following spatial data sets can be used for each species: 
-- Species range polygon (required)
-- Assessment area polygon (required)
-- Non-breeding range polygon
-- Projected habitat change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
-- Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.
+
+* Species range polygon (required)
+* Assessment area polygon (required)
+* Non-breeding range polygon
+* Projected habitat change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
+* Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.
 
 For this example all of the data is provided with the package. 
 
@@ -174,7 +177,7 @@ str(index_res)
 
 index_res$index
 ```
-These results can be used to investigate how the index value was reached including using two graphs that are included in the package. The first shows how the index values that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In our example we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
+These results can be used to investigate how the index value was reached including using two graphs that are included in the package. The first shows how the index values, that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections, are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In our example we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
 
 ```{r}
 plot_score_index(index_res$b_c_score, index_res$d_score, index_res$n_d_factors)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/make_vuln_df.R
 \name{make_vuln_df}
 \alias{make_vuln_df}
-\title{Make Vulnerability Table}
+\title{Make vulnerability table}
 \usage{
 make_vuln_df(
   sp_nm,

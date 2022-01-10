@@ -1,36 +1,6 @@
 {
   "output": {
     "assess_poly_pth_out": "",
-    "box_C2ai": {
-      "html": "<div id=\"C2aidiv\">\n  <div id=\"C2ai\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"C2ai-label\">\n    <label class=\"control-label\" id=\"C2ai-label\" for=\"C2ai\">Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.<\/b><\/font><\/label>\n    <div class=\"shiny-options-group\">\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2ai\" value=\"3\" checked=\"checked\"/>\n        <span>Greatly increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2ai\" value=\"2\"/>\n        <span>Increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2ai\" value=\"1\"/>\n        <span>Somewhat increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2ai\" value=\"0\"/>\n        <span>Neutral<\/span>\n      <\/label>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"comC2ai\" id=\"comC2ai-label\"><\/label>\n    <textarea id=\"comC2ai\" class=\"form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
-      "deps": [
-
-      ]
-    },
-    "box_C2aii": {
-      "html": "<div id=\"C2aiidiv\">\n  <div id=\"C2aii\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"C2aii-label\">\n    <label class=\"control-label\" id=\"C2aii-label\" for=\"C2aii\">Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.<\/b><\/font><\/label>\n    <div class=\"shiny-options-group\">\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2aii\" value=\"3\"/>\n        <span>Greatly increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2aii\" value=\"2\" checked=\"checked\"/>\n        <span>Increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2aii\" value=\"1\"/>\n        <span>Somewhat increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2aii\" value=\"0\"/>\n        <span>Neutral<\/span>\n      <\/label>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"comC2aii\" id=\"comC2aii-label\"><\/label>\n    <textarea id=\"comC2aii\" class=\"form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
-      "deps": [
-
-      ]
-    },
-    "box_C2bi": {
-      "html": "<div id=\"C2bidiv\">\n  <div id=\"C2bi\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"C2bi-label\">\n    <label class=\"control-label\" id=\"C2bi-label\" for=\"C2bi\">Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.<\/b><\/font><\/label>\n    <div class=\"shiny-options-group\">\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2bi\" value=\"3\" checked=\"checked\"/>\n        <span>Greatly increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2bi\" value=\"2\"/>\n        <span>Increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2bi\" value=\"1\"/>\n        <span>Somewhat increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"C2bi\" value=\"0\"/>\n        <span>Neutral<\/span>\n      <\/label>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"comC2bi\" id=\"comC2bi-label\"><\/label>\n    <textarea id=\"comC2bi\" class=\"form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
-      "deps": [
-
-      ]
-    },
-    "box_D2": {
-      "html": "<div id=\"D2div\">\n  <div id=\"D2\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"D2-label\">\n    <label class=\"control-label\" id=\"D2-label\" for=\"D2\">Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.<\/b><\/font><\/label>\n    <div class=\"shiny-options-group\">\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D2\" value=\"3\"/>\n        <span>Greatly increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D2\" value=\"2\"/>\n        <span>Increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D2\" value=\"1\" checked=\"checked\"/>\n        <span>Somewhat increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D2\" value=\"0\"/>\n        <span>Neutral<\/span>\n      <\/label>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"comD2\" id=\"comD2-label\"><\/label>\n    <textarea id=\"comD2\" class=\"form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
-      "deps": [
-
-      ]
-    },
-    "box_D3": {
-      "html": "<div id=\"D3div\">\n  <div id=\"D3\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"D3-label\">\n    <label class=\"control-label\" id=\"D3-label\" for=\"D3\">Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.<\/b><\/font><\/label>\n    <div class=\"shiny-options-group\">\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D3\" value=\"3\"/>\n        <span>Greatly increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D3\" value=\"2\"/>\n        <span>Increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D3\" value=\"1\" checked=\"checked\"/>\n        <span>Somewhat increase<\/span>\n      <\/label>\n      <label class=\"checkbox-inline\">\n        <input type=\"checkbox\" name=\"D3\" value=\"0\"/>\n        <span>Neutral<\/span>\n      <\/label>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"comD3\" id=\"comD3-label\"><\/label>\n    <textarea id=\"comD3\" class=\"form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
-      "deps": [
-
-      ]
-    },
     "ccei_map": {
       "x": {
         "options": {
@@ -655,7 +625,7 @@
     },
     "cmd_tbl": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: right;'> Exposure Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th> <th style='text-align: right;'> Exposure Multiplier <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td align=\"right\"> High - 1 <\/td> <td align=\"right\"> 10.00 <\/td> <td align=\"right\"> 1.67 <\/td> <\/tr>\n  <tr> <td align=\"right\">  2 <\/td> <td align=\"right\"> 90.00 <\/td> <td align=\"right\">  <\/td> <\/tr>\n  <tr> <td align=\"right\">  3 <\/td> <td align=\"right\"> 0.00 <\/td> <td align=\"right\">  <\/td> <\/tr>\n  <tr> <td align=\"right\">  4 <\/td> <td align=\"right\"> 0.00 <\/td> <td align=\"right\">  <\/td> <\/tr>\n  <tr> <td align=\"right\">  5 <\/td> <td align=\"right\"> 0.00 <\/td> <td align=\"right\">  <\/td> <\/tr>\n  <tr> <td align=\"right\"> Low - 6 <\/td> <td align=\"right\"> 0.00 <\/td> <td align=\"right\">  <\/td> <\/tr>\n   <\/tbody> <\/table>",
     "conf_graph": {
-      "src": "[image data sha1: 51377460e4d6224f36d14117a15aee26b2040d03]",
+      "src": "[image data sha1: db83b142e1d05bac5398eb631a96bc3b0e37c783]",
       "width": 300,
       "height": 200,
       "alt": "Plot object",
@@ -974,1242 +944,6 @@
       }
     },
     "index": "<h4><font color= darkorange ><b> Highly Vulnerable :<\/b><\/font><\/h4> <p>Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.<\/p>",
-    "map_C2ai": {
-      "x": {
-        "options": {
-          "crs": {
-            "crsClass": "L.CRS.EPSG3857",
-            "code": null,
-            "proj4def": null,
-            "projectedBounds": null,
-            "options": {
-
-            }
-          }
-        },
-        "calls": [
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap401",
-              401
-            ]
-          },
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap402",
-              402
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldGrayCanvas",
-              null,
-              "Esri.WorldGrayCanvas",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "OpenStreetMap",
-              null,
-              "OpenStreetMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldTopoMap",
-              null,
-              "Esri.WorldTopoMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addRasterImage",
-            "args": [
-              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABBklEQVR4nO3RsRGAIADAQGT/KVjPHZSaxtYU/xPkLtdzr3eQMf8O4GRIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCExhsQYEmNIjCHwZQMJWQRSUcvXFAAAAABJRU5ErkJggg==",
-              [
-                [
-                  1.00003807065288,
-                  0
-                ],
-                [
-                  -0.00994959645227047,
-                  1.00003806573389
-                ]
-              ],
-              1,
-              null,
-              "tmap401",
-              "rast"
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#FEEBA2"
-                ],
-                "labels": [
-                  "1"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "Historical thermal niche",
-                "extra": null,
-                "layerId": "legend401",
-                "className": "info legend rast",
-                "group": "rast"
-              }
-            ]
-          },
-          {
-            "method": "addPolygons",
-            "args": [
-              [
-                [
-                  [
-                    {
-                      "lng": [
-                        1,
-                        1,
-                        0,
-                        0,
-                        1
-                      ],
-                      "lat": [
-                        0.75,
-                        1,
-                        1,
-                        0.75,
-                        0.75
-                      ]
-                    }
-                  ]
-                ]
-              ],
-              "X1",
-              "poly1",
-              {
-                "interactive": false,
-                "className": "",
-                "pane": "tmap402",
-                "stroke": true,
-                "color": "#666666",
-                "weight": 1,
-                "opacity": 1,
-                "fill": true,
-                "fillOpacity": 0,
-                "dashArray": "none",
-                "smoothFactor": 1,
-                "noClip": false
-              },
-              null,
-              null,
-              null,
-              {
-                "interactive": false,
-                "permanent": false,
-                "direction": "auto",
-                "opacity": 1,
-                "offset": [
-                  0,
-                  0
-                ],
-                "textsize": "10px",
-                "textOnly": false,
-                "className": "",
-                "sticky": true
-              },
-              null
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#000000"
-                ],
-                "labels": [
-                  "Range"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "",
-                "extra": null,
-                "layerId": "legend NA",
-                "className": "info legend",
-                "group": null
-              }
-            ]
-          },
-          {
-            "method": "addLayersControl",
-            "args": [
-              [
-                "Esri.WorldGrayCanvas",
-                "OpenStreetMap",
-                "Esri.WorldTopoMap"
-              ],
-              [
-                "rast",
-                "poly1"
-              ],
-              {
-                "collapsed": true,
-                "autoZIndex": true,
-                "position": "topleft"
-              }
-            ]
-          }
-        ],
-        "limits": {
-          "lat": [
-            -0.00994959645227047,
-            1.00003807065288
-          ],
-          "lng": [
-            0,
-            1.00003806573389
-          ]
-        },
-        "fitBounds": [
-          0,
-          0,
-          1,
-          1,
-          [
-
-          ]
-        ]
-      },
-      "evals": [
-
-      ],
-      "jsHooks": [
-
-      ],
-      "deps": [
-        {
-          "name": "leaflet-providers",
-          "version": "1.9.0",
-          "src": {
-            "href": "leaflet-providers-1.9.0"
-          },
-          "meta": null,
-          "script": "leaflet-providers_1.9.0.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": false
-        },
-        {
-          "name": "leaflet-providers-plugin",
-          "version": "2.0.4.1",
-          "src": {
-            "href": "leaflet-providers-plugin-2.0.4.1"
-          },
-          "meta": null,
-          "script": "leaflet-providers-plugin.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": true
-        }
-      ]
-    },
-    "map_C2aii": {
-      "x": {
-        "options": {
-          "crs": {
-            "crsClass": "L.CRS.EPSG3857",
-            "code": null,
-            "proj4def": null,
-            "projectedBounds": null,
-            "options": {
-
-            }
-          }
-        },
-        "calls": [
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap401",
-              401
-            ]
-          },
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap402",
-              402
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldGrayCanvas",
-              null,
-              "Esri.WorldGrayCanvas",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "OpenStreetMap",
-              null,
-              "OpenStreetMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldTopoMap",
-              null,
-              "Esri.WorldTopoMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addPolygons",
-            "args": [
-              [
-                [
-                  [
-                    {
-                      "lng": [
-                        0,
-                        1,
-                        1,
-                        0,
-                        0
-                      ],
-                      "lat": [
-                        0.75,
-                        0.75,
-                        1,
-                        1,
-                        0.75
-                      ]
-                    }
-                  ]
-                ]
-              ],
-              "X1",
-              "poly1",
-              {
-                "interactive": false,
-                "className": "",
-                "pane": "tmap401",
-                "stroke": true,
-                "color": "#666666",
-                "weight": 1,
-                "opacity": 1,
-                "fill": true,
-                "fillOpacity": 0,
-                "dashArray": "none",
-                "smoothFactor": 1,
-                "noClip": false
-              },
-              null,
-              null,
-              null,
-              {
-                "interactive": false,
-                "permanent": false,
-                "direction": "auto",
-                "opacity": 1,
-                "offset": [
-                  0,
-                  0
-                ],
-                "textsize": "10px",
-                "textOnly": false,
-                "className": "",
-                "sticky": true
-              },
-              null
-            ]
-          },
-          {
-            "method": "addPolygons",
-            "args": [
-              [
-                [
-                  [
-                    {
-                      "lng": [
-                        0.5,
-                        0,
-                        1,
-                        0.5
-                      ],
-                      "lat": [
-                        0.5,
-                        1,
-                        1,
-                        0.5
-                      ]
-                    }
-                  ]
-                ]
-              ],
-              "X1.1",
-              "poly2",
-              {
-                "interactive": false,
-                "className": "",
-                "pane": "tmap402",
-                "stroke": true,
-                "color": "#FF0000",
-                "weight": 1,
-                "opacity": 1,
-                "fill": true,
-                "fillOpacity": 0,
-                "dashArray": "none",
-                "smoothFactor": 1,
-                "noClip": false
-              },
-              null,
-              null,
-              null,
-              {
-                "interactive": false,
-                "permanent": false,
-                "direction": "auto",
-                "opacity": 1,
-                "offset": [
-                  0,
-                  0
-                ],
-                "textsize": "10px",
-                "textOnly": false,
-                "className": "",
-                "sticky": true
-              },
-              null
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#000000",
-                  "#FF0000"
-                ],
-                "labels": [
-                  "Range",
-                  "Physiological thermal niche"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "",
-                "extra": null,
-                "layerId": "legend NA",
-                "className": "info legend",
-                "group": null
-              }
-            ]
-          },
-          {
-            "method": "addLayersControl",
-            "args": [
-              [
-                "Esri.WorldGrayCanvas",
-                "OpenStreetMap",
-                "Esri.WorldTopoMap"
-              ],
-              [
-                "poly1",
-                "poly2"
-              ],
-              {
-                "collapsed": true,
-                "autoZIndex": true,
-                "position": "topleft"
-              }
-            ]
-          }
-        ],
-        "limits": {
-          "lat": [
-            0.5,
-            1
-          ],
-          "lng": [
-            0,
-            1
-          ]
-        },
-        "fitBounds": [
-          0.75,
-          0,
-          1,
-          1,
-          [
-
-          ]
-        ]
-      },
-      "evals": [
-
-      ],
-      "jsHooks": [
-
-      ],
-      "deps": [
-        {
-          "name": "leaflet-providers",
-          "version": "1.9.0",
-          "src": {
-            "href": "leaflet-providers-1.9.0"
-          },
-          "meta": null,
-          "script": "leaflet-providers_1.9.0.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": false
-        },
-        {
-          "name": "leaflet-providers-plugin",
-          "version": "2.0.4.1",
-          "src": {
-            "href": "leaflet-providers-plugin-2.0.4.1"
-          },
-          "meta": null,
-          "script": "leaflet-providers-plugin.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": true
-        }
-      ]
-    },
-    "map_C2bi": {
-      "x": {
-        "options": {
-          "crs": {
-            "crsClass": "L.CRS.EPSG3857",
-            "code": null,
-            "proj4def": null,
-            "projectedBounds": null,
-            "options": {
-
-            }
-          }
-        },
-        "calls": [
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap401",
-              401
-            ]
-          },
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap402",
-              402
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldGrayCanvas",
-              null,
-              "Esri.WorldGrayCanvas",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "OpenStreetMap",
-              null,
-              "OpenStreetMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldTopoMap",
-              null,
-              "Esri.WorldTopoMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addRasterImage",
-            "args": [
-              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABRklEQVR4nO3cIQ7CQBRF0YF0/4thCaSyOBweRYLFFVsMdq44ZwWT3DzxzZz2z7oPMs6zH8AvQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIECdmf17Hsz+vsd3BgISXbZSxju8x+BgcWEvJaH2N5rY/Z7+DAQkJu9/dYbvf37HdwYCExJ3+/t1hIiEs9yEJKXOo9FhLiUg+ykBCXepCFxLjUYywkxKUeZCElLvUeCwlxqQdZSIhLPchCYlzqMRYS4lIPspASl3qPhYS41IMsJMSlHmQhMS71GAsJcakHWUiJS73HQkJc6kEWEuJSD7IQ+OcLf4pwDnI7rk0AAAAASUVORK5CYII=",
-              [
-                [
-                  1.00003807065288,
-                  0
-                ],
-                [
-                  -0.00994959645227047,
-                  1.00003806573389
-                ]
-              ],
-              1,
-              null,
-              "tmap401",
-              "rast"
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#FFF8C4",
-                  "#FEDE86",
-                  "#FEAA38",
-                  "#EA6E13",
-                  "#B74202"
-                ],
-                "labels": [
-                  "0 to 200",
-                  "200 to 400",
-                  "400 to 600",
-                  "600 to 800",
-                  "800 to 1,000"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "Precipitation",
-                "extra": null,
-                "layerId": "legend401",
-                "className": "info legend rast",
-                "group": "rast"
-              }
-            ]
-          },
-          {
-            "method": "addPolygons",
-            "args": [
-              [
-                [
-                  [
-                    {
-                      "lng": [
-                        1,
-                        1,
-                        0,
-                        0,
-                        1
-                      ],
-                      "lat": [
-                        0.75,
-                        1,
-                        1,
-                        0.75,
-                        0.75
-                      ]
-                    }
-                  ]
-                ]
-              ],
-              "X1",
-              "poly1",
-              {
-                "interactive": false,
-                "className": "",
-                "pane": "tmap402",
-                "stroke": true,
-                "color": "#666666",
-                "weight": 1,
-                "opacity": 1,
-                "fill": true,
-                "fillOpacity": 0,
-                "dashArray": "none",
-                "smoothFactor": 1,
-                "noClip": false
-              },
-              null,
-              null,
-              null,
-              {
-                "interactive": false,
-                "permanent": false,
-                "direction": "auto",
-                "opacity": 1,
-                "offset": [
-                  0,
-                  0
-                ],
-                "textsize": "10px",
-                "textOnly": false,
-                "className": "",
-                "sticky": true
-              },
-              null
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#000000"
-                ],
-                "labels": [
-                  "Range"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "",
-                "extra": null,
-                "layerId": "legend NA",
-                "className": "info legend",
-                "group": null
-              }
-            ]
-          },
-          {
-            "method": "addLayersControl",
-            "args": [
-              [
-                "Esri.WorldGrayCanvas",
-                "OpenStreetMap",
-                "Esri.WorldTopoMap"
-              ],
-              [
-                "rast",
-                "poly1"
-              ],
-              {
-                "collapsed": true,
-                "autoZIndex": true,
-                "position": "topleft"
-              }
-            ]
-          }
-        ],
-        "limits": {
-          "lat": [
-            -0.00994959645227047,
-            1.00003807065288
-          ],
-          "lng": [
-            0,
-            1.00003806573389
-          ]
-        },
-        "fitBounds": [
-          0,
-          0,
-          1,
-          1,
-          [
-
-          ]
-        ]
-      },
-      "evals": [
-
-      ],
-      "jsHooks": [
-
-      ],
-      "deps": [
-        {
-          "name": "leaflet-providers",
-          "version": "1.9.0",
-          "src": {
-            "href": "leaflet-providers-1.9.0"
-          },
-          "meta": null,
-          "script": "leaflet-providers_1.9.0.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": false
-        },
-        {
-          "name": "leaflet-providers-plugin",
-          "version": "2.0.4.1",
-          "src": {
-            "href": "leaflet-providers-plugin-2.0.4.1"
-          },
-          "meta": null,
-          "script": "leaflet-providers-plugin.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": true
-        }
-      ]
-    },
-    "map_D2_3": {
-      "x": {
-        "options": {
-          "crs": {
-            "crsClass": "L.CRS.EPSG3857",
-            "code": null,
-            "proj4def": null,
-            "projectedBounds": null,
-            "options": {
-
-            }
-          }
-        },
-        "calls": [
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap401",
-              401
-            ]
-          },
-          {
-            "method": "createMapPane",
-            "args": [
-              "tmap402",
-              402
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldGrayCanvas",
-              null,
-              "Esri.WorldGrayCanvas",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "OpenStreetMap",
-              null,
-              "OpenStreetMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addProviderTiles",
-            "args": [
-              "Esri.WorldTopoMap",
-              null,
-              "Esri.WorldTopoMap",
-              {
-                "minZoom": 0,
-                "maxZoom": 18,
-                "tileSize": 256,
-                "subdomains": "abc",
-                "errorTileUrl": "",
-                "tms": false,
-                "noWrap": false,
-                "zoomOffset": 0,
-                "zoomReverse": false,
-                "opacity": 1,
-                "zIndex": 1,
-                "detectRetina": false,
-                "pane": "tilePane"
-              }
-            ]
-          },
-          {
-            "method": "addRasterImage",
-            "args": [
-              "data:image/png;base64,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",
-              [
-                [
-                  1.00003807065288,
-                  0
-                ],
-                [
-                  -0.00994959645227047,
-                  1.00003806573389
-                ]
-              ],
-              1,
-              null,
-              "tmap401",
-              "rast"
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#BEBEBE",
-                  "#FF0000",
-                  "#FFC125",
-                  "#008000"
-                ],
-                "labels": [
-                  "Not suitable",
-                  "Lost",
-                  "Maintained",
-                  "Gained"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "Habitat suitability",
-                "extra": null,
-                "layerId": "legend401",
-                "className": "info legend rast",
-                "group": "rast"
-              }
-            ]
-          },
-          {
-            "method": "addPolygons",
-            "args": [
-              [
-                [
-                  [
-                    {
-                      "lng": [
-                        0,
-                        1,
-                        1,
-                        0,
-                        0
-                      ],
-                      "lat": [
-                        0.75,
-                        0.75,
-                        1,
-                        1,
-                        0.75
-                      ]
-                    }
-                  ]
-                ]
-              ],
-              "X1",
-              "poly1",
-              {
-                "interactive": false,
-                "className": "",
-                "pane": "tmap402",
-                "stroke": true,
-                "color": "#666666",
-                "weight": 1,
-                "opacity": 1,
-                "fill": true,
-                "fillOpacity": 0,
-                "dashArray": "none",
-                "smoothFactor": 1,
-                "noClip": false
-              },
-              null,
-              null,
-              null,
-              {
-                "interactive": false,
-                "permanent": false,
-                "direction": "auto",
-                "opacity": 1,
-                "offset": [
-                  0,
-                  0
-                ],
-                "textsize": "10px",
-                "textOnly": false,
-                "className": "",
-                "sticky": true
-              },
-              null
-            ]
-          },
-          {
-            "method": "addLegend",
-            "args": [
-              {
-                "colors": [
-                  "#000000"
-                ],
-                "labels": [
-                  "Range"
-                ],
-                "na_color": null,
-                "na_label": "NA",
-                "opacity": 1,
-                "position": "topright",
-                "type": "unknown",
-                "title": "",
-                "extra": null,
-                "layerId": "legend NA",
-                "className": "info legend",
-                "group": null
-              }
-            ]
-          },
-          {
-            "method": "addLayersControl",
-            "args": [
-              [
-                "Esri.WorldGrayCanvas",
-                "OpenStreetMap",
-                "Esri.WorldTopoMap"
-              ],
-              [
-                "rast",
-                "poly1"
-              ],
-              {
-                "collapsed": true,
-                "autoZIndex": true,
-                "position": "topleft"
-              }
-            ]
-          }
-        ],
-        "limits": {
-          "lat": [
-            -0.00994959645227047,
-            1.00003807065288
-          ],
-          "lng": [
-            0,
-            1.00003806573389
-          ]
-        },
-        "fitBounds": [
-          0,
-          0,
-          1,
-          1,
-          [
-
-          ]
-        ]
-      },
-      "evals": [
-
-      ],
-      "jsHooks": [
-
-      ],
-      "deps": [
-        {
-          "name": "leaflet-providers",
-          "version": "1.9.0",
-          "src": {
-            "href": "leaflet-providers-1.9.0"
-          },
-          "meta": null,
-          "script": "leaflet-providers_1.9.0.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": false
-        },
-        {
-          "name": "leaflet-providers-plugin",
-          "version": "2.0.4.1",
-          "src": {
-            "href": "leaflet-providers-plugin-2.0.4.1"
-          },
-          "meta": null,
-          "script": "leaflet-providers-plugin.js",
-          "stylesheet": null,
-          "head": null,
-          "attachment": null,
-          "package": null,
-          "all_files": true
-        }
-      ]
-    },
     "mig_exp": "<font color= grey ><b> N/A <\/b><\/font>",
     "mig_exp_gauge": {
       "x": {
@@ -2495,93 +1229,93 @@
               "y"
             ],
             "x": [
+              "C2bii",
+              "B2a",
               "C4e",
               "C5b",
               "C3",
-              "D2",
+              "C2d",
+              "C4d",
               "D4",
+              "C1",
               "D1",
               "C4g",
               "C5c",
               "C4c",
-              "D3",
-              "C2aii",
-              "C6",
-              "C2c",
-              "B3",
-              "C4b",
-              "C2bii",
-              "C2ai",
-              "B2a",
-              "C4d",
-              "C2d",
-              "C1",
-              "C2bi",
               "B1",
               "C4a",
               "C4f",
+              "C6",
+              "C2c",
               "C5a",
-              "B2b"
+              "B3",
+              "B2b",
+              "C4b",
+              "C2ai",
+              "C2aii",
+              "C2bi",
+              "D2",
+              "D3"
             ],
             "y": [
               0,
+              1.835,
+              0,
               0,
               1.835,
-              1,
+              1.835,
               0,
+              0,
+              2.7525,
               1.5,
               0,
               0,
               0,
-              1,
-              4,
+              0,
+              0,
+              0,
+              0,
               0,
               0,
               1.835,
               0,
               0,
               6,
-              1.835,
-              0,
-              1.835,
-              2.7525,
+              4,
               5.01,
-              0,
-              0,
-              0,
-              0,
-              0
+              1,
+              1
             ],
             "type": "bar",
             "name": "Score",
             "text": [
+              "Physiological hydrological niche",
+              "Natural barriers",
               "Sensitivity to pathogens or natural enemies",
               "Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\")",
               "Restriction to uncommon landscape/geological features or derivatives",
-              "Modeled future (2050) change in population or range size",
+              "Dependence on ice, ice-edge, or snow-cover habitats",
+              "Dependence on other species for propagule dispersal",
               "Occurrence of protected areas in modeled future (2050) distribution",
+              "Dispersal and movements",
               "Documented response to recent climate change",
               "Forms part of an interspecific interaction not covered by 5a-f",
               "Reproductive system (plants only; use only if c5a and c5b are “unknown”)",
               "Pollinator versatility (plants only)",
-              "Overlap of modeled future (2050) range with current range",
-              "Physiological thermal niche",
-              "Phenological response to changing seasonal temperature and precipitation dynamics",
-              "Dependence on a specific disturbance regime likely to be impacted by climate change",
-              "Predicted impact of land use changes resulting from human responses to climate change",
-              "Dietary versatility (animals only)",
-              "Physiological hydrological niche",
-              "Historical thermal niche",
-              "Natural barriers",
-              "Dependence on other species for propagule dispersal",
-              "Dependence on ice, ice-edge, or snow-cover habitats",
-              "Dispersal and movements",
-              "Historical hydrological niche",
               "Exposure to sea level rise",
               "Dependence on other species to generate required habitat",
               "Sensitivity to competition from native or non-native species",
+              "Phenological response to changing seasonal temperature and precipitation dynamics",
+              "Dependence on a specific disturbance regime likely to be impacted by climate change",
               "Measured genetic variation",
-              "Anthropogenic barriers"
+              "Predicted impact of land use changes resulting from human responses to climate change",
+              "Anthropogenic barriers",
+              "Dietary versatility (animals only)",
+              "Historical thermal niche",
+              "Physiological thermal niche",
+              "Historical hydrological niche",
+              "Modeled future (2050) change in population or range size",
+              "Overlap of modeled future (2050) range with current range"
             ],
             "hovertemplate": [
               "%{text}: <br> Score: %{y}<extra><\/extra>",
@@ -2634,94 +1368,94 @@
               "y"
             ],
             "x": [
+              "C2bii",
+              "B2a",
               "C4e",
               "C5b",
               "C3",
-              "D2",
+              "C2d",
+              "C4d",
               "D4",
+              "C1",
               "D1",
               "C4g",
               "C5c",
               "C4c",
-              "D3",
-              "C2aii",
-              "C6",
-              "C2c",
-              "B3",
-              "C4b",
-              "C2bii",
-              "C2ai",
-              "B2a",
-              "C4d",
-              "C2d",
-              "C1",
-              "C2bi",
               "B1",
               "C4a",
               "C4f",
+              "C6",
+              "C2c",
               "C5a",
-              "B2b"
+              "B3",
+              "B2b",
+              "C4b",
+              "C2ai",
+              "C2aii",
+              "C2bi",
+              "D2",
+              "D3"
             ],
             "y": [
-              1.835,
-              1.835,
-              1.835,
-              1,
-              1,
-              1,
-              1.835,
-              1.835,
-              1.835,
-              1,
-              2,
-              1.835,
-              1.835,
-              1.835,
-              1.835,
               1.67,
-              2,
               1.835,
               1.835,
               1.835,
               1.835,
-              1.67,
+              1.835,
+              1.835,
+              1,
+              1.835,
               1,
               1.835,
               1.835,
               1.835,
-              1.835
+              1,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              1.835,
+              2,
+              2,
+              1.67,
+              1,
+              1
             ],
             "type": "scatter",
             "mode": "markers",
             "name": "Exposure<br />Multiplier",
             "text": [
+              "Physiological hydrological niche",
+              "Natural barriers",
               "Sensitivity to pathogens or natural enemies",
               "Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\")",
               "Restriction to uncommon landscape/geological features or derivatives",
-              "Modeled future (2050) change in population or range size",
+              "Dependence on ice, ice-edge, or snow-cover habitats",
+              "Dependence on other species for propagule dispersal",
               "Occurrence of protected areas in modeled future (2050) distribution",
+              "Dispersal and movements",
               "Documented response to recent climate change",
               "Forms part of an interspecific interaction not covered by 5a-f",
               "Reproductive system (plants only; use only if c5a and c5b are “unknown”)",
               "Pollinator versatility (plants only)",
-              "Overlap of modeled future (2050) range with current range",
-              "Physiological thermal niche",
-              "Phenological response to changing seasonal temperature and precipitation dynamics",
-              "Dependence on a specific disturbance regime likely to be impacted by climate change",
-              "Predicted impact of land use changes resulting from human responses to climate change",
-              "Dietary versatility (animals only)",
-              "Physiological hydrological niche",
-              "Historical thermal niche",
-              "Natural barriers",
-              "Dependence on other species for propagule dispersal",
-              "Dependence on ice, ice-edge, or snow-cover habitats",
-              "Dispersal and movements",
-              "Historical hydrological niche",
               "Exposure to sea level rise",
               "Dependence on other species to generate required habitat",
               "Sensitivity to competition from native or non-native species",
+              "Phenological response to changing seasonal temperature and precipitation dynamics",
+              "Dependence on a specific disturbance regime likely to be impacted by climate change",
               "Measured genetic variation",
-              "Anthropogenic barriers"
+              "Predicted impact of land use changes resulting from human responses to climate change",
+              "Anthropogenic barriers",
+              "Dietary versatility (animals only)",
+              "Historical thermal niche",
+              "Physiological thermal niche",
+              "Historical hydrological niche",
+              "Modeled future (2050) change in population or range size",
+              "Overlap of modeled future (2050) range with current range"
             ],
             "hovertemplate": [
               "%{text}: <br> Exposure Multiplier: %{y}<extra><\/extra>",
@@ -2889,11 +1623,7 @@
     "slr": "",
     "spat_error": "",
     "species_name": "birbi",
-    "tbl_C2ai": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: right;'> Temperature Variation Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td align=\"right\"> Low - 1 <\/td> <td align=\"right\"> 100.00 <\/td> <\/tr>\n  <tr> <td align=\"right\">  2 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td align=\"right\">  3 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td align=\"right\"> High - 4 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n   <\/tbody> <\/table>",
-    "tbl_C2aii": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: left;'> Variable <\/th> <th style='text-align: right;'> Proportion of Range <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td> PTN <\/td> <td align=\"right\"> 75.00 <\/td> <\/tr>\n   <\/tbody> <\/table>",
-    "tbl_C2bi": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: right;'> Max MAP <\/th> <th style='text-align: right;'> Min MAP <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td align=\"right\"> 100.00 <\/td> <td align=\"right\"> 1.00 <\/td> <\/tr>\n   <\/tbody> <\/table>",
     "tbl_ccei": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: right;'> Exposure Class <\/th> <th style='text-align: right;'> Proportion of Range <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td align=\"right\"> Low - 1 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td align=\"right\">  2 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td align=\"right\">  3 <\/td> <td align=\"right\"> 0.00 <\/td> <\/tr>\n  <tr> <td align=\"right\"> High - 4 <\/td> <td align=\"right\"> 100.00 <\/td> <\/tr>\n   <\/tbody> <\/table>",
-    "tbl_D2_3": "<table  class = 'table shiny-table table- spacing-s' style = 'width:auto;'>\n<thead> <tr> <th style='text-align: right;'> % Lost <\/th> <th style='text-align: right;'> % Gain <\/th> <th style='text-align: right;'> % Maintained <\/th>  <\/tr> <\/thead> <tbody>\n  <tr> <td align=\"right\"> 48.26 <\/td> <td align=\"right\"> 8.66 <\/td> <td align=\"right\"> 51.74 <\/td> <\/tr>\n   <\/tbody> <\/table>",
     "texp_map": {
       "x": {
         "options": {

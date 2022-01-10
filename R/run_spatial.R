@@ -6,8 +6,8 @@
 #' appropriate scales.
 #'
 #' The range polygon will be clipped to the area overlapping the
-#' \code{scale_poly} and the also the the area overlapping the extent of the
-#' climate data polygon. The range within the assessment area in used to
+#' \code{scale_poly} and also to the area overlapping the extent of the
+#' climate data polygon. The range within the assessment area is used to
 #' calculate all results except the historical thermal and hydrological niches
 #' for which the range within the extent of the climate data is used.
 #'
@@ -53,8 +53,8 @@
 #' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
 #'
 #' run_spatial(
-#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
-#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp"), agr = "constant"),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
 #'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
@@ -223,7 +223,7 @@ check_polys <- function(poly, rast_crs, var_name){
   if(is.null(poly)){
     return(poly)
   }
-  if(!is(poly, "sf")){
+  if(!inherits(poly, "sf")){
     poly <- sf::st_as_sf(poly)
   }
 

@@ -43,7 +43,7 @@ installing it and its dependencies with:
 install.packages(c(‘dplyr', 'raster', 'sf', 'purrr', 'tidyr', 'shiny', 'stringr',
                     'units', 'exactextractr', 'shinyFiles', 'shinyjs', 'tmap', 
                     'ggplot2', 'shinycssloaders', 'R.utils', 'fs', 'plotly',
-                    'shinyFeedback', 'rgdal’))
+                    'rgdal’, 'scales', 'shinyvalidate', 'tibble'))
 
 install.packages("path/to/zip/file", repos = NULL)
 ```

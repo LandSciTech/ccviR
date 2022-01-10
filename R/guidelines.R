@@ -377,25 +377,25 @@ guideCSpatial <- function(){
 <p>
     Greatly Increase Vulnerability: Considering the mean seasonal temperature
     variation for occupied cells, the species has experienced very small (&lt;
-    37° F/20.8° C) temperature variation in the past 50 years. Includes cave
+    37&deg; F/20.8&deg; C) temperature variation in the past 50 years. Includes cave
     obligates and species occurring in thermally stable groundwater habitats.
 </p>
 <p>
     Increase Vulnerability: Considering the mean seasonal temperature variation
-    for occupied cells, the species has experienced small (37 - 47° F/20.8 -
-    26.3° C) temperature variation in the past 50 years. Includes facultative
+    for occupied cells, the species has experienced small (37 - 47&deg; F/20.8 -
+    26.3&deg; C) temperature variation in the past 50 years. Includes facultative
     cave invertebrates.
 </p>
 <p>
     Somewhat Increase Vulnerability: Considering the mean seasonal temperature
     variation for occupied cells, the species has experienced slightly lower
-    than average (47.1 - 57° F/26.3 - 31.8° C) temperature variation in the
+    than average (47.1 - 57&deg; F/26.3 - 31.8&deg; C) temperature variation in the
     past 50 years.
 </p>
 <p>
     Neutral: Considering the mean seasonal temperature variation for occupied
     cells, the species has experienced average or greater than average
-    (&gt;57.1° F/43.0° C) temperature variation in the past 50 years.
+    (&gt;57.1&deg; F/43.0&deg; C) temperature variation in the past 50 years.
 </p>
 <p>
     ii) Physiological thermal niche
@@ -462,7 +462,7 @@ guideCSpatial <- function(){
     NOTES: This factor measures large-scale precipitation variation that a
     species has experienced in recent historical times (i.e., the past 50
     years), as approximated by mean annual precipitation variation across
-    occupied cells within the assessment area. Overlay the species’ range on
+    occupied cells within the assessment area. Overlay the species' range on
     the Climate Wizard mean annual precipitation map 1951-2006. Subtract the
     lowest pixel value from the highest value to assess this factor. Use the
     extreme pixel values for this calculation. Use annual data for migratory
@@ -537,7 +537,7 @@ guideCNonSpatial <- function(){
     almost completely block dispersal, are treated in factor B2. If a species
     requires other species for propagule dispersal, please also complete factor
     C4d. The following categorization for plants is loosely based on Vittoz and
-    Engler (2007 Botanica Helvetica 117:109–124).
+    Engler (2007 Botanica Helvetica 117:109-124).
 </p>
 <p>
     A small number of species are confined by barriers to areas that are
@@ -974,7 +974,7 @@ guideCNonSpatial <- function(){
     indicator of but not an endemic to (65-85% of occurrences found on) the
     types of features described under Increase, OR (2) more or less restricted
     to a landscape or geological feature or derivative that is not highly
-    uncommon within the species’ range, but is not one of the dominant types.
+    uncommon within the species' range, but is not one of the dominant types.
     </p>
       <p>
       Examples: as in Increase Vulnerability but with a lesser degree of
@@ -990,7 +990,7 @@ guideCNonSpatial <- function(){
 <p>
     Neutral: Having a clear preference for (&gt; 85% of occurrences found on)
     a particular landscape or geological feature or derivative, but the
-    feature/derivative is among the dominant types within the species’ range;
+    feature/derivative is among the dominant types within the species' range;
     OR somewhat flexible in dependence upon geological features or derivatives
     (i.e., found on a subset of the dominant substrate/water chemistry types
     within its range); OR highly generalized relative to dependence upon
@@ -1003,7 +1003,7 @@ guideCNonSpatial <- function(){
     organic soils that are not uncommon within the range; many species whose
     habitat descriptions specify one pH category (acidic, neutral, or basic)
     and/or one soil particle size (e.g., rocky, sandy, or loamy) but that
-    substrate type is not particularly uncommon within the species’ range;
+    substrate type is not particularly uncommon within the species' range;
     species inhabiting multiple relatively widespread geological features;
     species with many occurrences associated with both acidic and basic soils
     or waters, or with both sandy and clay soils); species not strongly tied to
@@ -1023,7 +1023,7 @@ guideCNonSpatial <- function(){
     a) Dependence on other species to generate habitat
 </p>
 <p>
-    NOTES: This factor pertains to a species’ dependence on uncommon/restricted
+    NOTES: This factor pertains to a species' dependence on uncommon/restricted
     habitats that are generated or maintained by other species. Species that
     are dependent on a small number of other species likely are more vulnerable
     to climate change than are species that have more flexibility or that do
@@ -1280,8 +1280,8 @@ guideCNonSpatial <- function(){
     NOTES: Species may suffer when competitors are favored by both changing
     climates and the effects these climates have on disturbance regimes
     (Abatzoglou and Kolden 2011 Rangeland Ecology &amp; Management 64:471,
-    Dukes et al. 2011 Ecological Applications 21:1887, Pintó-Marijuan and
-    Munné-Bosch 2013, Grossman and Rice 2014 Ecology Letters 17:710). However,
+    Dukes et al. 2011 Ecological Applications 21:1887, Pint&#x00F3-Marijuan and
+    Munn&#x00E9-Bosch 2013, Grossman and Rice 2014 Ecology Letters 17:710). However,
     in some cases climate change will decrease the spread of particular
     invasive species (Bradley et al. 2010 Trends in Ecology &amp; Evolution
     25:310). To score this factor, some indication is needed that a potential
@@ -1377,7 +1377,7 @@ guideCNonSpatial <- function(){
     Increase Vulnerability categories.
 </p>
 <p>
-    Increase Vulnerability: Evidence that total population was reduced to ≤ 250
+    Increase Vulnerability: Evidence that total population was reduced to &leq; 250
     mature individuals, to one occurrence, and/or that occupied area was
     reduced by &gt;70% at some point in the past 500 years.
 </p>
@@ -1387,7 +1387,7 @@ guideCNonSpatial <- function(){
     occupied area was reduced by 30-70% at some point in the past 500 years.
 </p>
 <p>
-    Neutral: No evidence that total population was reduced to ≤ 1000 mature
+    Neutral: No evidence that total population was reduced to &leq; 1000 mature
     individuals and/or that occupied area was reduced by &gt; 30% at some point
     in the past 500 years.
 </p>
@@ -1397,11 +1397,11 @@ guideCNonSpatial <- function(){
 <p>
     NOTES: In plants, genetic variation is strongly linked to reproductive
     mode. Therefore, in the absence of measured genetic variation and knowledge
-    of recent genetic bottlenecks, a plant’s reproductive system may serve as a
-    proxy for a species’ genetic variation or capacity to adapt to novel
+    of recent genetic bottlenecks, a plant's reproductive system may serve as a
+    proxy for a species' genetic variation or capacity to adapt to novel
     climatic conditions. For example, species that can outcross may be better
     able to adapt to novel environments (Morran et al. 2009, Morran et al.
-    2011). Species with mixed mating systems, which make up 42% of the world’s
+    2011). Species with mixed mating systems, which make up 42% of the world's
     flora, appear to favor selfing as a buffering mechanism to climate change
     (Jones et al. 2013).
 </p>
