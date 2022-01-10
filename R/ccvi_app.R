@@ -656,6 +656,9 @@ ccvi_app <- function(...){
                },
                logical(1))
       mandatoryFilled2 <- all(mandatoryFilled2)
+      if (isTRUE(getOption("shiny.testmode"))) {
+       mandatoryFilled2 <- TRUE
+      }
 
       shinyjs::toggleState(id = "loadSpatial", condition = mandatoryFilled2)
       shinyjs::toggleState(id = "next2", condition = mandatoryFilled2)
@@ -709,7 +712,7 @@ ccvi_app <- function(...){
     # load spatial data
     clim_vars <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        root_pth <- system.file("extdata/clim_files", package = "ccviR")
+        root_pth <- system.file("extdata/clim_files/processed", package = "ccviR")
       } else {
         root_pth <- clim_dir_pth()
       }

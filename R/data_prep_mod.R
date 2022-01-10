@@ -158,11 +158,24 @@
     })
 
     prep_done <- eventReactive(input$submit, {
-      if(isTruthy(input$clim_var_dir)){
-        run_prep_data(in_folder = shinyFiles::parseDirPath(volumes,
-                                                           input$clim_var_dir),
-                      out_folder = shinyFiles::parseDirPath(volumes,
-                                                            input$out_folder),
+      if(isTruthy(input$clim_var_dir)||isTRUE(getOption("shiny.testmode"))){
+
+        if (isTRUE(getOption("shiny.testmode"))) {
+          in_dir <- system.file("extdata/clim_files/raw", package = "ccviR")
+          out_dir <- system.file("extdata/clim_files/processed", package = "ccviR")
+        } else {
+          in_dir <- shinyFiles::parseDirPath(volumes,
+                                             input$clim_var_dir)
+
+          out_dir <- shinyFiles::parseDirPath(volumes,
+                                              input$out_folder)
+        }
+
+        req(in_dir)
+        req(out_dir)
+
+        run_prep_data(in_folder = in_dir,
+                      out_folder = out_dir,
                       reproject = input$reproj,
                       overwrite = input$allow_over)
       } else {

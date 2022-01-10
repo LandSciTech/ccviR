@@ -92,3 +92,6 @@ test_that("error for missing files, works without optional files",{
   file.remove(file.path(pth_base, "raw/MAT_2050_2.tif"))
 
 })
+
+# remove the temp directory
+unlink(file.path(pth_base, "temp"), recursive = TRUE)

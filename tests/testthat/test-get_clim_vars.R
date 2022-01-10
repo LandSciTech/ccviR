@@ -81,4 +81,4 @@ test_that("error when two files or missing files",{
   })
 
 # remove the temp directory
-#unlink(file.path(file_dir, "temp"), recursive = TRUE)
+unlink(file.path(file_dir, "temp"), recursive = TRUE)
