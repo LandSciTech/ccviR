@@ -30,7 +30,7 @@ test_that("spatial runs with all data or optional data",{
 test_that("Nonoverlaping poly and raster",{
   # use nonbreed as range - no overlap - should not be allowed
   expect_error(run_spatial(nonbreed, assess, clim_vars[c(1:2, 6)]),
-               "does not overlap")
+               "does not fully overlap")
 
   # use nonbreed as assess - no overlap - should not be allowed
   # error
@@ -80,7 +80,7 @@ test_that("Multiple polygons are merged", {
                       st_polygon(list(matrix(c(0.5, 0.75, 1, 0.75, 1,
                                                1, 0.5, 1, 0.5, 0.75),
                                              ncol = 2, byrow = TRUE)))) %>%
-    st_sf() %>% st_set_crs(4326)
+    st_sf() %>% st_set_crs(3162)
 
   res1 <- run_spatial(rng_high, assess, clim_vars[c(1:2, 6)])$spat_table
   res2 <- run_spatial(rng_high2, assess, clim_vars[c(1:2, 6)])$spat_table

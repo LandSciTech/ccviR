@@ -110,7 +110,7 @@ sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
 
 write_fun <- function(x, nm, dir, crs_use){
   if(inherits(x, "Raster")){
-    crs(x) <- crs_use
+    crs(x) <- paste0("EPSG:", crs_use)
     if(nm == "CCEI"){
       writeRaster(x, paste0(dir, nm, ".img"), overwrite = TRUE)
     } else {
@@ -125,10 +125,10 @@ write_fun <- function(x, nm, dir, crs_use){
 
 purrr::walk2(clim_dat, names(clim_dat), write_fun,
              dir = "inst/extdata/clim_files/raw/",
-             crs_use = "+proj=longlat +datum=WGS84")
+             crs_use = 3162)
 purrr::walk2(sp_dat, names(sp_dat), write_fun,
              dir = "inst/extdata/",
-             crs_use = "+proj=longlat +datum=WGS84")
+             crs_use = 3162)
 
 run_prep_data(in_folder = "inst/extdata/clim_files/raw",
               out_folder = "inst/extdata/clim_files/processed/",
