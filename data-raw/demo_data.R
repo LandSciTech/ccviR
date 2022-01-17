@@ -9,6 +9,8 @@ library(sf)
 rast <- matrix(0, nrow = 100, ncol = 100) %>%
   raster()
 
+rast <- setExtent(rast, extent(0, 1000, 0, 1000))
+
 # MAT and CMD want difference to be higher at the top
 MAT <- rast
 values(MAT) <- seq(5, 10, length.out = 10000) %>%
@@ -24,7 +26,7 @@ CMD_2050 <- MAT_2050 - 5
 CCEI <- rast
 values(CCEI) <- seq(0, 25, length.out = 10000) %>% sort(decreasing = TRUE) %>%
   round()
-CCEI <- shift(CCEI, dy = -1)
+CCEI <- shift(CCEI, dy = -1000)
 
 # MWMT MCMT more difference between the two is less exposure
 MCMT <- rast
@@ -59,27 +61,27 @@ values(HS_rast_low) <- c(rep(0, 3000),
 
 # Should be a polygon of areas with special temperature regime
 PTN_poly <- st_polygon(list(matrix(c(0.5, 0.5, 1,
-                                1, 0, 1, 0.5, 0.5),
+                                1, 0, 1, 0.5, 0.5)*1000,
                               ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 rng_poly_high <- st_polygon(list(matrix(c(0, 0.75, 1, 0.75, 1,
-                                          1, 0, 1, 0, 0.75),
+                                          1, 0, 1, 0, 0.75)*1000,
                                         ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 rng_poly_med <- st_polygon(list(matrix(c(0, 0.25, 1, 0.25, 1,
-                                          0.5, 0, 0.5, 0, 0.25),
+                                          0.5, 0, 0.5, 0, 0.25)*1000,
                                         ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 rng_poly_low <- st_polygon(list(matrix(c(0, 0, 1, 0, 1,
-                                         0.25, 0, 0.25, 0, 0),
+                                         0.25, 0, 0.25, 0, 0)*1000,
                                        ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 nonbreed_poly <-  st_polygon(list(matrix(c(0, 0, 1, 0, 1,
-                                           -0.25, 0, -0.25, 0, 0),
+                                           -0.25, 0, -0.25, 0, 0)*1000,
                                          ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 

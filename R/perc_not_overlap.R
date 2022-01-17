@@ -44,9 +44,9 @@ perc_not_overlap <- function(rast, poly, var_name){
          call. = FALSE)
   }
 
-  if (!couldBeLonLat(r_mask)) {
+  if (!raster::couldBeLonLat(r_mask)) {
     # area in m2
-    area_cell <- prod(res(r_mask))
+    area_cell <- prod(raster::res(r_mask))
   } else {
     # area in km2
     area_cell <- raster::area(r_mask, na.rm = TRUE) %>%
