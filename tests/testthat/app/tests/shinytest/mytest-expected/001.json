@@ -695,6 +695,10 @@
         },
         "source": "A",
         "config": {
+          "modeBarButtonsToAdd": [
+            "hoverclosest",
+            "hovercompare"
+          ],
           "showSendToCloud": false,
           "displayModeBar": false,
           "displaylogo": false,
@@ -861,22 +865,22 @@
         },
         {
           "name": "crosstalk",
-          "version": "1.1.1",
+          "version": "1.2.0",
           "src": {
-            "href": "crosstalk-1.1.1"
+            "href": "crosstalk-1.2.0"
           },
           "meta": null,
           "script": "js/crosstalk.min.js",
-          "stylesheet": "css/crosstalk.css",
+          "stylesheet": "css/crosstalk.min.css",
           "head": null,
           "attachment": null,
           "all_files": true
         },
         {
           "name": "plotly-htmlwidgets-css",
-          "version": "1.57.1",
+          "version": "2.5.1",
           "src": {
-            "href": "plotly-htmlwidgets-css-1.57.1"
+            "href": "plotly-htmlwidgets-css-2.5.1"
           },
           "meta": null,
           "script": null,
@@ -887,9 +891,9 @@
         },
         {
           "name": "plotly-main",
-          "version": "1.57.1",
+          "version": "2.5.1",
           "src": {
-            "href": "plotly-main-1.57.1"
+            "href": "plotly-main-2.5.1"
           },
           "meta": null,
           "script": "plotly-latest.min.js",
@@ -960,6 +964,10 @@
         },
         "source": "A",
         "config": {
+          "modeBarButtonsToAdd": [
+            "hoverclosest",
+            "hovercompare"
+          ],
           "showSendToCloud": false,
           "displayModeBar": false,
           "displaylogo": false,
@@ -1117,22 +1125,22 @@
         },
         {
           "name": "crosstalk",
-          "version": "1.1.1",
+          "version": "1.2.0",
           "src": {
-            "href": "crosstalk-1.1.1"
+            "href": "crosstalk-1.2.0"
           },
           "meta": null,
           "script": "js/crosstalk.min.js",
-          "stylesheet": "css/crosstalk.css",
+          "stylesheet": "css/crosstalk.min.css",
           "head": null,
           "attachment": null,
           "all_files": true
         },
         {
           "name": "plotly-htmlwidgets-css",
-          "version": "1.57.1",
+          "version": "2.5.1",
           "src": {
-            "href": "plotly-htmlwidgets-css-1.57.1"
+            "href": "plotly-htmlwidgets-css-2.5.1"
           },
           "meta": null,
           "script": null,
@@ -1143,9 +1151,9 @@
         },
         {
           "name": "plotly-main",
-          "version": "1.57.1",
+          "version": "2.5.1",
           "src": {
-            "href": "plotly-main-1.57.1"
+            "href": "plotly-main-2.5.1"
           },
           "meta": null,
           "script": "plotly-latest.min.js",
@@ -1220,6 +1228,10 @@
         },
         "source": "A",
         "config": {
+          "modeBarButtonsToAdd": [
+            "hoverclosest",
+            "hovercompare"
+          ],
           "showSendToCloud": false
         },
         "data": [
@@ -1248,8 +1260,8 @@
               "C6",
               "C2c",
               "C5a",
-              "B3",
               "B2b",
+              "B3",
               "C4b",
               "C2ai",
               "C2aii",
@@ -1277,8 +1289,8 @@
               0,
               0,
               0,
-              1.835,
               0,
+              1.835,
               0,
               6,
               4,
@@ -1308,8 +1320,8 @@
               "Phenological response to changing seasonal temperature and precipitation dynamics",
               "Dependence on a specific disturbance regime likely to be impacted by climate change",
               "Measured genetic variation",
-              "Predicted impact of land use changes resulting from human responses to climate change",
               "Anthropogenic barriers",
+              "Predicted impact of land use changes resulting from human responses to climate change",
               "Dietary versatility (animals only)",
               "Historical thermal niche",
               "Physiological thermal niche",
@@ -1387,8 +1399,8 @@
               "C6",
               "C2c",
               "C5a",
-              "B3",
               "B2b",
+              "B3",
               "C4b",
               "C2ai",
               "C2aii",
@@ -1448,8 +1460,8 @@
               "Phenological response to changing seasonal temperature and precipitation dynamics",
               "Dependence on a specific disturbance regime likely to be impacted by climate change",
               "Measured genetic variation",
-              "Predicted impact of land use changes resulting from human responses to climate change",
               "Anthropogenic barriers",
+              "Predicted impact of land use changes resulting from human responses to climate change",
               "Dietary versatility (animals only)",
               "Historical thermal niche",
               "Physiological thermal niche",
@@ -1580,22 +1592,22 @@
         },
         {
           "name": "crosstalk",
-          "version": "1.1.1",
+          "version": "1.2.0",
           "src": {
-            "href": "crosstalk-1.1.1"
+            "href": "crosstalk-1.2.0"
           },
           "meta": null,
           "script": "js/crosstalk.min.js",
-          "stylesheet": "css/crosstalk.css",
+          "stylesheet": "css/crosstalk.min.css",
           "head": null,
           "attachment": null,
           "all_files": true
         },
         {
           "name": "plotly-htmlwidgets-css",
-          "version": "1.57.1",
+          "version": "2.5.1",
           "src": {
-            "href": "plotly-htmlwidgets-css-1.57.1"
+            "href": "plotly-htmlwidgets-css-2.5.1"
           },
           "meta": null,
           "script": null,
@@ -1606,9 +1618,9 @@
         },
         {
           "name": "plotly-main",
-          "version": "1.57.1",
+          "version": "2.5.1",
           "src": {
-            "href": "plotly-main-1.57.1"
+            "href": "plotly-main-2.5.1"
           },
           "meta": null,
           "script": "plotly-latest.min.js",
