@@ -170,7 +170,7 @@ ccvi_app <- function(...){
                 labelMandatory(strong("Folder location of prepared climate data:")),
                 shinyDirButton("clim_var_dir", "Choose a folder",
                                "Folder location of prepared climate data"),
-                verbatimTextOutput("clim_var_dir_out", placeholder = TRUE),
+                shinycssloaders::withSpinner(verbatimTextOutput("clim_var_dir_out", placeholder = TRUE)),
                 verbatimTextOutput("clim_var_error"),
                 br(),
                 labelMandatory(strong("Range polygon shapefile:")),
@@ -793,7 +793,7 @@ ccvi_app <- function(...){
                                      input$ns_from, input$ns_to, 0),
                                    byrow = TRUE, ncol = 3)})
 
-    doSpatial <- reactiveVal(0)
+    doSpatial <- reactiveVal(FALSE)
 
     observeEvent(input$startSpatial, {
       showModal(modalDialog(
@@ -1471,7 +1471,7 @@ ccvi_app <- function(...){
 
     observe({
       patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir",
-                                "guide", "tabset", "next"),
+                                "guide", "tabset", "next", "start", "shinyalert"),
                               collapse = "|")
 
       toExclude <- grep(patsToExclude, names(input), value = TRUE)
