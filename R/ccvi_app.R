@@ -818,10 +818,6 @@ ccvi_app <- function(...){
       }
     })
 
-    observe({
-      print(doSpatial())
-    })
-
     # run spatial calculations
     spat_res1 <- reactive({
       req(doSpatial())
@@ -912,7 +908,7 @@ ccvi_app <- function(...){
           sum(MAT_1, MAT_2, MAT_3, MAT_4, MAT_5, na.rm = TRUE) >= 20 ~ 0.8,
           TRUE ~ 0.4
         ),
-        temp_exp_cave = temp_exp / ifelse(input$cave == 1, 3, 1)) %>%
+        temp_exp_cave = round(temp_exp / ifelse(input$cave == 1, 3, 1)), 3) %>%
         select(contains("MAT"), temp_exp_cave) %>%
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
