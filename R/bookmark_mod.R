@@ -17,7 +17,9 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
                        duration = 10, type = "message")
     })
 
-    setBookmarkExclude(c("save_dir", "start_save", "save_action", "new_dir_name"))
+    setBookmarkExclude(c("save_dir", "start_save", "save_action", "new_dir_name",
+                         "guideB", "guideC", "guideD", "guideC2", "guideD2",
+                         "tabset"))
 
     observeEvent(input$start_save, {
       showModal(
@@ -53,6 +55,7 @@ save_bookmark_server <- function(id, latestBookmarkURL, volumes){
                                        invert = TRUE))
 
     observeEvent(input$save_action, {
+
       if (!iv$is_valid()) {
         iv$enable()
       } else {
@@ -91,7 +94,8 @@ load_bookmark_server <- function(id, volumes){
     shinyDirChoose(input, "load_dir", root = volumes)
     load_dir_pth <- reactive(parseDirPath(volumes, input$load_dir))
 
-    setBookmarkExclude(c("load_dir", "load_action", "start_load"))
+    setBookmarkExclude(c("load_dir", "load_action", "start_load", "guideB",
+                         "guideC", "guideD", "guideC2", "guideD2", "tabset"))
 
     observeEvent(input$start_load, {
       showModal(

@@ -223,7 +223,7 @@ ccvi_app <- function(...){
                 strong("Click Run to begin the spatial analysis or to re-run it",
                        " after changing inputs"),
                 br(),
-                actionButton("loadSpatial", "Run", class = "btn-primary"),
+                actionButton("startSpatial", "Run", class = "btn-primary"),
                 verbatimTextOutput("spat_error")
               )
             )
@@ -659,7 +659,7 @@ ccvi_app <- function(...){
        mandatoryFilled2 <- TRUE
       }
 
-      shinyjs::toggleState(id = "loadSpatial", condition = mandatoryFilled2)
+      shinyjs::toggleState(id = "startSpatial", condition = mandatoryFilled2)
       shinyjs::toggleState(id = "next2", condition = mandatoryFilled2)
     })
 
@@ -793,9 +793,38 @@ ccvi_app <- function(...){
                                      input$ns_from, input$ns_to, 0),
                                    byrow = TRUE, ncol = 3)})
 
+    doSpatial <- reactiveVal(0)
+
+    observeEvent(input$startSpatial, {
+      showModal(modalDialog(
+        p("Note: Re-running the spatial analysis will overwrite any changes made to ",
+          "the Spatial Vulnerability Questions. Comments will be preserved so ",
+          "you can record the change made in the comments and then change it ",
+          "again after re-running the analysis."),
+        footer = tagList(
+          actionButton("shinyalert", "Continue"),
+          modalButton("Cancel")
+        ),
+        title = "Do you want to run the spatial analysis?"))
+      if(input$startSpatial == 1){
+        shinyjs::click("shinyalert")
+      }
+    })
+
+    observeEvent(input$shinyalert, {
+      removeModal()
+      if(input$shinyalert > 0){
+        doSpatial(doSpatial() +1)
+      }
+    })
+
+    observe({
+      print(doSpatial())
+    })
+
     # run spatial calculations
     spat_res1 <- reactive({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(clim_vars())
       isolate({
         tryCatch({
@@ -813,17 +842,17 @@ ccvi_app <- function(...){
     })
 
     range_poly <- reactive({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_assess
     })
     range_poly_clim <- reactive({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_clim
     })
     spat_res <- reactive({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$spat_table
     })
@@ -848,7 +877,7 @@ ccvi_app <- function(...){
     })
 
     observe({
-      req(input$loadSpatial)
+      req(doSpatial())
       if(isTruthy(clim_vars()$ccei) && isTruthy(isolate(nonbreed_poly()))){
         shinyjs::hide("missing_ccei")
         shinyjs::show("ccei_exp")
@@ -972,7 +1001,7 @@ ccvi_app <- function(...){
     # Spatial Vulnerability Questions #========================
     # C2ai
     observe({
-      req(input$loadSpatial)
+      req(doSpatial())
       if(isTruthy(clim_vars()$htn)){
         shinyjs::hide("missing_htn")
         shinyjs::show("map_C2ai")
@@ -991,7 +1020,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2ai <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(clim_vars()$htn)
 
       make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn")
@@ -1010,6 +1039,9 @@ ccvi_app <- function(...){
     }, align = "r")
 
     output$box_C2ai <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comC2ai)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(C2ai = case_when(HTN_4 > 10 ~ 0,
                                 HTN_3 > 10 ~ 1,
@@ -1019,14 +1051,15 @@ ccvi_app <- function(...){
         pull(C2ai)
 
       check_comment_ui("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # C2aii
     observe({
-      req(input$loadSpatial)
+      req(doSpatial())
       if(isTruthy(ptn_poly())){
         shinyjs::hide("missing_ptn")
         shinyjs::show("map_C2aii")
@@ -1037,7 +1070,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2aii <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(ptn_poly())
 
       make_map(poly1 = isolate(range_poly()), poly2 = ptn_poly(), poly2_nm = "ptn")
@@ -1051,6 +1084,9 @@ ccvi_app <- function(...){
     })
 
     output$box_C2aii <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comC2aii)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(C2aii = case_when(PTN > 90 ~ 3,
                                  PTN > 50 ~ 2,
@@ -1060,14 +1096,15 @@ ccvi_app <- function(...){
         pull(C2aii)
 
       check_comment_ui("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # C2bi
     observe({
-      req(input$loadSpatial)
+      req(doSpatial())
       if(isTruthy(clim_vars()$map)){
         shinyjs::hide("missing_map")
         shinyjs::show("map_C2bi")
@@ -1078,7 +1115,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2bi <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(clim_vars()$map)
 
       make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map, rast_nm = "map",
@@ -1092,6 +1129,9 @@ ccvi_app <- function(...){
     })
 
     output$box_C2bi <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comC2bi)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(range_MAP = MAP_max - MAP_min,
                C2bi = case_when(range_MAP < 100 ~ 3,
@@ -1102,14 +1142,15 @@ ccvi_app <- function(...){
         pull(C2bi)
 
       check_comment_ui("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # D2 and D3
     observe({
-      req(input$loadSpatial)
+      req(doSpatial())
       if(isTruthy(hs_rast())){
         shinyjs::hide("missing_hs")
         shinyjs::show("map_D2_3")
@@ -1119,15 +1160,14 @@ ccvi_app <- function(...){
       }
     })
 
-    #reclassify raster with 0:7 where 1 is loss, and 7 is gain to 0:3
+    # reclassify raster with 0:7 where 1 is loss, and 7 is gain to 0:3
     hs_rast2 <- reactive({
       rast <- raster::reclassify(hs_rast(),
-                                 rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3),
-                                              ncol = 2))
+                                 rcl = hs_rcl_mat())
     })
 
     output$map_D2_3 <- tmap::renderTmap({
-      req(input$loadSpatial)
+      req(doSpatial())
       req(hs_rast2())
 
       make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
@@ -1142,6 +1182,9 @@ ccvi_app <- function(...){
     })
 
     output$box_D2 <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comD2)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(D2 = case_when(perc_lost > 99 ~ 3,
                               perc_lost > 50 ~ 2,
@@ -1151,12 +1194,16 @@ ccvi_app <- function(...){
         pull(D2)
 
       check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     output$box_D3 <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comD3)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(D2 = case_when(perc_lost > 99 ~ 3,
                               perc_lost > 50 ~ 2,
@@ -1172,9 +1219,10 @@ ccvi_app <- function(...){
         pull(D3)
 
       check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # When submit button is clicked move to next panel
@@ -1422,7 +1470,8 @@ ccvi_app <- function(...){
     # IncludedIDs <- reactiveVal(value = NULL)
 
     observe({
-      patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir"),
+      patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir",
+                                "guide", "tabset", "next"),
                               collapse = "|")
 
       toExclude <- grep(patsToExclude, names(input), value = TRUE)
