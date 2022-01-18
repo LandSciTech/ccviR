@@ -170,7 +170,7 @@ ccvi_app <- function(...){
                 labelMandatory(strong("Folder location of prepared climate data:")),
                 shinyDirButton("clim_var_dir", "Choose a folder",
                                "Folder location of prepared climate data"),
-                shinycssloaders::withSpinner(verbatimTextOutput("clim_var_dir_out", placeholder = TRUE)),
+                shinycssloaders::withSpinner(verbatimTextOutput("clim_var_dir_out", placeholder = TRUE), proxy.height = "100px"),
                 verbatimTextOutput("clim_var_error"),
                 br(),
                 labelMandatory(strong("Range polygon shapefile:")),
@@ -564,7 +564,7 @@ ccvi_app <- function(...){
       volumes <- c(wd = getShinyOption("file_dir"),
                    Home = fs::path_home(),
                    getVolumes()())
-    }, timeout = 20, onTimeout = "silent")
+    }, timeout = 200, onTimeout = "silent")
 
     if(is.null(timeout)){
       stop("The app is unable to access your files because you were connected",
