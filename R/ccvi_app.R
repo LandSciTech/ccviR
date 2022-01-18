@@ -1422,10 +1422,12 @@ ccvi_app <- function(...){
     )
 
     observeEvent(input$restart,{
-      updateTabsetPanel(session, "tabset",
-                        selected = "Species Information"
-      )
-      shinyjs::runjs("window.scrollTo(0, 0)")
+      restoreURL <- paste0(session$clientData$url_protocol, "//",
+                           session$clientData$url_hostname, ":",
+                           session$clientData$url_port)
+
+      # redirect user to restoreURL
+      shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
     })
 
     # Bookmarking #=============================================================
