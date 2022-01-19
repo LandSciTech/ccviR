@@ -6,8 +6,7 @@
 \alias{ccviR-package}
 \title{ccviR: NatureServe CCVI in R}
 \description{
-Implements the NatureServe climate change vulnerability index 
-  calculator in R.
+Implements the NatureServe climate change vulnerability index calculator in R.
 }
 \author{
 \strong{Maintainer}: Sarah Endicott \email{sarah.endicott@canada.ca} (\href{https://orcid.org/0000-0001-9644-5343}{ORCID})

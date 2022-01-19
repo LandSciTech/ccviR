@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_prep_data.R
 \name{run_prep_data}
 \alias{run_prep_data}
-\title{Prepare data from raw to form needed for app}
+\title{Prepare climate data}
 \usage{
 run_prep_data(
   mat_norm,
@@ -13,36 +13,60 @@ run_prep_data(
   map = NULL,
   mwmt = NULL,
   mcmt = NULL,
+  clim_poly = NULL,
   in_folder = NULL,
   out_folder,
-  reproject = TRUE,
+  reproject = FALSE,
   overwrite = FALSE
 )
 }
 \arguments{
-\item{mat_norm, mat_fut, cmd_norm, cmd_fut, ccei, map, mwmt, mcmt}{filepaths to find
-data if in_folder is not given}
+\item{mat_norm, mat_fut, cmd_norm, cmd_fut, ccei, map, mwmt, mcmt, clim_poly}{file paths to find data if in_folder is not given}
 
-\item{in_folder}{filepath where files are stored. Files must be named
+\item{in_folder}{file path where files are stored. Files must be named
 according to the convention described in details}
 
-\item{overwrite}{}
+\item{out_folder}{file path where the processed files will be saved}
+
+\item{reproject}{should the data be re-projected to lat/long? Not recommended.}
+
+\item{overwrite}{should existing files in out_folder be overwritten?}
 }
 \value{
-
+Returns nothing. Processed data is saved in \code{out_folder}
 }
 \description{
-Prepare data from raw to form needed for app including reclassifying and
-reprojecting (optional)
+Prepare data from raw to form needed for calculating the index. See the
+NatureServe Guidelines for details on how the data is prepared.
 }
 \details{
-File names required in in_folder:
-mat_norm: MAT.asc mean annual temperature for the historical normal period
-mat_fut: MAT_2050.asc mean annual temperature for the future under climate change it can be any number eg 2050, 2100
-cmd_norm: CMD.asc climate moisture deficit for the historical normal period
-cmd_fut: CMD_2050.asc climate moisture deficit for the future under climate change it can be any number eg 2050, 2100
-ccei: CCEI.img Climate Change Exposure Index from NatureServe website
-map: MAP.asc mean annual precipitation for the historical normal period
-mwmt: MWMT.asc mean warmest month temperature for the historical normal period
-mcmt: MCMT.asc mean coldest month temperature for the historical normal period
+Definition of input data sets and file names required in in_folder:
+\describe{
+  \item{mat_norm:}{"MAT" mean annual temperature for the historical normal period}
+  \item{mat_fut:}{"MAT_2050" mean annual temperature for the future under
+  climate change it can be any number eg 2050, 2100}
+  \item{cmd_norm:}{"CMD" climate moisture deficit for the historical normal period}
+  \item{cmd_fut:}{"CMD_2050" climate moisture deficit for the future under
+  climate change it can be any number eg 2050, 2100}
+  \item{ccei:}{"CCEI" Climate Change Exposure Index from NatureServe website}
+  \item{map:}{"MAP" mean annual precipitation for the historical normal period}
+  \item{mwmt:}{"MWMT" mean warmest month temperature for the historical
+  normal period}
+  \item{mcmt:}{"MCMT" mean coldest month temperature for the historical
+  normal period}
+  \item{clim_poly:}{An optional shapefile with a polygon of the range of the
+  climate data. It will be created from the climate data if it is missing
+  but it is faster to provide it.}
+}
+Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
+}
+\examples{
+pth_in <- system.file("extData/clim_files/raw", package = "ccviR")
+
+pth_out <- system.file("extData/clim_files/processed", package = "ccviR")
+
+run_prep_data(in_folder = pth_in, out_folder = pth_out, overwrite = TRUE)
+}
+\seealso{
+\code{\link{get_clim_vars}} for loading the processed data.
 }

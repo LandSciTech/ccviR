@@ -4,11 +4,7 @@
 #' @param rast
 #' @param poly
 #' @param var_name
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @noRd
 perc_not_overlap <- function(rast, poly, var_name){
   # # First check if poly is 100% inside rast extent and if so assume full overlap
   # rast_bbox <- st_bbox(rast) %>% st_as_sfc()
@@ -47,12 +43,20 @@ perc_not_overlap <- function(rast, poly, var_name){
     stop("The nonbreeding range polygon does not overlap the supplied CCEI raster",
          call. = FALSE)
   }
-  # area in km2
-  area_cell <- raster::area(r_mask, na.rm = TRUE) %>%
-    raster::cellStats("mean")
 
-  # convert to m2
-  area_overlap <- cells_overlap * area_cell *1000000
+  if (!raster::couldBeLonLat(r_mask)) {
+    # area in m2
+    area_cell <- prod(raster::res(r_mask))
+  } else {
+    # area in km2
+    area_cell <- raster::area(r_mask, na.rm = TRUE) %>%
+      raster::cellStats("mean")
+
+    # convert to m2
+    area_cell <- area_cell *1000000
+  }
+
+  area_overlap <- cells_overlap * area_cell
 
   # area in m2
   poly_area <- st_area(poly) %>% units::set_units(NULL)

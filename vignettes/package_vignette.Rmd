@@ -1,0 +1,192 @@
+---
+title: "Using the ccviR package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using the ccviR package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+The ccviR package implements the [NatureServe Climate Change Vulnerability Index (CCVI)](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) in an R package and Shiny App. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. It also enables easier sensitivity analysis of the Index. 
+
+The NatureServe CCVI is a trait based climate change vulnerability assessment framework that can also include observed and modeled responses to climate change. The NatureServe CCVI includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity and optionally incorporates the results of documented or modeled responses to climate change. Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change, which is used to determine an exposure multiplier. Sensitivity and adaptive capacity and responses to climate change are assessed by scoring vulnerability factors (23 and 4 respectively), on a scale from ‘neutral’ (0)  to ‘greatly increases vulnerability’ (3). Factors that cannot be answered can be left blank and contribute 0 to the total score, but if fewer than 13 are scored the index value can not be calculated. The sensitivity and adaptive capacity section scores are then multiplied by an exposure multiplier and summed, while the scores for the response to climate change section are simply summed. An index value is then determined for each section by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section (Young 2012, Young 2015). The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence if not enough factors of the CCVI are scored. For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf)
+
+## Preparing the climate data
+Step 1: Acquire climate data. We recommend the climate data for North America from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/) but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 2050s for the future. Save the downloaded data in a folder you can easily find.
+
+Step 2: Prepare the climate data for use in the app. Climate data can be processed by providing file paths for each file or for a folder that contains all the files with standard names. For the output folder make sure to choose a location that is easy to find again because you will use the prepared climate data to calculate the index.
+
+Standard names for input folder
+
+* MAT: mean annual temperature for the historical normal period (required)
+* MAT_2050: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100 (required)
+* CMD: climate moisture deficit for the historical normal period (required)
+* CMD_2050: climate moisture deficit for the future under climate change it can be any number eg 2050, 2100 (required)
+* CCEI: Climate Change Exposure Index from NatureServe website
+* MAP: mean annual precipitation for the historical normal period
+* MWMT: mean warmest month temperature for the historical normal period
+* MCMT: mean coldest month temperature for the historical normal period
+* clim_poly: An optional shapefile with a polygon of the extent of the climate data. It will be created from the climate data if it is missing but it is faster to provide it.
+
+Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
+
+An example data set has been provided with the app that we will use in the examples below. 
+
+```{r data_prep}
+
+library(ccviR)
+library(raster)
+library(sf)
+
+data_pth <- system.file("extdata", package = "ccviR")
+
+# check that file names match expected
+list.files(file.path(data_pth, "clim_files/raw"))
+
+# prepare the data and save it in out_folder
+run_prep_data(in_folder = file.path(data_pth, "clim_files/raw"), 
+              out_folder = file.path(data_pth, "clim_files/processed"),
+              overwrite = TRUE)
+
+```
+
+The prepared data will be saved in the output folder and can be used whenever the index is being calculated so this step only needs to be completed once.
+
+The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe. To demonstrate how the data is prepared the maps below use the demo data set to show the change in mean annual temperature which is then classified into 6 categories. 
+
+```{r fig.height=4, fig.width=4}
+mat_norm <- raster(file.path(data_pth, "clim_files/raw/MAT.tif"))
+mat_fut <- raster(file.path(data_pth, "clim_files/raw/MAT_2050.tif"))
+
+mat_classified <- raster(file.path(data_pth, "clim_files/processed/MAT_reclass.tif"))
+
+plot(mat_norm - mat_fut)
+
+plot(mat_classified)
+
+```
+
+
+## Load species specific spatial data
+The following spatial data sets can be used for each species: 
+
+* Species range polygon (required)
+* Assessment area polygon (required)
+* Non-breeding range polygon
+* Projected habitat change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
+* Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.
+
+For this example all of the data is provided with the package. 
+
+```{r load_sp_data}
+rng_poly_high <- read_sf(file.path(data_pth, "rng_poly_high.shp"), agr = "constant")
+assess_poly <- read_sf(file.path(data_pth, "assess_poly.shp"), agr = "constant")
+HS_rast_high <- raster(file.path(data_pth, "HS_rast_high.tif"))
+PTN_poly <- read_sf(file.path(data_pth, "PTN_poly.shp"), agr = "constant")
+nonbreed_poly <- read_sf(file.path(data_pth, "nonbreed_poly.shp"), agr = "constant")
+
+# the habitat change raster has values from 0 to 7, this matrix is used to
+# convert them to the 4 classes described above.
+hs_rcl_mat <- matrix(c(c(0:7), c(0, 1, 2,2,2,2,2,3)), ncol = 2)
+```
+
+## Load climate data and run spatial analysis
+
+Next we will load in the climate data that we prepared in the first step using the `get_clim_vars()` function which loads the data and stores it in a list with the required names. 
+
+```{r}
+clim_dat <- get_clim_vars(file.path(data_pth, "clim_files/processed"))
+```
+
+Then we can run the spatial data analysis using the species specific data and climate data. The resulting object is a list containing a table with the results of the spatial analysis, `spat_res$spat_table`, and two range polygons which are provided for mapping. `spat_res$range_poly_assess` the range polygon clipped to the assessment area, and `spat_res$range_poly_clim` the range polygon clipped to the extent of the climate data. The first is used for all factors except the historical thermal and hydrological niche which use the range clipped to the extent of the climate data because historical thermal and hydrological niche are used a proxies for the  range of temperature and moisture conditions that the species can tolerate and therefore should reflect as much of the range as possible. If the range_poly provided is completely within the assessment area then these two polygons will be the same
+
+```{r}
+spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
+                        ptn_poly = PTN_poly, non_breed_poly = nonbreed_poly,
+                        hs_rast = HS_rast_high,
+                        hs_rcl = hs_rcl_mat,
+                        clim_vars_lst = clim_dat)
+
+```
+
+We can look at how the spatial analysis was done by plotting the appropriate range polygon and climate data to see how they overlap.
+
+```{r fig.height=4, fig.width=4}
+plot(clim_dat$mat)
+
+plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
+
+```
+
+And then inspecting the spatial results table. In this case it shows that 10% of the range has the highest exposure to change in mean annual temperature class and 90% has the second highest. 
+
+```{r}
+spat_res$spat_table[, 1:6]
+```
+
+
+## Answer the vulnerability questions
+`make_vuln_df()` creates a blank table that can be filled in with scores for each vulnerability factor used to calculate the index. The vulnerability factors and how to score them is explained in the NatureServe Guidelines. The table includes an abbreviated version of the question, the maximum value for each factor and whether the factor is calculated by the spatial data analysis (and should be scored as -1 so as not to override the results of the spatial analysis). `Value1` should be filled with a number between -1 and the maximum value for that question (2 or 3) which correspond to the following impacts on vulnerability -1: Unknown, 0: Neutral, 1: Somewhat Increase, 2: Increase, 3: Greatly Increase. If you wish to choose two or more answers to reflect uncertainty you can fill in `Value2` - `Value4` as well.
+
+```{r}
+vuln <- make_vuln_df("sp_name")
+
+if(FALSE){
+  # you can interactively edit the table
+  vuln <- edit(vuln)
+  
+  # # Another option:
+  # 
+  # # save the table as a csv 
+  # 
+  # write.csv(vuln, "path/to/write", row.names = FALSE)
+  # 
+  # # Edit the csv, save it and load it back in to R
+  # vuln <- read.csv("path/to/write", stringsAsFactors = FALSE)
+} else {
+  # or use code (recommended for reproducibility)
+  vuln$Value1[3:19] <- c( 0,0,1,0, -1, -1, -1, -1, 0, 1, 1, 0, 0, 1, 0, 0, 1)
+  vuln$Value1[26:29] <- c(0, -1, -1, 0)
+  
+  # include a second value to reflect uncertainty and trigger a monte carlo to
+  # determine confidence
+  vuln$Value2[3] <- 2
+}
+```
+
+
+## Calculate the index
+Finally, combine the results of the spatial analysis with the answers to the vulnerability questions to calculate the index. For the example I have reduced the number of rounds in the Monte Carlo but it should generally be kept to the default.
+```{r}
+index_res <- calc_vulnerability(spat_res$spat_table, vuln, tax_grp = "Bird",
+                                n_rnds = 10)
+```
+
+The result is a list with 11 elements see `?calc_vulnerability` for an explanation of all of them. `index_res$index` gives the index where EV: Extremely Vulnerable, HV: Highly Vulnerable, MV: Moderately Vulnerable, LV: Less Vulnerable, and IE: Insufficient Evidence. Below we see that our example species is Highly Vulnerable to climate change
+
+```{r}
+str(index_res)
+
+index_res$index
+```
+These results can be used to investigate how the index value was reached including using two graphs that are included in the package. The first shows how the index values, that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections, are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In our example we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
+
+```{r fig.height=4, fig.width=8}
+plot_score_index(index_res$b_c_score, index_res$d_score, index_res$n_d_factors)
+```
+
+The second graph is a visual representation of the scores for each factor and how they were impacted by the exposure. The bars show the total score for the factor and the dots show the exposure multiplier that was used to modify the initial value.  
+
+```{r fig.height=4, fig.width=8}
+plot_q_score(index_res$vuln_df)
+```
+
+

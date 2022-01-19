@@ -4,11 +4,7 @@
 #' @param rast
 #' @param poly
 #' @param var_name
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @noRd
 calc_min_max_raster <- function(rast, poly, var_name){
 
   withCallingHandlers(

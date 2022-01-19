@@ -12,3 +12,11 @@ test_that("run_ccvi_app() works", {
   # which runs on Linux.
   expect_pass(testApp(test_path("app/"), compareImages = FALSE))
 })
+
+# # To update a snapshot
+# shinytest::snapshotUpdate('tests/testthat/app')
+
+# # To record a new test
+# shinytest::recordTest("tests/testthat/app")
+
+file.remove("app/Rplots.pdf")

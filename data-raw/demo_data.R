@@ -9,162 +9,149 @@ library(sf)
 rast <- matrix(0, nrow = 100, ncol = 100) %>%
   raster()
 
-# MAT and CMD have values 1-6 where 1 is more CC exposure
-MAT_rast <- rast
-values(MAT_rast) <- seq(1, 6, length.out = 10000) %>% sort() %>% round()
+rast <- setExtent(rast, extent(0, 1000, 0, 1000))
 
-CMD_rast <- MAT_rast
+# MAT and CMD want difference to be higher at the top
+MAT <- rast
+values(MAT) <- seq(5, 10, length.out = 10000) %>%
+  sort(decreasing = TRUE) %>% round()
+MAT_2050 <- MAT
+values(MAT_2050) <- seq(10, 30, length.out = 10000) %>%
+  sort(decreasing = TRUE) %>% round()
 
-# CCEI and HTN have values 1-4 and CCEI should be in the nonbreeding range
-CCEI_rast <- rast
-values(CCEI_rast) <- seq(1, 4, length.out = 10000) %>% sort() %>% round()
+CMD <- MAT - 5
+CMD_2050 <- MAT_2050 - 5
 
-HTN_rast <- CCEI_rast
+# CCEI 0-25
+CCEI <- rast
+values(CCEI) <- seq(0, 25, length.out = 10000) %>% sort(decreasing = TRUE) %>%
+  round()
+CCEI <- shift(CCEI, dy = -1000)
 
-CCEI_rast <- shift(CCEI_rast, dy = -1)
+# MWMT MCMT more difference between the two is less exposure
+MCMT <- rast
+values(MCMT) <- seq(5, 10, length.out = 10000) %>%
+  sort() %>% round()
+MWMT <- MCMT
+values(MWMT) <- seq(10, 20, length.out = 10000) %>%
+  sort() %>% round()
 
 # MAP is scored based on the range where lower variation in species range is
 # more vulnerable
-MAP_rast <- rast
-values(MAP_rast) <- c(rep(seq(1, 100), 50),
+MAP <- rast
+values(MAP) <- c(rep(seq(1, 100), 50),
                       rep(seq(1, 1000), 5))
 
 # 7 is gain, 1 is lost, rest is maint, is assessed over the whole assessment
 # area so should be 0 or NA outside range
-HS_rast <- rast
-values(HS_rast) <- c(sample(c(0:7, 1, 1, 1, 1), 3000, replace = TRUE),
-                     sample(c(0:7), 4000, replace = TRUE),
-                     sample(c(0:7, 7, 7, 7, 7), 3000, replace = TRUE))
+HS_rast_high <- rast
+values(HS_rast_high) <- c(sample(c(0:7, 1, 1, 1, 1), 3000, replace = TRUE),
+                          rep(0, 4000),
+                          rep(0, 3000))
+
+HS_rast_med <- rast
+values(HS_rast_med) <- c(rep(0, 3000),
+                         sample(c(0:7), 4000, replace = TRUE),
+                         rep(0, 3000))
+
+HS_rast_low <- rast
+values(HS_rast_low) <- c(rep(0, 3000),
+                         rep(0, 4000),
+                         sample(c(0:7, 6, 6, 6, 6), 3000, replace = TRUE))
 
 # Should be a polygon of areas with special temperature regime
 PTN_poly <- st_polygon(list(matrix(c(0.5, 0.5, 1,
-                                1, 0, 1, 0.5, 0.5),
+                                1, 0, 1, 0.5, 0.5)*1000,
                               ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 rng_poly_high <- st_polygon(list(matrix(c(0, 0.75, 1, 0.75, 1,
-                                          1, 0, 1, 0, 0.75),
+                                          1, 0, 1, 0, 0.75)*1000,
                                         ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 rng_poly_med <- st_polygon(list(matrix(c(0, 0.25, 1, 0.25, 1,
-                                          0.5, 0, 0.5, 0, 0.25),
+                                          0.5, 0, 0.5, 0, 0.25)*1000,
                                         ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 rng_poly_low <- st_polygon(list(matrix(c(0, 0, 1, 0, 1,
-                                         0.25, 0, 0.25, 0, 0),
+                                         0.25, 0, 0.25, 0, 0)*1000,
                                        ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
 nonbreed_poly <-  st_polygon(list(matrix(c(0, 0, 1, 0, 1,
-                                           -0.25, 0, -0.25, 0, 0),
+                                           -0.25, 0, -0.25, 0, 0)*1000,
                                          ncol = 2, byrow = TRUE))) %>%
   st_sfc() %>% st_sf()
 
-assess_poly <- st_bbox(MAT_rast) %>% st_as_sfc() %>% st_as_sf()
+assess_poly <- st_bbox(MAT) %>% st_as_sfc() %>% st_as_sf()
 
-spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
-                        non_breed_poly = nonbreed_poly,
-                        clim_vars_lst = list(mat = MAT_rast, cmd = CMD_rast,
-                                             ccei = CCEI_rast, htn = HTN_rast,
-                                             ptn = PTN_poly, map = MAP_rast),
-                                             hs_rast = mask(HS_rast, rng_poly_high))
+# spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
+#                         non_breed_poly = nonbreed_poly,
+#                         clim_vars_lst = list(mat = MAT_rast, cmd = CMD_rast,
+#                                              ccei = CCEI_rast, htn = HTN_rast,
+#                                              ptn = PTN_poly, map = MAP_rast),
+#                                              hs_rast = mask(HS_rast, rng_poly_high))
 
-make_vuln_df <- function(val1, val2 = NA, cave = 0 , mig = 0){
-  vuln_qs <- tribble(
-    ~Species, ~Code, ~Value1, ~Value2,
-    "test_sp", "Z2", cave, NA,
-    "test_sp", "Z3", mig, NA,
-    "test_sp", "B1", val1, val2,
-    "test_sp", "B2a", val1, val2,
-    "test_sp", "B2b", val1, val2,
-    "test_sp", "B3", val1, val2,
-    "test_sp", "C1", val1, val2,
-    "test_sp", "C2ai", val1, val2,
-    "test_sp", "C2aii", val1, val2,
-    "test_sp", "C2bi", val1, val2,
-    "test_sp", "C2bii", val1, val2,
-    "test_sp", "C2c", val1, val2,
-    "test_sp", "C2d", val1, val2,
-    "test_sp", "C3", val1, val2,
-    "test_sp", "C4a", val1, val2,
-    "test_sp", "C4b", val1, val2,
-    "test_sp", "C4c", -1, val2,
-    "test_sp", "C4d", val1, val2,
-    "test_sp", "C4e", val1, ifelse(is.na(val2), val2, -1),
-    "test_sp", "C4f", val1, val2,
-    "test_sp", "C4g", val1, val2,
-    "test_sp", "C5a", val1, val2,
-    "test_sp", "C5b", val1, val2,
-    "test_sp", "C5c", val1, val2,
-    "test_sp", "C6", val1, val2,
-    "test_sp", "D1", val1, val2,
-    "test_sp", "D2", val1, val2,
-    "test_sp", "D3", val1, val2,
-    "test_sp", "D4", val1, val2,
-  )
-  vuln_qs %>% mutate(Value3 = NA_real_, Value4 = NA_real_)
-}
 
-vuln_df <- make_vuln_df(0)
-
-vuln_df$Value1[1:15] <- c(0,0, 0,0,0,0, -1, -1, -1, -1, 0, 0, 0, 0, 0)
-vuln_df$Value1[26:29] <- c(-1, -1, -1, -1)
-
-res <- calc_vulnerability(spat_res, vuln_df)
+#
+# vuln_df <- make_vuln_df(0)
+#
+# vuln_df$Value1[1:15] <- c(0,0, 0,0,0,0, -1, -1, -1, -1, 0, 0, 0, 0, 0)
+# vuln_df$Value1[26:29] <- c(-1, -1, -1, -1)
+#
+# res <- calc_vulnerability(spat_res, vuln_df)
 
 # save the data to extdata so that it can be used with the app for a demo
-clim_dat <- lst(MAT_rast, CMD_rast, CCEI_rast, HTN_rast, MAP_rast)
+clim_dat <- lst(MAT, MAT_2050, CMD, CMD_2050, CCEI, MWMT, MCMT, MAP)
 
-sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly, HS_rast,
+sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
+              HS_rast_high, HS_rast_med, HS_rast_low,
               assess_poly, PTN_poly)
 
-write_fun <- function(x, nm, dir){
-  if(is(x, "Raster")){
-    writeRaster(x, paste0(dir, nm, ".tif"))
+write_fun <- function(x, nm, dir, crs_use){
+  if(inherits(x, "Raster")){
+    crs(x) <- paste0("EPSG:", crs_use)
+    if(nm == "CCEI"){
+      writeRaster(x, paste0(dir, nm, ".img"), overwrite = TRUE)
+    } else {
+      writeRaster(x, paste0(dir, nm, ".tif"), overwrite = TRUE)
+    }
   }
-  if(is(x, "sf")){
-    st_write(x, paste0(dir, nm, ".shp"))
+  if(inherits(x, "sf")){
+    x <- st_set_crs(x, crs_use)
+    write_sf(x, paste0(dir, nm, ".shp"))
   }
 }
 
 purrr::walk2(clim_dat, names(clim_dat), write_fun,
-             dir = "inst/extdata/clim_files/")
+             dir = "inst/extdata/clim_files/raw/",
+             crs_use = 3162)
 purrr::walk2(sp_dat, names(sp_dat), write_fun,
-             dir = "inst/extdata/")
-
-# make raw versions to use for testing data_prep
-
-MAT <- HTN_rast
-MAT_2050 <- MAT_rast
-
-CMD <- HTN_rast
-CMD_2050 <- CMD_rast
-
-MAP <- MAP_rast
-
-CCEI <- CCEI_rast
-CCEI[] <- values(MAP_rast)/100
-
-MWMT <- MAT_rast
-
-MCMT <- HTN_rast
-
-clim_dat2 <- lst(MAT, MAT_2050, CMD, CMD_2050, MAP, MWMT, MCMT, CCEI)
-
-clim_dat2 <- purrr:::map(clim_dat2, ~`crs<-`(.x, value = "+proj=longlat +datum=WGS84"))
-
-purrr::walk2(clim_dat2[1:7], names(clim_dat2[1:7]), write_fun,
-             dir = "inst/extdata/clim_files/raw/")
-
-writeRaster(clim_dat2[[8]], paste0("inst/extdata/clim_files/raw/", "CCEI", ".img"))
+             dir = "inst/extdata/",
+             crs_use = 3162)
 
 run_prep_data(in_folder = "inst/extdata/clim_files/raw",
               out_folder = "inst/extdata/clim_files/processed/",
               reproject = F, overwrite = T)
 
-prep_exp(MAT, MAT_2050, file_nm = "inst/extdata/clim_files/processed/MAT_reclass.tif",
-         reproject = F)
-MAT - MAT_2050
+rng_poly_high <- read_sf("inst/extdata/rng_poly_high.shp", agr = "constant")
+assess_poly <- read_sf("inst/extdata/assess_poly.shp", agr = "constant")
+HS_rast_high <- raster("inst/extdata/HS_rast_high.tif")
+PTN_poly <- read_sf("inst/extdata/PTN_poly.shp", agr = "constant")
+nonbreed_poly <- read_sf("inst/extdata/nonbreed_poly.shp", agr = "constant")
+
+spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
+                        ptn_poly = PTN_poly, non_breed_poly = nonbreed_poly,
+                        hs_rast = HS_rast_high,
+                        hs_rcl = matrix(c(c(0:7), c(0, 1, 2,2,2,2,2,3)), ncol = 2),
+                        clim_vars_lst = get_clim_vars("inst/extdata/clim_files/processed/"))
+
+vuln_df <- make_vuln_df("sp_name", 0)
+
+vuln_df$Value1[1:15] <- c(0,0, 0,0,0,0, -1, -1, -1, -1, 0, 0, 0, 0, 0)
+vuln_df$Value1[26:29] <- c(0, -1, -1, 0)
+
+res <- calc_vulnerability(spat_res$spat_table, vuln_df, tax_grp = "Bird")
 

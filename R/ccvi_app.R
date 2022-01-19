@@ -1,13 +1,8 @@
 # based on example app: https://github.com/daattali/shiny-server/blob/master/mimic-google-form/app.R
 # and blog post explaining it: https://deanattali.com/2015/06/14/mimicking-google-form-shiny/
 
-
-
-#' Title
+#' Create the ccviR Shiny application
 #'
-#' @param ...
-#'
-#' @return
 #'
 #' @import shiny
 #' @import dplyr
@@ -15,18 +10,18 @@
 #' @import shinyFiles
 #' @importFrom raster raster crs
 #' @importFrom tmap tmap_leaflet
-#' @export
 #'
-#' @examples
+#' @noRd
 ccvi_app <- function(...){
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
 
-  fieldsMandatory2 <- c("clim_var_dir", "range_poly_pth", "assess_poly_pth")
+  fieldsMandatory2 <- c("range_poly_pth", "assess_poly_pth")
 
   # File path ids to use with file choose
   filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
                    "hs_rast_pth", "ptn_poly_pth")
+  names(filePathIds) <- filePathIds
 
   # Input options
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
@@ -43,500 +38,544 @@ ccvi_app <- function(...){
   "
 
   # Header #=================================
-  ui <-  fluidPage(
-    shinyjs::useShinyjs(),
-    shinyjs::inlineCSS(appCSS),
-    shinyFeedback::useShinyFeedback(),
-    title = "ccviR app",
-    tags$head(tags$style(type = "text/css",
-                         ".container-fluid {  max-width: 950px; /* or 950px */}")),
-    div(id = "header",
-        h1("An app to run the NatureServe CCVI process"),
-        strong(
-          span("App developer: Sarah Endicott"), HTML("&bull;"),
-          span("Project lead: Ilona Naujokaitis-Lewis"), HTML("&bull;"),
-          span("With support from: ECCC"),
-          br(),
-          span("Code"),
-          a("on GitHub", href = "https://github.com/see24/ccviR"),
-          HTML("&bull;"),
-          a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"))
-    ),
-
-    tabsetPanel(
-      id = "tabset",
-      # Introduction #===============
-      tabPanel(
-        "Welcome",
-        tabsetPanel(
-          id = "welcome", type = "hidden",
-          tabPanelBody("instructions",
-            fluidPage(
-              h2("Welcome"),
-              p("This app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
-                a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
-                "that automates the spatial analysis needed to inform the index. ",
-                "The app is based on version 3.02 of the NatureServe CCVI. ",
-                "For detailed instructions on how to use the index see the NatureServe ",
-                a("Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf")),
-              h3("Preparing to use the app"),
-
-              p(strong("Step 0: "),"The first time you use the app ",
-                "you will need to prepare the climate data used in the app."),
-              actionButton("prep_data", "Prepare Climate Data", class = "btn-primary"),
-              br(), br(),
-              p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
-                tags$ul(
-                  tags$li(labelMandatory("Species range polygon")),
-                  tags$li(labelMandatory("Assessment area polygon")),
-                  tags$li("Non-breeding range polygon"),
-                  tags$li("Projected habitat change raster classified as",
-                          " 1 = lost, 2-6 = maintained and 7 = gained"),
-                  tags$li("Physiological thermal niche (PTN) polygon. ",
-                          "PTN polygon should include cool or cold environments ",
-                          "that the species occupies that may be lost or reduced ",
-                          "in the assessment area as a result of climate change."))),
-              p(strong("Step 2: "), "Acquire species-specific sensitivity and life history data.",
-                "Including information about dispersal and movement ability, ",
-                "temperature/precipitation regime, dependence on disturbance events, ",
-                "relationship with ice or snow-cover habitats, physical",
-                " specificity to geological features or their derivatives, ",
-                "interactions with other species including diet and pollinator ",
-                "specificity, genetic variation, and phenological response to ",
-                "changing seasons. Recognizing that some of this information is",
-                " unknown for many species, the Index is designed such that only",
-                " 10 of the 19 sensitivity factors require input in order to ",
-                "obtain an overall Index score."),
-              actionButton("start", "Start", class = "btn-primary"),
-              h3("References"),
-              p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
-                " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
-                "animal vulnerability to climate change. Pages 129-150 in ",
-                "Wildlife Conservation in a Changing Climate, edited by J. ",
-                "Brodie, E. Post, and D. Doak. University of Chicago Press, ",
-                "Chicago, IL."),
-              p("Young, B. E., N. S. Dubois, and E. L. Rowland. 2015. Using the",
-                " Climate Change Vulnerability Index to inform adaptation ",
-                "planning: lessons, innovations, and next steps. Wildlife ",
-                "Society Bulletin 39:174-181.")
-            ),
-          ),
-          tabPanelBody("data_prep",
-            data_prep_ui("data_prep_mod"),
+  ui <-  function(request){
+    fluidPage(
+      shinyjs::useShinyjs(),
+      shinyjs::inlineCSS(appCSS),
+      title = "ccviR app",
+      tags$head(tags$style(type = "text/css",
+                           ".container-fluid {  max-width: 950px; /* or 950px */}")),
+      div(id = "header",
+          h1("An app to run the NatureServe CCVI process"),
+          strong(
+            span("App developer: Sarah Endicott"), HTML("&bull;"),
+            span("Project lead: Ilona Naujokaitis-Lewis"), HTML("&bull;"),
+            span("With support from: ECCC"),
             br(),
-            shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
-                                                            placeholder = TRUE)),
-            actionButton("data_done", "Finished", class = "btn-primary")
-
-          )
-        )
-
+            span("Code"),
+            a("on GitHub", href = "https://github.com/see24/ccviR"),
+            HTML("&bull;"),
+            a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"))
       ),
-      # Species Info #===============
-      tabPanel(
-        "Species Information",
-        column(
-          width = 12,
-          div(
-            id = "form_sp_info",
-            h3("Species information"),
 
-            textInput("assessor_name", labelMandatory("Assessor Name"), ""),
-            textInput("geo_location", labelMandatory("Geographic Area Assessed")),
-            selectInput("tax_grp", labelMandatory("Major Taxonomic Group"),
-                        c("Vascular Plant", "Nonvascular Plant", "Lichen",
-                          "Invert-Insect", "Invert-Mollusk", "Invert-Other",
-                          "Fish", "Amphibian", "Reptile", "Mammal", "Bird")),
-            textInput("species_name", labelMandatory("Species Scientific Name")),
-            textInput("common_name", "Common Name"),
-            checkboxInput("cave", "Check if the species is an obligate of caves or groundwater systems"),
-            checkboxInput("mig", "Check if species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
-            actionButton("next1", "Next", class = "btn-primary"),
-            br(),br()
+      tabsetPanel(
+        id = "tabset",
+        # Introduction #===============
+        tabPanel(
+          "Welcome",
+          tabsetPanel(
+            id = "welcome", type = "hidden",
+            tabPanelBody("instructions",
+                         fluidPage(
+                           h2("Welcome"),
+                           p("This app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
+                             a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
+                             "that automates the spatial analysis needed to inform the index. ",
+                             "The app is based on version 3.02 of the NatureServe CCVI. ",
+                             "For detailed instructions on how to use the index see the NatureServe ",
+                             a("Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf")),
+                           h3("Preparing to use the app"),
 
+                           p(strong("Step 0: "),"The first time you use the app ",
+                             "you will need to prepare the climate data used in the app."),
+                           actionButton("prep_data", "Prepare Climate Data", class = "btn-primary"),
+                           br(), br(),
+                           p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
+                             tags$ul(
+                               tags$li(labelMandatory("Species range polygon")),
+                               tags$li(labelMandatory("Assessment area polygon")),
+                               tags$li("Non-breeding range polygon"),
+                               tags$li("Projected habitat change raster"),
+                               tags$li("Physiological thermal niche (PTN) polygon. ",
+                                       "PTN polygon should include cool or cold environments ",
+                                       "that the species occupies that may be lost or reduced ",
+                                       "in the assessment area as a result of climate change."))),
+                           p(strong("Step 2: "), "Acquire species-specific sensitivity and life history data.",
+                             "Including information about dispersal and movement ability, ",
+                             "temperature/precipitation regime, dependence on disturbance events, ",
+                             "relationship with ice or snow-cover habitats, physical",
+                             " specificity to geological features or their derivatives, ",
+                             "interactions with other species including diet and pollinator ",
+                             "specificity, genetic variation, and phenological response to ",
+                             "changing seasons. Recognizing that some of this information is",
+                             " unknown for many species, the Index is designed such that only",
+                             " 10 of the 19 sensitivity factors require input in order to ",
+                             "obtain an overall Index score."),
+                           h3("Start assessment"),
+                           br(),
+                           strong("Optional: Load data from a previous assessment"),
+                           br(),
+                           load_bookmark_ui("load"),
+                           br(),
+                           br(),
+                           actionButton("start", "Start", class = "btn-primary"),
+                           h3("References"),
+                           p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
+                             " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
+                             "animal vulnerability to climate change. Pages 129-150 in ",
+                             "Wildlife Conservation in a Changing Climate, edited by J. ",
+                             "Brodie, E. Post, and D. Doak. University of Chicago Press, ",
+                             "Chicago, IL."),
+                           p("Young, B. E., N. S. Dubois, and E. L. Rowland. 2015. Using the",
+                             " Climate Change Vulnerability Index to inform adaptation ",
+                             "planning: lessons, innovations, and next steps. Wildlife ",
+                             "Society Bulletin 39:174-181.")
+                         ),
+            ),
+            tabPanelBody("data_prep",
+                         data_prep_ui("data_prep_mod"),
+                         br(),
+                         shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
+                                                                         placeholder = TRUE)),
+                         actionButton("data_done", "Finished", class = "btn-primary")
+
+            )
           )
-        )
-      ),
-      # Spatial Analysis #============
-      tabPanel(
-        "Spatial Data Analysis",
-        fluidRow(
+
+        ),
+        # Species Info #===============
+        tabPanel(
+          "Species Information",
           column(
-            12,
+            width = 12,
             div(
-              id = "spatial",
-              h3("Spatial data analysis"),
-              labelMandatory(strong("Folder location of prepared climate data:")),
-              shinyDirButton("clim_var_dir", "Choose a folder",
-                             "Folder location of prepared climate data"),
-              verbatimTextOutput("clim_var_dir", placeholder = TRUE),
-              verbatimTextOutput("clim_var_error"),
-              br(),
-              labelMandatory(strong("Range polygon shapefile:")),
-              shinyFilesButton("range_poly_pth", "Choose file",
-                               "Range polygon shapefile", multiple = FALSE),
-              verbatimTextOutput("range_poly_pth", placeholder = TRUE),
-              br(),
-              labelMandatory(strong("Assessment area polygon shapefile")),
-              shinyFilesButton("assess_poly_pth", "Choose file",
-                               "Assessment area polygon shapefile",
-                               multiple = FALSE),
-              verbatimTextOutput("assess_poly_pth", placeholder = TRUE),
-              br(),
-              strong("Non-breeding Range polygon shapefile"),
-              shinyFilesButton("nonbreed_poly_pth", "Choose file",
-                               "Non-breeding Range polygon shapefile",
-                               multiple = FALSE),
-              verbatimTextOutput("nonbreed_poly_pth", placeholder = TRUE),
-              br(),
-              strong("Projected habitat change raster"),
-              shinyFilesButton("hs_rast_pth", "Choose file",
-                               "Projected habitat change raster file", multiple = FALSE),
-              verbatimTextOutput("hs_rast_pth", placeholder = TRUE),
-              br(),
-              strong("Physiological thermal niche file"),
-              shinyFilesButton("ptn_poly_pth", "Choose file",
-                               "Physiological thermal niche file", multiple = FALSE),
-              verbatimTextOutput("ptn_poly_pth", placeholder = TRUE),
-              br(),
-              strong("Click Load to begin spatial analysis"),
-              br(),
-              actionButton("loadSpatial", "Load", class = "btn-primary"),
-              verbatimTextOutput("spat_error")
+              id = "form_sp_info",
+              h3("Species information"),
+
+              textInput("assessor_name", labelMandatory("Assessor Name"), ""),
+              textInput("geo_location", labelMandatory("Geographic Area Assessed")),
+              selectInput("tax_grp", labelMandatory("Major Taxonomic Group"),
+                          c("Vascular Plant", "Nonvascular Plant", "Lichen",
+                            "Invert-Insect", "Invert-Mollusk", "Invert-Other",
+                            "Fish", "Amphibian", "Reptile", "Mammal", "Bird")),
+              textInput("species_name", labelMandatory("Species Scientific Name")),
+              textInput("common_name", "Common Name"),
+              checkboxInput("cave", "Check if the species is an obligate of caves or groundwater systems"),
+              checkboxInput("mig", "Check if species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
+              actionButton("next1", "Next", class = "btn-primary"),
+              br(),br()
+
             )
           )
         ),
-        fluidRow(
-          column(
-            6,
-            div(
-              id = "texp_map_div",
-              h3("Temperature exposure"),
-              shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
-              tableOutput("texp_tbl")
-            ),
-            div(
-              h3("Migratory exposure - Climate change exposure index"),
-              div(id = "missing_ccei",
-                  HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>CCEI data and a non-breeding range are needed to calculate."),
-                  br(),
-                  br()),
+        # Spatial Analysis #============
+        tabPanel(
+          "Spatial Data Analysis",
+          fluidRow(
+            column(
+              12,
               div(
-                id = "ccei_exp",
-                tmap::tmapOutput("ccei_map"),
-                tableOutput("tbl_ccei"))
-
+                id = "spatial",
+                h3("Spatial data analysis"),
+                labelMandatory(strong("Folder location of prepared climate data:")),
+                shinyDirButton("clim_var_dir", "Choose a folder",
+                               "Folder location of prepared climate data"),
+                shinycssloaders::withSpinner(verbatimTextOutput("clim_var_dir_out", placeholder = TRUE), proxy.height = "100px"),
+                verbatimTextOutput("clim_var_error"),
+                br(),
+                labelMandatory(strong("Range polygon shapefile:")),
+                shinyFilesButton("range_poly_pth", "Choose file",
+                                 "Range polygon shapefile", multiple = FALSE),
+                verbatimTextOutput("range_poly_pth_out", placeholder = TRUE),
+                br(),
+                labelMandatory(strong("Assessment area polygon shapefile")),
+                shinyFilesButton("assess_poly_pth", "Choose file",
+                                 "Assessment area polygon shapefile",
+                                 multiple = FALSE),
+                verbatimTextOutput("assess_poly_pth_out", placeholder = TRUE),
+                br(),
+                strong("Physiological thermal niche file"),
+                shinyFilesButton("ptn_poly_pth", "Choose file",
+                                 "Physiological thermal niche file", multiple = FALSE),
+                verbatimTextOutput("ptn_poly_pth_out", placeholder = TRUE),
+                br(),
+                strong("Non-breeding Range polygon shapefile"),
+                shinyFilesButton("nonbreed_poly_pth", "Choose file",
+                                 "Non-breeding Range polygon shapefile",
+                                 multiple = FALSE),
+                verbatimTextOutput("nonbreed_poly_pth_out", placeholder = TRUE),
+                br(),
+                strong("Projected habitat change raster"),
+                shinyFilesButton("hs_rast_pth", "Choose file",
+                                 "Projected habitat change raster file", multiple = FALSE),
+                verbatimTextOutput("hs_rast_pth_out", placeholder = TRUE),
+                br(),
+                conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
+                                 strong("Classification of habitat suitability raster"),
+                                 p("Enter the range of values in the raster corresponding to ",
+                                   "lost, maintained, gained and not suitable habitat. "),
+                                 strong("Lost: "),
+                                 tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
+                                 tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
+                                 br(),
+                                 strong("Maintained: "),
+                                 tags$div(numericInput("maint_from", "From", 2), style="display:inline-block"),
+                                 tags$div(numericInput("maint_to", "To", 6), style="display:inline-block"),
+                                 br(),
+                                 strong("Gained: "),
+                                 tags$div(numericInput("gain_from", "From", 7), style="display:inline-block"),
+                                 tags$div(numericInput("gain_to", "To", 7), style="display:inline-block"),
+                                 br(),
+                                 strong("Not Suitable: "),
+                                 tags$div(numericInput("ns_from", "From", 0), style="display:inline-block"),
+                                 tags$div(numericInput("ns_to", "To", 0), style="display:inline-block")
+                                 ),
+                strong("Click Run to begin the spatial analysis or to re-run it",
+                       " after changing inputs"),
+                br(),
+                actionButton("startSpatial", "Run", class = "btn-primary"),
+                verbatimTextOutput("spat_error")
+              )
             )
           ),
-          column(
-            6,
-            div(
-              id = "cmd_map",
-              h3("Moisture exposure"),
-              tmap::tmapOutput("cmd_map"),
-              tableOutput("cmd_tbl")
-            )
-          )
-        ),
-        fluidRow(
-          column(
-            12,
-            actionButton("next2", "Next", class = "btn-primary"),
-            br(), br()
-          )
-        )
-      ),
-      # Section B questions #=================
-      tabPanel(
-        "Vulnerability Questions",
-        fluidRow(
-          column(
-            12,
-            h3("Vulnerability Questions"),
-            div(
-              id = "secB",
-              h4("Section B: Indirect Exposure to Climate Change"),
-              h4("Evaluate for specific geographical area under consideration"),
-              h5("Factors that influence vulnerability"),
-              actionButton("guideB", "Show guidelines"),
-              check_comment_ui("B1", "1) Exposure to sea level rise:",
-                               choiceNames = valueNms,
-                               choiceValues = valueOpts),
-              check_comment_ui("B2a", "2a) Distribution relative to natural barriers",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts),
-              check_comment_ui("B2b", "2b) Distribution relative to anthropogenic barriers",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts),
-
-              check_comment_ui("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4])
-            )
-          )
-        ),
-        # Section C questions #=============================
-        fluidRow(
-          column(
-            12,
-            div(
-              id = "secC",
-              h4("Section C: Sensitivity and Adaptive Capacity"),
-              actionButton("guideC", "Show guidelines"),
-              check_comment_ui("C1", "1) Dispersal and movements",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts),
-
-              strong("2b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
-
-              check_comment_ui("C2bii", "ii) physiological hydrological niche.",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts),
-
-              check_comment_ui("C2c", "2c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              check_comment_ui("C2d", "2d) Dependence on ice, ice-edge, or snow-cover habitats.",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts),
-
-              check_comment_ui("C3", "3) Restriction to uncommon landscape/geological features or derivatives.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              check_comment_ui("C4a", "4a) Dependence on other species to generate required habitat.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              shinyjs::hidden(
+          fluidRow(
+            column(
+              6,
+              div(
+                id = "texp_map_div",
+                h3("Temperature exposure"),
+                shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
+                tableOutput("texp_tbl")
+              ),
+              div(
+                h3("Migratory exposure - Climate change exposure index"),
+                div(id = "missing_ccei",
+                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>CCEI data and a non-breeding range are needed to calculate."),
+                    br(),
+                    br()),
                 div(
-                  id = "animal_only",
-                  check_comment_ui("C4b", "4b) Dietary versatility (animals only).",
-                                     choiceNames = valueNms[2:4],
-                                     choiceValues = valueOpts[2:4])
-                )
-              ),
-              shinyjs::hidden(
-                div(
-                  id = "plant_only",
-                  check_comment_ui("C4c", "4c) Pollinator versatility (plants only).",
-                                     choiceNames = valueNms[2:4],
-                                     choiceValues = valueOpts[2:4])
-                )
-              ),
-              check_comment_ui("C4d", "4d) Dependence on other species for propagule dispersal.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              check_comment_ui("C4e", "4e) Sensitivity to pathogens or natural enemies.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              check_comment_ui("C4f", "4f) Sensitivity to competition from native or non-native species.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              check_comment_ui("C4g", "4g) Forms part of an interspecific interaction not covered by 4a-f.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
+                  id = "ccei_exp",
+                  tmap::tmapOutput("ccei_map"),
+                  tableOutput("tbl_ccei"))
 
-              check_comment_ui("C5a", "5a) Measured genetic variation.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              conditionalPanel(
-                "input.C5a == ''",
-                check_comment_ui("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
-                                   choiceNames = valueNms[2:4],
-                                   choiceValues = valueOpts[2:4]),
-
-              ),
-              conditionalPanel(
-                "input.C5a == '' && input.C5b == ''",
-                shinyjs::hidden(
-                  div(
-                    id = "plant_only2",
-                    check_comment_ui("C5c", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
-                                       choiceNames = valueNms[2:4],
-                                       choiceValues = valueOpts[2:4])
-                  )
-                )
-              ),
-
-              check_comment_ui("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4])
+              )
+            ),
+            column(
+              6,
+              div(
+                id = "cmd_map",
+                h3("Moisture exposure"),
+                tmap::tmapOutput("cmd_map"),
+                tableOutput("cmd_tbl")
+              )
             )
-          )
-        ),
-        # Section D questions #=============================
-        fluidRow(
-          column(
-            12,
-            div(
-              id = "secD",
-              h4("Section D: Documented or Modeled Response to Climate Change"),
-              h5("(Optional; May apply across the range of a species)"),
-              actionButton("guideD", "Show guidelines"),
-
-              check_comment_ui("D1", "1) Documented response to recent climate change. ",
-                                 choiceNames = valueNms,
-                                 choiceValues = valueOpts),
-
-              check_comment_ui("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4]),
-              actionButton("nextVuln", "Next", class = "btn-primary"),
+          ),
+          fluidRow(
+            column(
+              12,
+              actionButton("next2", "Next", class = "btn-primary"),
               br(), br()
             )
           )
-        )
-      ),
-      # Spatial Vulnerability Questions #================================
-      tabPanel(
-        "Spatial Vulnerability Questions",
-        fluidRow(
-          column(
-            12,
-            h3("Spatial Vulnerability Questions"),
-            h4("Section C: Sensitivity and Adaptive Capacity"),
-            actionButton("guideC2", "Show guidelines"),
-            br(),
-            div(
-              id = "C2ai",
-              h4("Predicted sensitivity to temperature and moisture changes:"),
-              strong("2a) i) Historical thermal niche."),
-              br(),br(),
-              div(id = "missing_htn",
-                  HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                  br(),
-                  br()),
-              shinycssloaders::withSpinner(tmap::tmapOutput("map_C2ai", width = "50%")),
-              tableOutput("tbl_C2ai"),
-              uiOutput("box_C2ai")
-            ),
-            div(
-              id = "C2aii",
-              strong("2a) ii) Physiological thermal niche."),
-              br(),br(),
-              div(id = "missing_ptn",
-                  HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                  br(),
-                  br()),
-              tmap::tmapOutput("map_C2aii", width = "50%"),
-              tableOutput("tbl_C2aii"),
-              uiOutput("box_C2aii")
-            ),
-            div(
-              id = "C2bi",
-              strong("2b) i) Historical hydrological niche."),
-              br(),br(),
-              div(id = "missing_map",
-                  HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                  br(),
-                  br()),
-              tmap::tmapOutput("map_C2bi", width = "50%"),
-              tableOutput("tbl_C2bi"),
-              uiOutput("box_C2bi")
-            ),
-            h4("Section D: Documented or Modeled Response to Climate Change"),
-            actionButton("guideD2", "Show guidelines"),
-            br(),
-            div(
-              id = "D2_3",
-              h4("Modelled change in habitat suitability"),
-              br(),
-              div(id = "missing_hs",
-                  HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                  br(),
-                  br()),
-              tmap::tmapOutput("map_D2_3", width = "50%"),
-              tableOutput("tbl_D2_3"),
-              strong("2) Modeled future (2050) change in population or range size."),
-              uiOutput("box_D2"),
-              strong("3) Overlap of modeled future (2050) range with current range"),
-              uiOutput("box_D3")
-            ),
-            actionButton("submitSpatVuln", "Submit", class = "btn-primary")
-          )
-        )
-      ),
-      # Results #===================================
-      tabPanel(
-        "Results",
-        fluidPage(
-          div(
-            id = "formData",
-            #style = 'width:800px;',
-            h3("Results"),
+        ),
+        # Section B questions #=================
+        tabPanel(
+          "Vulnerability Questions",
+          fluidRow(
+            column(
+              12,
+              h3("Vulnerability Questions"),
+              div(
+                id = "secB",
+                h4("Section B: Indirect Exposure to Climate Change"),
+                h4("Evaluate for specific geographical area under consideration"),
+                h5("Factors that influence vulnerability"),
+                actionButton("guideB", "Show guidelines"),
+                check_comment_ui("B1", "1) Exposure to sea level rise:",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
+                check_comment_ui("B2a", "2a) Distribution relative to natural barriers",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
+                check_comment_ui("B2b", "2b) Distribution relative to anthropogenic barriers",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
 
-            p("The Climate Change Vulnerability Index for",
-              strong(textOutput("species_name", inline = TRUE)), "is:"),
-            shinycssloaders::withSpinner(htmlOutput("index")),
-            plotly::plotlyOutput("ind_gauge", inline = TRUE, height = "100px"),
-            br(),
-            br(),
-            p("The climate exposure in the migratory range is:"),
-            h5(htmlOutput("mig_exp")),
-            plotly::plotlyOutput("mig_exp_gauge", inline = TRUE, height = "100px"),
-            br(),
-
-            h4("Data completeness"),
-            tableOutput("n_factors"),
-
-            h4("Confidence in index"),
-            p("When multiple values are selected for any of the vulnerability ",
-              "factors the average of the values is used to calculate the ",
-              "overall index. To test the uncertainty in the result a Monte Carlo ",
-              "simulation with 1000 runs is carried out. In each simulation run ",
-              "one of the selected values is chosen at randon and the index is ",
-              "calculated. The confidence reflects whether the range of values ",
-              "selected for vulnerability factors affects the final index."),
-            p("Confidence in the index is:",
-              textOutput("conf_index", inline = TRUE)),
-            plotOutput("conf_graph", width = 300, height = 200)
+                check_comment_ui("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4])
+              )
+            )
           ),
-          div(
-            id = "indplt",
-            #style = 'width:800px;',
-            br(),
-            h4("Factors contributing to index value"),
-            p("The CCVI is calculated by combining the index calculated based on ",
-              "exposure, sensitivity and adabptive capacity with the index ",
-              "calculated based on documented or modelled responses to climate change. ",
-              "The plot below demonstrates which of these had the strongest",
-              "influence on the overall calculated index"),
-            plotOutput("ind_score_plt", width = 600, height = 300),
-            textOutput("slr"),
-            br(), br(),
-            p("The score for each vulnerability factor is determined by the ",
-              "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
-              "multiplied by the exposure multiplier for temperature or moisture,
-              whichever is most relevant to that factor. These scores are summed ",
-              "to determine the index. The plot below demonstrates which factors ",
-              "had the highest scores and how exposure impacted the score."),
-            plotly::plotlyOutput("q_score_plt", width = 700),
+          # Section C questions #=============================
+          fluidRow(
+            column(
+              12,
+              div(
+                id = "secC",
+                h4("Section C: Sensitivity and Adaptive Capacity"),
+                actionButton("guideC", "Show guidelines"),
+                check_comment_ui("C1", "1) Dispersal and movements",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
 
-            # helpful for testing
-            # verbatimTextOutput("test_vulnQ"),
-            # tableOutput("vuln_df_tbl"),
-            br(), br(),
-            downloadButton("downloadData", "Download results as csv"),
-            downloadButton("downloadDefs", "Download column definitions"),
-            br(), br(),
-            actionButton("restart", "Assess another species",
-                         class = "btn-primary")
+                strong("2b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
+
+                check_comment_ui("C2bii", "ii) physiological hydrological niche.",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
+
+                check_comment_ui("C2c", "2c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                check_comment_ui("C2d", "2d) Dependence on ice, ice-edge, or snow-cover habitats.",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
+
+                check_comment_ui("C3", "3) Restriction to uncommon landscape/geological features or derivatives.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                check_comment_ui("C4a", "4a) Dependence on other species to generate required habitat.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                shinyjs::hidden(
+                  div(
+                    id = "animal_only",
+                    check_comment_ui("C4b", "4b) Dietary versatility (animals only).",
+                                     choiceNames = valueNms[2:4],
+                                     choiceValues = valueOpts[2:4])
+                  )
+                ),
+                shinyjs::hidden(
+                  div(
+                    id = "plant_only",
+                    check_comment_ui("C4c", "4c) Pollinator versatility (plants only).",
+                                     choiceNames = valueNms[2:4],
+                                     choiceValues = valueOpts[2:4])
+                  )
+                ),
+                check_comment_ui("C4d", "4d) Dependence on other species for propagule dispersal.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                check_comment_ui("C4e", "4e) Sensitivity to pathogens or natural enemies.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                check_comment_ui("C4f", "4f) Sensitivity to competition from native or non-native species.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                check_comment_ui("C4g", "4g) Forms part of an interspecific interaction not covered by 4a-f.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+
+                check_comment_ui("C5a", "5a) Measured genetic variation.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                conditionalPanel(
+                  "input.C5a == ''",
+                  check_comment_ui("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
+                                   choiceNames = valueNms[2:4],
+                                   choiceValues = valueOpts[2:4]),
+
+                ),
+                conditionalPanel(
+                  "input.C5a == '' && input.C5b == ''",
+                  shinyjs::hidden(
+                    div(
+                      id = "plant_only2",
+                      check_comment_ui("C5c", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+                                       choiceNames = valueNms[2:4],
+                                       choiceValues = valueOpts[2:4])
+                    )
+                  )
+                ),
+
+                check_comment_ui("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4])
+              )
+            )
+          ),
+          # Section D questions #=============================
+          fluidRow(
+            column(
+              12,
+              div(
+                id = "secD",
+                h4("Section D: Documented or Modeled Response to Climate Change"),
+                h5("(Optional; May apply across the range of a species)"),
+                actionButton("guideD", "Show guidelines"),
+
+                check_comment_ui("D1", "1) Documented response to recent climate change. ",
+                                 choiceNames = valueNms,
+                                 choiceValues = valueOpts),
+
+                check_comment_ui("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
+                                 choiceNames = valueNms[2:4],
+                                 choiceValues = valueOpts[2:4]),
+                actionButton("next3", "Next", class = "btn-primary"),
+                br(), br()
+              )
+            )
+          )
+        ),
+        # Spatial Vulnerability Questions #================================
+        tabPanel(
+          "Spatial Vulnerability Questions",
+          fluidRow(
+            column(
+              12,
+              h3("Spatial Vulnerability Questions"),
+              h4("Section C: Sensitivity and Adaptive Capacity"),
+              actionButton("guideC2", "Show guidelines"),
+              br(),
+              div(
+                id = "C2ai",
+                h4("Predicted sensitivity to temperature and moisture changes:"),
+                strong("2a) i) Historical thermal niche."),
+                br(),br(),
+                div(id = "missing_htn",
+                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
+                    br(),
+                    br()),
+                shinycssloaders::withSpinner(tmap::tmapOutput("map_C2ai", width = "50%")),
+                tableOutput("tbl_C2ai"),
+                uiOutput("box_C2ai")
+              ),
+              div(
+                id = "C2aii",
+                strong("2a) ii) Physiological thermal niche."),
+                br(),br(),
+                div(id = "missing_ptn",
+                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
+                    br(),
+                    br()),
+                tmap::tmapOutput("map_C2aii", width = "50%"),
+                tableOutput("tbl_C2aii"),
+                uiOutput("box_C2aii")
+              ),
+              div(
+                id = "C2bi",
+                strong("2b) i) Historical hydrological niche."),
+                br(),br(),
+                div(id = "missing_map",
+                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
+                    br(),
+                    br()),
+                tmap::tmapOutput("map_C2bi", width = "50%"),
+                tableOutput("tbl_C2bi"),
+                uiOutput("box_C2bi")
+              ),
+              h4("Section D: Documented or Modeled Response to Climate Change"),
+              actionButton("guideD2", "Show guidelines"),
+              br(),
+              div(
+                id = "D2_3",
+                h4("Modelled change in habitat suitability"),
+                br(),
+                div(id = "missing_hs",
+                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
+                    br(),
+                    br()),
+                tmap::tmapOutput("map_D2_3", width = "50%"),
+                tableOutput("tbl_D2_3"),
+                strong("2) Modeled future (2050) change in population or range size."),
+                uiOutput("box_D2"),
+                strong("3) Overlap of modeled future (2050) range with current range"),
+                uiOutput("box_D3")
+              ),
+              actionButton("next4", "Next", class = "btn-primary")
+            )
+          )
+        ),
+        # Results #===================================
+        tabPanel(
+          "Results",
+          fluidPage(
+            div(
+              id = "formData",
+              #style = 'width:800px;',
+              h4("Calculate or re-calculate the index"),
+              actionButton("calcIndex", "Calculate", class = "btn-primary"),
+              h3("Results"),
+              p("The Climate Change Vulnerability Index for",
+                strong(textOutput("species_name", inline = TRUE)), "is:"),
+              shinycssloaders::withSpinner(htmlOutput("index")),
+              plotly::plotlyOutput("ind_gauge", inline = FALSE, height = "100px"),
+              br(),
+              br(),
+              p("The climate exposure in the migratory range is:"),
+              h5(htmlOutput("mig_exp")),
+              plotly::plotlyOutput("mig_exp_gauge", inline = TRUE, height = "100px"),
+              br(),
+
+              h4("Data completeness"),
+              tableOutput("n_factors"),
+
+              h4("Confidence in index"),
+              p("When multiple values are selected for any of the vulnerability ",
+                "factors the average of the values is used to calculate the ",
+                "overall index. To test the uncertainty in the result a Monte Carlo ",
+                "simulation with 1000 runs is carried out. In each simulation run ",
+                "one of the selected values is chosen at randon and the index is ",
+                "calculated. The confidence reflects whether the range of values ",
+                "selected for vulnerability factors affects the final index."),
+              p("Confidence in the index is:",
+                textOutput("conf_index", inline = TRUE)),
+              plotOutput("conf_graph", width = 300, height = 200)
+            ),
+            div(
+              id = "indplt",
+              #style = 'width:800px;',
+              br(),
+              h4("Factors contributing to index value"),
+              p("The CCVI is calculated by combining the index calculated based on ",
+                "exposure, sensitivity and adabptive capacity with the index ",
+                "calculated based on documented or modelled responses to climate change. ",
+                "The plot below demonstrates which of these had the strongest",
+                "influence on the overall calculated index. A score of negative ",
+                "one indicates none of the factors in the modelled response to",
+                " climate change section were completed"),
+              plotOutput("ind_score_plt", width = 600, height = 300),
+              textOutput("slr"),
+              br(), br(),
+              p("The score for each vulnerability factor is determined by the ",
+                "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
+                "multiplied by the exposure multiplier for temperature or moisture,",
+                "whichever is most relevant to that factor. These scores are summed ",
+                "to determine the index. The plot below demonstrates which factors ",
+                "had the highest scores and how exposure impacted the score."),
+              plotly::plotlyOutput("q_score_plt", width = 700),
+
+              # helpful for testing
+              # verbatimTextOutput("test_vulnQ"),
+              # tableOutput("vuln_df_tbl"),
+              br(), br(),
+              downloadButton("downloadData", "Download results as csv"),
+              downloadButton("downloadDefs", "Download column definitions"),
+              br(), br(),
+              actionButton("restart", "Assess another species",
+                           class = "btn-primary"),
+              br(),
+              br(),
+              save_bookmark_ui("save")
+            )
           )
         )
       )
     )
-  )
-
+  }
 
   # Server #========================
   server <- function(input, output, session) {
     # start up Note this time out is because when I disconnected from VPN it
     # made the getVolumes function hang forever because it was looking for
     # drives that were no longer connected. Now it will give an error
-    R.utils::withTimeout({
+    timeout <- R.utils::withTimeout({
       volumes <- c(wd = getShinyOption("file_dir"),
                    Home = fs::path_home(),
                    getVolumes()())
-    }, timeout = 10, onTimeout = "error")
+    }, timeout = 200, onTimeout = "silent")
+
+    if(is.null(timeout)){
+      stop("The app is unable to access your files because you were connected",
+           " to the VPN and then disconnected. To fix this either reconnect to",
+           " the VPN or restart your computer and use the app with out connecting",
+           " to VPN. See issue https://github.com/see24/ccviR/issues/36 for more ",
+           "information", call. = FALSE)
+    }
+
+    # Flag for if this is a restored session
+    restored <- reactiveValues()
 
     # Data Preparation #============================
     prepped_data <- data_prep_server("data_prep_mod")
@@ -557,6 +596,9 @@ ccvi_app <- function(...){
       )
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
+
+    # restore a previous session
+    load_bookmark_server("load", volumes)
 
     # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
@@ -612,46 +654,69 @@ ccvi_app <- function(...){
       mandatoryFilled2 <-
         vapply(fieldsMandatory2,
                function(x) {
-                 isTruthy(input[[x]])
+                 isTruthy(file_pths()[[x]]) & isTruthy(clim_dir_pth())
                },
                logical(1))
       mandatoryFilled2 <- all(mandatoryFilled2)
+      if (isTRUE(getOption("shiny.testmode"))) {
+       mandatoryFilled2 <- TRUE
+      }
 
-      shinyjs::toggleState(id = "loadSpatial", condition = mandatoryFilled2)
+      shinyjs::toggleState(id = "startSpatial", condition = mandatoryFilled2)
       shinyjs::toggleState(id = "next2", condition = mandatoryFilled2)
     })
 
     # Find file paths
     shinyDirChoose(input, "clim_var_dir", root = volumes)
-    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input, filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
+    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input,
+               filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
+
+
+    # parse file paths
+    clim_dir_pth <- reactive({
+      if(is.integer(input$clim_var_dir)){
+        if(!is.null(restored$yes)){
+          return(clim_dir_pth_restore())
+        }
+          return(NULL)
+      } else {
+        return(parseDirPath(volumes, input$clim_var_dir))
+      }
+      })
+
+
+    file_pths <- reactive({
+      purrr::map(filePathIds, ~{
+        if(is.integer(input[[.x]])){
+          if(!is.null(restored$yes)){
+            return(file_pths_restore()[[.x]])
+          }
+            return(NULL)
+          } else {
+          return(parseFilePaths(volumes, input[[.x]])$datapath)
+        }
+
+      })
+    })
 
     # output file paths
-    output$clim_var_dir <- renderText({
-      parseDirPath(volumes, input$clim_var_dir)
-    })
-    output$range_poly_pth <- renderText({
-      parseFilePaths(volumes, input$range_poly_pth)$datapath
-    })
-    output$nonbreed_poly_pth <- renderText({
-      parseFilePaths(volumes, input$nonbreed_poly_pth)$datapath
-    })
-    output$assess_poly_pth <- renderText({
-      parseFilePaths(volumes, input$assess_poly_pth)$datapath
-    })
-    output$hs_rast_pth <- renderText({
-      parseFilePaths(volumes, input$hs_rast_pth)$datapath
-    })
-    output$ptn_poly_pth <- renderText({
-      parseFilePaths(volumes, input$ptn_poly_pth)$datapath
+    output$clim_var_dir_out <- renderText({
+      clim_dir_pth()
     })
 
+    observe({
+      purrr::walk2(file_pths(), filePathIds, ~{
+        out_name <- paste0(.y, "_out")
+        output[[out_name]] <- renderText({.x})
+      })
+    })
 
     # load spatial data
     clim_vars <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        root_pth <- system.file("extdata/clim_files", package = "ccviR")
+        root_pth <- system.file("extdata/clim_files/processed", package = "ccviR")
       } else {
-        root_pth <- parseDirPath(volumes, input$clim_var_dir)
+        root_pth <- clim_dir_pth()
       }
 
       req(root_pth)
@@ -660,15 +725,13 @@ ccvi_app <- function(...){
 
     })
 
-
-    range_poly <- reactive({
+    range_poly_in <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/rng_poly_high.shp",
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
-        sf::st_read(parseFilePaths(volumes,
-                                   input$range_poly_pth)$datapath,
+        sf::st_read(file_pths()$range_poly_pth,
                     agr = "constant", quiet = TRUE)
       }
 
@@ -679,8 +742,7 @@ ccvi_app <- function(...){
         pth <- system.file("extdata/nonbreed_poly.shp",
                            package = "ccviR")
       } else {
-        pth <- parseFilePaths(volumes,
-                              input$nonbreed_poly_pth)$datapath
+        pth <- file_pths()$nonbreed_poly_pth
       }
 
       if(!isTruthy(pth)){
@@ -695,19 +757,17 @@ ccvi_app <- function(...){
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
-        sf::st_read(parseFilePaths(volumes,
-                                   input$assess_poly_pth)$datapath,
+        sf::st_read(file_pths()$assess_poly_pth,
                     agr = "constant", quiet = TRUE)
       }
     })
 
     hs_rast <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/HS_rast.tif",
+        pth <- system.file("extdata/HS_rast_high.tif",
                            package = "ccviR")
       } else {
-        pth <- parseFilePaths(volumes,
-                              input$hs_rast_pth)$datapath
+        pth <- file_pths()$hs_rast_pth
       }
 
       if(!isTruthy(pth)){
@@ -721,7 +781,7 @@ ccvi_app <- function(...){
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/ptn_poly.shp", package = "ccviR")
       } else {
-        pth <- parseFilePaths(volumes, input$ptn_poly_pth)$datapath
+        pth <- file_pths()$ptn_poly_pth
       }
       if(!isTruthy(pth)){
         return(NULL)
@@ -729,33 +789,93 @@ ccvi_app <- function(...){
       sf::st_read(pth, agr = "constant", quiet = TRUE)
     })
 
+    # assemble hs_rcl matrix
+    hs_rcl_mat <- reactive({matrix(c(input$lost_from, input$lost_to, 1,
+                                     input$maint_from, input$maint_to, 2,
+                                     input$gain_from, input$gain_to, 3,
+                                     input$ns_from, input$ns_to, 0),
+                                   byrow = TRUE, ncol = 3)})
+
+    doSpatial <- reactiveVal(FALSE)
+
+    observe({
+      if(!is.null(restored$yes)){
+        doSpatial(1)
+        message("doSpatial restore")
+      }
+    })
+
+    observe({
+      print(doSpatial())
+    })
+
+    observeEvent(input$startSpatial, {
+      showModal(modalDialog(
+        p("Note: Re-running the spatial analysis will overwrite any changes made to ",
+          "the Spatial Vulnerability Questions. Comments will be preserved so ",
+          "you can record the change made in the comments and then change it ",
+          "again after re-running the analysis."),
+        footer = tagList(
+          actionButton("shinyalert", "Continue"),
+          modalButton("Cancel")
+        ),
+        title = "Do you want to run the spatial analysis?"))
+      if(input$startSpatial == 1){
+        shinyjs::click("shinyalert")
+      }
+    })
+
+    observeEvent(input$shinyalert, {
+      removeModal()
+      if(input$shinyalert > 0){
+        doSpatial(doSpatial() +1)
+      }
+    })
+
     # run spatial calculations
-    spat_res <- reactive({
-      req(input$loadSpatial)
+    spat_res1 <- reactive({
+      req(doSpatial())
       req(clim_vars())
       isolate({
         tryCatch({
-          run_spatial(range_poly = range_poly(),
+          run_spatial(range_poly = range_poly_in(),
                       non_breed_poly = nonbreed_poly(),
                       scale_poly = assess_poly(),
                       hs_rast = hs_rast(),
                       ptn_poly = ptn_poly(),
-                      clim_vars_lst = clim_vars())
+                      clim_vars_lst = clim_vars(),
+                      hs_rcl = hs_rcl_mat())
         },
         error = function(cnd) conditionMessage(cnd))
       })
 
     })
 
+    range_poly <- reactive({
+      req(doSpatial())
+      req(!is.character(spat_res1()))
+      spat_res1()$range_poly_assess
+    })
+    range_poly_clim <- reactive({
+      req(doSpatial())
+      req(!is.character(spat_res1()))
+      spat_res1()$range_poly_clim
+    })
+    spat_res <- reactive({
+      req(doSpatial())
+      req(!is.character(spat_res1()))
+      spat_res1()$spat_table
+    })
+
     output$clim_var_error <- renderText({
-      if(is(clim_vars(), "try-error")){
+      if(inherits(clim_vars(), "try-error")){
         stop(conditionMessage(attr(clim_vars(), "condition")))
       }
     })
 
     output$spat_error <- renderText({
-      if(is.character(spat_res())){
-        stop(spat_res(), call. = FALSE)
+      if(is.character(spat_res1())){
+        stop(spat_res1(), call. = FALSE)
       }
     })
 
@@ -767,7 +887,7 @@ ccvi_app <- function(...){
     })
 
     observe({
-      req(input$loadSpatial)
+      req(doSpatial())
       if(isTruthy(clim_vars()$ccei) && isTruthy(isolate(nonbreed_poly()))){
         shinyjs::hide("missing_ccei")
         shinyjs::show("ccei_exp")
@@ -802,7 +922,7 @@ ccvi_app <- function(...){
           sum(MAT_1, MAT_2, MAT_3, MAT_4, MAT_5, na.rm = TRUE) >= 20 ~ 0.8,
           TRUE ~ 0.4
         ),
-        temp_exp_cave = temp_exp / ifelse(input$cave == 1, 3, 1)) %>%
+        temp_exp_cave = round(temp_exp / ifelse(input$cave == 1, 3, 1)), 3) %>%
         select(contains("MAT"), temp_exp_cave) %>%
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
@@ -882,7 +1002,7 @@ ccvi_app <- function(...){
     })
 
     # When next button is clicked move to next panel
-    observeEvent(input$nextVuln, {
+    observeEvent(input$next3, {
       updateTabsetPanel(session, "tabset",
                         selected = "Spatial Vulnerability Questions")
       shinyjs::runjs("window.scrollTo(0, 0)")
@@ -891,7 +1011,7 @@ ccvi_app <- function(...){
     # Spatial Vulnerability Questions #========================
     # C2ai
     observe({
-      req(input$nextVuln)
+      req(doSpatial())
       if(isTruthy(clim_vars()$htn)){
         shinyjs::hide("missing_htn")
         shinyjs::show("map_C2ai")
@@ -910,10 +1030,10 @@ ccvi_app <- function(...){
     })
 
     output$map_C2ai <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(doSpatial())
       req(clim_vars()$htn)
 
-      make_map(isolate(range_poly()), rast = clim_vars()$htn, rast_nm = "htn")
+      make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn")
     })
 
     output$tbl_C2ai <- renderTable({
@@ -929,6 +1049,9 @@ ccvi_app <- function(...){
     }, align = "r")
 
     output$box_C2ai <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comC2ai)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(C2ai = case_when(HTN_4 > 10 ~ 0,
                                 HTN_3 > 10 ~ 1,
@@ -938,14 +1061,15 @@ ccvi_app <- function(...){
         pull(C2ai)
 
       check_comment_ui("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # C2aii
     observe({
-      req(input$nextVuln)
+      req(doSpatial())
       if(isTruthy(ptn_poly())){
         shinyjs::hide("missing_ptn")
         shinyjs::show("map_C2aii")
@@ -956,7 +1080,7 @@ ccvi_app <- function(...){
     })
 
     output$map_C2aii <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(doSpatial())
       req(ptn_poly())
 
       make_map(poly1 = isolate(range_poly()), poly2 = ptn_poly(), poly2_nm = "ptn")
@@ -970,6 +1094,9 @@ ccvi_app <- function(...){
     })
 
     output$box_C2aii <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comC2aii)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(C2aii = case_when(PTN > 90 ~ 3,
                                  PTN > 50 ~ 2,
@@ -979,14 +1106,15 @@ ccvi_app <- function(...){
         pull(C2aii)
 
       check_comment_ui("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # C2bi
     observe({
-      req(input$nextVuln)
+      req(doSpatial())
       if(isTruthy(clim_vars()$map)){
         shinyjs::hide("missing_map")
         shinyjs::show("map_C2bi")
@@ -997,10 +1125,10 @@ ccvi_app <- function(...){
     })
 
     output$map_C2bi <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(doSpatial())
       req(clim_vars()$map)
 
-      make_map(poly1 = isolate(range_poly()), rast = clim_vars()$map, rast_nm = "map",
+      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map, rast_nm = "map",
                rast_style = "pretty")
     })
 
@@ -1011,6 +1139,9 @@ ccvi_app <- function(...){
     })
 
     output$box_C2bi <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comC2bi)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(range_MAP = MAP_max - MAP_min,
                C2bi = case_when(range_MAP < 100 ~ 3,
@@ -1021,14 +1152,15 @@ ccvi_app <- function(...){
         pull(C2bi)
 
       check_comment_ui("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # D2 and D3
     observe({
-      req(input$nextVuln)
+      req(doSpatial())
       if(isTruthy(hs_rast())){
         shinyjs::hide("missing_hs")
         shinyjs::show("map_D2_3")
@@ -1038,14 +1170,14 @@ ccvi_app <- function(...){
       }
     })
 
+    # reclassify raster with 0:7 where 1 is loss, and 7 is gain to 0:3
     hs_rast2 <- reactive({
       rast <- raster::reclassify(hs_rast(),
-                                 rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3),
-                                              ncol = 2))
+                                 rcl = hs_rcl_mat())
     })
 
     output$map_D2_3 <- tmap::renderTmap({
-      req(input$nextVuln)
+      req(doSpatial())
       req(hs_rast2())
 
       make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
@@ -1060,6 +1192,9 @@ ccvi_app <- function(...){
     })
 
     output$box_D2 <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comD2)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(D2 = case_when(perc_lost > 99 ~ 3,
                               perc_lost > 50 ~ 2,
@@ -1069,12 +1204,16 @@ ccvi_app <- function(...){
         pull(D2)
 
       check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     output$box_D3 <- renderUI({
+      # get previous comment
+      prevCom <- isolate(input$comD3)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
         mutate(D2 = case_when(perc_lost > 99 ~ 3,
                               perc_lost > 50 ~ 2,
@@ -1090,13 +1229,14 @@ ccvi_app <- function(...){
         pull(D3)
 
       check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val)
+                       choiceNames = valueNms,
+                       choiceValues = valueOpts,
+                       selected = box_val,
+                       com = prevCom)
     })
 
     # When submit button is clicked move to next panel
-    observeEvent(input$submitSpatVuln, {
+    observeEvent(input$next4, {
       updateTabsetPanel(session, "tabset",
                         selected = "Results"
       )
@@ -1106,17 +1246,15 @@ ccvi_app <- function(...){
     # Calculate Index value #================================
 
     # Gather all the form inputs
-    vuln_df <- eventReactive(input$submitSpatVuln, {
-      isolate({
+    vuln_df <- eventReactive(input$calcIndex, {
         vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
         data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
         as_tibble(data)
-      })
     })
 
     # gather comments
     coms_df <- reactive({
-      req(input$submitSpatVuln)
+      req(input$calcIndex)
       com_ins <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*")
 
       data <- purrr::map_df(com_ins,
@@ -1219,14 +1357,11 @@ ccvi_app <- function(...){
                              index_res()$n_c_factors < 10 ~ NA_real_,
                              TRUE ~ index_res()$b_c_score)
 
-      d_score <- case_when(index_res()$n_d_factors < 1 ~ 0,
-                           TRUE ~ index_res()$d_score)
-
       # if b_c is IE no plot if d is IE set to 0 but still plot
       if(is.na(b_c_score)){
         return(NULL)
       } else {
-        plot_score_index(b_c_score, index_res()$d_score)
+        plot_score_index(b_c_score, index_res()$d_score, index_res()$n_d_factors)
       }
     })
 
@@ -1241,7 +1376,6 @@ ccvi_app <- function(...){
         ggplot2::theme_classic()
     })
 
-    # TODO: make this prettier and uncomment
     output$q_score_plt <- plotly::renderPlotly({
       plot_q_score(index_res()$vuln_df)
     })
@@ -1295,22 +1429,79 @@ ccvi_app <- function(...){
     output$downloadDefs <- downloadHandler(
       filename = "CCVI_column_definitions_results.csv",
       content = function(file) {
-        out <- read.csv(system.file("extdata/column_definitions_results.csv",
+        out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                     package = "ccviR"))
         write.csv(out, file, row.names = FALSE)
       }
     )
 
     observeEvent(input$restart,{
-      updateTabsetPanel(session, "tabset",
-                        selected = "Species Information"
-      )
-      shinyjs::runjs("window.scrollTo(0, 0)")
+      restoreURL <- paste0(session$clientData$url_protocol, "//",
+                           session$clientData$url_hostname, ":",
+                           session$clientData$url_port)
+
+      # redirect user to restoreURL
+      shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
     })
+
+    # Bookmarking #=============================================================
+
+    # this part is not allowed to be inside the module
+    latestBookmarkURL <- reactiveVal()
+
+    onBookmarked(
+      fun = function(url) {
+        latestBookmarkURL(parseQueryString(url))
+        showNotification("Session saved",
+                         duration = 10, type = "message")
+      }
+    )
+
+    save_bookmark_server("save", latestBookmarkURL(), volumes)
+
+    # Need to explicitly save and restore reactive values.
+    onBookmark(fun = function(state){
+      state$values$file_pths <- file_pths()
+      state$values$clim_dir <- clim_dir_pth()
+    })
+
+    file_pths_restore <- reactiveVal()
+    clim_dir_pth_restore <- reactiveVal()
+
+    onRestore(fun = function(state){
+      message("Restoring session")
+      file_pths_restore(state$values$file_pths)
+      clim_dir_pth_restore (state$values$clim_dir)
+      restored$yes <- TRUE
+    })
+
+    # exclude shiny file choose and map and plotly input vals that might be
+    # causing trouble
+    # ExcludedIDs <- reactiveVal(value = NULL)
+    # IncludedIDs <- reactiveVal(value = NULL)
+
+    observe({
+      patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir",
+                                "guide", "tabset", "next", "restart", "shinyalert"),
+                              collapse = "|")
+
+      toExclude <- grep(patsToExclude, names(input), value = TRUE)
+
+      setBookmarkExclude(toExclude)
+      # ExcludedIDs(toExclude)
+      # IncludedIDs(setdiff(names(input), toExclude))
+    })
+#
+#     output$ExcludedIDsOut <- renderText({
+#       paste("ExcludedIDs:", paste(ExcludedIDs(), collapse = ", "))
+#     })
+#     output$IncludedIDsOut <- renderText({
+#       paste("IncludedIDs:", paste(IncludedIDs(), collapse = ", "))
+#     })
 
   }
 
-  shinyApp(ui, server,
+  shinyApp(ui, server, enableBookmarking = "server",
            options = list(launch.browser = getShinyOption("launch.browser"),
                           port = getShinyOption("port")))
 }

@@ -17,11 +17,16 @@ run_ccvi_app(
 
 \item{port}{If launch.browser is FALSE, specify port to run CCVI app}
 }
+\value{
+A shiny app.
+}
 \description{
-Run this function to launch the app.
+Launch the ccviR app to calculate the NatureServe Climate Change
+Vulnerability Index. See \code{vignette("app_vignette", package = "ccviR")}
+for details on how to use the app.
 }
 \examples{
 if(interactive()){
-run_ccvi_app("demo")
+ run_ccvi_app("demo")
 }
 }

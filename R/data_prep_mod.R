@@ -1,5 +1,5 @@
-#' Data prep module
-#'
+# Data prep module
+
 # UI #========================================================================
   data_prep_ui <- function(id){
     fluidPage(
@@ -43,7 +43,8 @@
             tags$li("MCMT: mean coldest month temperature for the historical normal period")
 
           ),
-          p('Accepted filetypes are ".asc", ".tif", ".nc", ".grd" and ".img"')
+          p('Accepted filetypes are ".asc", ".tif", ".nc", ".grd" and ".img"'),
+          tags$ul(tags$li("clim_poly: An optional shapefile with a polygon of the extent of the climate data. It will be created from the climate data if it is missing but it is faster to provide it."))
         )
       ),
       div(
@@ -55,7 +56,8 @@
         get_file_ui(NS(id, "ccei_pth"), "Climate change exposure index"),
         get_file_ui(NS(id, "map_pth"), "Historical mean annual precipitation"),
         get_file_ui(NS(id, "mwmt_pth"), "Mean warmest month temperature"),
-        get_file_ui(NS(id, "mcmt_pth"), "Mean coldest month temperature")
+        get_file_ui(NS(id, "mcmt_pth"), "Mean coldest month temperature"),
+        get_file_ui(NS(id, "clim_poly_pth"), "Climate data extent polygon")
 
       ),
       div(
@@ -100,7 +102,7 @@
 
     # File path ids to use with file choose
     filePathIds <- c("mat_norm_pth", "mat_fut_pth", "cmd_norm_pth", "cmd_fut_pth",
-                     "ccei_pth", "map_pth", "mwmt_pth", "mcmt_pth")
+                     "ccei_pth", "map_pth", "mwmt_pth", "mcmt_pth", "clim_poly_pth")
 
     # Find file paths
     shinyFiles::shinyDirChoose(input, "clim_var_dir", root = volumes)
@@ -143,6 +145,10 @@
       shinyFiles::parseFilePaths(volumes, input$mcmt_pth)$datapath
     })
 
+    output$clim_poly_pth <- renderText({
+      shinyFiles::parseFilePaths(volumes, input$clim_poly_pth)$datapath
+    })
+
     output$clim_var_dir <- renderText({
       shinyFiles::parseDirPath(volumes, input$clim_var_dir)
     })
@@ -152,11 +158,24 @@
     })
 
     prep_done <- eventReactive(input$submit, {
-      if(isTruthy(input$clim_var_dir)){
-        run_prep_data(in_folder = shinyFiles::parseDirPath(volumes,
-                                                           input$clim_var_dir),
-                      out_folder = shinyFiles::parseDirPath(volumes,
-                                                            input$out_folder),
+      if(isTruthy(input$clim_var_dir)||isTRUE(getOption("shiny.testmode"))){
+
+        if (isTRUE(getOption("shiny.testmode"))) {
+          in_dir <- system.file("extdata/clim_files/raw", package = "ccviR")
+          out_dir <- system.file("extdata/clim_files/processed", package = "ccviR")
+        } else {
+          in_dir <- shinyFiles::parseDirPath(volumes,
+                                             input$clim_var_dir)
+
+          out_dir <- shinyFiles::parseDirPath(volumes,
+                                              input$out_folder)
+        }
+
+        req(in_dir)
+        req(out_dir)
+
+        run_prep_data(in_folder = in_dir,
+                      out_folder = out_dir,
                       reproject = input$reproj,
                       overwrite = input$allow_over)
       } else {
@@ -169,6 +188,7 @@
           shinyFiles::parseFilePaths(volumes, input$map_pth)$datapath,
           shinyFiles::parseFilePaths(volumes, input$mwmt_pth)$datapath,
           shinyFiles::parseFilePaths(volumes, input$mcmt_pth)$datapath,
+          shinyFiles::parseFilePaths(volumes, input$clim_poly_pth)$datapath,
 
           out_folder = shinyFiles::parseDirPath(volumes,
                                                 input$out_folder),

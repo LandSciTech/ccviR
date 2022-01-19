@@ -8,10 +8,7 @@
 #' @param overwrite
 #' @param ...
 #'
-#' @return
-#' @export
-#'
-#' @examples
+#' @noRd
 wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE,
                           resamp_method = "near", ...){
   if(!requireNamespace("gdalUtils", quietly = TRUE)){

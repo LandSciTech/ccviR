@@ -1,93 +1,58 @@
-# Functions to prepare data from raw to form needed for app
-
-
-#' Prepare exposure data
+#' Prepare climate data
 #'
-#' Prepare exposure data into classes based on delta and mean and
-#' 1/2 standard deviation
-#' @param rast_norm
-#' @param rast_fut
-#' @param file_nm
-#' @param do_reproj
-#' @param overwrite
+#' Prepare data from raw to form needed for calculating the index. See the
+#' NatureServe Guidelines for details on how the data is prepared.
 #'
-#' @return
-#' @export
-#'
-#' @examples
-prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = TRUE,
-                     overwrite = FALSE){
-  rast_delta <-  rast_norm - rast_fut
+#' Definition of input data sets and file names required in in_folder:
+#' \describe{
+#'   \item{mat_norm:}{"MAT" mean annual temperature for the historical normal period}
+#'   \item{mat_fut:}{"MAT_2050" mean annual temperature for the future under
+#'   climate change it can be any number eg 2050, 2100}
+#'   \item{cmd_norm:}{"CMD" climate moisture deficit for the historical normal period}
+#'   \item{cmd_fut:}{"CMD_2050" climate moisture deficit for the future under
+#'   climate change it can be any number eg 2050, 2100}
+#'   \item{ccei:}{"CCEI" Climate Change Exposure Index from NatureServe website}
+#'   \item{map:}{"MAP" mean annual precipitation for the historical normal period}
+#'   \item{mwmt:}{"MWMT" mean warmest month temperature for the historical
+#'   normal period}
+#'   \item{mcmt:}{"MCMT" mean coldest month temperature for the historical
+#'   normal period}
+#'   \item{clim_poly:}{An optional shapefile with a polygon of the range of the
+#'   climate data. It will be created from the climate data if it is missing
+#'   but it is faster to provide it.}
+#' }
+#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
 
-  if(reproject){
-    ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-    file_in <- raster::filename(rast_delta)
-    if(file_in == ""){
-      file_in <- raster::rasterTmpFile()
-      raster::writeRaster(rast_delta, file_in)
-    }
-    # project raster to WGS84 and save to file_nm
-    rast_delta <- wrap_gdalwarp(file_in, ref_crs,
-                                overwrite = overwrite,
-                                raster::rasterTmpFile(),
-                                resamp_method = "bilinear",
-                                output_Raster = TRUE)
-  }
-
-  mean_delta <- round(raster::cellStats(rast_delta, "mean"), 2)
-
-  std_delta <- round(raster::cellStats(rast_delta, "sd")/2, 2)
-
-  min_delta <- round(raster::cellStats(rast_delta, "min") -1, 2)
-
-  max_delta <- round(raster::cellStats(rast_delta, "max") +1, 2)
-
-  brs <- c(min_delta, mean_delta-2*std_delta, mean_delta-std_delta,
-           mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
-           max_delta)
-
-  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
-
-  rast_reclass <- raster::reclassify(rast_delta, rcl_tbl, file_nm,
-                                     overwrite = overwrite)
-
-  return(rcl_tbl)
-
-}
-
-#' Prepare data from raw to form needed for app
-#'
-#' Prepare data from raw to form needed for app including reclassifying and
-#' reprojecting (optional)
-#'
-#' File names required in in_folder:
-#' mat_norm: MAT mean annual temperature for the historical normal period
-#' mat_fut: MAT_2050 mean annual temperature for the future under climate change it can be any number eg 2050, 2100
-#' cmd_norm: CMD climate moisture deficit for the historical normal period
-#' cmd_fut: CMD_2050 climate moisture deficit for the future under climate change it can be any number eg 2050, 2100
-#' ccei: CCEI Climate Change Exposure Index from NatureServe website
-#' map: MAP mean annual precipitation for the historical normal period
-#' mwmt: MWMT mean warmest month temperature for the historical normal period
-#' mcmt: MCMT mean coldest month temperature for the historical normal period
-#' Accepted filetypes are ".asc", ".tif", ".nc", ".grd" and ".img"
-#'
-#' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt filepaths to find
-#'   data if in_folder is not given
-#' @param in_folder filepath where files are stored. Files must be named
+#' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt,clim_poly
+#'   file paths to find data if in_folder is not given
+#' @param in_folder file path where files are stored. Files must be named
 #'   according to the convention described in details
-#' @param out_folder
-#' @param reproject
-#' @param overwrite
+#' @param out_folder file path where the processed files will be saved
+#' @param reproject should the data be re-projected to lat/long? Not recommended.
+#' @param overwrite should existing files in out_folder be overwritten?
 #'
-#' @return
+#' @return Returns nothing. Processed data is saved in \code{out_folder}
+#'
+#' @seealso \code{\link{get_clim_vars}} for loading the processed data.
+#'
 #' @export
 #'
 #' @examples
+#' pth_in <- system.file("extData/clim_files/raw", package = "ccviR")
+#'
+#' pth_out <- system.file("extData/clim_files/processed", package = "ccviR")
+#'
+#' run_prep_data(in_folder = pth_in, out_folder = pth_out, overwrite = TRUE)
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
-                          map = NULL, mwmt = NULL, mcmt = NULL, in_folder = NULL, out_folder,
-                          reproject = TRUE, overwrite = FALSE){
+                          map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
+                          in_folder = NULL, out_folder,
+                          reproject = FALSE, overwrite = FALSE){
   if(length(out_folder) == 0 || missing(out_folder)){
     stop("out_folder is missing with no default")
+  }
+
+  if(!dir.exists(out_folder)){
+    stop("out_folder does not exist", call. = FALSE)
   }
 
   # TODO: Figure out if we should match Sarah O's intervals for reclassing.
@@ -98,6 +63,11 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   if(!is.null(in_folder)){
+
+    if(!dir.exists(in_folder)){
+      stop("in_folder does not exist", call. = FALSE)
+    }
+
     mat_norm <- list.files(in_folder,
                            pattern = make_pat("MAT", ext_accept),
                            full.names = TRUE)
@@ -137,9 +107,13 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     mcmt <- list.files(in_folder,
                        pattern = make_pat("MCMT", ext_accept),
                        full.names = TRUE)
+
+    clim_poly <- list.files(in_folder,
+                       pattern = make_pat("clim_poly", ".shp"),
+                       full.names = TRUE)
   }
   too_long <- purrr::map_lgl(lst(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
-                                 map, mwmt, mcmt),
+                                 map, mwmt, mcmt, clim_poly),
                              ~length(.x) > 1)
   if(any(too_long)){
     stop("more than one file in ", in_folder,
@@ -177,6 +151,12 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     mcmt <- raster::raster(mcmt)
   } else {
     mcmt <- NULL
+  }
+
+  if(!is.null(clim_poly) && length(clim_poly) > 0){
+    clim_poly <- sf::read_sf(clim_poly, agr = "constant")
+  } else {
+    clim_poly <- NULL
   }
 
   # check for crs
@@ -266,9 +246,154 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                         file.path(out_folder, "MWMT_MCMT_reclass.tif"),
                         overwrite = overwrite)
   }
+
+  # Climate data polygon boundary
+  if(is.null(clim_poly)){
+    # make polygon boundary from raster data
+    message("creating clim_poly from raster data")
+    mat <- raster::raster(file.path(out_folder,"MAT_reclass.tif"))
+    mat <- raster::extend(mat, c(100,100), snap = "out")
+
+    clim_bound <- raster::rasterToContour(is.na(mat), levels = 1)
+
+    clim_poly <- clim_bound %>% sf::st_as_sf() %>%
+      sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
+      sf::st_union() %>%
+      sf::st_buffer(dist = 2 * raster::xres(mat))
+
+  }
+  sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
+
   message("finished processing")
   return("")
 
+}
+
+
+#' Prepare exposure data
+#'
+#' Prepare exposure data into classes based on delta and mean and
+#' 1/2 standard deviation
+#' @param rast_norm
+#' @param rast_fut
+#' @param file_nm
+#' @param do_reproj
+#' @param overwrite
+#'
+#' @noRd
+prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
+                     overwrite = FALSE, type = "halfIQR"){
+  rast_delta <-  rast_norm - rast_fut
+
+  if(reproject){
+    ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+    file_in <- raster::filename(rast_delta)
+    if(file_in == ""){
+      file_in <- raster::rasterTmpFile()
+      raster::writeRaster(rast_delta, file_in)
+    }
+    # project raster to WGS84 and save to file_nm
+    rast_delta <- wrap_gdalwarp(file_in, ref_crs,
+                                overwrite = overwrite,
+                                raster::rasterTmpFile(),
+                                resamp_method = "bilinear",
+                                output_Raster = TRUE)
+  }
+
+  if(type == "halfIQR"){
+    sd_div <- 2
+    type <- "IQR"
+  } else if(type == "sd"){
+    sd_div <- 1
+  } else {
+    stop("type should be halfIQR or sd not", type, call. = FALSE)
+  }
+
+  # returns the rcl table and writes raster to disk
+  return(prep_from_delta(rast_delta, sd_div = sd_div, type = type,
+                         file_nm = file_nm, overwrite = overwrite))
+
+}
+
+#' Prepare exposure classes
+#'
+#' Classify the change in a climate variable into six categories.
+#'
+#' NatureServe uses the mean and the standard deviation to create classes in the
+#' US but uses the mean and 1/2 the standard deviation and then shifts the
+#' classes by one for temperature in Canada based on a visual interpretation of
+#' the classes. To make a more reproducible process I use 1/2 the interquartile
+#' range since it is more robust to outliers and skewed distributions.
+#'
+#' @param rast_delta raster of change in climate variable
+#' @param sd_div number to divide standard deviation or interquartile range by
+#' @param shift number of sd or IQRs to shift the breaks by can be 1 or -1
+#' @param type "sd" for the mean and standard deviation (similar to
+#'   NatureServe), "IQR" for the median and interquartile range (recommended),
+#'   or "quantile" for six evenly spaced quantiles (not recommended)
+#'
+#' @noRd
+prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
+                            file_nm, overwrite){
+
+  min_delta <- round(raster::cellStats(rast_delta, "min") -1, 3)
+
+  max_delta <- round(raster::cellStats(rast_delta, "max") +1, 3)
+
+  if(type == "sd"){
+    mean_delta <- round(raster::cellStats(rast_delta, "mean"), 3)
+
+    std_delta <- round(raster::cellStats(rast_delta, "sd")/sd_div, 3)
+
+    brs <- c(min_delta, mean_delta-3*std_delta, mean_delta-2*std_delta,
+             mean_delta-std_delta,
+             mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
+             mean_delta + 3*std_delta, max_delta)
+  } else if(type == "IQR"){
+    med_delta <- round(stats::median(raster::sampleRegular(rast_delta, 1000000),
+                              na.rm = TRUE), 3)
+
+    iqr_delta <- round(stats::IQR(raster::sampleRegular(rast_delta, 1000000),
+                           na.rm = TRUE)/sd_div, 3)
+
+    brs <- c(min_delta, med_delta-3*iqr_delta, med_delta-2*iqr_delta,
+             med_delta-iqr_delta,
+             med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
+             med_delta + 3*iqr_delta, max_delta)
+  } else if(type == "quantile"){
+    brs <- raster::quantile(rast_delta,
+                            probs = seq(0, 1, 1/6))
+    # make sure min and max included
+    brs[1] <- brs[1] - 1
+    brs[7] <- brs[7] + 1
+  } else {
+    stop("type must be one of sd, IQR or quantile not", type, call. = FALSE)
+  }
+
+  if(type == "quantile" && shift != 0){
+    stop("shift must be 0 when type is quantile", call. = FALSE)
+  }
+
+  if(shift == 0){
+    brs <- brs[c(1,3,4,5,6,7,9)]
+
+    if(brs[6] > brs[7]){
+      brs[7] <- brs[6]+1
+    }
+
+  } else if(shift == 1){
+    brs <- brs[c(1,4,5,6,7,8,9)]
+  } else if(shift == -1){
+    brs <- brs[c(1,2,3,4,5,6,9)]
+  } else {
+    stop("shift must be 0, 1 or -1 not", shift, call. = FALSE)
+  }
+
+  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
+
+  raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite)
+
+  return(rcl_tbl)
 }
 
 check_crs <- function(rast){
