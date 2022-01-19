@@ -574,6 +574,9 @@ ccvi_app <- function(...){
            "information", call. = FALSE)
     }
 
+    # Flag for if this is a restored session
+    restored <- reactiveValues()
+
     # Data Preparation #============================
     prepped_data <- data_prep_server("data_prep_mod")
 
@@ -794,6 +797,17 @@ ccvi_app <- function(...){
                                    byrow = TRUE, ncol = 3)})
 
     doSpatial <- reactiveVal(FALSE)
+
+    observe({
+      if(!is.null(restored$yes)){
+        doSpatial(1)
+        message("doSpatial restore")
+      }
+    })
+
+    observe({
+      print(doSpatial())
+    })
 
     observeEvent(input$startSpatial, {
       showModal(modalDialog(
@@ -1451,7 +1465,6 @@ ccvi_app <- function(...){
       state$values$clim_dir <- clim_dir_pth()
     })
 
-    restored <- reactiveValues()
     file_pths_restore <- reactiveVal()
     clim_dir_pth_restore <- reactiveVal()
 
@@ -1469,7 +1482,7 @@ ccvi_app <- function(...){
 
     observe({
       patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir",
-                                "guide", "tabset", "next", "start", "shinyalert"),
+                                "guide", "tabset", "next", "restart", "shinyalert"),
                               collapse = "|")
 
       toExclude <- grep(patsToExclude, names(input), value = TRUE)
