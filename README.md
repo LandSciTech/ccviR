@@ -43,7 +43,7 @@ installing it and its dependencies with:
 install.packages(c(‘dplyr', 'raster', 'sf', 'purrr', 'tidyr', 'shiny', 'stringr',
                     'units', 'exactextractr', 'shinyFiles', 'shinyjs', 'tmap', 
                     'ggplot2', 'shinycssloaders', 'R.utils', 'fs', 'plotly',
-                    'rgdal’, 'scales', 'shinyvalidate', 'tibble'))
+                    'rgdal’, 'scales', 'shinyvalidate'))
 
 install.packages("path/to/zip/file", repos = NULL)
 ```
@@ -65,5 +65,9 @@ as the default data location.
 run_ccvi_app()
 ```
 
-See `vignette("app_vignette")` for a more detailed description of how to
-use the app.
+## Additional Help
+
+See `vignette("app_vignette", package = "ccviR")` for a more detailed
+description of how to use the app and
+`vignette("package_vignette", package = "ccviR")` for a tutorial on how
+to use the package to calculate the index directly in R.
