@@ -65,7 +65,7 @@ On the Results page click Calculate to calculate the index value. Once loaded th
 If you go back and change the answer to a vulnerability question you will need to click the Calculate button again to see the updated results. 
 
 ### Saving the app
-The state of the app can be saved by clicking the save button at the bottom of the Results page. A pop up will appear that asks you to pick a location and name for a folder that will store the app data. Be sure to save this some where that is easy to remember because you will need to find it again to load the saved app. The folder name must have only letters or numbers and no spaces. 
+The state of the app can be saved by clicking the save button at the bottom of the Results page. A pop up will appear that asks you to pick a location and name for a folder that will store the app data. Be sure to save this some where that is easy to remember because you will need to find it again to load the saved app. The folder name must have only letters or numbers and no spaces. This will create a folder with the given name containing two .rds files that store the values.
 
 This will save the information entered into the app but it will not save the results so when the app is loaded from the saved file it will re-run the calculations. In addition, only the path to the spatial data is stored not the data itself so the app will not be able to load if data is moved or its name is changed. If the data has moved you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press Run which will re-run the spatial analysis but keep the answers to the non-spatial vulnerability questions from the saved file. 
 

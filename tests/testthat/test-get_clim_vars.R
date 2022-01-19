@@ -25,7 +25,7 @@ test_that("basic version works",{
 
 test_that("trimming happens", {
   na_rast <- clim_vars[[1]]
-  na_rast <- setValues(na_rast, NA_real_) %>% shift(dy = 1)
+  na_rast <- setValues(na_rast, NA_real_) %>% shift(dy = 1000)
 
   na_rast <- raster::merge(na_rast, clim_vars[[1]])
 

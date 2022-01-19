@@ -39,7 +39,7 @@ test_that("Nonoverlaping poly and raster",{
 
   # nonbreed is allowed to only partially overlap CCEI but should there be a
   # warning if below a certain threshold based on what Sarah O did 40%
-  nonbreed_lt40 <- mutate(nonbreed, geometry = geometry + 0.2) %>%
+  nonbreed_lt40 <- mutate(nonbreed, geometry = geometry + 200) %>%
     st_set_crs(st_crs(nonbreed))
 
   expect_warning(run_spatial(rng_high, assess, clim_vars[c(1:2, 4, 6)],
@@ -75,10 +75,10 @@ test_that("Non matching crs are handled reasonably", {
 
 test_that("Multiple polygons are merged", {
   rng_high2 <- st_sfc(st_polygon(list(matrix(c(0, 0.75, 0.6, 0.75, 0.6,
-                                        1, 0, 1, 0, 0.75),
+                                        1, 0, 1, 0, 0.75)*1000,
                                       ncol = 2, byrow = TRUE))),
                       st_polygon(list(matrix(c(0.5, 0.75, 1, 0.75, 1,
-                                               1, 0.5, 1, 0.5, 0.75),
+                                               1, 0.5, 1, 0.5, 0.75)*1000,
                                              ncol = 2, byrow = TRUE)))) %>%
     st_sf() %>% st_set_crs(3162)
 

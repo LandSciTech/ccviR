@@ -101,15 +101,15 @@
           {
             "method": "addRasterImage",
             "args": [
-              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABJklEQVR4nO3ToQ3CUABF0bbpBJ0BTxAILI6JWYChcEVSDPZfcc4EL7l58/O+7BMZy+gB/BIkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiVmv5230Bg48JEaQGEFiBIkRJEaQGEFi1u12Gr2BAw+JESRGkJh1ujxGb+DAQ2IEiREkRpAYQWIEiREkRpAYQWIEiREkRpAYQWIEiREkZt7fr330CL48BP75AFZkB+AS9i17AAAAAElFTkSuQmCC",
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABqCAYAAAC/Fn+UAAACCklEQVR4nO3dP07CcBiH8bZhcCasbjobBwcTJ504jicwnoDjuDE5eAevwAGcwM0/tGmBvKXv0z6fUTuQ75OfgYpSFjqLt8dqd8h1y/W23P/aLP7hjMehw/ZtVJGyjBpt8EhjHTbSSZEc9rxmDp5fNfQDUDcjARgJwEgARgIwEoCRAIwEYCSAqunWuHLxJAEYKZmme6lGAjASgJEAjARgJAAjARgJwEgARgIwEoCRAIwEYCQAIwEYCcBIAFVRNP91mfLwJAEYKaH9X6EbCcBIAEYCMBKAkQCMBGAkACMBGAnASABGAjASgJEAjARgJAAjARgJ4CeS73PIy5MEYKSk/r7PwUgARgIwEoCRAIwEYCQAIwEYCcBIAEYCMBKAkQCMBDD4x8VN2d3NvP2C9aYoCiMdrXPYHow+0hCjRvsXabnelhk+428Mw0YKO0kO25/am082z4vBT5J+LVab0qfgAEYCGP2zu+zm91ftF6w2RjpW56g9mESkIYaNlDYSfdhIYZEc9US3y44LPuqRHPsAncPGSvvjLtSZR42WNxJ82EixkRy2F/VIDp2Ot4UAjARgJAAjARgJoBapun7xXwUk40kCaDw1289X3+eQiCcJwEgAeW+wTkh5+dT6fSOdqGvYSJOJdM5Rj1VePLS+7EkdiTxspPBIDhuv8UHvvt5TvE6ijhot/iQ5rKboGxD0OZNalNqPAAAAAElFTkSuQmCC",
               [
                 [
-                  0,
-                  0
+                  -31.9756469816049,
+                  -88.9108111956941
                 ],
                 [
-                  -1.00998613654284,
-                  1.0000380657339
+                  -31.9794354389843,
+                  -88.9063871558658
                 ]
               ],
               1,
@@ -157,18 +157,18 @@
                   [
                     {
                       "lng": [
-                        0,
-                        1,
-                        1,
-                        0,
-                        0
+                        -88.9108111956941,
+                        -88.906613468587,
+                        -88.9065593629195,
+                        -88.910757032095,
+                        -88.9108111956941
                       ],
                       "lat": [
-                        0,
-                        0,
-                        -0.25,
-                        -0.25,
-                        0
+                        -31.9758315585978,
+                        -31.9756469816048,
+                        -31.9765414955659,
+                        -31.9767260656345,
+                        -31.9758315585978
                       ]
                     }
                   ]
@@ -255,19 +255,19 @@
         ],
         "limits": {
           "lat": [
-            -1.00998613654284,
-            0
+            -31.9794354389843,
+            -31.9756469816048
           ],
           "lng": [
-            0,
-            1.0000380657339
+            -88.9108111956941,
+            -88.9063871558658
           ]
         },
         "fitBounds": [
-          -1,
-          0,
-          0,
-          1,
+          -31.9794094598645,
+          -88.9108111956941,
+          -31.9756469816048,
+          -88.906397054901,
           [
 
           ]
@@ -412,15 +412,15 @@
           {
             "method": "addRasterImage",
             "args": [
-              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABY0lEQVR4nO3aMUolQRRA0a8UrsTMBbiHWbB7UBEjMxkmm8gF+JNvqolRQ10e56zgFZd+Bd19dfl8upzIuN49AD+t3QMc5fLxsnuEQ6wpB5nCyooRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQmDE/yp3eH3ZPcIg15SBTWFkx63T7Z/cMfOMJiXGpx7jUY6ysGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQmDGv38+Pb7tHOMSacpAprKyYdXN/t3sGvvGExLjUY1zqMVZWjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsSM+VHu3+v/3SMcYk05yBRWVowgMYLECBIjSIwgMYLECBIjSIwgMYLECBIjSIwgMYLECBIjSIwgMWO+qT//Pe8e4RBrykGmsLLgN19IBSYLyMNIzwAAAABJRU5ErkJggg==",
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABqCAYAAAC/Fn+UAAACoUlEQVR4nO3cP27UQBiGca+1AnKFlBFFJHroOECkXCASB8gBOAUH4Aa5QCQOkAqIEBUSBVqlSirqhEhkqXa9xk7sGX/2fO/4+VX8caTofZjVZm2xKDCJ9Z+v6z7XLZ6/Xvz/Z0v7bycffYcdW1aRvIzaZv37W/TXJo+U67CWoiIx7LSWngcPkWOcjfQvdxmPayXu5Y5hJ7VkcP/K1N8AuhFJAJEEEEkAkQQQSUBZ7p82PhqHL5wkAURy5uH6Y+OzVCIJIJIAIgkgkgAiCSCSACIJIJIAIglI/iDK7Pz6FPwlROojYlhLeUZKPKq1vCIpxHl51OOi89rv/ETyPHCvYcczLBLDhot+4+BhbK+jFkXyfba3zh8ujsMf3GfYUZRvz2uPNFQvd54HDyEc5zHVSWq5bTu5DAeOtXua8n3jkJEqEoO7xQesAogkgEgCiCSASAKIJIBIAogkwM/9pBm5//Ij6Hoi9RQ6rKWsI6Uc1lJ2kVTCPHvzquOK1fZX7iJ5Hbl71PEMjuR11KJIO2yXkN22kbyM7XXYlPvU7qXffTgIvjvrddSi8PMPL8aL96v2O7OeBw+hHKdN7SRFPTFkLLeBh9icJpN3dww7rlokxvaJD1gFEEkAkQQQSQCRBBBJAJEEEEkAkQQQSQCRBBBJAJEEEElALdLuLVv4wUkSQCTHNg8GEUmAuydY5+bq+03nNUQK1GdUa7OIlGJYS9lGUg+zy22knEYeyiwSo46nEYmx/eHnJAFEEkAkAUQSQCQBRBJAJAFEEkAkAY1Ih2e3POfgDCdJQOup+Xmyl/y/CkCFkyTA7f2kOblc3T/590SK1DWspdlEmnJUa1lHUgnz7vPfJ3/scR3J88hdw1oyj8Sw9lojeRladVRr5ieJYTFL/wDy57fsmscXkgAAAABJRU5ErkJggg==",
               [
                 [
-                  1.00003807065288,
-                  0
+                  -31.9720687142753,
+                  -88.9110278650813
                 ],
                 [
-                  -0.00994959645227047,
-                  1.00003806573389
+                  -31.9758575297757,
+                  -88.9066035795393
                 ]
               ],
               1,
@@ -470,18 +470,18 @@
                   [
                     {
                       "lng": [
-                        0,
-                        1,
-                        1,
-                        0,
-                        0
+                        -88.9110278650813,
+                        -88.9068299062319,
+                        -88.9067757945743,
+                        -88.9109736954857,
+                        -88.9110278650813
                       ],
                       "lat": [
-                        0.75,
-                        0.75,
-                        1,
-                        1,
-                        0.75
+                        -31.9722533189692,
+                        -31.9720687142753,
+                        -31.9729633128316,
+                        -31.9731479105998,
+                        -31.9722533189692
                       ]
                     }
                   ]
@@ -568,19 +568,19 @@
         ],
         "limits": {
           "lat": [
-            -0.00994959645227047,
-            1.00003807065288
+            -31.9758575297757,
+            -31.9720687142753
           ],
           "lng": [
-            0,
-            1.00003806573389
+            -88.9110278650813,
+            -88.9066035795393
           ]
         },
         "fitBounds": [
-          0,
-          0,
-          1,
-          1,
+          -31.9758315585978,
+          -88.9110278650813,
+          -31.9720687142753,
+          -88.906613468587,
           [
 
           ]
@@ -746,7 +746,7 @@
                   "width": 5
                 },
                 "thickness": 2,
-                "value": 70
+                "value": 90
               },
               "bgcolor": "white",
               "steps": [
@@ -905,7 +905,7 @@
       ]
     },
     "ind_score_plt": {
-      "src": "[image data sha1: 3d448a7a257d1b0baddf78940fc2be97b3332a04]",
+      "src": "[image data sha1: 07cd833a352471ff67e3a873ddb5da77b0d21112]",
       "width": 600,
       "height": 300,
       "alt": "Plot object",
@@ -947,7 +947,7 @@
         }
       }
     },
-    "index": "<h4><font color= darkorange ><b> Highly Vulnerable :<\/b><\/font><\/h4> <p>Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.<\/p>",
+    "index": "<h4><font color= red ><b> Extremely Vulnerable :<\/b><\/font><\/h4> <p>Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.<\/p>",
     "mig_exp": "<font color= grey ><b> N/A <\/b><\/font>",
     "mig_exp_gauge": {
       "x": {
@@ -1295,7 +1295,7 @@
               6,
               4,
               5.01,
-              1,
+              2,
               1
             ],
             "type": "bar",
@@ -1736,15 +1736,15 @@
           {
             "method": "addRasterImage",
             "args": [
-              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABlCAYAAAC7vkbxAAABY0lEQVR4nO3aMUolQRRA0a8UrsTMBbiHWbB7UBEjMxkmm8gF+JNvqolRQ10e56zgFZd+Bd19dfl8upzIuN49AD+t3QMc5fLxsnuEQ6wpB5nCyooRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQmDE/yp3eH3ZPcIg15SBTWFkx63T7Z/cMfOMJiXGpx7jUY6ysGEFiBIkRJEaQGEFiBIkRJEaQGEFiBIkRJEaQmDGv38+Pb7tHOMSacpAprKyYdXN/t3sGvvGExLjUY1zqMVZWjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsQIEiNIjCAxgsSM+VHu3+v/3SMcYk05yBRWVowgMYLECBIjSIwgMYLECBIjSIwgMYLECBIjSIwgMYLECBIjSIwgMWO+qT//Pe8e4RBrykGmsLLgN19IBSYLyMNIzwAAAABJRU5ErkJggg==",
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGkAAABqCAYAAAC/Fn+UAAACoUlEQVR4nO3cP27UQBiGca+1AnKFlBFFJHroOECkXCASB8gBOAUH4Aa5QCQOkAqIEBUSBVqlSirqhEhkqXa9xk7sGX/2fO/4+VX8caTofZjVZm2xKDCJ9Z+v6z7XLZ6/Xvz/Z0v7bycffYcdW1aRvIzaZv37W/TXJo+U67CWoiIx7LSWngcPkWOcjfQvdxmPayXu5Y5hJ7VkcP/K1N8AuhFJAJEEEEkAkQQQSUBZ7p82PhqHL5wkAURy5uH6Y+OzVCIJIJIAIgkgkgAiCSCSACIJIJIAIglI/iDK7Pz6FPwlROojYlhLeUZKPKq1vCIpxHl51OOi89rv/ETyPHCvYcczLBLDhot+4+BhbK+jFkXyfba3zh8ujsMf3GfYUZRvz2uPNFQvd54HDyEc5zHVSWq5bTu5DAeOtXua8n3jkJEqEoO7xQesAogkgEgCiCSASAKIJIBIAogkwM/9pBm5//Ij6Hoi9RQ6rKWsI6Uc1lJ2kVTCPHvzquOK1fZX7iJ5Hbl71PEMjuR11KJIO2yXkN22kbyM7XXYlPvU7qXffTgIvjvrddSi8PMPL8aL96v2O7OeBw+hHKdN7SRFPTFkLLeBh9icJpN3dww7rlokxvaJD1gFEEkAkQQQSQCRBBBJAJEEEEkAkQQQSQCRBBBJAJEEEElALdLuLVv4wUkSQCTHNg8GEUmAuydY5+bq+03nNUQK1GdUa7OIlGJYS9lGUg+zy22knEYeyiwSo46nEYmx/eHnJAFEEkAkAUQSQCQBRBJAJAFEEkAkAY1Ih2e3POfgDCdJQOup+Xmyl/y/CkCFkyTA7f2kOblc3T/590SK1DWspdlEmnJUa1lHUgnz7vPfJ3/scR3J88hdw1oyj8Sw9lojeRladVRr5ieJYTFL/wDy57fsmscXkgAAAABJRU5ErkJggg==",
               [
                 [
-                  1.00003807065288,
-                  0
+                  -31.9720687142753,
+                  -88.9110278650813
                 ],
                 [
-                  -0.00994959645227047,
-                  1.00003806573389
+                  -31.9758575297757,
+                  -88.9066035795393
                 ]
               ],
               1,
@@ -1794,18 +1794,18 @@
                   [
                     {
                       "lng": [
-                        0,
-                        1,
-                        1,
-                        0,
-                        0
+                        -88.9110278650813,
+                        -88.9068299062319,
+                        -88.9067757945743,
+                        -88.9109736954857,
+                        -88.9110278650813
                       ],
                       "lat": [
-                        0.75,
-                        0.75,
-                        1,
-                        1,
-                        0.75
+                        -31.9722533189692,
+                        -31.9720687142753,
+                        -31.9729633128316,
+                        -31.9731479105998,
+                        -31.9722533189692
                       ]
                     }
                   ]
@@ -1892,19 +1892,19 @@
         ],
         "limits": {
           "lat": [
-            -0.00994959645227047,
-            1.00003807065288
+            -31.9758575297757,
+            -31.9720687142753
           ],
           "lng": [
-            0,
-            1.00003806573389
+            -88.9110278650813,
+            -88.9066035795393
           ]
         },
         "fitBounds": [
-          0,
-          0,
-          1,
-          1,
+          -31.9758315585978,
+          -88.9110278650813,
+          -31.9720687142753,
+          -88.906613468587,
           [
 
           ]
