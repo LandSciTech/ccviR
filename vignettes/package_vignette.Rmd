@@ -62,7 +62,7 @@ The prepared data will be saved in the output folder and can be used whenever th
 
 The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe. To demonstrate how the data is prepared the maps below use the demo data set to show the change in mean annual temperature which is then classified into 6 categories. 
 
-```{r}
+```{r fig.height=4, fig.width=4}
 mat_norm <- raster(file.path(data_pth, "clim_files/raw/MAT.tif"))
 mat_fut <- raster(file.path(data_pth, "clim_files/raw/MAT_2050.tif"))
 
@@ -119,7 +119,7 @@ spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
 
 We can look at how the spatial analysis was done by plotting the appropriate range polygon and climate data to see how they overlap.
 
-```{r}
+```{r fig.height=4, fig.width=4}
 plot(clim_dat$mat)
 
 plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
@@ -179,13 +179,13 @@ index_res$index
 ```
 These results can be used to investigate how the index value was reached including using two graphs that are included in the package. The first shows how the index values, that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections, are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In our example we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
 
-```{r}
+```{r fig.height=4, fig.width=8}
 plot_score_index(index_res$b_c_score, index_res$d_score, index_res$n_d_factors)
 ```
 
 The second graph is a visual representation of the scores for each factor and how they were impacted by the exposure. The bars show the total score for the factor and the dots show the exposure multiplier that was used to modify the initial value.  
 
-```{r}
+```{r fig.height=4, fig.width=8}
 plot_q_score(index_res$vuln_df)
 ```
 

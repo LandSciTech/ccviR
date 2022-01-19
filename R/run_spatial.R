@@ -84,7 +84,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   crs_use <- sf::st_crs(clim_vars_lst$mat)
   range_poly <- check_polys(range_poly, crs_use, "range polygon")
   scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
-  non_breed_poly <- check_polys(non_breed_poly, crs_use, "non-breeding range polygon")
+  non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei), "non-breeding range polygon")
   ptn_poly <- check_polys(ptn_poly, crs_use, "PTN polygon")
   clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
 
