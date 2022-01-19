@@ -40,10 +40,10 @@ repository, downloading the .zip file containing the package and
 installing it and its dependencies with:
 
 ``` r
-install.packages(c(‘dplyr', 'raster', 'sf', 'purrr', 'tidyr', 'shiny', 'stringr',
+install.packages(c('dplyr', 'raster', 'sf', 'purrr', 'tidyr', 'shiny', 'stringr',
                     'units', 'exactextractr', 'shinyFiles', 'shinyjs', 'tmap', 
                     'ggplot2', 'shinycssloaders', 'R.utils', 'fs', 'plotly',
-                    'rgdal’, 'scales', 'shinyvalidate'))
+                    'rgdal', 'scales', 'shinyvalidate'))
 
 install.packages("path/to/zip/file", repos = NULL)
 ```
