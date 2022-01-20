@@ -83,7 +83,7 @@ load_clim <- function(pth){
 }
 #' Trim NAs from raster
 #'
-#' Copied from raster package internal .memtrimlayer in raster::trim. This is
+#' Extracted from raster package internal .memtrimlayer in raster::trim. This is
 #' not memory safe but raster::trim takes over an hour while this takes ~30s
 #'
 #' @param r raster to be trimmed
@@ -104,25 +104,8 @@ load_clim <- function(pth){
 #' trim_ras(rast)
 #'
 #' @export
-trim_ras <- function(r, padding=0, values=NA, filename="", ...) {
-  x <- raster::as.matrix(r)
-  if (all(is.na(values))) {
-    rows <- rowSums(is.na(x))
-    cols <- colSums(is.na(x))
-  } else {
-    rows <- apply(x, 1, function(i) sum(i %in% values))
-    cols <- apply(x, 2, function(i) sum(i %in% values))
-  }
-  rows <- which(rows != ncol(x))
-  if (length(rows)==0) { 	stop("only NA values found") }
-  cols <- which(cols != nrow(x))
-
-  rows <- pmin(pmax(1, c(min(rows) - padding, max(rows + padding))), nrow(r))
-  cols <- pmin(pmax(1, c(min(cols) - padding, max(cols + padding))), ncol(r))
-
-  e <- raster::extent(r, rows[1], rows[2], cols[1], cols[2])
-  raster::crop(r, e, filename=filename, ...)
-}
+#'
+trim_ras <- utils::getFromNamespace(".memtrimlayer", ns = "raster")
 
 check_trim <- function(rast){
   do_trim <- sum(!is.na(rast[1:10,]))
