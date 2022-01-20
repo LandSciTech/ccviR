@@ -92,6 +92,17 @@ load_clim <- function(pth){
 #' @param filename character. Optional output filename
 #' @param ... If x is a Raster* object: additional arguments as for writeRaster
 #'
+#' @return the trimmed Raster* object
+#'
+#' @examples
+#' library(raster)
+#'
+#' rast <- raster(matrix(NA, nrow = 100, ncol = 100))
+#'
+#' rast[30:60, 30:60] <- 1
+#'
+#' trim_ras(rast)
+#'
 #' @export
 trim_ras <- function(r, padding=0, values=NA, filename="", ...) {
   x <- raster::as.matrix(r)
