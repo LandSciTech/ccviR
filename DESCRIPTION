@@ -1,13 +1,23 @@
 Package: ccviR
-Title: NatureServe CCVI in R
+Title: Calculate the NatureServe Climate Change Vulnerability Index in R
 Version: 0.0.0.9004
-Authors@R: person(given = "Sarah",
+Authors@R: c(person(given = "Sarah",
   family = "Endicott",
   role = c("aut", "cre"),
   email = "sarah.endicott@canada.ca",
-  comment = c(ORCID = "0000-0001-9644-5343"))
-Description: Implements the NatureServe climate change vulnerability index 
-  calculator in R.
+  comment = c(ORCID = "0000-0001-9644-5343")),
+  person(given="Her Majesty the Queen in Right of Canada, as represented by the Minister of Environment and Climate Change",
+         role = "cph"))
+Description: The ccviR package implements the 
+  NatureServe Climate Change Vulnerability Index (CCVI) version 3.02 <https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index>
+  in an R package and Shiny App. The package allows all of the geospatial
+  aspects of calculating the CCVI to be done in R, removing the need for 
+  separate GIS calculations. It also enables easier sensitivity analysis 
+  of the Index. The app provides an interactive application designed to 
+  offer a user-friendly and simple interface for calculating the NatureServe
+  CCVI. See Young et. al (2012) <doi:10.7208/9780226074641-007> and 
+  Young et. al. (2015) <doi:10.1002/wsb.478> for a detailed description of the 
+  index.
 License: TBD
 Encoding: UTF-8
 LazyData: true
@@ -47,3 +57,5 @@ RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)
+URL: https://github.com/see24/ccviR
+BugReports: https://github.com/see24/ccviR/issues

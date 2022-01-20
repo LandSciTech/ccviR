@@ -76,7 +76,7 @@ If you have a problem in the app you can look at the output in the R console for
 If you have persistent problems with the app you can do the same analysis using the ccviR package. You will often be able to figure out what is causing the problem and return to the app. See `vignette("package_vignette", package = "ccviR")` for a tutorial on how to use the package.  
 
 ## References
-Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson, A. Redder, and K. Szabo. 2012. Rapid assessment of plant and animal vulnerability to climate change. Pages 129-150 in Wildlife Conservation in a Changing Climate, edited by J. Brodie, E. Post, and D. Doak. University of Chicago Press, Chicago, IL.
+Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson, A. Redder, and K. Szabo. 2012. Rapid assessment of plant and animal vulnerability to climate change. Pages 129-150 in Wildlife Conservation in a Changing Climate, edited by J. Brodie, E. Post, and D. Doak. University of Chicago Press, Chicago, IL. https://doi.org/10.7208/9780226074641-007
 
 Young, B. E., N. S. Dubois, and E. L. Rowland. 2015. Using the Climate Change Vulnerability Index to inform adaptation planning: lessons, innovations, and next steps. Wildlife Society Bulletin 39:174-181.
 
