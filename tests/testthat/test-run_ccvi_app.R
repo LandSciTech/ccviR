@@ -13,6 +13,9 @@ test_that("run_ccvi_app() works", {
   expect_pass(testApp(test_path("app/"), compareImages = FALSE))
 })
 
+# # to see what changed
+# shinytest::snapshotCompare('tests/testthat/app')
+
 # # To update a snapshot
 # shinytest::snapshotUpdate('tests/testthat/app')
 
