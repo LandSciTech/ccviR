@@ -19,7 +19,7 @@ hs <- raster(file.path(file_dir, "HS_rast_high.tif"))
 
 test_that("spatial runs with all data or optional data",{
   res <- run_spatial(rng_high, assess, clim_vars, nonbreed, ptn, hs,
-                     hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,7)), ncol = 2))
+                     hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,3)), ncol = 2))
   expect_false(anyNA(res$spat_table))
 
   # with only required data
@@ -68,7 +68,7 @@ test_that("Non matching crs are handled reasonably", {
 
   # make sure results are the same after transformed
   res2 <- run_spatial(rng_high, assess, clim_vars[c(1:2, 6)])$spat_table
-  expect_equal(as.numeric(res[1,-28]), as.numeric(res2[1,-28]))
+  expect_equal(as.numeric(res[1,-27]), as.numeric(res2[1,-27]))
   # the range size is different after transforming but I think that is expected
 
 })
@@ -87,7 +87,7 @@ test_that("Multiple polygons are merged", {
 
   res1$range_size - res2$range_size
 
-  expect_equal(as.numeric(res1[1,-28]), as.numeric(res2[1,-28]))
+  expect_equal(as.numeric(res1[1,-27]), as.numeric(res2[1,-27]))
   # the range size is different but I think it is just an issue with my
   # polygons being made from scratch
 

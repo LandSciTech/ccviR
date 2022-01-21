@@ -203,7 +203,11 @@ ccvi_app <- function(...){
                 conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
                                  strong("Classification of habitat suitability raster"),
                                  p("Enter the range of values in the raster corresponding to ",
-                                   "lost, maintained, gained and not suitable habitat. "),
+                                   "lost, maintained, gained and not suitable habitat. Take care ",
+                                   "to only label values as gained if the model has considered ",
+                                   "whether the gains are likely to be realized. E.g. Is the species ",
+                                   "capable of dispersing to the new habitat and will factors other ",
+                                   "than climate be suitable in those areas?"),
                                  strong("Lost: "),
                                  tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
                                  tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
@@ -790,11 +794,17 @@ ccvi_app <- function(...){
     })
 
     # assemble hs_rcl matrix
-    hs_rcl_mat <- reactive({matrix(c(input$lost_from, input$lost_to, 1,
+    hs_rcl_mat <- reactive({
+      mat <- matrix(c(input$lost_from, input$lost_to, 1,
                                      input$maint_from, input$maint_to, 2,
                                      input$gain_from, input$gain_to, 3,
                                      input$ns_from, input$ns_to, 0),
-                                   byrow = TRUE, ncol = 3)})
+                                   byrow = TRUE, ncol = 3)
+
+      # if an input is blank then the value is NA but that converts raster values that
+      # are NA to that value
+      mat[which(!is.na(mat[, 1])), ]
+    })
 
     doSpatial <- reactiveVal(FALSE)
 
@@ -803,10 +813,6 @@ ccvi_app <- function(...){
         doSpatial(1)
         message("doSpatial restore")
       }
-    })
-
-    observe({
-      print(doSpatial())
     })
 
     observeEvent(input$startSpatial, {
@@ -1170,10 +1176,10 @@ ccvi_app <- function(...){
       }
     })
 
-    # reclassify raster with 0:7 where 1 is loss, and 7 is gain to 0:3
+    # reclassify raster
     hs_rast2 <- reactive({
       rast <- raster::reclassify(hs_rast(),
-                                 rcl = hs_rcl_mat())
+                                 rcl = hs_rcl_mat(), right = NA)
     })
 
     output$map_D2_3 <- tmap::renderTmap({
@@ -1187,8 +1193,8 @@ ccvi_app <- function(...){
 
     output$tbl_D2_3 <- renderTable({
       exp_df <-  spat_res() %>%
-        select(`% Lost` = perc_lost, `% Gain` = perc_gain,
-               `% Maintained` = perc_maint)
+        select(`% Range Lost` = range_change,
+               `% Maintained` = range_overlap)
     })
 
     output$box_D2 <- renderUI({
@@ -1196,10 +1202,10 @@ ccvi_app <- function(...){
       prevCom <- isolate(input$comD2)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
-        mutate(D2 = case_when(perc_lost > 99 ~ 3,
-                              perc_lost > 50 ~ 2,
-                              perc_lost > 20 ~ 1,
-                              is.na(perc_lost) ~ NA_real_,
+        mutate(D2 = case_when(range_change > 99 ~ 3,
+                              range_change > 50 ~ 2,
+                              range_change > 20 ~ 1,
+                              is.na(range_change) ~ NA_real_,
                               TRUE ~ 0)) %>%
         pull(D2)
 
@@ -1215,16 +1221,16 @@ ccvi_app <- function(...){
       prevCom <- isolate(input$comD3)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
-        mutate(D2 = case_when(perc_lost > 99 ~ 3,
-                              perc_lost > 50 ~ 2,
-                              perc_lost > 20 ~ 1,
-                              is.na(perc_lost) ~ NA_real_,
+        mutate(D2 = case_when(range_change > 99 ~ 3,
+                              range_change > 50 ~ 2,
+                              range_change > 20 ~ 1,
+                              is.na(range_change) ~ NA_real_,
                               TRUE ~ 0),
                D3 = case_when(D2 == 3 ~ 0,
-                              perc_maint == 0 ~ 3,
-                              perc_maint < 30 ~ 2,
-                              perc_maint < 60 ~ 1,
-                              is.na(perc_maint) ~ NA_real_,
+                              range_overlap == 0 ~ 3,
+                              range_overlap < 30 ~ 2,
+                              range_overlap < 60 ~ 1,
+                              is.na(range_overlap) ~ NA_real_,
                               TRUE ~ 0)) %>%
         pull(D3)
 
@@ -1416,6 +1422,8 @@ ccvi_app <- function(...){
                  d_score = index_res()$d_score) %>%
         bind_cols(conf_df, spat_df, vuln_df)
     })
+
+    exportTestValues(out_data = out_data())
 
     output$downloadData <- downloadHandler(
       filename = function() {
