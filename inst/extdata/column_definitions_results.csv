@@ -53,3 +53,8 @@ D1,  1) Documented response to recent climate change
 D2,  2) Modeled future (2050) change in population or range size
 D3,  3) Overlap of modeled future (2050) range with current range
 D4,  4) Occurrence of protected areas in modeled future (2050) distribution
+"GCM or Ensemble name", Name of the climate model
+"Historical normal period", Time period for the historical data
+"Future period", Time period for the future climate projections
+"Emissions scenario", Emissions scenario used for climate projections
+"Link to source", Url for where the climate data was downloaded from

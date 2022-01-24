@@ -739,6 +739,11 @@ ccvi_app <- function(...){
 
     })
 
+    clim_readme <- reactive({
+      utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
+                      check.names = FALSE)
+    })
+
     range_poly_in <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/rng_poly_high.shp",
@@ -1433,7 +1438,7 @@ ccvi_app <- function(...){
                  mig_exposure = index_res()$mig_exp,
                  b_c_score = index_res()$b_c_score,
                  d_score = index_res()$d_score) %>%
-        bind_cols(conf_df, spat_df, vuln_df)
+        bind_cols(conf_df, spat_df, vuln_df, clim_readme())
     })
 
     exportTestValues(out_data = out_data())
