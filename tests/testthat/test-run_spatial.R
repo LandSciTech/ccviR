@@ -93,5 +93,14 @@ test_that("Multiple polygons are merged", {
 
 })
 
+test_that("gain_mod works", {
+  res <- run_spatial(rng_high, assess, clim_vars,hs_rast =  hs,
+                     hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,3)), ncol = 2))
 
+  res2 <- run_spatial(rng_high, assess, clim_vars, hs_rast = hs,
+                      hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,3)), ncol = 2),
+                      gain_mod = 0.5)
+
+  expect_lt(res$spat_table$range_change, res2$spat_table$range_change)
+})
 

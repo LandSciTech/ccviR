@@ -64,7 +64,7 @@
 
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
-                        hs_rast = NULL, hs_rcl = NULL){
+                        hs_rast = NULL, hs_rcl = NULL, gain_mod = 1){
   message("performing spatial analysis")
 
   clim_nms_dif <- setdiff(names(clim_vars_lst),
@@ -194,7 +194,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
            "Check that all habitat raster values are included in the reclassification matrix")
     }
 
-    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly)
+    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
     if(sum(mod_resp_CC, na.rm = T) == 0){
       stop("The assessment area polygon does not overlap the supplied habitat suitability ",
            "raster.", call. = FALSE)

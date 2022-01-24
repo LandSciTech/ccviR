@@ -9,14 +9,16 @@ cave_grnd_water,Whether the species is an obligate of caves or groundwater syste
 CCVI_index,Calculated CCVI index
 CCVI_conf_index,Level of confidence in the CCVI index result. This is based on the proportion of Monte Carlo results that had different index values
 mig_exposure,Index of migratory exposure
-b_c_score,Total score from sections B and C the indirect exposure, sensitivity and adaptive capacity questions
+b_c_score,"Total score from sections B and C the indirect exposure, sensitivity and adaptive capacity questions"
 d_score,Total score from section D the modelled response to climate change section
+gain_mod, Gain modifier. Used to down-weight modelled habitat gains
+gain_mod_comm, Explaination for gain modifier choice
 MC_freq_*,The proportion of Monte Carlo runs with each CCVI index result
 MAT_#,The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
 CMD_#,The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
 CCEI_#,The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 1 indicates high exposure while Class 4 indicates low exposure
 perc_non_breed_not_over_ccei,The precentage of the non-breeding range that does not overlap with the CCEI raster data
-HTN_#,The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest
+HTN_#,The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest months. Class 1 has the smallest variation and Class 4 is the largest
 PTN,The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change
 MAP_max/min,The maximum and minimum historical mean annual precipitation in the species' range
 range_change,The projected decrease in range size as a percentage of current range size. Negative numbers indicate an increase in range size
