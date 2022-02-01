@@ -158,7 +158,7 @@ if(interactive()){
     split(.$Species)
 
   exp_ccviR <- exp_facts %>% mutate(species = sp_nm, tax_grp = taxa)
-  cols_to_add <- c(paste0("HTN_", 1:4), "PTN", "MAP_max", "MAP_min", "perc_lost", "perc_maint")
+  cols_to_add <- c(paste0("HTN_", 1:4), "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap")
   exp_ccviR[,cols_to_add] <- NA_real_
   exp_ccviR <- split(exp_ccviR, exp_ccviR$species)
 

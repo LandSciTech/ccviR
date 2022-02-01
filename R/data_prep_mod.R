@@ -13,7 +13,20 @@
         "the ensemble data for SSP2-4.5 2050s for the future. ",
         "Save the downloaded data in a folder you can easily find."),
 
-      p(strong("Step 2: "), "Prepare the climate data for use in the app.",
+      p(strong("Step 2:"), "Record a description of the climate data. ",
+        "The values for the recommended data have already been filled in but ",
+        "should be changed if a different data set is selected."),
+      textInput(NS(id, "clim_gcm"),"GCM or Ensemble Name",
+                value = "AdaptWest 13 CMIP6 AOGCM Ensemble"),
+      textInput(NS(id, "clim_norm_period"), "Historical normal period",
+                value = "1961-1990"),
+      textInput(NS(id, "clim_fut_period"), "Future period", value = "2050s"),
+      textInput(NS(id, "clim_em_scenario"), "Emissions scenario", value = "SSP2-4.5"),
+      textInput(NS(id, "clim_dat_url"), "Link to Source",
+                value = "https://adaptwest.databasin.org/pages/adaptwest-climatena/"),
+
+
+      p(strong("Step 3: "), "Prepare the climate data for use in the app.",
         "Climate data can be added by selecting file paths for each file",
         " or selecting a folder that contains all the files with standard names.",
         " For the output folder make sure to choose a location that is easy to find again",
@@ -71,8 +84,6 @@
 
       checkboxInput(NS(id, "allow_over"),
                     "Should existing files in the output folder be overwritten?"),
-
-      checkboxInput(NS(id, "reproj"), "Should the outputs be reprojected to WGS84?"),
 
       actionButton(NS(id, "submit"), "Process", class = "btn-primary"),
     )
@@ -158,6 +169,19 @@
     })
 
     prep_done <- eventReactive(input$submit, {
+
+      clim_readme <- tibble(`GCM or Ensemble name` = input$clim_gcm,
+                                `Historical normal period` = input$clim_norm_period,
+                                `Future period` = input$clim_fut_period,
+                                `Emissions scenario` = input$clim_em_scenario,
+                                `Link to source` = input$clim_dat_url)
+
+      out_dir <- shinyFiles::parseDirPath(volumes,
+                                          input$out_folder)
+
+      write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
+                row.names = FALSE)
+
       if(isTruthy(input$clim_var_dir)||isTRUE(getOption("shiny.testmode"))){
 
         if (isTRUE(getOption("shiny.testmode"))) {
@@ -167,8 +191,6 @@
           in_dir <- shinyFiles::parseDirPath(volumes,
                                              input$clim_var_dir)
 
-          out_dir <- shinyFiles::parseDirPath(volumes,
-                                              input$out_folder)
         }
 
         req(in_dir)
@@ -176,7 +198,7 @@
 
         run_prep_data(in_folder = in_dir,
                       out_folder = out_dir,
-                      reproject = input$reproj,
+                      reproject = FALSE,
                       overwrite = input$allow_over)
       } else {
         run_prep_data(
@@ -190,8 +212,7 @@
           shinyFiles::parseFilePaths(volumes, input$mcmt_pth)$datapath,
           shinyFiles::parseFilePaths(volumes, input$clim_poly_pth)$datapath,
 
-          out_folder = shinyFiles::parseDirPath(volumes,
-                                                input$out_folder),
+          out_folder = out_dir,
           reproject = input$reproj,
           overwrite = input$allow_over
         )

@@ -185,7 +185,7 @@ plot_score_index(index_res$b_c_score, index_res$d_score, index_res$n_d_factors)
 
 The second graph is a visual representation of the scores for each factor and how they were impacted by the exposure. The bars show the total score for the factor and the dots show the exposure multiplier that was used to modify the initial value.  
 
-```{r fig.height=4, fig.width=8}
+```{r eval=FALSE, fig.height=4, fig.width=8}
 plot_q_score(index_res$vuln_df)
 ```
 

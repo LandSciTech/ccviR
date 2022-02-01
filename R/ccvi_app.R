@@ -72,8 +72,10 @@ ccvi_app <- function(...){
                              a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
                              "that automates the spatial analysis needed to inform the index. ",
                              "The app is based on version 3.02 of the NatureServe CCVI. ",
-                             "For detailed instructions on how to use the index see the NatureServe ",
-                             a("Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf")),
+                             "For detailed instructions on how to use the index and definitions ",
+                             "of the terms used below see the ",
+                             a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf"),
+                             "Required datasets are indicated with ", labelMandatory("a"), "."),
                            h3("Preparing to use the app"),
 
                            p(strong("Step 0: "),"The first time you use the app ",
@@ -102,13 +104,14 @@ ccvi_app <- function(...){
                              " 10 of the 19 sensitivity factors require input in order to ",
                              "obtain an overall Index score."),
                            h3("Start assessment"),
+                           actionButton("start", "Start", class = "btn-primary"),
                            br(),
-                           strong("Optional: Load data from a previous assessment"),
+                           br(),
+                           strong("Or load data from a previous assessment"),
                            br(),
                            load_bookmark_ui("load"),
                            br(),
                            br(),
-                           actionButton("start", "Start", class = "btn-primary"),
                            h3("References"),
                            p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
                              " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
@@ -203,7 +206,7 @@ ccvi_app <- function(...){
                 conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
                                  strong("Classification of habitat suitability raster"),
                                  p("Enter the range of values in the raster corresponding to ",
-                                   "lost, maintained, gained and not suitable habitat. "),
+                                   "lost, maintained, gained and not suitable habitat."),
                                  strong("Lost: "),
                                  tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
                                  tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
@@ -218,7 +221,21 @@ ccvi_app <- function(...){
                                  br(),
                                  strong("Not Suitable: "),
                                  tags$div(numericInput("ns_from", "From", 0), style="display:inline-block"),
-                                 tags$div(numericInput("ns_to", "To", 0), style="display:inline-block")
+                                 tags$div(numericInput("ns_to", "To", 0), style="display:inline-block"),
+                                 br(), br(),
+                                 strong("Gain modifier"),
+                                 p("Range gains predicted based on future climate projections should be ",
+                                   "interpreted cautiously. It is important to consider whether ",
+                                   "the gains are likely to be realized. E.g. Is the species ",
+                                   "capable of dispersing to the new habitat and will factors other ",
+                                   "than climate be suitable in those areas?"),
+                                 p("To account for this you can set the gain modifier below to less",
+                                   " than 1 in order to down weight future range expansions when the",
+                                   " modelled response to climate change is being assessed. A value of 0 will ",
+                                   "ignore gains all together while 0.5 assumes that only half",
+                                   " the projected gains are realized and 1 assumes all gains are realized."),
+                                 numericInput("gain_mod", NULL, 1, min = 0, max = 1, step = 0.1),
+                                 textAreaInput("gain_mod_comm", "Gain modifier explanation")
                                  ),
                 strong("Click Run to begin the spatial analysis or to re-run it",
                        " after changing inputs"),
@@ -725,6 +742,11 @@ ccvi_app <- function(...){
 
     })
 
+    clim_readme <- reactive({
+      utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
+                      check.names = FALSE)
+    })
+
     range_poly_in <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/rng_poly_high.shp",
@@ -790,11 +812,17 @@ ccvi_app <- function(...){
     })
 
     # assemble hs_rcl matrix
-    hs_rcl_mat <- reactive({matrix(c(input$lost_from, input$lost_to, 1,
+    hs_rcl_mat <- reactive({
+      mat <- matrix(c(input$lost_from, input$lost_to, 1,
                                      input$maint_from, input$maint_to, 2,
                                      input$gain_from, input$gain_to, 3,
                                      input$ns_from, input$ns_to, 0),
-                                   byrow = TRUE, ncol = 3)})
+                                   byrow = TRUE, ncol = 3)
+
+      # if an input is blank then the value is NA but that converts raster values that
+      # are NA to that value
+      mat[which(!is.na(mat[, 1])), ]
+    })
 
     doSpatial <- reactiveVal(FALSE)
 
@@ -803,10 +831,6 @@ ccvi_app <- function(...){
         doSpatial(1)
         message("doSpatial restore")
       }
-    })
-
-    observe({
-      print(doSpatial())
     })
 
     observeEvent(input$startSpatial, {
@@ -844,7 +868,8 @@ ccvi_app <- function(...){
                       hs_rast = hs_rast(),
                       ptn_poly = ptn_poly(),
                       clim_vars_lst = clim_vars(),
-                      hs_rcl = hs_rcl_mat())
+                      hs_rcl = hs_rcl_mat(),
+                      gain_mod = input$gain_mod)
         },
         error = function(cnd) conditionMessage(cnd))
       })
@@ -1170,10 +1195,10 @@ ccvi_app <- function(...){
       }
     })
 
-    # reclassify raster with 0:7 where 1 is loss, and 7 is gain to 0:3
+    # reclassify raster
     hs_rast2 <- reactive({
       rast <- raster::reclassify(hs_rast(),
-                                 rcl = hs_rcl_mat())
+                                 rcl = hs_rcl_mat(), right = NA)
     })
 
     output$map_D2_3 <- tmap::renderTmap({
@@ -1187,8 +1212,8 @@ ccvi_app <- function(...){
 
     output$tbl_D2_3 <- renderTable({
       exp_df <-  spat_res() %>%
-        select(`% Lost` = perc_lost, `% Gain` = perc_gain,
-               `% Maintained` = perc_maint)
+        select(`% Range Lost` = range_change,
+               `% Maintained` = range_overlap)
     })
 
     output$box_D2 <- renderUI({
@@ -1196,10 +1221,10 @@ ccvi_app <- function(...){
       prevCom <- isolate(input$comD2)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
-        mutate(D2 = case_when(perc_lost > 99 ~ 3,
-                              perc_lost > 50 ~ 2,
-                              perc_lost > 20 ~ 1,
-                              is.na(perc_lost) ~ NA_real_,
+        mutate(D2 = case_when(range_change > 99 ~ 3,
+                              range_change > 50 ~ 2,
+                              range_change > 20 ~ 1,
+                              is.na(range_change) ~ NA_real_,
                               TRUE ~ 0)) %>%
         pull(D2)
 
@@ -1215,16 +1240,16 @@ ccvi_app <- function(...){
       prevCom <- isolate(input$comD3)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
-        mutate(D2 = case_when(perc_lost > 99 ~ 3,
-                              perc_lost > 50 ~ 2,
-                              perc_lost > 20 ~ 1,
-                              is.na(perc_lost) ~ NA_real_,
+        mutate(D2 = case_when(range_change > 99 ~ 3,
+                              range_change > 50 ~ 2,
+                              range_change > 20 ~ 1,
+                              is.na(range_change) ~ NA_real_,
                               TRUE ~ 0),
                D3 = case_when(D2 == 3 ~ 0,
-                              perc_maint == 0 ~ 3,
-                              perc_maint < 30 ~ 2,
-                              perc_maint < 60 ~ 1,
-                              is.na(perc_maint) ~ NA_real_,
+                              range_overlap == 0 ~ 3,
+                              range_overlap < 30 ~ 2,
+                              range_overlap < 60 ~ 1,
+                              is.na(range_overlap) ~ NA_real_,
                               TRUE ~ 0)) %>%
         pull(D3)
 
@@ -1409,13 +1434,17 @@ ccvi_app <- function(...){
                  taxonomic_group = input$tax_grp,
                  migratory = input$mig,
                  cave_grnd_water = input$cave,
+                 gain_mod = input$gain_mod,
+                 gain_mod_comm = input$gain_mod_comm,
                  CCVI_index = index_res()$index,
                  CCVI_conf_index = index_res()$conf_index,
                  mig_exposure = index_res()$mig_exp,
                  b_c_score = index_res()$b_c_score,
                  d_score = index_res()$d_score) %>%
-        bind_cols(conf_df, spat_df, vuln_df)
+        bind_cols(conf_df, spat_df, vuln_df, clim_readme())
     })
+
+    exportTestValues(out_data = out_data())
 
     output$downloadData <- downloadHandler(
       filename = function() {

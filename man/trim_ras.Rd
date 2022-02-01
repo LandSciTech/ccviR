@@ -17,7 +17,20 @@ trim_ras(r, padding = 0, values = NA, filename = "", ...)
 
 \item{...}{If x is a Raster* object: additional arguments as for writeRaster}
 }
+\value{
+the trimmed Raster* object
+}
 \description{
-Copied from raster package internal .memtrimlayer in raster::trim. This is
+Extracted from raster package internal .memtrimlayer in raster::trim. This is
 not memory safe but raster::trim takes over an hour while this takes ~30s
+}
+\examples{
+library(raster)
+
+rast <- raster(matrix(NA, nrow = 100, ncol = 100))
+
+rast[30:60, 30:60] <- 1
+
+trim_ras(rast)
+
 }
