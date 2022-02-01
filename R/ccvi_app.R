@@ -947,18 +947,18 @@ ccvi_app <- function(...){
           sum(MAT_1, MAT_2, MAT_3, MAT_4, MAT_5, na.rm = TRUE) >= 20 ~ 0.8,
           TRUE ~ 0.4
         ),
-        temp_exp_cave = round(temp_exp / ifelse(input$cave == 1, 3, 1)), 3) %>%
-        select(contains("MAT"), temp_exp_cave) %>%
+        temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1)), 3) %>%
+        select(contains("MAT"), .data$temp_exp_cave) %>%
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
-        rename(`Exposure Multiplier` = temp_exp_cave) %>%
+        rename(`Exposure Multiplier` = .data$temp_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "High - 1") %>%
+        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "High - 1") %>%
                     stringr::str_replace("Class 6", "Low - 6") %>%
                     stringr::str_remove("Class"),
-                  `Proportion of Range`,
-                  `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
+                  .data$`Proportion of Range`,
+                  `Exposure Multiplier` = c(as.character(.data$`Exposure Multiplier`[1]),
                                             rep("", n() - 1)))
 
     }, align = "r")
@@ -974,18 +974,18 @@ ccvi_app <- function(...){
           sum(CMD_1, CMD_2, CMD_3, CMD_4, CMD_5, na.rm = TRUE) >= 16 ~ 0.67,
           TRUE ~ 0.33
         ),
-        moist_exp_cave = moist_exp / ifelse(input$cave == 1, 3, 1)) %>%
-        select(contains("CMD"), moist_exp_cave) %>%
+        moist_exp_cave = .data$moist_exp / ifelse(input$cave == 1, 3, 1)) %>%
+        select(contains("CMD"), .data$moist_exp_cave) %>%
         rename_at(vars(contains("CMD")),
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
-        rename(`Exposure Multiplier` = moist_exp_cave) %>%
+        rename(`Exposure Multiplier` = .data$moist_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                             names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "High - 1") %>%
+        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "High - 1") %>%
                     stringr::str_replace("Class 6", "Low - 6") %>%
                     stringr::str_remove("Class"),
-                  `Proportion of Range`,
-                  `Exposure Multiplier` = c(as.character(`Exposure Multiplier`[1]),
+                  .data$`Proportion of Range`,
+                  `Exposure Multiplier` = c(as.character(.data$`Exposure Multiplier`[1]),
                                             rep("", n() - 1)))
 
     }, align = "r")
@@ -998,10 +998,10 @@ ccvi_app <- function(...){
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                             names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(`Exposure Class`, "Class 1", "Low - 1") %>%
+        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "Low - 1") %>%
                     stringr::str_replace("Class 4", "High - 4") %>%
                     stringr::str_remove("Class"),
-                  `Proportion of Range`)
+                  .data$`Proportion of Range`)
     }, align = "r")
 
     # When next button is clicked move to next panel
@@ -1068,9 +1068,9 @@ ccvi_app <- function(...){
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Temperature Variation Class", values_to = "Proportion of Range") %>%
-        transmute(`Temperature Variation Class` = stringr::str_replace(`Temperature Variation Class`, "Class 1", "Low - 1") %>%
+        transmute(`Temperature Variation Class` = stringr::str_replace(.data$`Temperature Variation Class`, "Class 1", "Low - 1") %>%
                     stringr::str_replace("Class 4", "High - 4") %>%
-                    stringr::str_remove("Class"), `Proportion of Range`)
+                    stringr::str_remove("Class"), .data$`Proportion of Range`)
     }, align = "r")
 
     output$box_C2ai <- renderUI({
@@ -1083,7 +1083,7 @@ ccvi_app <- function(...){
                                 HTN_2 > 10 ~ 2,
                                 HTN_1 > 10 ~ 3,
                                 is.na(HTN_1) ~ NA_real_)) %>%
-        pull(C2ai)
+        pull(.data$C2ai)
 
       check_comment_ui("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1128,7 +1128,7 @@ ccvi_app <- function(...){
                                  PTN > 10 ~ 1,
                                  is.na(PTN) ~ NA_real_,
                                  TRUE ~ 0)) %>%
-        pull(C2aii)
+        pull(.data$C2aii)
 
       check_comment_ui("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1159,8 +1159,8 @@ ccvi_app <- function(...){
 
     output$tbl_C2bi <- renderTable({
       exp_df <-  spat_res() %>%
-        select(MAP_max, MAP_min) %>%
-        rename(`Min MAP` = MAP_min, `Max MAP` = MAP_max)
+        select(.data$MAP_max, .data$MAP_min) %>%
+        rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max)
     })
 
     output$box_C2bi <- renderUI({
@@ -1168,13 +1168,13 @@ ccvi_app <- function(...){
       prevCom <- isolate(input$comC2bi)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
-        mutate(range_MAP = MAP_max - MAP_min,
+        mutate(range_MAP = .data$MAP_max - .data$MAP_min,
                C2bi = case_when(range_MAP < 100 ~ 3,
                                 range_MAP < 254 ~ 2,
                                 range_MAP < 508 ~ 1,
                                 is.na(range_MAP) ~ NA_real_,
                                 TRUE ~ 0)) %>%
-        pull(C2bi)
+        pull(.data$C2bi)
 
       check_comment_ui("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1212,8 +1212,8 @@ ccvi_app <- function(...){
 
     output$tbl_D2_3 <- renderTable({
       exp_df <-  spat_res() %>%
-        select(`% Range Lost` = range_change,
-               `% Maintained` = range_overlap)
+        select(`% Range Lost` = .data$range_change,
+               `% Maintained` = .data$range_overlap)
     })
 
     output$box_D2 <- renderUI({
@@ -1226,7 +1226,7 @@ ccvi_app <- function(...){
                               range_change > 20 ~ 1,
                               is.na(range_change) ~ NA_real_,
                               TRUE ~ 0)) %>%
-        pull(D2)
+        pull(.data$D2)
 
       check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1251,7 +1251,7 @@ ccvi_app <- function(...){
                               range_overlap < 60 ~ 1,
                               is.na(range_overlap) ~ NA_real_,
                               TRUE ~ 0)) %>%
-        pull(D3)
+        pull(.data$D3)
 
       check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1408,11 +1408,11 @@ ccvi_app <- function(...){
     # Make csv
     out_data <- reactive({
       vuln_df <- index_res()$vuln_df %>%
-        select(Code, contains("Value")) %>%
-        filter(!Code %in% c("Z2", "Z3")) %>%
-        arrange(Code) %>%
+        select(.data$Code, contains("Value")) %>%
+        filter(!.data$Code %in% c("Z2", "Z3")) %>%
+        arrange(.data$Code) %>%
         mutate_all(as.character) %>%
-        tidyr::unite(Value, Value1:Value4, na.rm = TRUE, sep = ", ") %>%
+        tidyr::unite("Value", .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
         left_join(coms_df(), by = "Code") %>%
         tidyr::pivot_wider(names_from = "Code",
                            values_from = c("Comment","Value")) %>%
@@ -1424,7 +1424,7 @@ ccvi_app <- function(...){
       spat_df <- spat_res()
 
       conf_df <- index_res()$index_conf %>%
-        mutate(index = paste0("MC_freq_", index)) %>%
+        mutate(index = paste0("MC_freq_", .data$index)) %>%
         tidyr::pivot_wider(names_from = "index", values_from = "frequency")
 
       data.frame(species_name = input$species_name,
