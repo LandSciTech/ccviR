@@ -10,4 +10,4 @@ vulnq_code_lu_tbl <- mutate_all(lu_tbl, stringr::str_trim) %>%
 
 
 usethis::use_data(vulnq_code_lu_tbl, overwrite = TRUE)
-usethis::use_data(vulnq_code_lu_tbl, overwrite = TRUE, internal = TRUE)
+usethis::use_data(vulnq_code_lu_tbl, internal = TRUE)
