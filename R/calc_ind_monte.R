@@ -54,11 +54,11 @@ calc_ind_monte <- function(vuln_df){
                     select(val) %>%
                     max(na.rm = TRUE) >= 2)
 
-  col_bc_index <- which(ccviR::comb_index_tbl$Dindex == b_c_index) + 1
-  row_d_index <- which(ccviR::comb_index_tbl$Dindex == d_index)
+  col_bc_index <- which(comb_index_tbl$Dindex == b_c_index) + 1
+  row_d_index <- which(comb_index_tbl$Dindex == d_index)
 
   comb_index <- case_when( slr_vuln ~ "EV",
-                           TRUE ~ ccviR::comb_index_tbl[row_d_index, col_bc_index])
+                           TRUE ~ comb_index_tbl[row_d_index, col_bc_index])
   return(comb_index)
 
 }

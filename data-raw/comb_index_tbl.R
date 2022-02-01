@@ -9,3 +9,4 @@ comb_index_tbl <- data.frame(Dindex = c("EV", "HV", "MV", "LV", "IE"),
                              stringsAsFactors = FALSE)
 
 usethis::use_data(comb_index_tbl, overwrite = TRUE)
+usethis::use_data(comb_index_tbl, overwrite = TRUE, internal = TRUE)
