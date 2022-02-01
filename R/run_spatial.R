@@ -40,7 +40,8 @@
 #'     \item{HTN_#}{The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest}
 #'     \item{PTN}{The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change}
 #'     \item{MAP_max/min}{The maximum and minimum historical mean annual precipitation in the species' range}
-#'     \item{perc_lost/gain/maintained}{The percentage of the assessment area that is predicted to be lost/gained/maintained under future climate conditions.}
+#'     \item{range_change}{The projected decrease in range size as a percentage of current range size. Negative numbers indicate an increase in range size}
+#'     \item{range_overlap}{The percentage of the current range that is projected to remain in the future range.}
 #'     \item{range_size}{The area of the species' range in m2}
 #'     }
 #'
@@ -63,7 +64,7 @@
 
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
-                        hs_rast = NULL, hs_rcl = NULL){
+                        hs_rast = NULL, hs_rcl = NULL, gain_mod = 1){
   message("performing spatial analysis")
 
   clim_nms_dif <- setdiff(names(clim_vars_lst),
@@ -177,8 +178,8 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Section D - Modelled Response to Climate Change #====
   if(is.null(hs_rast)){
-    mod_resp_CC <- rep(NA_real_, 3) %>% as.list() %>% as.data.frame() %>%
-      purrr::set_names(c("perc_lost", "perc_gain", "perc_maint"))
+    mod_resp_CC <- rep(NA_real_, 2) %>% as.list() %>% as.data.frame() %>%
+      purrr::set_names(c("range_change", "range_overlap"))
 
   } else {
 
@@ -188,7 +189,12 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
     hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
 
-    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly)
+    if(raster::maxValue(hs_rast) > 3){
+      stop("Reclassified habitat raster values outside the expected range of 0-3 were found. ",
+           "Check that all habitat raster values are included in the reclassification matrix")
+    }
+
+    mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
     if(sum(mod_resp_CC, na.rm = T) == 0){
       stop("The assessment area polygon does not overlap the supplied habitat suitability ",
            "raster.", call. = FALSE)
