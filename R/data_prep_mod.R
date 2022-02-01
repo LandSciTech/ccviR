@@ -85,8 +85,6 @@
       checkboxInput(NS(id, "allow_over"),
                     "Should existing files in the output folder be overwritten?"),
 
-      checkboxInput(NS(id, "reproj"), "Should the outputs be reprojected to WGS84?"),
-
       actionButton(NS(id, "submit"), "Process", class = "btn-primary"),
     )
   }
@@ -200,7 +198,7 @@
 
         run_prep_data(in_folder = in_dir,
                       out_folder = out_dir,
-                      reproject = input$reproj,
+                      reproject = FALSE,
                       overwrite = input$allow_over)
       } else {
         run_prep_data(

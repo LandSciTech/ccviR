@@ -11,7 +11,8 @@ run_spatial(
   non_breed_poly = NULL,
   ptn_poly = NULL,
   hs_rast = NULL,
-  hs_rcl = NULL
+  hs_rcl = NULL,
+  gain_mod = 1
 )
 }
 \arguments{
