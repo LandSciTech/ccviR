@@ -8,22 +8,17 @@
 
 *This application/package is under active development*
 
-The ccviR app is an interactive application designed to offer a
-user-friendly and simple interface for using the [NatureServe Climate
-Change Vulnerability
-Index](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index)
-to identify species that are vulnerable to climate change. Effective use
-of the NatureServe CCVI tool requires some GIS analysis followed by
-entering the results of that analysis and answers to vulnerability
-questions into an Excel spreadsheet which then calculates the
-corresponding index. With this app we combine these two steps into one,
-using R to do the spatial analysis and calculate the index based on user
-inputs entered through a Shiny application.
-
-The ccviR app uses the ccviR package to calculate the NatureServe CCVI
-index based on user inputs but users familiar with R could use the ccviR
-package directly to investigate different aspects of the NatureServe
-CCVI algorithm.
+The ccviR package implements the [NatureServe Climate Change
+Vulnerability Index (CCVI) version
+3.02](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index)
+in an R package and Shiny App. The package allows all of the geospatial
+aspects of calculating the CCVI to be done in R, removing the need for
+separate GIS calculations. The app provides an interactive application
+designed to offer a user-friendly and simple interface for calculating
+the NatureServe CCVI. See [Young et. al
+(2012)](https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html)
+and [Young et. al. (2015)](https://doi.org/10.1002/wsb.478) for a
+detailed description of the index.
 
 ## Installation
 

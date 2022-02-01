@@ -25,6 +25,8 @@
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 #'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
 #'   details on the matrix format
+#' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
+#'   in the modeled change in habitat under climate change
 #'
 #' @return a list with elements: \code{spat_table} the results of the spatial
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
