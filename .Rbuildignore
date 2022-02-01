@@ -7,3 +7,4 @@ documents\*
 ^docs$
 ^pkgdown$
 ^README\.Rmd$
+^\.github$
