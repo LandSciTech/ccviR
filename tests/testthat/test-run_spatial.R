@@ -104,3 +104,31 @@ test_that("gain_mod works", {
   expect_lt(res$spat_table$range_change, res2$spat_table$range_change)
 })
 
+test_that("works with mulitple clim scenarios",{
+
+  clim_vars_multi <- clim_vars
+
+  clim2 <- clim_vars$mat - 1
+
+  clim2[which(values(clim2) == 0)] <- 1
+
+  clim_vars_multi$mat <- raster::stack(clim_vars$mat, clim2) %>%
+    setNames(c("mat_scn1", "mat_scn2"))
+
+  clim_vars_multi$cmd <- raster::stack(clim_vars$cmd, clim2) %>%
+    setNames(c("cmd_scn1", "cmd_scn2"))
+
+  ccei2 <- clim_vars$ccei + 1
+
+  ccei2[which(values(ccei2) == 5)] <- 4
+
+  clim_vars_multi$ccei <- raster::stack(clim_vars$ccei, ccei2) %>%
+    setNames(c("ccei_scn1", "ccei_scn2"))
+
+  res <- run_spatial(rng_high, assess, clim_vars_multi,
+                     non_breed_poly = nonbreed, hs_rast =  hs,
+                     hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,3)), ncol = 2),
+                     scenario_names = c("Scn1", "Scn2"))
+
+})
+

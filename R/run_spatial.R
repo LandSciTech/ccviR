@@ -66,7 +66,8 @@
 
 run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
-                        hs_rast = NULL, hs_rcl = NULL, gain_mod = 1){
+                        hs_rast = NULL, hs_rcl = NULL, gain_mod = 1,
+                        scenario_names = "Scenario 1"){
   message("performing spatial analysis")
 
   clim_nms_dif <- setdiff(names(clim_vars_lst),
@@ -84,7 +85,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   }
 
   # Check polygon inputs have only one feature and if not union and crs
-  crs_use <- sf::st_crs(clim_vars_lst$mat)
+  crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
   range_poly <- check_polys(range_poly, crs_use, "range polygon")
   scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
   non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei), "non-breeding range polygon")
@@ -115,33 +116,24 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Temperature
   mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT")
-  if(sum(mat_classes, na.rm = T) < 99){
-    stop("The range polygon does not fully overlap the supplied temperature ",
-         "raster.", call. = FALSE)
-  }
 
   # Moisture
   cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD")
-  if(sum(cmd_classes, na.rm = T) < 99){
-    stop("The range polygon does not fully overlap the supplied moisture ",
-         "raster.", call. = FALSE)
-  }
 
   # Migratory Exposure
   if(is.null(non_breed_poly) || is.null(clim_vars_lst$ccei)){
-    ccei_classes <- rep(NA_real_, 4) %>% as.list() %>% as.data.frame() %>%
-      purrr::set_names(paste0("CCEI_", 1:4))
-
-    not_overlap <- data.frame(perc_non_breed_not_over_ccei = NA_real_)
+    ccei_classes <- rep(NA_real_, 5) %>% as.list() %>% as.data.frame() %>%
+      purrr::set_names(c(paste0("CCEI_", 1:4), "prop_non_breed_over_ccei"))
   } else {
 
     ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
-                                     val_range = 1:4)
+                                     val_range = 1:4, check_overlap = 0,
+                                     return_overlap_as = "prop_non_breed_over_ccei")
 
-    not_overlap <- perc_not_overlap(clim_vars_lst$ccei, non_breed_poly,
-                                    "perc_non_breed_not_over_ccei")
-    if(not_overlap[1,1] > 60){
-      warning(round(not_overlap[1,1], 2), "% of the nonbreeding range polygon does not",
+    overlap <- ccei_classes$prop_non_breed_over_ccei[1]
+
+    if(overlap < 0.4){
+      warning(round(1-overlap, 2) *100, "% of the nonbreeding range polygon does not",
               " overlap the CCEI raster. Migratory exposure index only reflects ",
               "conditions in the area of overlap",
               call. = FALSE)
@@ -197,28 +189,26 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     }
 
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
-    if(sum(mod_resp_CC, na.rm = T) == 0){
-      stop("The assessment area polygon does not overlap the supplied habitat suitability ",
-           "raster.", call. = FALSE)
-    }
   }
 
   # Range size
   range_size <- tibble(range_size = st_area(range_poly) %>% units::set_units(NULL))
 
 
-  outs <- lst(mat_classes, cmd_classes, ccei_classes, not_overlap, htn_classes,
-              ptn_perc, range_MAP, mod_resp_CC, range_size)
+  # outs <- lst(mat_classes, cmd_classes, ccei_classes, htn_classes,
+  #             ptn_perc, range_MAP, mod_resp_CC, range_size)
+  #
+  # too_long <- purrr::map_lgl(outs, ~nrow(.x) > 1)
+  #
+  # if(any(too_long)){
+  #   stop("the " , paste0(names(which(too_long)), sep = " "),
+  #        " variables have multiple rows. Check polygon inputs have only one feature")
+  # }
 
-  too_long <- purrr::map_lgl(outs, ~nrow(.x) > 1)
+  scn_nm <- data.frame(scenario_name = scenario_names)
 
-  if(any(too_long)){
-    stop("the " , paste0(names(which(too_long)), sep = " "),
-         " variables have multiple rows. Check polygon inputs have only one feature")
-  }
-
-  out <- list(spat_table = bind_cols(mat_classes, cmd_classes, ccei_classes,
-                                     not_overlap, htn_classes, ptn_perc,
+  out <- list(spat_table = bind_cols(scn_nm, mat_classes, cmd_classes, ccei_classes,
+                                     htn_classes, ptn_perc,
                                      range_MAP, mod_resp_CC, range_size),
               range_poly_assess = range_poly,
               range_poly_clim = range_poly_clim)
@@ -244,4 +234,5 @@ check_polys <- function(poly, rast_crs, var_name){
   poly <- sf::st_transform(poly, rast_crs)
   return(poly)
 }
+
 
