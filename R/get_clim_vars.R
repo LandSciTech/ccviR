@@ -70,16 +70,17 @@ load_clim <- function(pth, scenario_names = "scn1"){
 
   if(length(pth) > 1){
     # make sure the order of pth matches scenario_names
-    pth2 <- pth[purrr::map_dbl(scenario_names, ~grep(.x, pth))]
+    pth2 <- purrr::map(scenario_names, ~grep(.x, pth, value = TRUE)) %>% unlist()
 
     if(length(pth2) != length(pth)){
-      stop("the scenario_names do not uniquely identify a climate data file",
+      stop("the filename ", setdiff(pth, pth2),
+           " does not match any of the scenario_names. ",
            call. = FALSE)
     }
 
     out <- purrr::map(pth2, load_clim) %>% purrr::set_names(scenario_names)
 
-    return(out)
+    return(raster::stack(out))
   }
 
   if(is.null(pth)){

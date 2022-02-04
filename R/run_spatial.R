@@ -88,7 +88,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
   range_poly <- check_polys(range_poly, crs_use, "range polygon")
   scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
-  non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei), "non-breeding range polygon")
+  non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]), "non-breeding range polygon")
   ptn_poly <- check_polys(ptn_poly, crs_use, "PTN polygon")
   clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
 
@@ -104,7 +104,8 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   range_poly_clim <- valid_or_error(range_poly_clim, "range_poly clim_poly intersection")
 
   range_poly <- st_intersection(range_poly, scale_poly) %>% st_set_agr("constant")
-  if(nrow(range_poly) == 0){
+  if(nrow(range_poly) == 0 ||
+     st_geometry_type(range_poly) %in% c("LINESTRING", "MULTILINESTRING")){
     stop("The range polygon does not overlap with the assessment area polygon.",
          call. = FALSE)
   }
@@ -131,6 +132,10 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                                      return_overlap_as = "prop_non_breed_over_ccei")
 
     overlap <- ccei_classes$prop_non_breed_over_ccei[1]
+
+    if(overlap == 0){
+      stop("The nonbreeding range polygon does not overlap the CCEI raster")
+    }
 
     if(overlap < 0.4){
       warning(round(1-overlap, 2) *100, "% of the nonbreeding range polygon does not",
