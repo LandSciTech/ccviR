@@ -1,6 +1,6 @@
 #' Get the proportion of habitat gained and lost in range
 #'
-#' range_change is (gain - loss)/(loss + maintained) which is change in range
+#' range_change is (loss - gain)/(loss + maintained) which is change in range
 #' relative to current size of range
 #'
 #' range_overlap is (maintained)/(loss + maintained) which is percent of the

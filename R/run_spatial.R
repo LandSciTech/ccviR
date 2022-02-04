@@ -188,7 +188,7 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
     hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
 
-    if(raster::maxValue(hs_rast) > 3){
+    if(any(raster::maxValue(hs_rast) > 3)){
       stop("Reclassified habitat raster values outside the expected range of 0-3 were found. ",
            "Check that all habitat raster values are included in the reclassification matrix")
     }

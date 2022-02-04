@@ -31,6 +31,7 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
 
   out <- tidyr::pivot_wider(out, names_from = "value", values_from = "prop",
                             names_prefix = paste0(var_name, "_")) %>%
+    arrange(factor(layer, levels = names(rast))) %>%
     select(-layer)
 
   if(check_overlap > 0 || !is.null(return_overlap_as)){

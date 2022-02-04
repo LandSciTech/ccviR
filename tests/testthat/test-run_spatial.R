@@ -16,6 +16,10 @@ ptn <- st_read(file.path(file_dir, "PTN_poly.shp"), agr = "constant",
                     quiet = TRUE)
 hs <- raster(file.path(file_dir, "HS_rast_high.tif"))
 
+# make hs2 less CC in same area
+hs2 <- raster(file.path(file_dir, "HS_rast_med.tif"))
+hs2[1:30,] <- hs2[31:60,]
+hs2[31:100,] <- 0
 
 test_that("spatial runs with all data or optional data",{
   res <- run_spatial(rng_high, assess, clim_vars, nonbreed, ptn, hs,
@@ -110,7 +114,7 @@ test_that("works with mulitple clim scenarios",{
                                    scenario_names = c("RCP4.5", "RCP8.5"))
 
   res <- run_spatial(rng_high, assess, clim_vars_multi,
-                     non_breed_poly = nonbreed, hs_rast =  hs,
+                     non_breed_poly = nonbreed, hs_rast =  stack(hs2, hs),
                      hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,3)), ncol = 2),
                      scenario_names = c("RCP4.5", "RCP8.5"))
 
