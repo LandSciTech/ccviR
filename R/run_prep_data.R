@@ -30,8 +30,14 @@
 #' @param out_folder file path where the processed files will be saved
 #' @param reproject should the data be re-projected to lat/long? Not recommended.
 #' @param overwrite should existing files in out_folder be overwritten?
+#' @param brks_mat,brks_cmd,brks_ccei a matrix containing breaks to use for
+#'   classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
+#'   \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
+#'   the default, the breaks will be determined using the median and half the
+#'   interquartile range
 #'
-#' @return Returns nothing. Processed data is saved in \code{out_folder}
+#' @return Returns a list of matrices with the breaks used to classify mat, cmd
+#'   and ccei. This list can be used to  Processed data is saved in \code{out_folder}
 #'
 #' @seealso \code{\link{get_clim_vars}} for loading the processed data.
 #'
@@ -46,7 +52,9 @@
 run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
                           in_folder = NULL, out_folder,
-                          reproject = FALSE, overwrite = FALSE){
+                          reproject = FALSE, overwrite = FALSE,
+                          scenario_name = "", brks_mat = NULL,
+                          brks_cmd = NULL, brks_ccei = NULL){
   if(length(out_folder) == 0 || missing(out_folder)){
     stop("out_folder is missing with no default")
   }
@@ -165,15 +173,19 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   message("processing MAT")
 
-  prep_exp(mat_norm, mat_fut, file.path(out_folder,"MAT_reclass.tif"),
-           reproject = reproject, overwrite = overwrite)
+  brks_mat <- prep_exp(mat_norm, mat_fut,
+                       file.path(out_folder, paste0("MAT_reclass", scenario_name, ".tif")),
+                       reproject = reproject, overwrite = overwrite,
+                       brs = brks_mat)
 
   rm(mat_fut, mat_norm)
 
   message("processing CMD")
 
-  prep_exp(cmd_norm, cmd_fut, file.path(out_folder,"CMD_reclass.tif"),
-           reproject = reproject, overwrite = overwrite)
+  brks_cmd <- prep_exp(cmd_norm, cmd_fut,
+                       file.path(out_folder, paste0("CMD_reclass", scenario_name, ".tif")),
+                       reproject = reproject, overwrite = overwrite,
+                       brs = brks_cmd)
 
   rm(cmd_fut, cmd_norm)
 
@@ -181,15 +193,24 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   if(!is.null(ccei)){
     # CCEI
     message("processing CCEI")
-    brs <- c(0, 4, 5, 7, 25)
+    if(is.null(brks_ccei)){
+      brks_ccei <- c(0, 4, 5, 7, 25)
 
-    rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
-    ccei_reclass <- raster::reclassify(ccei, rcl_tbl)
+      rcl_tbl_ccei <- matrix(c(brks_ccei[1:4], brks_ccei[2:5], 1:4), ncol = 3)
+    } else {
+      rcl_tbl_ccei <- brks_ccei
+    }
 
-    raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"),
+    ccei_reclass <- raster::reclassify(ccei, rcl_tbl_ccei)
+
+    raster::writeRaster(ccei_reclass,
+                        file.path(out_folder,
+                                  paste0("CCEI_reclass", scenario_name, ".tif")),
                         overwrite = overwrite)
 
-    rm(ccei_reclass, rcl_tbl, brs, ccei)
+    rm(ccei_reclass, ccei, brks_ccei)
+  } else {
+    rcl_tbl_ccei <- NULL
   }
 
 
@@ -248,10 +269,18 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   # Climate data polygon boundary
+  #does a clim_poly already exist in output folder
+  clim_exists <- list.files(out_folder, pattern = "clim_poly.shp")
+  if(length(clim_exists) > 0 && !overwrite){
+    stop("A clim_poly already exists in out_folder. Set overwrite = TRUE or",
+         " clim_poly = path/to/existing/climpoly", call. = FALSE)
+  }
+
   if(is.null(clim_poly)){
     # make polygon boundary from raster data
     message("creating clim_poly from raster data")
-    mat <- raster::raster(file.path(out_folder,"MAT_reclass.tif"))
+    mat <- raster::raster(file.path(out_folder,
+                                    paste0("MAT_reclass", scenario_name, ".tif")))
     mat <- raster::extend(mat, c(100,100), snap = "out")
 
     clim_bound <- raster::rasterToContour(is.na(mat), levels = 1)
@@ -265,7 +294,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
 
   message("finished processing")
-  return("")
+  return(invisible(lst(brks_mat, brks_cmd, brks_ccei = rcl_tbl_ccei)))
 
 }
 
@@ -282,7 +311,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 #'
 #' @noRd
 prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
-                     overwrite = FALSE, type = "halfIQR"){
+                     overwrite = FALSE, type = "halfIQR", brs = NULL){
   rast_delta <-  rast_norm - rast_fut
 
   if(reproject){
@@ -311,7 +340,8 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
 
   # returns the rcl table and writes raster to disk
   return(prep_from_delta(rast_delta, sd_div = sd_div, type = type,
-                         file_nm = file_nm, overwrite = overwrite))
+                         file_nm = file_nm, overwrite = overwrite,
+                         brs = brs))
 
 }
 
@@ -331,65 +361,75 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
 #' @param type "sd" for the mean and standard deviation (similar to
 #'   NatureServe), "IQR" for the median and interquartile range (recommended),
 #'   or "quantile" for six evenly spaced quantiles (not recommended)
+#' @param brs breaks matrix to use. If not null type, shift and sd_div are ignored
 #'
 #' @noRd
 prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
-                            file_nm, overwrite){
+                            file_nm, overwrite, brs = NULL){
 
   min_delta <- round(raster::cellStats(rast_delta, "min") -1, 3)
 
   max_delta <- round(raster::cellStats(rast_delta, "max") +1, 3)
 
-  if(type == "sd"){
-    mean_delta <- round(raster::cellStats(rast_delta, "mean"), 3)
+  if(is.null(brs)){
+    if(type == "sd"){
+      mean_delta <- round(raster::cellStats(rast_delta, "mean"), 3)
 
-    std_delta <- round(raster::cellStats(rast_delta, "sd")/sd_div, 3)
+      std_delta <- round(raster::cellStats(rast_delta, "sd")/sd_div, 3)
 
-    brs <- c(min_delta, mean_delta-3*std_delta, mean_delta-2*std_delta,
-             mean_delta-std_delta,
-             mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
-             mean_delta + 3*std_delta, max_delta)
-  } else if(type == "IQR"){
-    med_delta <- round(stats::median(raster::sampleRegular(rast_delta, 1000000),
-                              na.rm = TRUE), 3)
+      brs <- c(min_delta, mean_delta-3*std_delta, mean_delta-2*std_delta,
+               mean_delta-std_delta,
+               mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
+               mean_delta + 3*std_delta, max_delta)
+    } else if(type == "IQR"){
+      med_delta <- round(stats::median(raster::sampleRegular(rast_delta, 1000000),
+                                       na.rm = TRUE), 3)
 
-    iqr_delta <- round(stats::IQR(raster::sampleRegular(rast_delta, 1000000),
-                           na.rm = TRUE)/sd_div, 3)
+      iqr_delta <- round(stats::IQR(raster::sampleRegular(rast_delta, 1000000),
+                                    na.rm = TRUE)/sd_div, 3)
 
-    brs <- c(min_delta, med_delta-3*iqr_delta, med_delta-2*iqr_delta,
-             med_delta-iqr_delta,
-             med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
-             med_delta + 3*iqr_delta, max_delta)
-  } else if(type == "quantile"){
-    brs <- raster::quantile(rast_delta,
-                            probs = seq(0, 1, 1/6))
-    # make sure min and max included
-    brs[1] <- brs[1] - 1
-    brs[7] <- brs[7] + 1
-  } else {
-    stop("type must be one of sd, IQR or quantile not", type, call. = FALSE)
-  }
-
-  if(type == "quantile" && shift != 0){
-    stop("shift must be 0 when type is quantile", call. = FALSE)
-  }
-
-  if(shift == 0){
-    brs <- brs[c(1,3,4,5,6,7,9)]
-
-    if(brs[6] > brs[7]){
-      brs[7] <- brs[6]+1
+      brs <- c(min_delta, med_delta-3*iqr_delta, med_delta-2*iqr_delta,
+               med_delta-iqr_delta,
+               med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
+               med_delta + 3*iqr_delta, max_delta)
+    } else if(type == "quantile"){
+      brs <- raster::quantile(rast_delta,
+                              probs = seq(0, 1, 1/6))
+      # make sure min and max included
+      brs[1] <- brs[1] - 1
+      brs[7] <- brs[7] + 1
+    } else {
+      stop("type must be one of sd, IQR or quantile not", type, call. = FALSE)
     }
 
-  } else if(shift == 1){
-    brs <- brs[c(1,4,5,6,7,8,9)]
-  } else if(shift == -1){
-    brs <- brs[c(1,2,3,4,5,6,9)]
+    if(type == "quantile" && shift != 0){
+      stop("shift must be 0 when type is quantile", call. = FALSE)
+    }
+
+    if(shift == 0){
+      brs <- brs[c(1,3,4,5,6,7,9)]
+
+      if(brs[6] > brs[7]){
+        brs[7] <- brs[6]+1
+      }
+
+    } else if(shift == 1){
+      brs <- brs[c(1,4,5,6,7,8,9)]
+    } else if(shift == -1){
+      brs <- brs[c(1,2,3,4,5,6,9)]
+    } else {
+      stop("shift must be 0, 1 or -1 not", shift, call. = FALSE)
+    }
+
+    rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
   } else {
-    stop("shift must be 0, 1 or -1 not", shift, call. = FALSE)
+    rcl_tbl <- brs
+
+    rcl_tbl[1,1] <- min(min_delta, rcl_tbl[1,1])
+    rcl_tbl[nrow(rcl_tbl),2] <- max(max_delta, rcl_tbl[nrow(rcl_tbl),2])
   }
 
-  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
+
 
   raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite)
 

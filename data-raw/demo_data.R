@@ -29,9 +29,10 @@ values(CCEI) <- seq(0, 25, length.out = 10000) %>% sort(decreasing = TRUE) %>%
 CCEI <- shift(CCEI, dy = -1000)
 
 # add second scenario for vars that are projected
-MAT_2050_scn2 <- flip(MAT_2050)
-CMD_2050_scn2 <- flip(CMD_2050)
-CCEI_scn2 <- flip(CCEI)
+MAT_2050_scn2 <- MAT_2050 + 5
+CMD_2050_scn2 <- CMD_2050 + 5
+CCEI_scn2 <- CCEI + 5
+CCEI_scn2[which(values(CCEI_scn2) > 25)] <- 25
 
 # MWMT MCMT more difference between the two is less exposure
 MCMT <- rast
