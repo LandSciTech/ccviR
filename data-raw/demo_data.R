@@ -28,6 +28,11 @@ values(CCEI) <- seq(0, 25, length.out = 10000) %>% sort(decreasing = TRUE) %>%
   round()
 CCEI <- shift(CCEI, dy = -1000)
 
+# add second scenario for vars that are projected
+MAT_2050_scn2 <- flip(MAT_2050)
+CMD_2050_scn2 <- flip(CMD_2050)
+CCEI_scn2 <- flip(CCEI)
+
 # MWMT MCMT more difference between the two is less exposure
 MCMT <- rast
 values(MCMT) <- seq(5, 10, length.out = 10000) %>%
@@ -87,24 +92,10 @@ nonbreed_poly <-  st_polygon(list(matrix(c(0, 0, 1, 0, 1,
 
 assess_poly <- st_bbox(MAT) %>% st_as_sfc() %>% st_as_sf()
 
-# spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
-#                         non_breed_poly = nonbreed_poly,
-#                         clim_vars_lst = list(mat = MAT_rast, cmd = CMD_rast,
-#                                              ccei = CCEI_rast, htn = HTN_rast,
-#                                              ptn = PTN_poly, map = MAP_rast),
-#                                              hs_rast = mask(HS_rast, rng_poly_high))
-
-
-#
-# vuln_df <- make_vuln_df(0)
-#
-# vuln_df$Value1[1:15] <- c(0,0, 0,0,0,0, -1, -1, -1, -1, 0, 0, 0, 0, 0)
-# vuln_df$Value1[26:29] <- c(-1, -1, -1, -1)
-#
-# res <- calc_vulnerability(spat_res, vuln_df)
-
 # save the data to extdata so that it can be used with the app for a demo
 clim_dat <- lst(MAT, MAT_2050, CMD, CMD_2050, CCEI, MWMT, MCMT, MAP)
+
+clim_dat2 <- lst(MAT_2050_scn2, CMD_2050_scn2, CCEI_scn2)
 
 sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
               HS_rast_high, HS_rast_med, HS_rast_low,
@@ -128,6 +119,11 @@ write_fun <- function(x, nm, dir, crs_use){
 purrr::walk2(clim_dat, names(clim_dat), write_fun,
              dir = "inst/extdata/clim_files/raw/",
              crs_use = 3162)
+
+purrr::walk2(clim_dat2, names(clim_dat2), write_fun,
+             dir = "inst/extdata/clim_files/raw/scenario2/",
+             crs_use = 3162)
+
 purrr::walk2(sp_dat, names(sp_dat), write_fun,
              dir = "inst/extdata/",
              crs_use = 3162)
