@@ -54,7 +54,7 @@ test_that("trimming happens", {
 
 test_that("error when two files or missing files",{
   expect_error(get_clim_vars(file.path(file_dir, "clim_files/processed")),
-               "More than one file")
+               "number of files matching")
 
   #remove MAT na_rast from previous test
   file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_na.tif"))
@@ -79,6 +79,23 @@ test_that("error when two files or missing files",{
             file.path(file_dir, "clim_files/processed/MWMT_MCMT_reclass.tif")))
 
   })
+
+test_that("multi_scenario works as expected", {
+  clim_vars_multi <- get_clim_vars(file.path(file_dir,
+                                             "clim_files/processed/multi_scenario"),
+                                   scenario_names = c("RCP4.5", "RCP8.5"))
+
+  expect_type(clim_vars_multi, "list")
+
+  expect_s4_class(clim_vars_multi$mat, "RasterStack")
+
+  expect_error(get_clim_vars(file.path(file_dir,
+                                       "clim_files/processed/multi_scenario"),
+                             scenario_names = c("RCP4.5", "RCP85")),
+               "does not match")
+
+
+})
 
 # remove the temp directory
 unlink(file.path(file_dir, "temp"), recursive = TRUE)

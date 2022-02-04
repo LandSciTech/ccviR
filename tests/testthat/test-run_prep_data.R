@@ -93,5 +93,19 @@ test_that("error for missing files, works without optional files",{
 
 })
 
+test_that("multiple scenarios works",{
+  run_prep_data(in_folder = file.path(pth_base, "raw"),
+                out_folder = file.path(pth_base, "processed/multi_scenario"),
+                overwrite = TRUE, scenario_name = "RCP4.5")
+
+  run_prep_data(mat_norm = file.path(pth_base, "raw/MAT.tif"),
+                mat_fut = file.path(pth_base, "raw/scenario2/MAT_2050_scn2.tif"),
+                cmd_norm = file.path(pth_base, "raw/CMD.tif"),
+                cmd_fut = file.path(pth_base, "raw/scenario2/CMD_2050_scn2.tif"),
+                ccei = file.path(pth_base, "raw/scenario2/CCEI_scn2.tif"),
+                out_folder = file.path(pth_base, "processed/multi_scenario"),
+                overwrite = TRUE, scenario_name = "RCP8.5")
+})
+
 # remove the temp directory
 unlink(file.path(pth_base, "temp"), recursive = TRUE)

@@ -30,7 +30,7 @@ test_that("spatial runs with all data or optional data",{
 test_that("Nonoverlaping poly and raster",{
   # use nonbreed as range - no overlap - should not be allowed
   expect_error(run_spatial(nonbreed, assess, clim_vars[c(1:2, 6)]),
-               "does not fully overlap")
+               "does not overlap")
 
   # use nonbreed as assess - no overlap - should not be allowed
   # error
@@ -68,7 +68,7 @@ test_that("Non matching crs are handled reasonably", {
 
   # make sure results are the same after transformed
   res2 <- run_spatial(rng_high, assess, clim_vars[c(1:2, 6)])$spat_table
-  expect_equal(as.numeric(res[1,-27]), as.numeric(res2[1,-27]))
+  expect_equal(as.numeric(res[1,-c(1,27)]), as.numeric(res2[1,-c(1,27)]))
   # the range size is different after transforming but I think that is expected
 
 })
@@ -87,7 +87,7 @@ test_that("Multiple polygons are merged", {
 
   res1$range_size - res2$range_size
 
-  expect_equal(as.numeric(res1[1,-27]), as.numeric(res2[1,-27]))
+  expect_equal(as.numeric(res1[1,-c(1,27)]), as.numeric(res2[1,-c(1,27)]))
   # the range size is different but I think it is just an issue with my
   # polygons being made from scratch
 
@@ -105,30 +105,16 @@ test_that("gain_mod works", {
 })
 
 test_that("works with mulitple clim scenarios",{
-
-  clim_vars_multi <- clim_vars
-
-  clim2 <- clim_vars$mat - 1
-
-  clim2[which(values(clim2) == 0)] <- 1
-
-  clim_vars_multi$mat <- raster::stack(clim_vars$mat, clim2) %>%
-    setNames(c("mat_scn1", "mat_scn2"))
-
-  clim_vars_multi$cmd <- raster::stack(clim_vars$cmd, clim2) %>%
-    setNames(c("cmd_scn1", "cmd_scn2"))
-
-  ccei2 <- clim_vars$ccei + 1
-
-  ccei2[which(values(ccei2) == 5)] <- 4
-
-  clim_vars_multi$ccei <- raster::stack(clim_vars$ccei, ccei2) %>%
-    setNames(c("ccei_scn1", "ccei_scn2"))
+  clim_vars_multi <- get_clim_vars(file.path(file_dir,
+                                             "clim_files/processed/multi_scenario"),
+                                   scenario_names = c("RCP4.5", "RCP8.5"))
 
   res <- run_spatial(rng_high, assess, clim_vars_multi,
                      non_breed_poly = nonbreed, hs_rast =  hs,
                      hs_rcl = matrix(c(0:7, c(0,1,2,2,2,2,2,3)), ncol = 2),
-                     scenario_names = c("Scn1", "Scn2"))
+                     scenario_names = c("RCP4.5", "RCP8.5"))
+
+  expect_true(nrow(res$spat_table) == 2)
 
 })
 
