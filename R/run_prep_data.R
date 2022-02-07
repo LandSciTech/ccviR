@@ -30,6 +30,8 @@
 #' @param out_folder file path where the processed files will be saved
 #' @param reproject should the data be re-projected to lat/long? Not recommended.
 #' @param overwrite should existing files in out_folder be overwritten?
+#' @param scenario_name a string identifying the climate change scenario that
+#'   will be used as a suffix for the output files.
 #' @param brks_mat,brks_cmd,brks_ccei a matrix containing breaks to use for
 #'   classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
 #'   \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,

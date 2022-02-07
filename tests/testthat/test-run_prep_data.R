@@ -3,14 +3,14 @@ pth_base <- system.file("extdata/clim_files", package = "ccviR")
 
 test_that("works with demo data",{
   # to start delete contents of processed data
-  file.remove(list.files(file.path(pth_base, "processed"), full.names = TRUE))
+  file.remove(list.files(file.path(pth_base, "processed"), "\\.", full.names = TRUE))
 
   # using in_folder and reproject FALSE
   run_prep_data(in_folder = file.path(pth_base, "raw"),
                 out_folder = file.path(pth_base, "processed"),
                 reproject = FALSE)
 
-  expect_length(list.files(file.path(pth_base, "processed")), 9)
+  expect_length(list.files(file.path(pth_base, "processed")), 10)
 
   # # to start delete contents of processed data
   # file.remove(list.files(file.path(pth_base, "processed"), full.names = TRUE))
@@ -37,7 +37,7 @@ test_that("works with demo data",{
                 overwrite = TRUE,
                 reproject = FALSE)
 
-  expect_length(list.files(file.path(pth_base, "processed")), 9)
+  expect_length(list.files(file.path(pth_base, "processed")), 10)
 
 })
 
@@ -67,12 +67,12 @@ test_that("error for missing files, works without optional files",{
   file.remove(file.path(pth_base, "raw/CCEI.img"))
 
 
-  expect_true({
+  expect_type({
     run_prep_data(in_folder = file.path(pth_base, "raw"),
                   out_folder = file.path(pth_base, "processed"),
                   overwrite = TRUE,
-                  reproject = FALSE) == ""
-  })
+                  reproject = FALSE)
+  }, "list")
 
   file.copy(file.path(pth_base, "temp/CCEI.img"),
             file.path(pth_base, "raw/CCEI.img"))

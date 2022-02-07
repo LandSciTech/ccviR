@@ -12,6 +12,7 @@ The ccviR package implements the NatureServe Climate Change Vulnerability Index 
 Useful links:
 \itemize{
   \item \url{https://github.com/see24/ccviR}
+  \item \url{https://landscitech.github.io/ccviR/}
   \item Report bugs at \url{https://github.com/see24/ccviR/issues}
 }
 

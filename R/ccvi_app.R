@@ -130,7 +130,9 @@ ccvi_app <- function(...){
                          br(),
                          shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
                                                                          placeholder = TRUE)),
-                         actionButton("data_done", "Finished", class = "btn-primary")
+                         actionButton("data_done", "Finished", class = "btn-primary"),
+                         br(),
+                         actionButton("data_reset", "Process Another")
 
             )
           )
@@ -246,13 +248,17 @@ ccvi_app <- function(...){
             )
           ),
           fluidRow(
-            column(
-              6,
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
                 shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
                 tableOutput("texp_tbl")
+              ),
+              div(
+                id = "cmd_map",
+                h3("Moisture exposure"),
+                tmap::tmapOutput("cmd_map"),
+                tableOutput("cmd_tbl")
               ),
               div(
                 h3("Migratory exposure - Climate change exposure index"),
@@ -266,16 +272,6 @@ ccvi_app <- function(...){
                   tableOutput("tbl_ccei"))
 
               )
-            ),
-            column(
-              6,
-              div(
-                id = "cmd_map",
-                h3("Moisture exposure"),
-                tmap::tmapOutput("cmd_map"),
-                tableOutput("cmd_tbl")
-              )
-            )
           ),
           fluidRow(
             column(
@@ -607,6 +603,16 @@ ccvi_app <- function(...){
       updateTabsetPanel(session, "welcome", selected = "instructions")
     })
 
+    observeEvent(input$data_reset,{
+      purrr::map(list("data_prep_mod-clim_scn_nm",
+                      "data_prep_mod-folder_input",
+                      "data_prep_mod-folder_output",
+                      "data_prep_mod-paths_input"),
+                 shinyjs::reset)
+      shinyjs::runjs("window.scrollTo(0, 0)")
+
+    })
+
     observeEvent(input$start, {
       updateTabsetPanel(session, "tabset",
                         selected = "Species Information"
@@ -729,6 +735,11 @@ ccvi_app <- function(...){
     })
 
     # load spatial data
+    clim_readme <- reactive({
+      utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
+                      check.names = FALSE)
+    })
+
     clim_vars <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         root_pth <- system.file("extdata/clim_files/processed", package = "ccviR")
@@ -737,14 +748,10 @@ ccvi_app <- function(...){
       }
 
       req(root_pth)
+      req(clim_readme)
 
-      clim_vars <- try(get_clim_vars(root_pth))
+      clim_vars <- try(get_clim_vars(root_pth, scenario_names = clim_readme()$Scenario_Name))
 
-    })
-
-    clim_readme <- reactive({
-      utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
-                      check.names = FALSE)
     })
 
     range_poly_in <- reactive({
@@ -869,7 +876,8 @@ ccvi_app <- function(...){
                       ptn_poly = ptn_poly(),
                       clim_vars_lst = clim_vars(),
                       hs_rcl = hs_rcl_mat(),
-                      gain_mod = input$gain_mod)
+                      gain_mod = input$gain_mod,
+                      scenario_names = clim_readme()$Scenario_Name)
         },
         error = function(cnd) conditionMessage(cnd))
       })
@@ -908,7 +916,10 @@ ccvi_app <- function(...){
     output$texp_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
 
-      make_map(isolate(range_poly()), clim_vars()$mat, rast_nm = "mat")
+      isolate(
+        make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
+                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+      )
     })
 
     observe({
@@ -926,14 +937,18 @@ ccvi_app <- function(...){
       req(!is.character(spat_res()))
       req(clim_vars()$ccei)
       req(isolate(nonbreed_poly()))
-
-      make_map(isolate(nonbreed_poly()), clim_vars()$ccei, rast_nm = "ccei")
+      isolate(
+        make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei",
+                 rast_lbl = c("1 Low", "2", "3", "4 High"))
+      )
     })
 
     output$cmd_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
-
-      make_map(isolate(range_poly()), clim_vars()$cmd, rast_nm = "cmd")
+      isolate(
+        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
+                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+      )
     })
 
     output$texp_tbl <- renderTable({
@@ -948,18 +963,11 @@ ccvi_app <- function(...){
           TRUE ~ 0.4
         ),
         temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1)), 3) %>%
-        select(contains("MAT"), .data$temp_exp_cave) %>%
+        select(.data$scenario_name, contains("MAT"), .data$temp_exp_cave) %>%
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
-        rename(`Exposure Multiplier` = .data$temp_exp_cave) %>%
-        tidyr::pivot_longer(cols = contains("Class"),
-                     names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "High - 1") %>%
-                    stringr::str_replace("Class 6", "Low - 6") %>%
-                    stringr::str_remove("Class"),
-                  .data$`Proportion of Range`,
-                  `Exposure Multiplier` = c(as.character(.data$`Exposure Multiplier`[1]),
-                                            rep("", n() - 1)))
+        rename(`Scenario Name` = .data$scenario_name,
+               `Exposure Multiplier` = .data$temp_exp_cave)
 
     }, align = "r")
 
@@ -975,33 +983,22 @@ ccvi_app <- function(...){
           TRUE ~ 0.33
         ),
         moist_exp_cave = .data$moist_exp / ifelse(input$cave == 1, 3, 1)) %>%
-        select(contains("CMD"), .data$moist_exp_cave) %>%
+        select(.data$scenario_name, contains("CMD"), .data$moist_exp_cave) %>%
         rename_at(vars(contains("CMD")),
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
-        rename(`Exposure Multiplier` = .data$moist_exp_cave) %>%
-        tidyr::pivot_longer(cols = contains("Class"),
-                            names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "High - 1") %>%
-                    stringr::str_replace("Class 6", "Low - 6") %>%
-                    stringr::str_remove("Class"),
-                  .data$`Proportion of Range`,
-                  `Exposure Multiplier` = c(as.character(.data$`Exposure Multiplier`[1]),
-                                            rep("", n() - 1)))
+        rename(`Scenario Name` = .data$scenario_name,
+               `Exposure Multiplier` = .data$moist_exp_cave)
 
     }, align = "r")
 
     output$tbl_ccei <- renderTable({
       req(!is.character(spat_res()))
       exp_df <-  spat_res() %>%
-        select(contains("CCEI", ignore.case = FALSE)) %>%
+        select(.data$scenario_name,
+               contains("CCEI", ignore.case = FALSE)) %>%
         rename_at(vars(contains("CCEI")),
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
-        tidyr::pivot_longer(cols = contains("Class"),
-                            names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "Low - 1") %>%
-                    stringr::str_replace("Class 4", "High - 4") %>%
-                    stringr::str_remove("Class"),
-                  .data$`Proportion of Range`)
+        rename(`Scenario Name` = .data$scenario_name)
     }, align = "r")
 
     # When next button is clicked move to next panel
@@ -1444,7 +1441,7 @@ ccvi_app <- function(...){
         bind_cols(conf_df, spat_df, vuln_df, clim_readme())
     })
 
-    exportTestValues(out_data = out_data())
+    exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))
 
     output$downloadData <- downloadHandler(
       filename = function() {

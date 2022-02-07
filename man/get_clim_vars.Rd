@@ -4,17 +4,24 @@
 \alias{get_clim_vars}
 \title{Load climate variables}
 \usage{
-get_clim_vars(root_pth)
+get_clim_vars(root_pth, scenario_names = "scn1")
 }
 \arguments{
 \item{root_pth}{A folder location where all the climate data is stored. The
 names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
 "MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
 three are required.}
+
+\item{scenario_names}{character vector with names that identify multiple
+future climate scenarios. If this is supplied the raster file must include
+the scenario name as a suffix to the pattern mentioned above eg. if there
+are two MAT files "MAT_RCP4.5.tif" and "MAT_RCP8.5.tif" the scenario names
+should be "RCP4.5" and "RCP8.5".}
 }
 \value{
 A list of climate variables with names "mat", "cmd", "map", "ccei",
-  "htn", "clim_poly"
+  "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
+  be sub-lists with an element per scenario.
 }
 \description{
 Load climate variables and store them in a list that can be used with

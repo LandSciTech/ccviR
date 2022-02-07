@@ -17,7 +17,11 @@ run_prep_data(
   in_folder = NULL,
   out_folder,
   reproject = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  scenario_name = "",
+  brks_mat = NULL,
+  brks_cmd = NULL,
+  brks_ccei = NULL
 )
 }
 \arguments{
@@ -31,9 +35,19 @@ according to the convention described in details}
 \item{reproject}{should the data be re-projected to lat/long? Not recommended.}
 
 \item{overwrite}{should existing files in out_folder be overwritten?}
+
+\item{scenario_name}{a string identifying the climate change scenario that
+will be used as a suffix for the output files.}
+
+\item{brks_mat, brks_cmd, brks_ccei}{a matrix containing breaks to use for
+classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
+\code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
+the default, the breaks will be determined using the median and half the
+interquartile range}
 }
 \value{
-Returns nothing. Processed data is saved in \code{out_folder}
+Returns a list of matrices with the breaks used to classify mat, cmd
+  and ccei. This list can be used to  Processed data is saved in \code{out_folder}
 }
 \description{
 Prepare data from raw to form needed for calculating the index. See the

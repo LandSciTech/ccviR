@@ -80,14 +80,16 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       tmap::tm_shape(poly1)+
       tmap::tm_borders()+
       tmap::tm_add_legend("fill", labels = c(poly1_nm),
-                          col = c("black"))
+                          col = c("black"))+
+      tmap::tm_facets(as.layers = TRUE)
   } else if(is.null(rast)){
     out <- tmap::tm_shape(poly1)+
       tmap::tm_borders()+
       tmap::tm_shape(poly2)+
       tmap::tm_borders(col = "red")+
       tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                          col = c("black", "red"))
+                          col = c("black", "red"))+
+      tmap::tm_facets(as.layers = TRUE)
   } else {
     out <-  tmap::tm_shape(rast)+
       tmap::tm_raster(title = rast_nm)+
@@ -96,7 +98,8 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       tmap::tm_shape(poly2)+
       tmap::tm_borders(col = "red")+
       tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                          col = c("black", "red"))
+                          col = c("black", "red"))+
+      tmap::tm_facets(as.layers = TRUE)
   }
   return(out)
 }
