@@ -200,9 +200,10 @@ ccvi_app <- function(...){
                                  multiple = FALSE),
                 verbatimTextOutput("nonbreed_poly_pth_out", placeholder = TRUE),
                 br(),
-                strong("Projected habitat change raster"),
+
+                p(strong("Projected habitat change raster"), "To select multiple scenarios hold ctrl"),
                 shinyFilesButton("hs_rast_pth", "Choose file",
-                                 "Projected habitat change raster file", multiple = FALSE),
+                                 "Projected habitat change raster file", multiple = TRUE),
                 verbatimTextOutput("hs_rast_pth_out", placeholder = TRUE),
                 br(),
                 conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
@@ -797,13 +798,30 @@ ccvi_app <- function(...){
                            package = "ccviR")
       } else {
         pth <- file_pths()$hs_rast_pth
+
+        if(length(pth) > 1 & length(clim_readme()$Scenario_Name) > 1){
+          # make sure the order of pth matches scenario_names
+          pth2 <- purrr::map(clim_readme()$Scenario_Name, ~grep(.x, pth, value = TRUE)) %>% unlist()
+
+          if(length(pth2) != length(pth)){
+            return(try(stop("the filename ", setdiff(pth, pth2),
+                            " does not match any of the scenario names: ",
+                            paste0(clim_readme()$Scenario_Name, collapse = ", "),
+                            call. = FALSE)))
+          }
+          pth <- pth2
+        }
       }
 
       if(!isTruthy(pth)){
         return(NULL)
+      }else {
+        names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
+
+        check_trim(raster::stack(pth))
       }
 
-      check_trim(raster::raster(pth))
+
     })
 
     ptn_poly <- reactive({
@@ -907,6 +925,9 @@ ccvi_app <- function(...){
     })
 
     output$spat_error <- renderText({
+      if(inherits(hs_rast(), "try-error")){
+        stop(conditionMessage(attr(hs_rast(), "condition")))
+      }
       if(is.character(spat_res1())){
         stop(spat_res1(), call. = FALSE)
       }
@@ -1055,7 +1076,8 @@ ccvi_app <- function(...){
       req(doSpatial())
       req(clim_vars()$htn)
 
-      make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn")
+      make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn",
+               rast_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
     output$tbl_C2ai <- renderTable({
@@ -1067,7 +1089,8 @@ ccvi_app <- function(...){
                      names_to = "Temperature Variation Class", values_to = "Proportion of Range") %>%
         transmute(`Temperature Variation Class` = stringr::str_replace(.data$`Temperature Variation Class`, "Class 1", "Low - 1") %>%
                     stringr::str_replace("Class 4", "High - 4") %>%
-                    stringr::str_remove("Class"), .data$`Proportion of Range`)
+                    stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
+        distinct()
     }, align = "r")
 
     output$box_C2ai <- renderUI({
@@ -1080,7 +1103,7 @@ ccvi_app <- function(...){
                                 HTN_2 > 10 ~ 2,
                                 HTN_1 > 10 ~ 3,
                                 is.na(HTN_1) ~ NA_real_)) %>%
-        pull(.data$C2ai)
+        pull(.data$C2ai) %>% unique()
 
       check_comment_ui("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1112,7 +1135,8 @@ ccvi_app <- function(...){
       exp_df <-  spat_res() %>%
         select(contains("PTN")) %>%
         tidyr::pivot_longer(cols = contains("PTN"),
-                     names_to = "Variable", values_to = "Proportion of Range")
+                     names_to = "Variable", values_to = "Proportion of Range") %>%
+        distinct()
     })
 
     output$box_C2aii <- renderUI({
@@ -1125,7 +1149,7 @@ ccvi_app <- function(...){
                                  PTN > 10 ~ 1,
                                  is.na(PTN) ~ NA_real_,
                                  TRUE ~ 0)) %>%
-        pull(.data$C2aii)
+        pull(.data$C2aii) %>% unique()
 
       check_comment_ui("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1157,7 +1181,8 @@ ccvi_app <- function(...){
     output$tbl_C2bi <- renderTable({
       exp_df <-  spat_res() %>%
         select(.data$MAP_max, .data$MAP_min) %>%
-        rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max)
+        rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
+        distinct()
     })
 
     output$box_C2bi <- renderUI({
@@ -1171,7 +1196,7 @@ ccvi_app <- function(...){
                                 range_MAP < 508 ~ 1,
                                 is.na(range_MAP) ~ NA_real_,
                                 TRUE ~ 0)) %>%
-        pull(.data$C2bi)
+        pull(.data$C2bi) %>% unique()
 
       check_comment_ui("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                        choiceNames = valueNms,
@@ -1194,6 +1219,7 @@ ccvi_app <- function(...){
 
     # reclassify raster
     hs_rast2 <- reactive({
+      req(hs_rast())
       rast <- raster::reclassify(hs_rast(),
                                  rcl = hs_rcl_mat(), right = NA)
     })
@@ -1203,13 +1229,15 @@ ccvi_app <- function(...){
       req(hs_rast2())
 
       make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
+               poly2 = assess_poly(), poly2_nm = "assess_poly",
                rast_nm = "hs_rast",
                rast_lbl = c("Not suitable", "Lost", "Maintained", "Gained"))
     })
 
     output$tbl_D2_3 <- renderTable({
       exp_df <-  spat_res() %>%
-        select(`% Range Lost` = .data$range_change,
+        select(`Scenario Name` = .data$scenario_name,
+               `% Range Lost` = .data$range_change,
                `% Maintained` = .data$range_overlap)
     })
 
@@ -1225,11 +1253,19 @@ ccvi_app <- function(...){
                               TRUE ~ 0)) %>%
         pull(.data$D2)
 
-      check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+      if(raster::nlayers(hs_rast2()) > 1){
+        valueNm <- valueNms[ 4- box_val]
+        div(strong("Calculated effect on vulnerability."),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+
+      } else {
+        check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+                         choiceNames = valueNms,
+                         choiceValues = valueOpts,
+                         selected = box_val,
+                         com = prevCom)
+      }
     })
 
     output$box_D3 <- renderUI({
@@ -1250,11 +1286,19 @@ ccvi_app <- function(...){
                               TRUE ~ 0)) %>%
         pull(.data$D3)
 
-      check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+      if(raster::nlayers(hs_rast2()) > 1){
+        valueNm <- valueNms[4 - box_val]
+        div(strong("Calculated effect on vulnerability."),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+
+      } else {
+        check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+                         choiceNames = valueNms,
+                         choiceValues = valueOpts,
+                         selected = box_val,
+                         com = prevCom)
+      }
     })
 
     # When submit button is clicked move to next panel

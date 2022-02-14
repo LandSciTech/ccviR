@@ -176,13 +176,6 @@
 
     brks <- reactiveVal(list(brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL))
 
-    observe({
-      cat("Breaks:")
-      print(brks())
-      cat("prep_done:")
-      print(prep_done())
-    })
-
     prep_done <- eventReactive(input$submit, {
 
       clim_readme <- tibble(Scenario_Name = input$clim_scn_nm,

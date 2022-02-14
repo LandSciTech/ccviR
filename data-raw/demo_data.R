@@ -65,6 +65,13 @@ values(HS_rast_low) <- c(rep(0, 3000),
                          rep(0, 4000),
                          sample(c(0:7, 6, 6, 6, 6), 3000, replace = TRUE))
 
+# make hs2 less CC in same area
+HS_rast_RCP4.5 <- HS_rast_med
+HS_rast_RCP4.5[1:30,] <- HS_rast_RCP4.5[31:60,]
+HS_rast_RCP4.5[31:100,] <- 0
+
+HS_rast_RCP8.5 <- HS_rast_high
+
 # Should be a polygon of areas with special temperature regime
 PTN_poly <- st_polygon(list(matrix(c(0.5, 0.5, 1,
                                 1, 0, 1, 0.5, 0.5)*1000,
@@ -102,6 +109,8 @@ sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
               HS_rast_high, HS_rast_med, HS_rast_low,
               assess_poly, PTN_poly)
 
+sp_dat2 <- lst(HS_rast_RCP4.5, HS_rast_RCP8.5)
+
 write_fun <- function(x, nm, dir, crs_use){
   if(inherits(x, "Raster")){
     crs(x) <- paste0("EPSG:", crs_use)
@@ -126,6 +135,10 @@ purrr::walk2(clim_dat2, names(clim_dat2), write_fun,
              crs_use = 3162)
 
 purrr::walk2(sp_dat, names(sp_dat), write_fun,
+             dir = "inst/extdata/",
+             crs_use = 3162)
+
+purrr::walk2(sp_dat2, names(sp_dat2), write_fun,
              dir = "inst/extdata/",
              crs_use = 3162)
 

@@ -75,6 +75,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
     if(length(pth2) != length(pth)){
       stop("the filename ", setdiff(pth, pth2),
            " does not match any of the scenario_names. ",
+           paste0(scenario_names, collapse = ", "),
            call. = FALSE)
     }
 
