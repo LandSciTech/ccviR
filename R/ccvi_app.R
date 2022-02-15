@@ -1435,7 +1435,7 @@ ccvi_app <- function(...){
     output$conf_graph <- renderPlot({
       ggplot2::quickplot(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
                          y = frequency,
-                         data = index_res()$index_conf,
+                         data = index_res()$index_conf[[1]],
                          geom = "col", xlab = "Index", ylab = "Proportion of Runs",
                          main = "Monte Carlo Simulation Results",
                          ylim = c(NA, 1))+
@@ -1443,12 +1443,12 @@ ccvi_app <- function(...){
     })
 
     output$q_score_plt <- plotly::renderPlotly({
-      plot_q_score(index_res()$vuln_df)
+      plot_q_score(index_res()$vuln_df[[1]])
     })
 
     # Make csv
     out_data <- reactive({
-      vuln_df <- index_res()$vuln_df %>%
+      vuln_df <- index_res()$vuln_df[[1]] %>%
         select(.data$Code, contains("Value")) %>%
         filter(!.data$Code %in% c("Z2", "Z3")) %>%
         arrange(.data$Code) %>%
@@ -1464,7 +1464,7 @@ ccvi_app <- function(...){
 
       spat_df <- spat_res()
 
-      conf_df <- index_res()$index_conf %>%
+      conf_df <- index_res()$index_conf[[1]] %>%
         mutate(index = paste0("MC_freq_", .data$index)) %>%
         tidyr::pivot_wider(names_from = "index", values_from = "frequency")
 
