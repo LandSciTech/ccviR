@@ -47,7 +47,8 @@ getMultValues <- function(x, nm){
 # function to make maps (Uses some external objects, could be improved)
 make_map <- function(poly1, rast = NULL, poly2 = NULL,
                      poly1_nm = "Range", poly2_nm = NULL,
-                     rast_nm = NULL, rast_style = "cat", rast_lbl = NULL){
+                     rast_nm = NULL, rast_style = "cat",
+                     rast_lbl = NULL, rast_grp = NULL){
 
   # Name of input data layers for mapping
   rast_nms <- list(Temperature = "mat",
@@ -55,7 +56,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                    Moisture = "cmd",
                    `Climate change exposure index` = "ccei",
                    `Historical thermal niche` = "htn",
-                   `Habitat suitability` = "hs_rast")
+                   `Range Change` = "hs_rast")
 
   poly_nms <- list(`Assessment area`= "assess_poly",
                    `Non-breeding range` = "nonbreed_poly",
@@ -67,35 +68,51 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
     } else {
       pal = NULL
     }
+  } else{
+    if(!is.null(rast)){
+      stop("rast_nm must be provided if rast is not NULL", call. = FALSE)
+    }
   }
 
   # tried adding a line break to legend but doesn't work in interactive map
   poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
   rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
 
+  if(!is.null(rast)){
+    if(raster::nlayers(rast) == 1){
+      rast_grp <- rast_nm
+    } else {
+      if(is.null(rast_grp)){
+        rast_grp <- NA
+      }
+    }
+  }
+
+
   if(is.null(poly2)){
-    out <-  tmap::tm_shape(rast)+
+    out <-  tmap::tm_shape(rast, name = rast_nm)+
       tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
-                      palette = pal)+
-      tmap::tm_shape(poly1)+
+                      palette = pal, group = rast_grp)+
+      tmap::tm_shape(poly1, name = poly1_nm)+
       tmap::tm_borders()+
       tmap::tm_add_legend("fill", labels = c(poly1_nm),
                           col = c("black"))+
       tmap::tm_facets(as.layers = TRUE)
   } else if(is.null(rast)){
-    out <- tmap::tm_shape(poly1)+
+    out <- tmap::tm_shape(poly1, name = poly1_nm)+
       tmap::tm_borders()+
-      tmap::tm_shape(poly2)+
+      tmap::tm_shape(poly2, name = poly2_nm)+
       tmap::tm_borders(col = "red")+
       tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
                           col = c("black", "red"))+
       tmap::tm_facets(as.layers = TRUE)
   } else {
-    out <-  tmap::tm_shape(rast)+
-      tmap::tm_raster(title = rast_nm)+
-      tmap::tm_shape(poly1)+
+    out <-  tmap::tm_shape(rast, name = rast_nm)+
+      tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
+                      palette = pal, group = rast_grp)+
+      tmap::tm_shape(poly1, name = poly1_nm)+
       tmap::tm_borders()+
-      tmap::tm_shape(poly2)+
+      tmap::tm_shape(poly2, name = poly2_nm)+
       tmap::tm_borders(col = "red")+
       tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
                           col = c("black", "red"))+
