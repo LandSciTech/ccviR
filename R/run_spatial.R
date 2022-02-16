@@ -84,6 +84,20 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
          call. = FALSE)
   }
 
+  # Check scenario names match raster stacks
+  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "Raster")) %>%
+    purrr::splice(hs_rast = hs_rast) %>%
+    purrr::compact() %>%
+    purrr::map_dbl(raster::nlayers)
+
+  if(!all(rast_lyrs %in% c(1, length(scenario_names)))){
+    stop("rasters must have one layer or length(scenario_names) layers. ",
+         "The rasters ",
+         paste0(names(rast_lyrs)[which(!rast_lyrs %in% c(1, length(scenario_names)))],
+                collapse = ", "),
+         " do not have the correct number of layers.", call. = FALSE)
+  }
+
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
   range_poly <- check_polys(range_poly, crs_use, "range polygon")

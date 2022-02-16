@@ -203,7 +203,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
       rcl_tbl_ccei <- brks_ccei
     }
 
-    ccei_reclass <- raster::reclassify(ccei, rcl_tbl_ccei)
+    ccei_reclass <- raster::reclassify(ccei, rcl_tbl_ccei, right = NA)
 
     raster::writeRaster(ccei_reclass,
                         file.path(out_folder,
@@ -263,7 +263,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
     rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
 
-    dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl)
+    dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl, right = NA)
 
     raster::writeRaster(dif_mt_reclass,
                         file.path(out_folder, "MWMT_MCMT_reclass.tif"),
@@ -433,7 +433,7 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
 
 
 
-  raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite)
+  raster::reclassify(rast_delta, rcl_tbl, right = NA, filename = file_nm, overwrite = overwrite)
 
   return(rcl_tbl)
 }

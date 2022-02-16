@@ -83,7 +83,7 @@ test_that("error when two files or missing files",{
 test_that("multi_scenario works as expected", {
   clim_vars_multi <- get_clim_vars(file.path(file_dir,
                                              "clim_files/processed/multi_scenario"),
-                                   scenario_names = c("RCP4.5", "RCP8.5"))
+                                   scenario_names = c("RCP2.6", "RCP4.5", "RCP8.5"))
 
   expect_type(clim_vars_multi, "list")
 
@@ -91,7 +91,7 @@ test_that("multi_scenario works as expected", {
 
   expect_error(get_clim_vars(file.path(file_dir,
                                        "clim_files/processed/multi_scenario"),
-                             scenario_names = c("RCP4.5", "RCP85")),
+                             scenario_names = c("RCP2.6", "RCP4.5", "RCP85")),
                "does not match")
 
 
