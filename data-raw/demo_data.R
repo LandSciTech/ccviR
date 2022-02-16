@@ -34,6 +34,11 @@ CMD_2050_scn2 <- CMD_2050 + 5
 CCEI_scn2 <- CCEI + 5
 CCEI_scn2[which(values(CCEI_scn2) > 25)] <- 25
 
+# third scn flip so high rng now has low values
+MAT_2050_scn3 <- raster::flip(MAT_2050)
+CMD_2050_scn3 <- raster::flip(CMD_2050)
+CCEI_scn3 <- raster::flip(CCEI)
+
 # MWMT MCMT more difference between the two is less exposure
 MCMT <- rast
 values(MCMT) <- seq(5, 10, length.out = 10000) %>%
@@ -70,6 +75,10 @@ HS_rast_RCP4.5 <- HS_rast_med
 HS_rast_RCP4.5[1:30,] <- HS_rast_RCP4.5[31:60,]
 HS_rast_RCP4.5[31:100,] <- 0
 
+HS_rast_RCP2.6 <- HS_rast_low
+HS_rast_RCP2.6[1:30,] <- HS_rast_RCP2.6[71:100,]
+HS_rast_RCP2.6[31:100,] <- 0
+
 HS_rast_RCP8.5 <- HS_rast_high
 
 # Should be a polygon of areas with special temperature regime
@@ -104,12 +113,13 @@ assess_poly <- st_bbox(MAT) %>% st_as_sfc() %>% st_as_sf()
 clim_dat <- lst(MAT, MAT_2050, CMD, CMD_2050, CCEI, MWMT, MCMT, MAP)
 
 clim_dat2 <- lst(MAT_2050_scn2, CMD_2050_scn2, CCEI_scn2)
+clim_dat3 <- lst(MAT_2050_scn3, CMD_2050_scn3, CCEI_scn3)
 
 sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
               HS_rast_high, HS_rast_med, HS_rast_low,
               assess_poly, PTN_poly)
 
-sp_dat2 <- lst(HS_rast_RCP4.5, HS_rast_RCP8.5)
+sp_dat2 <- lst(HS_rast_RCP2.6, HS_rast_RCP4.5, HS_rast_RCP8.5)
 
 write_fun <- function(x, nm, dir, crs_use){
   if(inherits(x, "Raster")){
@@ -131,6 +141,10 @@ purrr::walk2(clim_dat, names(clim_dat), write_fun,
              crs_use = 3162)
 
 purrr::walk2(clim_dat2, names(clim_dat2), write_fun,
+             dir = "inst/extdata/clim_files/raw/scenario2/",
+             crs_use = 3162)
+
+purrr::walk2(clim_dat3, names(clim_dat3), write_fun,
              dir = "inst/extdata/clim_files/raw/scenario2/",
              crs_use = 3162)
 

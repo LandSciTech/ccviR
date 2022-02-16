@@ -108,13 +108,27 @@ test_that("multiple scenarios works",{
                 brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
                 brks_ccei = brks_out$brks_ccei)
 
+  run_prep_data(mat_norm = file.path(pth_base, "raw/MAT.tif"),
+                mat_fut = file.path(pth_base, "raw/scenario2/MAT_2050_scn3.tif"),
+                cmd_norm = file.path(pth_base, "raw/CMD.tif"),
+                cmd_fut = file.path(pth_base, "raw/scenario2/CMD_2050_scn3.tif"),
+                ccei = file.path(pth_base, "raw/scenario2/CCEI_scn3.tif"),
+                out_folder = file.path(pth_base, "processed/multi_scenario"),
+                overwrite = TRUE, scenario_name = "RCP2.6",
+                brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
+                brks_ccei = brks_out$brks_ccei)
+
   # check that the scn2 data is higher
+  mat_26 <- raster::raster(file.path(pth_base,
+                                     "processed/multi_scenario/MAT_reclassRCP2.6.tif"))
+
   mat_45 <- raster::raster(file.path(pth_base,
                                      "processed/multi_scenario/MAT_reclassRCP4.5.tif"))
 
   mat_85 <- raster::raster(file.path(pth_base,
                                      "processed/multi_scenario/MAT_reclassRCP8.5.tif"))
 
+  expect_gt(raster::freq(mat_85)[1,2], raster::freq(mat_26)[1,2])
   expect_gt(raster::freq(mat_85)[1,2], raster::freq(mat_45)[1,2])
 })
 
