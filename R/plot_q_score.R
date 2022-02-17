@@ -42,18 +42,30 @@ plot_q_score <- function(vuln_df){
       rename(Question = "Question.y")
   }
 
-  vuln_df <- filter(vuln_df, !Code %in% c("Z2", "Z3")) %>%
-    mutate(score = case_when(score < 0 ~ 0,
-                             is.na(score) ~ 0,
-                             TRUE ~ score))
+  # for error bars need difference from mean
+  vuln_df <- filter(vuln_df, !is.na(score_mean)) %>%
+    mutate(exp_min = exp_mean - exp_min,
+           exp_max = exp_max - exp_mean,
+           score_min = score_mean - score_min,
+           score_max = score_max - score_mean)
 
   plotly::plot_ly(vuln_df, hoverinfo = list("text", "y")) %>%
-    plotly::add_bars(x = ~Code, y = ~score, name = "Score",
-             text = ~Question,
-             hovertemplate = "%{text}: <br> Score: %{y}<extra></extra>") %>%
-    plotly::add_markers(x = ~Code, y = ~exp, name = "Exposure\nMultiplier",
+    plotly::add_markers(x = ~Code, y = ~exp_mean, name = "Exposure\nMultiplier",
                 text = ~Question,
-                hovertemplate = "%{text}: <br> Exposure Multiplier: %{y}<extra></extra>") %>%
+                marker = list(symbol = "x", size = 8),
+                hovertemplate = "%{text}: <br> Exposure Multiplier: %{y}<extra></extra>",
+                error_y = ~list(type = "data",
+                                symmetric = FALSE,
+                                array = exp_max,
+                                arrayminus = exp_min,
+                                thickness = 2)) %>%
+    plotly::add_markers(x = ~Code, y = ~score_mean, name = "Score",
+                        text = ~Question,
+                        hovertemplate = "%{text}: <br> Score: %{y}<extra></extra>",
+                        error_y = ~list(type = "data",
+                                        symmetric = FALSE,
+                                        array = score_max,
+                                        arrayminus = score_min, thickness = 1)) %>%
     plotly::layout(xaxis = list(title = "Question"), yaxis = list(title = "Score"))
 }
 

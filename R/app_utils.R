@@ -120,3 +120,44 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   }
   return(out)
 }
+
+# create html text for index result for multi scenario
+index_res_text <- function(ind_freq){
+
+  ind_freq <- ind_freq %>%
+    mutate(col = case_when(index == "IE" ~ "grey",
+                            index == "EV" ~ "red",
+                            index == "HV" ~ "darkorange",
+                            index == "MV" ~ "#FFC125",
+                            index == "LV" ~ "green",
+                            TRUE ~ "grey"),
+           def = case_when(index == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an indexex score.",
+                            index == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.",
+                            index == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.",
+                            index == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
+                            index == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.",
+                            TRUE ~ ""),
+           index = case_when(index == "IE" ~ "Insufficient Evidence",
+                            index == "EV" ~ "Extremely Vulnerable",
+                            index == "HV" ~ "Highly Vulnerable",
+                            index == "MV" ~ "Moderately Vulnerable",
+                            index == "LV" ~ "Less Vulnerable",
+                            TRUE ~ "Insufficient Evidence"))
+
+
+  paste0("<h4><font color=", ind_freq$col, "><b>", ind_freq$index,
+         ": </b></font>", paste0(ind_freq$scenarios), "</h4>",
+        "<p>", ind_freq$def, "</p>", collapse = " ")
+}
+
+mig_exp_text <- function(mig_freq){
+  mig_freq <- mig_freq %>%
+    mutate(  col = case_when(mig_exp == "N/A" ~ "grey",
+                             mig_exp == "High" ~ "red",
+                             mig_exp == "Moderate" ~ "darkorange",
+                             mig_exp == "Low" ~ "green",
+                             TRUE ~ "grey"))
+
+  paste0("<font color=", mig_freq$col, "><b>", mig_freq$mig_exp, ": </font>", mig_freq$scenarios, "</b>",
+         collapse = " ")
+}

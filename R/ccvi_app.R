@@ -523,8 +523,8 @@ ccvi_app <- function(...){
                 "one of the selected values is chosen at randon and the index is ",
                 "calculated. The confidence reflects whether the range of values ",
                 "selected for vulnerability factors affects the final index."),
-              p("Confidence in the index is:",
-                textOutput("conf_index", inline = TRUE)),
+              # p("Confidence in the index is:",
+              #   textOutput("conf_index", inline = TRUE)),
               plotOutput("conf_graph", width = 300, height = 200)
             ),
             div(
@@ -1258,13 +1258,19 @@ ccvi_app <- function(...){
                               TRUE ~ 0)) %>%
         pull(.data$D2)
 
-      if(!is.null(hs_rast2())){
+      if(!is.null(hs_rast())){
         if(raster::nlayers(hs_rast2()) > 1){
           valueNm <- valueNms[ 4- box_val]
           div(strong("Calculated effect on vulnerability."),
               HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
+        } else {
+          check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+                           choiceNames = valueNms,
+                           choiceValues = valueOpts,
+                           selected = box_val,
+                           com = prevCom)
         }
       } else {
         check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
@@ -1292,13 +1298,20 @@ ccvi_app <- function(...){
                               is.na(range_overlap) ~ NA_real_,
                               TRUE ~ 0)) %>%
         pull(.data$D3)
-      if(!is.null(hs_rast2())){
+
+      if(!is.null(hs_rast())){
         if(raster::nlayers(hs_rast2()) > 1){
           valueNm <- valueNms[4 - box_val]
           div(strong("Calculated effect on vulnerability."),
               HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
+        } else {
+          check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+                           choiceNames = valueNms,
+                           choiceValues = valueOpts,
+                           selected = box_val,
+                           com = prevCom)
         }
       } else {
         check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
@@ -1336,21 +1349,6 @@ ccvi_app <- function(...){
                                         Comment = input[[.x]]))
     })
 
-    # Useful for testing
-    # output$test_vulnQ <- renderPrint({
-    #   print(input[["B1"]] %>% str())
-    #   x <- ifelse(is.null(input[["B1"]]), -1, input[["B1"]])
-    #   print(x)
-    #   x <- as.numeric(x)
-    #   print(x)
-    #
-    #   df <- data.frame(Code = "B1", Value1 = x[1], Value2 = x[2], Value3 = x[3],
-    #                    Value4 = x[4], stringsAsFactors = FALSE)
-    #   print(df)
-    #   })
-    #
-    # output$vuln_df_tbl <- renderTable(coms_df() %>% arrange(Code))
-
     index_res <- reactive({
       z_df <- data.frame(Code = c("Z2", "Z3"),
                          Value1 = as.numeric(c(input$cave, input$mig)))
@@ -1363,65 +1361,46 @@ ccvi_app <- function(...){
     })
 
     output$species_name <- renderText(input$species_name)
+
+    # summarize across scenarios
+    index_sum <- reactive(summarize_scenarios(index_res()))
+
     output$index <- renderText({
-      ind <- index_res()$index
-      col <- case_when(ind == "IE" ~ "grey",
-                       ind == "EV" ~ "red",
-                       ind == "HV" ~ "darkorange",
-                       ind == "MV" ~ "#FFC125",
-                       ind == "LV" ~ "green",
-                       TRUE ~ "grey")
-      def <- case_when(ind == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an Index score.",
-                       ind == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.",
-                       ind == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.",
-                       ind == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
-                       ind == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.",
-                       TRUE ~ "")
-      ind <- case_when(ind == "IE" ~ "Insufficient Evidence",
-                       ind == "EV" ~ "Extremely Vulnerable",
-                       ind == "HV" ~ "Highly Vulnerable",
-                       ind == "MV" ~ "Moderately Vulnerable",
-                       ind == "LV" ~ "Less Vulnerable",
-                       TRUE ~ "Insufficient Evidence")
-
-      paste("<h4><font color=", col, "><b>", ind, ":</b></font></h4>",
-            p(def))
-
+      req(index_sum())
+      index_res_text(index_sum()$index_freq)
     })
 
-
-    output$ind_gauge <- renderPlot({
-      plt_index_gauge(index_res()$index)
+     output$ind_gauge <- renderPlot({
+      plt_index_gauge(index_sum()$index_stats$index_mode,
+                      index_sum()$index_stats$index_min,
+                      index_sum()$index_stats$index_max)
     })
 
     output$mig_exp <- renderText({
-      ind <- index_res()$mig_exp
-
-      col <- case_when(ind == "N/A" ~ "grey",
-                       ind == "High" ~ "red",
-                       ind == "Moderate" ~ "darkorange",
-                       ind == "Low" ~ "green",
-                       TRUE ~ "grey")
-
-      paste("<font color=", col, "><b>", ind, "</b></font>")
+      mig_exp_text(index_sum()$mig_freq)
     })
 
     output$mig_exp_gauge <- renderPlot({
-      plt_mig_exp_gauge(index_res()$mig_exp)
+      plt_mig_exp_gauge(index_sum()$mig_stats$mig_mode,
+                        index_sum()$mig_stats$mig_min,
+                        index_sum()$mig_stats$mig_max)
     })
 
     output$n_factors <- renderTable({
+      facts <- index_res() %>% distinct(across(contains("factors")))
       tibble(Section = c("Section B", "Section C", "Section D"),
-             `Factors completed` = c(paste0(index_res()$n_b_factors, "/4"),
-                                     paste0(index_res()$n_c_factors, "/16"),
-                                     paste0(index_res()$n_d_factors, "/4")))
+             `Factors completed` = c(paste0(facts$n_b_factors, "/4"),
+                                     paste0(facts$n_c_factors, "/16"),
+                                     paste0(facts$n_d_factors, "/4")))
     })
 
     output$slr <- renderText({
-      if(!index_res()$slr_vuln){
+      if(!any(index_res()$slr_vuln)){
         return(NULL)
       }
-      paste0("The index value for this species was increased to ",
+      scn_slr <- filter(index_res(), slr_vuln)
+      paste0("The index value for this species in scenario ",
+             paste0(scn_slr, collapse = ", "), " was increased to ",
              "'Extremely Vulnerable' because it is vulnerable to rising ",
              "sea levels and has significant dispersal barriers")
     })
@@ -1435,23 +1414,32 @@ ccvi_app <- function(...){
       if(is.na(b_c_score)){
         return(NULL)
       } else {
-        plot_score_index(b_c_score, index_res()$d_score, index_res()$n_d_factors)
+        plot_score_index(index_res())
       }
     })
 
-    output$conf_index <- renderText(index_res()$conf_index)
+    #output$conf_index <- renderText(index_res()$conf_index)
     output$conf_graph <- renderPlot({
-      ggplot2::quickplot(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
-                         y = frequency,
-                         data = index_res()$index_conf[[1]],
-                         geom = "col", xlab = "Index", ylab = "Proportion of Runs",
-                         main = "Monte Carlo Simulation Results",
-                         ylim = c(NA, 1))+
+      res %>% select(scenario_name, index_conf) %>%
+        tidyr::unnest(index_conf) %>%
+        ggplot2::ggplot(ggplot2::aes(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
+                            y = frequency,
+                            fill = scenario_name))+
+        ggplot2::geom_col(position = "dodge")+
+        ggplot2::labs(x = "Index",
+                      y = "Proportion of Runs",
+                      main = "Monte Carlo Simulation Results",
+                      fill = "Scenario Name")+
+        ggplot2::ylim (c(NA, 1))+
         ggplot2::theme_classic()
+
     })
 
     output$q_score_plt <- plotly::renderPlotly({
-      plot_q_score(index_res()$vuln_df[[1]])
+      index_res() %>%
+        summarize_scenarios() %>%
+        .$question_score_summary %>%
+        plot_q_score()
     })
 
     # Make csv
