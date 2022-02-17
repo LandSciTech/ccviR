@@ -504,12 +504,12 @@ ccvi_app <- function(...){
               p("The Climate Change Vulnerability Index for",
                 strong(textOutput("species_name", inline = TRUE)), "is:"),
               shinycssloaders::withSpinner(htmlOutput("index")),
-              plotly::plotlyOutput("ind_gauge", inline = FALSE, height = "100px"),
+              plotOutput("ind_gauge", inline = FALSE, height = "80px"),
               br(),
               br(),
               p("The climate exposure in the migratory range is:"),
               h5(htmlOutput("mig_exp")),
-              plotly::plotlyOutput("mig_exp_gauge", inline = TRUE, height = "100px"),
+              plotOutput("mig_exp_gauge", inline = FALSE, height = "80px"),
               br(),
 
               h4("Data completeness"),
@@ -737,6 +737,11 @@ ccvi_app <- function(...){
 
     # load spatial data
     clim_readme <- reactive({
+      req(clim_dir_pth())
+      if(!file.exists(fs::path(clim_dir_pth(), "climate_data_readme.csv"))){
+        stop("The climate folder is missing the required readme file",
+             call. = FALSE)
+      }
       utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
                       check.names = FALSE)
     })
@@ -1253,12 +1258,14 @@ ccvi_app <- function(...){
                               TRUE ~ 0)) %>%
         pull(.data$D2)
 
-      if(raster::nlayers(hs_rast2()) > 1){
-        valueNm <- valueNms[ 4- box_val]
-        div(strong("Calculated effect on vulnerability."),
-            HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
-            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+      if(!is.null(hs_rast2())){
+        if(raster::nlayers(hs_rast2()) > 1){
+          valueNm <- valueNms[ 4- box_val]
+          div(strong("Calculated effect on vulnerability."),
+              HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
+              HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
+        }
       } else {
         check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
@@ -1285,13 +1292,14 @@ ccvi_app <- function(...){
                               is.na(range_overlap) ~ NA_real_,
                               TRUE ~ 0)) %>%
         pull(.data$D3)
+      if(!is.null(hs_rast2())){
+        if(raster::nlayers(hs_rast2()) > 1){
+          valueNm <- valueNms[4 - box_val]
+          div(strong("Calculated effect on vulnerability."),
+              HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
+              HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
-      if(raster::nlayers(hs_rast2()) > 1){
-        valueNm <- valueNms[4 - box_val]
-        div(strong("Calculated effect on vulnerability."),
-            HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
-            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
-
+        }
       } else {
         check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
                          choiceNames = valueNms,
@@ -1382,7 +1390,7 @@ ccvi_app <- function(...){
     })
 
 
-    output$ind_gauge <- plotly::renderPlotly({
+    output$ind_gauge <- renderPlot({
       plt_index_gauge(index_res()$index)
     })
 
@@ -1398,7 +1406,7 @@ ccvi_app <- function(...){
       paste("<font color=", col, "><b>", ind, "</b></font>")
     })
 
-    output$mig_exp_gauge <- plotly::renderPlotly({
+    output$mig_exp_gauge <- renderPlot({
       plt_mig_exp_gauge(index_res()$mig_exp)
     })
 
