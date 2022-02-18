@@ -515,14 +515,14 @@ ccvi_app <- function(...){
               h4("Data completeness"),
               tableOutput("n_factors"),
 
-              h4("Confidence in index"),
+              h4("Variation in index"),
               p("When multiple values are selected for any of the vulnerability ",
                 "factors the average of the values is used to calculate the ",
                 "overall index. To test the uncertainty in the result a Monte Carlo ",
                 "simulation with 1000 runs is carried out. In each simulation run ",
-                "one of the selected values is chosen at randon and the index is ",
-                "calculated. The confidence reflects whether the range of values ",
-                "selected for vulnerability factors affects the final index."),
+                "one of the selected values is randomly chosen and the index is ",
+                "calculated. The graph below shows the proportion of runs with each",
+                " index value for each scenario. "),
               # p("Confidence in the index is:",
               #   textOutput("conf_index", inline = TRUE)),
               plotOutput("conf_graph", width = 300, height = 200)
@@ -979,7 +979,7 @@ ccvi_app <- function(...){
 
     output$texp_tbl <- renderTable({
       req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>%
+      exp_df <-  spat_res() %>% rowwise() %>%
         mutate(temp_exp = case_when(
           MAT_1 > 50 ~ 2.4,
           sum(MAT_1, MAT_2, na.rm = TRUE) >= 75 ~ 2,
@@ -988,7 +988,7 @@ ccvi_app <- function(...){
           sum(MAT_1, MAT_2, MAT_3, MAT_4, MAT_5, na.rm = TRUE) >= 20 ~ 0.8,
           TRUE ~ 0.4
         ),
-        temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1)), 3) %>%
+        temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
         select(.data$scenario_name, contains("MAT"), .data$temp_exp_cave) %>%
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
@@ -999,7 +999,7 @@ ccvi_app <- function(...){
 
     output$cmd_tbl <- renderTable({
       req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>%
+      exp_df <-  spat_res() %>% rowwise() %>%
         mutate(moist_exp = case_when(
           CMD_1 >= 80 ~ 2,
           sum(CMD_1, CMD_2, na.rm = TRUE) >= 64 ~ 1.67,
@@ -1008,7 +1008,7 @@ ccvi_app <- function(...){
           sum(CMD_1, CMD_2, CMD_3, CMD_4, CMD_5, na.rm = TRUE) >= 16 ~ 0.67,
           TRUE ~ 0.33
         ),
-        moist_exp_cave = .data$moist_exp / ifelse(input$cave == 1, 3, 1)) %>%
+        moist_exp_cave = round(.data$moist_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
         select(.data$scenario_name, contains("CMD"), .data$moist_exp_cave) %>%
         rename_at(vars(contains("CMD")),
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
@@ -1398,7 +1398,7 @@ ccvi_app <- function(...){
       if(!any(index_res()$slr_vuln)){
         return(NULL)
       }
-      scn_slr <- filter(index_res(), slr_vuln)
+      scn_slr <- filter(index_res(), slr_vuln) %>% pull(scenario_name)
       paste0("The index value for this species in scenario ",
              paste0(scn_slr, collapse = ", "), " was increased to ",
              "'Extremely Vulnerable' because it is vulnerable to rising ",
@@ -1406,21 +1406,12 @@ ccvi_app <- function(...){
     })
 
     output$ind_score_plt <- renderPlot({
-      b_c_score <- case_when(index_res()$n_b_factors < 3 ~ NA_real_,
-                             index_res()$n_c_factors < 10 ~ NA_real_,
-                             TRUE ~ index_res()$b_c_score)
-
-      # if b_c is IE no plot if d is IE set to 0 but still plot
-      if(is.na(b_c_score)){
-        return(NULL)
-      } else {
         plot_score_index(index_res())
-      }
     })
 
     #output$conf_index <- renderText(index_res()$conf_index)
     output$conf_graph <- renderPlot({
-      res %>% select(scenario_name, index_conf) %>%
+      index_res() %>% select(scenario_name, index_conf) %>%
         tidyr::unnest(index_conf) %>%
         ggplot2::ggplot(ggplot2::aes(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
                             y = frequency,
@@ -1444,25 +1435,15 @@ ccvi_app <- function(...){
 
     # Make csv
     out_data <- reactive({
-      vuln_df <- index_res()$vuln_df[[1]] %>%
-        select(.data$Code, contains("Value")) %>%
-        filter(!.data$Code %in% c("Z2", "Z3")) %>%
-        arrange(.data$Code) %>%
-        mutate_all(as.character) %>%
-        tidyr::unite(.data$Value, .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
-        left_join(coms_df(), by = "Code") %>%
-        tidyr::pivot_wider(names_from = "Code",
-                           values_from = c("Comment","Value")) %>%
-        rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
-                           stringr::str_extract(.x, "^.*(?=_)")) %>%
-                     stringr::str_remove("_Value")) %>%
-        select(order(colnames(.)))
+      vuln_df <- purrr::map_dfr(index_res()$vuln_df, widen_vuln_coms,
+                                coms_df = coms_df())
 
       spat_df <- spat_res()
 
-      conf_df <- index_res()$index_conf[[1]] %>%
-        mutate(index = paste0("MC_freq_", .data$index)) %>%
-        tidyr::pivot_wider(names_from = "index", values_from = "frequency")
+      conf_df <- purrr::map_dfr(index_res()$index_conf,
+                                ~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
+                                  tidyr::pivot_wider(names_from = "index",
+                                                     values_from = "frequency"))
 
       data.frame(species_name = input$species_name,
                  common_name = input$common_name,
@@ -1478,7 +1459,9 @@ ccvi_app <- function(...){
                  mig_exposure = index_res()$mig_exp,
                  b_c_score = index_res()$b_c_score,
                  d_score = index_res()$d_score) %>%
-        bind_cols(conf_df, spat_df, vuln_df, clim_readme())
+        bind_cols(conf_df, spat_df, vuln_df,
+                  clim_readme() %>% select(-Scenario_Name)) %>%
+        select(scenario_name, everything())
     })
 
     exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))

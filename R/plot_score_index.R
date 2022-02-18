@@ -32,8 +32,14 @@
 #'
 #' plot_score_index(index_vuln$b_c_score, index_vuln$d_score, index_vuln$n_d_factors)
 plot_score_index <- function(score_df){
+  # if b_c is IE no plot if d is IE set to 0 but still plot
+  if(all(score_df$n_b_factors < 3)||all(score_df$n_c_factors < 10)){
+    return(NULL)
+  }
+
   score_pt <- score_df %>%
     mutate(d_score = ifelse(n_d_factors == 0, -1, d_score))
+
 
   # max possible score
   max_score_bc <- 22*6.6 + 3

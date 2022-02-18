@@ -158,6 +158,22 @@ mig_exp_text <- function(mig_freq){
                              mig_exp == "Low" ~ "green",
                              TRUE ~ "grey"))
 
-  paste0("<font color=", mig_freq$col, "><b>", mig_freq$mig_exp, ": </font>", mig_freq$scenarios, "</b>",
-         collapse = " ")
+  paste0("<font color=", mig_freq$col, "><b>", mig_freq$mig_exp, ": </b></font>",
+         mig_freq$scenarios, collapse = " ")
+}
+
+widen_vuln_coms <- function(vuln_df, coms_df){
+  vuln_df %>%
+    select(.data$Code, matches("Value\\d")) %>%
+    filter(!.data$Code %in% c("Z2", "Z3")) %>%
+    arrange(.data$Code) %>%
+    mutate_all(as.character) %>%
+    tidyr::unite("Value", .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
+    left_join(coms_df, by = "Code") %>%
+    tidyr::pivot_wider(names_from = "Code",
+                       values_from = c("Comment","Value")) %>%
+    rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
+                       stringr::str_extract(.x, "^.*(?=_)")) %>%
+                 stringr::str_remove("_Value")) %>%
+    select(order(colnames(.)))
 }
