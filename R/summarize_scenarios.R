@@ -1,5 +1,6 @@
 # vuln_calc_lst <- res
 
+
 summarize_scenarios <- function(vuln_calc_df){
   index_freq <- vuln_calc_df %>%
     mutate(index = factor(index, levels = c("IE", "LV", "MV", "HV", "EV"), ordered = TRUE)) %>%
