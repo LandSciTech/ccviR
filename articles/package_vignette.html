@@ -164,7 +164,7 @@
 <li>Species range polygon (required)</li>
 <li>Assessment area polygon (required)</li>
 <li>Non-breeding range polygon</li>
-<li>Projected habitat change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained</li>
+<li>Projected range change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained</li>
 <li>Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.</li>
 </ul>
 <p>For this example all of the data is provided with the package.</p>
@@ -175,7 +175,7 @@
 <span class="va">PTN_poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"PTN_poly.shp"</span><span class="op">)</span>, agr <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span>
 <span class="va">nonbreed_poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"nonbreed_poly.shp"</span><span class="op">)</span>, agr <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span>
 
-<span class="co"># the habitat change raster has values from 0 to 7, this matrix is used to</span>
+<span class="co"># the range change raster has values from 0 to 7, this matrix is used to</span>
 <span class="co"># convert them to the 4 classes described above.</span>
 <span class="va">hs_rcl_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">7</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
 </div>
