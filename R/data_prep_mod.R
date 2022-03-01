@@ -176,12 +176,6 @@
                                 `Emissions scenario` = input$clim_em_scenario,
                                 `Link to source` = input$clim_dat_url)
 
-      out_dir <- shinyFiles::parseDirPath(volumes,
-                                          input$out_folder)
-
-      write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
-                row.names = FALSE)
-
       if(isTruthy(input$clim_var_dir)||isTRUE(getOption("shiny.testmode"))){
 
         if (isTRUE(getOption("shiny.testmode"))) {
@@ -190,8 +184,13 @@
         } else {
           in_dir <- shinyFiles::parseDirPath(volumes,
                                              input$clim_var_dir)
+          out_dir <- shinyFiles::parseDirPath(volumes,
+                                              input$out_folder)
 
         }
+
+        write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
+                  row.names = FALSE)
 
         req(in_dir)
         req(out_dir)

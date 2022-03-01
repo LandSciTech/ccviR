@@ -554,8 +554,8 @@ ccvi_app <- function(...){
               plotly::plotlyOutput("q_score_plt", width = 700),
 
               # helpful for testing
-              # verbatimTextOutput("test_vulnQ"),
-              # tableOutput("vuln_df_tbl"),
+              # shinyjs::runcodeUI(),
+
               br(), br(),
               downloadButton("downloadData", "Download results as csv"),
               downloadButton("downloadDefs", "Download column definitions"),
@@ -694,12 +694,15 @@ ccvi_app <- function(...){
       if(is.integer(input$clim_var_dir)){
         if(!is.null(restored$yes)){
           return(clim_dir_pth_restore())
-        }
+        } else if (isTRUE(getOption("shiny.testmode"))) {
+          return(system.file("extdata/clim_files/processed", package = "ccviR"))
+        } else {
           return(NULL)
-      } else {
+        }
+      }  else {
         return(parseDirPath(volumes, input$clim_var_dir))
       }
-      })
+    })
 
 
     file_pths <- reactive({
@@ -730,11 +733,7 @@ ccvi_app <- function(...){
 
     # load spatial data
     clim_vars <- reactive({
-      if (isTRUE(getOption("shiny.testmode"))) {
-        root_pth <- system.file("extdata/clim_files/processed", package = "ccviR")
-      } else {
-        root_pth <- clim_dir_pth()
-      }
+      root_pth <- clim_dir_pth()
 
       req(root_pth)
 
@@ -1443,6 +1442,9 @@ ccvi_app <- function(...){
                  d_score = index_res()$d_score) %>%
         bind_cols(conf_df, spat_df, vuln_df, clim_readme())
     })
+
+    # helpful for testing
+    #shinyjs::runcodeServer()
 
     exportTestValues(out_data = out_data())
 
