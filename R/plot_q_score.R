@@ -42,31 +42,51 @@ plot_q_score <- function(vuln_df){
       rename(Question = "Question.y")
   }
 
-  # for error bars need difference from mean
-  vuln_df <- filter(vuln_df, !is.na(score_mean)) %>%
-    mutate(exp_min = exp_mean - exp_min,
-           exp_max = exp_max - exp_mean,
-           score_min = score_mean - score_min,
-           score_max = score_max - score_mean)
+  vuln_df <- mutate(vuln_df,
+                    score = ifelse(score < 0, 0, score),
+                    custom_tooltip = paste0(Question, ":\n",
+                                            "Exposure Multiplier: ", exp, "\n",
+                                            "Score: ", score)) %>%
+    filter(!is.na(score))
 
-  plotly::plot_ly(vuln_df, hoverinfo = list("text", "y")) %>%
-    plotly::add_markers(x = ~Code, y = ~exp_mean, name = "Exposure\nMultiplier",
-                text = ~Question,
-                marker = list(symbol = "x", size = 8),
-                hovertemplate = "%{text}: <br> Exposure Multiplier: %{y}<extra></extra>",
-                error_y = ~list(type = "data",
-                                symmetric = FALSE,
-                                array = exp_max,
-                                arrayminus = exp_min,
-                                thickness = 2)) %>%
-    plotly::add_markers(x = ~Code, y = ~score_mean, name = "Score",
-                        text = ~Question,
-                        hovertemplate = "%{text}: <br> Score: %{y}<extra></extra>",
-                        error_y = ~list(type = "data",
-                                        symmetric = FALSE,
-                                        array = score_max,
-                                        arrayminus = score_min, thickness = 1)) %>%
-    plotly::layout(xaxis = list(title = "Question"), yaxis = list(title = "Score"))
+  plt <- ggplot2::ggplot(vuln_df, ggplot2::aes(x = Code, y = score, text = custom_tooltip))+
+    ggplot2::geom_col()+
+    ggplot2::facet_wrap(~scenario_name, ncol = 3)+
+    ggplot2::labs(x = "Question", y = "Score")+
+    ggplot2::scale_x_discrete(limits = rev)+
+    ggplot2::theme_classic()+
+    ggplot2::theme(strip.background = ggplot2::element_blank())+
+    ggplot2::coord_flip()
+
+  plotly::ggplotly(plt, tooltip = "text")
+
+  # Version with error bars for aggregated results
+
+  # # for error bars need difference from mean
+  # vuln_df <- filter(vuln_df, !is.na(score_mean)) %>%
+  #   mutate(exp_min = exp_mean - exp_min,
+  #          exp_max = exp_max - exp_mean,
+  #          score_min = score_mean - score_min,
+  #          score_max = score_max - score_mean)
+
+  # plotly::plot_ly(vuln_df, hoverinfo = list("text", "y")) %>%
+  #   plotly::add_markers(x = ~Code, y = ~exp_mean, name = "Exposure\nMultiplier",
+  #               text = ~Question,
+  #               marker = list(symbol = "x", size = 8),
+  #               hovertemplate = "%{text}: <br> Exposure Multiplier: %{y}<extra></extra>",
+  #               error_y = ~list(type = "data",
+  #                               symmetric = FALSE,
+  #                               array = exp_max,
+  #                               arrayminus = exp_min,
+  #                               thickness = 2)) %>%
+  #   plotly::add_markers(x = ~Code, y = ~score_mean, name = "Score",
+  #                       text = ~Question,
+  #                       hovertemplate = "%{text}: <br> Score: %{y}<extra></extra>",
+  #                       error_y = ~list(type = "data",
+  #                                       symmetric = FALSE,
+  #                                       array = score_max,
+  #                                       arrayminus = score_min, thickness = 1)) %>%
+  #   plotly::layout(xaxis = list(title = "Question"), yaxis = list(title = "Score"))
 }
 
 

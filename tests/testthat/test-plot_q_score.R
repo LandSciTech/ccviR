@@ -21,19 +21,19 @@ make_exp_df <- function(exp_lev){
 test_that("single plot works", {
   expect_s3_class(plot_q_score(calc_vulnerability(make_exp_df(1), make_vuln_df("nm", 0.5),
                                                       tax_grp = "Bird") %>%
-                                 summarize_scenarios() %>% .$question_score_summary),
+                                 select(scenario_name, vuln_df) %>%
+                                 tidyr::unnest(vuln_df)),
                   "plotly")
 })
 
 test_that("multi plot works", {
   exp_df2 <- bind_rows(make_exp_df(1), make_exp_df(2))
   exp_df2[2,1] <- "Scn2"
-
-  expect_s3_class(calc_vulnerability(exp_df2,
-                                     make_vuln_df("nm", 2, use_spatial = FALSE),
-                                     tax_grp = "Bird") %>%
-                    summarize_scenarios() %>%
-                    .$question_score_summary %>%
+  res <- calc_vulnerability(exp_df2,
+                            make_vuln_df("nm", 2, use_spatial = FALSE),
+                            tax_grp = "Bird")
+  expect_s3_class(select(res, scenario_name, vuln_df) %>%
+                    tidyr::unnest(vuln_df) %>%
                     plot_q_score(),
                   "plotly")
 })

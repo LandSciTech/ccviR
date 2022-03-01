@@ -540,7 +540,10 @@ ccvi_app <- function(...){
                 "influence on the overall calculated index. A score of negative ",
                 "one indicates none of the factors in the modelled response to",
                 " climate change section were completed"),
-              plotOutput("ind_score_plt", width = 600, height = 300),
+              # Might want to add something like this to change width dependent
+              # on n facets https://stackoverflow.com/questions/50914398/increase-plot-size-in-shiny-when-using-ggplot-facets
+
+              plotOutput("ind_score_plt"),
               textOutput("slr"),
               br(), br(),
               p("The score for each vulnerability factor is determined by the ",
@@ -549,7 +552,7 @@ ccvi_app <- function(...){
                 "whichever is most relevant to that factor. These scores are summed ",
                 "to determine the index. The plot below demonstrates which factors ",
                 "had the highest scores and how exposure impacted the score."),
-              plotly::plotlyOutput("q_score_plt", width = 700),
+              plotly::plotlyOutput("q_score_plt"),
 
               # helpful for testing
               # shinyjs::runcodeUI(),
@@ -1429,8 +1432,8 @@ ccvi_app <- function(...){
 
     output$q_score_plt <- plotly::renderPlotly({
       index_res() %>%
-        summarize_scenarios() %>%
-        .$question_score_summary %>%
+        select(scenario_name, vuln_df) %>%
+        tidyr::unnest(vuln_df) %>%
         plot_q_score()
     })
 

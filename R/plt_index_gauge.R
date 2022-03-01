@@ -43,6 +43,9 @@ plt_index_gauge <- function(ind, ind_min = ind, ind_max = ind){
     ggplot2::theme_minimal()+
     ggplot2::theme(panel.border = ggplot2::element_rect(fill = NA),
                    axis.text = ggplot2::element_text(size = 12))
+  # Add this to make half pie chart
+  # scale_y_continuous(..., limits = c(0,200))
+  # coord_polar(theta ='y', start= -pi/2)
 }
 
 plt_mig_exp_gauge <- function(ind, ind_min = ind, ind_max = ind){
