@@ -56,7 +56,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                    Moisture = "cmd",
                    `Climate change exposure index` = "ccei",
                    `Historical thermal niche` = "htn",
-                   `Range Change` = "hs_rast")
+                   `Modeled range change` = "hs_rast")
 
   poly_nms <- list(`Assessment area`= "assess_poly",
                    `Non-breeding range` = "nonbreed_poly",

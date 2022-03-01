@@ -87,7 +87,7 @@ ccvi_app <- function(...){
                                tags$li(labelMandatory("Species range polygon")),
                                tags$li(labelMandatory("Assessment area polygon")),
                                tags$li("Non-breeding range polygon"),
-                               tags$li("Projected habitat change raster"),
+                               tags$li("Projected range change raster"),
                                tags$li("Physiological thermal niche (PTN) polygon. ",
                                        "PTN polygon should include cool or cold environments ",
                                        "that the species occupies that may be lost or reduced ",
@@ -201,15 +201,16 @@ ccvi_app <- function(...){
                 verbatimTextOutput("nonbreed_poly_pth_out", placeholder = TRUE),
                 br(),
 
-                p(strong("Projected habitat change raster"), "To select multiple scenarios hold ctrl"),
+                p(strong("Projected range change raster"), "To select multiple scenarios hold ctrl"),
                 shinyFilesButton("hs_rast_pth", "Choose file",
-                                 "Projected habitat change raster file", multiple = TRUE),
+                                 "Projected range change raster file", multiple = TRUE),
+
                 verbatimTextOutput("hs_rast_pth_out", placeholder = TRUE),
                 br(),
                 conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
-                                 strong("Classification of habitat suitability raster"),
+                                 strong("Classification of projected range change raster"),
                                  p("Enter the range of values in the raster corresponding to ",
-                                   "lost, maintained, gained and not suitable habitat."),
+                                   "lost, maintained, gained and not suitable."),
                                  strong("Lost: "),
                                  tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
                                  tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
@@ -474,7 +475,7 @@ ccvi_app <- function(...){
               br(),
               div(
                 id = "D2_3",
-                h4("Modelled change in habitat suitability"),
+                h4("Modeled future range change"),
                 br(),
                 div(id = "missing_hs",
                     HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
@@ -551,8 +552,8 @@ ccvi_app <- function(...){
               plotly::plotlyOutput("q_score_plt", width = 700),
 
               # helpful for testing
-              # verbatimTextOutput("test_vulnQ"),
-              # tableOutput("vuln_df_tbl"),
+              # shinyjs::runcodeUI(),
+
               br(), br(),
               downloadButton("downloadData", "Download results as csv"),
               downloadButton("downloadDefs", "Download column definitions"),
@@ -701,12 +702,15 @@ ccvi_app <- function(...){
       if(is.integer(input$clim_var_dir)){
         if(!is.null(restored$yes)){
           return(clim_dir_pth_restore())
-        }
+        } else if (isTRUE(getOption("shiny.testmode"))) {
+          return(system.file("extdata/clim_files/processed", package = "ccviR"))
+        } else {
           return(NULL)
-      } else {
+        }
+      }  else {
         return(parseDirPath(volumes, input$clim_var_dir))
       }
-      })
+    })
 
 
     file_pths <- reactive({
@@ -747,11 +751,7 @@ ccvi_app <- function(...){
     })
 
     clim_vars <- reactive({
-      if (isTRUE(getOption("shiny.testmode"))) {
-        root_pth <- system.file("extdata/clim_files/processed", package = "ccviR")
-      } else {
-        root_pth <- clim_dir_pth()
-      }
+      root_pth <- clim_dir_pth()
 
       req(root_pth)
       req(clim_readme)
@@ -1025,6 +1025,7 @@ ccvi_app <- function(...){
         rename_at(vars(contains("CCEI")),
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
         rename(`Scenario Name` = .data$scenario_name)
+
     }, align = "r")
 
     # When next button is clicked move to next panel
@@ -1465,6 +1466,9 @@ ccvi_app <- function(...){
     })
 
     exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))
+
+    # helpful for testing
+    #shinyjs::runcodeServer()
 
     output$downloadData <- downloadHandler(
       filename = function() {

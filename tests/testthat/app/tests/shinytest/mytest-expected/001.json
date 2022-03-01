@@ -22,6 +22,12 @@
       "cave_grnd_water": [
         false
       ],
+      "gain_mod": [
+        1
+      ],
+      "gain_mod_comm": [
+        ""
+      ],
       "CCVI_index": [
         "HV"
       ],
@@ -38,10 +44,10 @@
         3.5
       ],
       "MC_freq_EV": [
-        0.514
+        0.51
       ],
       "MC_freq_HV": [
-        0.486
+        0.49
       ],
       "MC_freq_MV": [
         0
@@ -294,6 +300,21 @@
       ],
       "D4_Comment": [
         ""
+      ],
+      "GCM or Ensemble name": [
+        "AdaptWest 13 CMIP6 AOGCM Ensemble"
+      ],
+      "Historical normal period": [
+        "1961-1990"
+      ],
+      "Future period": [
+        "2050s"
+      ],
+      "Emissions scenario": [
+        "SSP2-4.5"
+      ],
+      "Link to source": [
+        "https://adaptwest.databasin.org/pages/adaptwest-climatena/"
       ]
     }
   }

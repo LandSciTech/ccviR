@@ -21,12 +21,12 @@
 #'   considered part of the physiological thermal niche (See NatureServe
 #'   Guidelines for definition).
 #' @param hs_rast Optional. A raster with results from a model of the change in
-#'   habitat suitability caused by climate change.
+#'   the species' range caused by climate change.
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 #'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
 #'   details on the matrix format
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
-#'   in the modeled change in habitat under climate change
+#'   in the modeled range change under climate change
 #'
 #' @return a list with elements: \code{spat_table} the results of the spatial
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
@@ -203,11 +203,12 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
 
     if(any(raster::maxValue(hs_rast) > 3)){
-      stop("Reclassified habitat raster values outside the expected range of 0-3 were found. ",
-           "Check that all habitat raster values are included in the reclassification matrix")
+      stop("Reclassified range change raster values outside the expected range of 0-3 were found. ",
+           "Check that all range change raster values are included in the reclassification matrix")
     }
 
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
+
   }
 
   # Range size

@@ -185,8 +185,13 @@
                             Emissions_scenario = input$clim_em_scenario,
                             Link_to_source = input$clim_dat_url)
 
-      out_dir <- shinyFiles::parseDirPath(volumes,
-                                          input$out_folder)
+      if (isTRUE(getOption("shiny.testmode"))) {
+        out_dir <- system.file("extdata/clim_files/processed", package = "ccviR")
+      } else {
+        out_dir <- shinyFiles::parseDirPath(volumes,
+                                            input$out_folder)
+
+      }
 
       if(file.exists(fs::path(out_dir, "climate_data_readme.csv"))){
         clim_readme_cur <- read.csv(fs::path(out_dir, "climate_data_readme.csv"))
@@ -198,15 +203,14 @@
       write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
                 row.names = FALSE)
 
+
       if(input$data_as == "folder"||isTRUE(getOption("shiny.testmode"))){
 
         if (isTRUE(getOption("shiny.testmode"))) {
           in_dir <- system.file("extdata/clim_files/raw", package = "ccviR")
-          out_dir <- system.file("extdata/clim_files/processed", package = "ccviR")
         } else {
           in_dir <- shinyFiles::parseDirPath(volumes,
                                              input$clim_var_dir)
-
         }
 
         req(in_dir)
