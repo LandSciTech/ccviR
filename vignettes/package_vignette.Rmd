@@ -81,7 +81,7 @@ The following spatial data sets can be used for each species:
 * Species range polygon (required)
 * Assessment area polygon (required)
 * Non-breeding range polygon
-* Projected habitat change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
+* Projected range change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
 * Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.
 
 For this example all of the data is provided with the package. 
@@ -93,7 +93,7 @@ HS_rast_high <- raster(file.path(data_pth, "HS_rast_high.tif"))
 PTN_poly <- read_sf(file.path(data_pth, "PTN_poly.shp"), agr = "constant")
 nonbreed_poly <- read_sf(file.path(data_pth, "nonbreed_poly.shp"), agr = "constant")
 
-# the habitat change raster has values from 0 to 7, this matrix is used to
+# the range change raster has values from 0 to 7, this matrix is used to
 # convert them to the 4 classes described above.
 hs_rcl_mat <- matrix(c(c(0:7), c(0, 1, 2,2,2,2,2,3)), ncol = 2)
 ```

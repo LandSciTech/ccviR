@@ -1,4 +1,4 @@
-#' Get the proportion of habitat gained and lost in range
+#' Calculate changes in the range in the assessment area
 #'
 #' range_change is (gain - loss)/(loss + maintained) which is change in range
 #' relative to current size of range

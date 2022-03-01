@@ -11,7 +11,7 @@ CCVI_conf_index,Level of confidence in the CCVI index result. This is based on t
 mig_exposure,Index of migratory exposure
 b_c_score,"Total score from sections B and C the indirect exposure, sensitivity and adaptive capacity questions"
 d_score,Total score from section D the modelled response to climate change section
-gain_mod, Gain modifier. Used to down-weight modelled habitat gains
+gain_mod, Gain modifier. Used to down-weight modelled range gains
 gain_mod_comm, Explaination for gain modifier choice
 MC_freq_*,The proportion of Monte Carlo runs with each CCVI index result
 MAT_#,The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
