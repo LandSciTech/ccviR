@@ -11,10 +11,8 @@
 #'
 #' @noRd
 
-plt_index_gauge <- function(ind, type = FALSE, codes, nms, cols){
-  if(missing(codes)){
-    type = "index"
-  }
+plt_index_gauge <- function(ind, type, codes, nms, cols){
+
   if(type == "index"){
     codes <- c("IE","LV", "MV", "HV", "EV")
     nms <- c("Insufficient Evidence",
@@ -30,15 +28,15 @@ plt_index_gauge <- function(ind, type = FALSE, codes, nms, cols){
     cols <- c("#808080", "#008000", "#FF8C00",
               "#FF0000")
     if(ind %in% nms){
-
+      ind <- codes[which(ind == nms)]
     }
   }
   # parameters related to annotation placement
   # inner circle radius
-  r1 <- 0.38
+  r1 <- 0.37
 
   # middle of arch circle radius
-  r2 <- 0.43
+  r2 <- 0.42
 
   # Number of levels in index
   n <- length(codes)
@@ -50,7 +48,7 @@ plt_index_gauge <- function(ind, type = FALSE, codes, nms, cols){
 
   # circle centre
   cent_x <- 0.5
-  cent_y <- 0.25
+  cent_y <- 0.0
 
   tickannot <- tibble(name = nms,
                       code = codes,
@@ -62,23 +60,27 @@ plt_index_gauge <- function(ind, type = FALSE, codes, nms, cols){
                                        to = 100, by = 100/n)) %>%
     mutate(text_x = ifelse(text_ang > 90*pi/180, cent_x + text_x,
                            cent_x - text_x),
-           text_y = cent_y + text_y)
+           text_y = cent_y + 2*text_y)
 
 
   val_df <- data.frame(code = ind) %>%
     left_join(tickannot, by = "code") %>%
     mutate(arrow_y = r1*sin(text_ang),
            arrow_x = sqrt(r1^2 - arrow_y^2)) %>%
-    mutate(arrow_x = ifelse(text_ang > 90*pi/180, arrow_x*-1, arrow_x))
+    mutate(arrow_x = ifelse(text_ang > 90*pi/180, arrow_x*-1, arrow_x),
+           arrow_y = arrow_y*2)
 
-  annot <- list(x = 0.5, y = 0.18, text = val_df$name,
+  annot <- list(x = cent_x, y = cent_y , text = val_df$name,
                 showarrow = FALSE,
-                font = list(color = val_df$col, size = 16, face = "bold"))
+                font = list(color = val_df$col, size = 16, face = "bold"),
+                bgcolor = "white",
+                xanchor = "center",
+                yanchor = "middle")
 
   #Note changing ht or wd will mess up placement of annotations
 
   plt <- plotly::plot_ly(domain = list(x = c(0, 1), y = c(0, 1)),
-                         height = 300, width = 300)  %>%
+                         height = 150, width = 300)  %>%
     plotly::add_annotations(x = cent_x-val_df$arrow_x, y = cent_y+val_df$arrow_y ,
                             text = ".",
                             ax = cent_x, ay = cent_y,

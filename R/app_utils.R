@@ -131,7 +131,7 @@ index_res_text <- function(ind_freq){
                             index == "MV" ~ "#FFC125",
                             index == "LV" ~ "green",
                             TRUE ~ "grey"),
-           def = case_when(index == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an indexex score.",
+           def = case_when(index == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an index score.",
                             index == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.",
                             index == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.",
                             index == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
