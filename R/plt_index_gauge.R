@@ -25,7 +25,7 @@ plt_index_gauge <- function(ind, type, codes, nms, cols){
   } else if(type == "mig_exp") {
     codes <- c("N/A", "L", "M", "H")
     nms <- c("N/A", "Low", "Moderate", "High")
-    cols <- c("#808080", "#008000", "#FF8C00",
+    cols <- c("#808080", "#008000", "#FFC125",
               "#FF0000")
     if(ind %in% nms){
       ind <- codes[which(ind == nms)]

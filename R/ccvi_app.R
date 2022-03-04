@@ -499,19 +499,9 @@ ccvi_app <- function(...){
             div(
               id = "formData",
               #style = 'width:800px;',
+              h3("Results"),
               h4("Calculate or re-calculate the index"),
               actionButton("calcIndex", "Calculate", class = "btn-primary"),
-              h3("Results"),
-              p("The Climate Change Vulnerability Index for",
-                strong(textOutput("species_name", inline = TRUE)), "is:"),
-              shinycssloaders::withSpinner(htmlOutput("index")),
-              plotOutput("ind_gauge", inline = FALSE, height = "80px"),
-              br(),
-              br(),
-              p("The climate exposure in the migratory range is:"),
-              h5(htmlOutput("mig_exp")),
-              plotOutput("mig_exp_gauge", inline = FALSE, height = "80px"),
-              br(),
 
               h4("Data completeness"),
               tableOutput("n_factors"),
@@ -1367,27 +1357,25 @@ ccvi_app <- function(...){
     output$species_name <- renderText(input$species_name)
 
     # summarize across scenarios
-    index_sum <- reactive(summarize_scenarios(index_res()))
+    # index_sum <- reactive(summarize_scenarios(index_res()))
 
-    output$index <- renderText({
-      req(index_sum())
-      index_res_text(index_sum()$index_freq)
-    })
+    observeEvent(input$calcIndex, {
+      removeUI(
+        selector = "#*index_result*"
+      )
 
-     output$ind_gauge <- renderPlot({
-      plt_index_gauge(index_sum()$index_stats$index_mode,
-                      index_sum()$index_stats$index_min,
-                      index_sum()$index_stats$index_max)
-    })
+      ind_ls <- index_res() %>% arrange(desc(scenario_name)) %>% split(index_res()$scenario_name)
 
-    output$mig_exp <- renderText({
-      mig_exp_text(index_sum()$mig_freq)
-    })
+      purrr::map(1:length(ind_ls),
+                 ~insertUI(selector = paste0("#", "calcIndex"),
+                           where = "afterEnd",
+                           ui = indexOutUI(paste0("index_result",
+                                                  .x))))
 
-    output$mig_exp_gauge <- renderPlot({
-      plt_mig_exp_gauge(index_sum()$mig_stats$mig_mode,
-                        index_sum()$mig_stats$mig_min,
-                        index_sum()$mig_stats$mig_max)
+      purrr::map2(ind_ls, 1:length(ind_ls),
+                  ~indexOutServer(paste0("index_result",
+                                         .y),
+                                  reactive(.x)))
     })
 
     output$n_factors <- renderTable({

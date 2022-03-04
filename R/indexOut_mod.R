@@ -1,23 +1,34 @@
 
 indexOutUI <- function(id) {
-  tagList(
-    fluidRow(htmlOutput(NS(id, "scenario_name"))),
-    fluidRow(column(width = 6,
-                    align = "center",
-                    h4("Climate Change Vulnerability Index"),
-                    plotly::plotlyOutput(NS(id, "ind_gauge"), height = "150px",
-                                         inline = TRUE),
-                    htmlOutput(NS(id, "ind_def"))),
-             column(width = 6,
-                    align = "center",
-                    h4("Migratory Exposure Index"),
-                    plotly::plotlyOutput(NS(id, "mig_exp_gauge"))))
-  )
+    uiOutput(NS(id, "index_result"), inline = TRUE)
 }
 
 indexOutServer <- function(id, ind_df) {
   moduleServer(id, function(input, output, session) {
     stopifnot(is.reactive(ind_df))
+
+    output$index_result <- renderUI({
+      tagList(
+        #wellPanel(
+          fluidRow(column(12, htmlOutput(NS(id, "scenario_name")))),
+          fluidRow(column(width = 6,
+                          align = "center",
+                          h4("Climate Change Vulnerability Index"),
+                          plotly::plotlyOutput(NS(id, "ind_gauge"), height = "150px",
+                                               inline = TRUE),
+                          htmlOutput(NS(id, "ind_def"))),
+                   column(width = 6,
+                          align = "center",
+                          h4("Migratory Exposure Index"),
+                          plotly::plotlyOutput(NS(id, "mig_exp_gauge"), height = "150px",
+                                               inline = TRUE)),
+          ),
+          hr(style="border-color: grey;",
+             .noWS = c("before", "after", "outside", "after-begin", "before-end"))
+        #)
+      )
+    })
+
     output$scenario_name <- renderText(paste(h4(style = "text-align: left;",
                                           ind_df()$scenario_name)))
 
@@ -29,7 +40,7 @@ indexOutServer <- function(id, ind_df) {
                 index == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
                 index == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.",
                 TRUE ~ "")
-      paste(p(style = "text-align: left;", def))
+      paste(p(style = "text-align: left;", def, .noWS = "after"))
     })
 
     output$ind_gauge <- plotly::renderPlotly({
@@ -45,9 +56,10 @@ indexOutServer <- function(id, ind_df) {
 
 #'
 #'
-#' @examples
+#'  @examples
 #' ui <- fluidPage(
-#'   indexOutUI("index_out")
+#'   indexOutUI("index_out"),
+#'   p("some other text")
 #' )
 #'
 #' server <- function(input, output, session) {
@@ -58,7 +70,33 @@ indexOutServer <- function(id, ind_df) {
 #' }
 #'
 #' shinyApp(ui, server)
-
-
+#'
+#' # with multiple scenarios
+#' ui <- fluidPage(
+#'   h4("Calculate or re-calculate the index"),
+#'   actionButton("calcIndex", "Calculate", class = "btn-primary")
+#' )
+#'
+#' server <- function(input, output, session) {
+#'
+#'   ind_df <- reactive(data.frame(scenario_name = c("Scenario 1", "Scenario 2"),
+#'                       index = c("HV", "LV"),
+#'                       mig_exp = c("M", "H")))
+#'
+#'   observeEvent(input$calcIndex, {
+#'     ind_ls <- ind_df() %>% arrange(desc(scenario_name)) %>% split(ind_df()$scenario_name)
+#'
+#'     purrr::map(ind_ls, ~insertUI(selector = paste0("#", "calcIndex"),
+#'                                  where = "afterEnd",
+#'                                  ui = indexOutUI(paste0("index_result",
+#'                                                         .x$scenario_name))))
+#'
+#'     purrr::map(ind_ls, ~indexOutServer(paste0("index_result",
+#'                                               .x$scenario_name),
+#'                                        reactive(.x)))
+#'   })
+#' }
+#'
+#' shinyApp(ui, server)
 
 
