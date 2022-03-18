@@ -43,13 +43,16 @@ plot_q_score <- function(vuln_df){
   }
 
   vuln_df <- mutate(vuln_df,
-                    score = ifelse(score < 0, 0, score),
+                    score = ifelse(score <= 0, 0.001, score),
                     custom_tooltip = paste0(Question, ":\n",
                                             "Exposure Multiplier: ", exp, "\n",
-                                            "Score: ", score)) %>%
+                                            "Score: ", round(score, 2))) %>%
     filter(!is.na(score))
 
-  plt <- ggplot2::ggplot(vuln_df, ggplot2::aes(x = Code, y = score, text = custom_tooltip))+
+  plt <- ggplot2::ggplot(vuln_df,
+                         ggplot2::aes(x = Code, y = score, text = custom_tooltip))+
+    # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
+    ggplot2::geom_point(size = 0.1, color = "grey35")+
     ggplot2::geom_col()+
     ggplot2::facet_wrap(~scenario_name, ncol = 3)+
     ggplot2::labs(x = "Question", y = "Score")+
