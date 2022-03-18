@@ -8,10 +8,11 @@
 #' @param codes character. Options for ind. Should be short 1-3 letters
 #' @param nms character. Long form names to go with codes
 #' @param cols character. Colours to use for each code
+#' @param ttl character. Title for the plot
 #'
 #' @noRd
 
-plt_index_gauge <- function(ind, type, codes, nms, cols){
+plt_index_gauge <- function(ind, type, codes, nms, cols, ttl){
 
   if(type == "index"){
     codes <- c("IE","LV", "MV", "HV", "EV")
@@ -22,6 +23,7 @@ plt_index_gauge <- function(ind, type, codes, nms, cols){
                "Extremely Vulnerable")
     cols <- c("#808080", "#008000", "#FFC125", "#FF8C00",
               "#FF0000")
+    ttl <- "Climate Change Vulnerability Index"
   } else if(type == "mig_exp") {
     codes <- c("N/A", "L", "M", "H")
     nms <- c("N/A", "Low", "Moderate", "High")
@@ -30,13 +32,14 @@ plt_index_gauge <- function(ind, type, codes, nms, cols){
     if(ind %in% nms){
       ind <- codes[which(ind == nms)]
     }
+    ttl <- "Migratory Exposure Index"
   }
   # parameters related to annotation placement
   # inner circle radius
   r1 <- 0.37
 
   # middle of arch circle radius
-  r2 <- 0.42
+  r2 <- 0.43
 
   # Number of levels in index
   n <- length(codes)
@@ -80,7 +83,7 @@ plt_index_gauge <- function(ind, type, codes, nms, cols){
   #Note changing ht or wd will mess up placement of annotations
 
   plt <- plotly::plot_ly(domain = list(x = c(0, 1), y = c(0, 1)),
-                         height = 150, width = 300)  %>%
+                         height = 190, width = 300)  %>%
     plotly::add_annotations(x = cent_x-val_df$arrow_x, y = cent_y+val_df$arrow_y ,
                             text = ".",
                             ax = cent_x, ay = cent_y,
@@ -110,7 +113,7 @@ plt_index_gauge <- function(ind, type, codes, nms, cols){
                       )) %>%
     plotly::config(displayModeBar = FALSE, displaylogo = FALSE,
                    staticPlot = FALSE) %>%
-    plotly::layout(margin = list(l = 10,r = 10,b = 10,t = 10), annotations = annot)
+    plotly::layout(title = list(text = ttl), margin = list(l = 10,r = 10,b = 10,t = 40), annotations = annot)
 
   return(plt)
 }
