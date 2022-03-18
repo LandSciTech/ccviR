@@ -238,7 +238,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
     brs <- c(-1, 20.8, 26.3, 31.8, 50)
 
-    rcl_tbl <- matrix(c(brs[1:4], brs[2:5], 1:4), ncol = 3)
+    rcl_tbl <- matrix(c(brs[1:4], brs[2:5], rev(1:4)), ncol = 3)
 
     dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl)
 
@@ -389,7 +389,7 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
     stop("shift must be 0, 1 or -1 not", shift, call. = FALSE)
   }
 
-  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], 1:6), ncol = 3)
+  rcl_tbl <- matrix(c(brs[1:6], brs[2:7], rev(1:6)), ncol = 3)
 
   raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite)
 

@@ -953,8 +953,8 @@ ccvi_app <- function(...){
         rename(`Exposure Multiplier` = .data$temp_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "High - 1") %>%
-                    stringr::str_replace("Class 6", "Low - 6") %>%
+        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "Low - 1") %>%
+                    stringr::str_replace("Class 6", "High - 6") %>%
                     stringr::str_remove("Class"),
                   .data$`Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(.data$`Exposure Multiplier`[1]),
@@ -980,8 +980,8 @@ ccvi_app <- function(...){
         rename(`Exposure Multiplier` = .data$moist_exp_cave) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                             names_to = "Exposure Class", values_to = "Proportion of Range") %>%
-        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "High - 1") %>%
-                    stringr::str_replace("Class 6", "Low - 6") %>%
+        transmute(`Exposure Class` = stringr::str_replace(.data$`Exposure Class`, "Class 1", "Low - 1") %>%
+                    stringr::str_replace("Class 6", "High - 6") %>%
                     stringr::str_remove("Class"),
                   .data$`Proportion of Range`,
                   `Exposure Multiplier` = c(as.character(.data$`Exposure Multiplier`[1]),
