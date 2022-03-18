@@ -57,9 +57,7 @@ plot_q_score <- function(vuln_df){
     ggplot2::facet_wrap(~scenario_name, ncol = 3)+
     ggplot2::labs(x = "Question", y = "Score")+
     ggplot2::scale_x_discrete(limits = rev)+
-    ggplot2::theme_classic()+
-    ggplot2::theme(strip.background = ggplot2::element_blank())+
-    ggplot2::coord_flip()
+    ggplot2::coord_flip(expand = FALSE)
 
   plotly::ggplotly(plt, tooltip = "text")
 

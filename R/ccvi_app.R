@@ -37,6 +37,13 @@ ccvi_app <- function(testmode_in, ...){
    #header { background: #fff; border-bottom: 1px solid #ddd; margin: -20px -15px 0; padding: 15px 15px 10px; }
   "
 
+  # set theme
+  my_theme <- ggplot2::theme_classic() +
+    ggplot2::theme(text = ggplot2::element_text(size = 12),
+          strip.background = ggplot2::element_blank())
+
+  ggplot2::theme_set(my_theme)
+
   # Header #=================================
   ui <-  function(request){
     fluidPage(
@@ -533,7 +540,7 @@ ccvi_app <- function(testmode_in, ...){
               # Might want to add something like this to change width dependent
               # on n facets https://stackoverflow.com/questions/50914398/increase-plot-size-in-shiny-when-using-ggplot-facets
 
-              plotOutput("ind_score_plt"),
+              plotOutput("ind_score_plt", height = "300px"),
               textOutput("slr"),
               br(), br(),
               p("The score for each vulnerability factor is determined by the ",
@@ -1406,15 +1413,13 @@ ccvi_app <- function(testmode_in, ...){
       index_res() %>% select(scenario_name, index_conf) %>%
         tidyr::unnest(index_conf) %>%
         ggplot2::ggplot(ggplot2::aes(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
-                            y = frequency,
-                            fill = scenario_name))+
+                            y = frequency))+
         ggplot2::geom_col(position = "dodge")+
         ggplot2::labs(x = "Index",
                       y = "Proportion of Runs",
-                      main = "Monte Carlo Simulation Results",
-                      fill = "Scenario Name")+
+                      main = "Monte Carlo Simulation Results")+
         ggplot2::ylim (c(NA, 1))+
-        ggplot2::theme_classic()
+        ggplot2::facet_wrap(~scenario_name, ncol = 3)
 
     })
 

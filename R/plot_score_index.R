@@ -48,11 +48,11 @@ plot_score_index <- function(score_df){
 
   score_lim <- mutate(score_pt,
                      d_score_lim = ifelse(d_score > 7, d_score + 1, 8),
-                     b_c_score_lim = ifelse(b_c_score > 20, b_c_score + 5, 20)) %>%
+                     b_c_score_lim = ifelse(b_c_score > 18, b_c_score + 5, 20)) %>%
     summarise(across(contains("lim"), .fns = max))
 
 
-  levs <- rev(c("EV", "HV", "MV", "LV", "IE"))
+  levs <- c("EV", "HV", "MV", "LV", "IE")
 
   comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
     transmute(Dindex,
@@ -83,14 +83,13 @@ plot_score_index <- function(score_df){
 
   ggplot2::ggplot(score_tbl, ggplot2::aes(b_c_score, d_score, fill = value))+
     ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0.5)+
-    ggplot2::coord_fixed(xlim = c(0, score_lim$b_c_score_lim),
+    ggplot2::coord_cartesian(xlim = c(0, score_lim$b_c_score_lim),
                          ylim = c(-1.5, score_lim$d_score_lim))+
-    ggplot2::scale_fill_manual(values = c("#008000", "#FFC125", "#FF8C00", "#FF0000"))+
+    ggplot2::scale_fill_manual(values = rev(c("#008000", "#FFC125", "#FF8C00", "#FF0000")))+
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(),
                                 breaks = c(-1:score_lim$d_score_lim))+
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(),
                                 breaks = scales::breaks_extended(10))+
-    ggplot2::theme_classic()+
     ggplot2::geom_point(data = score_pt,
                         ggplot2::aes(b_c_score, d_score, shape = scenario_name),
                         stroke = 2,
