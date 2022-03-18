@@ -20,14 +20,18 @@
 #' }
 run_ccvi_app <- function(file_dir = getwd(),
                          launch.browser = TRUE,
-                         port = getOption("shiny.port")){
+                         port = getOption("shiny.port"),
+                         test.mode = FALSE){
+  testmode_in <- options(shiny.testmode = test.mode)
+
   if(file_dir == "demo"){
     file_dir <- system.file("extdata", package = "ccviR")
   }
 
-  shiny::shinyOptions(file_dir = file_dir, launch.browser = launch.browser,
-                      port = port)
+  shiny::shinyOptions(file_dir = file_dir)
 
-  ccvi_app()
+  ccvi_app(testmode_in = testmode_in,
+           launch.browser = launch.browser,
+           port = port)
 
 }

@@ -12,7 +12,7 @@
 #' @importFrom tmap tmap_leaflet
 #'
 #' @noRd
-ccvi_app <- function(...){
+ccvi_app <- function(testmode_in, ...){
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
 
@@ -1545,8 +1545,9 @@ ccvi_app <- function(...){
 
   }
 
+  onStop(function(){options(testmode_in)})
+
   shinyApp(ui, server, enableBookmarking = "server",
-           options = list(launch.browser = getShinyOption("launch.browser"),
-                          port = getShinyOption("port")))
+           options = list(...))
 }
 
