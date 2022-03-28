@@ -1,2 +1,2 @@
 pkgload::load_all(".")
-run_ccvi_app()
+run_ccvi_app("demo")
