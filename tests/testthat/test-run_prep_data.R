@@ -10,7 +10,7 @@ test_that("works with demo data",{
                 out_folder = file.path(pth_base, "processed"),
                 reproject = FALSE)
 
-  expect_length(list.files(file.path(pth_base, "processed")), 10)
+  expect_length(list.files(file.path(pth_base, "processed")), 11)
 
   # # to start delete contents of processed data
   # file.remove(list.files(file.path(pth_base, "processed"), full.names = TRUE))
@@ -37,7 +37,7 @@ test_that("works with demo data",{
                 overwrite = TRUE,
                 reproject = FALSE)
 
-  expect_length(list.files(file.path(pth_base, "processed")), 10)
+  expect_length(list.files(file.path(pth_base, "processed")), 11)
 
 })
 
@@ -128,8 +128,8 @@ test_that("multiple scenarios works",{
   mat_85 <- raster::raster(file.path(pth_base,
                                      "processed/multi_scenario/MAT_reclassRCP8.5.tif"))
 
-  expect_gt(raster::freq(mat_85)[1,2], raster::freq(mat_26)[1,2])
-  expect_gt(raster::freq(mat_85)[1,2], raster::freq(mat_45)[1,2])
+  expect_gt(raster::freq(mat_85)[4,2], raster::freq(mat_26)[6,2])
+  expect_gt(raster::freq(mat_85)[4,2], raster::freq(mat_45)[6,2])
 })
 
 # remove the temp directory

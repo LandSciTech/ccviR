@@ -4,7 +4,7 @@
 \alias{plot_score_index}
 \title{Visualize the D score, B/C score and index}
 \usage{
-plot_score_index(b_c_score, d_score, n_d_factors)
+plot_score_index(score_df)
 }
 \arguments{
 \item{b_c_score}{Total score in the B and C sections.}

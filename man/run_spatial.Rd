@@ -32,14 +32,14 @@ considered part of the physiological thermal niche (See NatureServe
 Guidelines for definition).}
 
 \item{hs_rast}{Optional. A raster with results from a model of the change in
-habitat suitability caused by climate change.}
+the species' range caused by climate change.}
 
 \item{hs_rcl}{a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
 details on the matrix format}
 
 \item{gain_mod}{a number between 0 and 1 that can be used to down-weight gains
-in the modeled change in habitat under climate change}
+in the modeled range change under climate change}
 }
 \value{
 a list with elements: \code{spat_table} the results of the spatial

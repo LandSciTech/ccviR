@@ -7,7 +7,8 @@
 run_ccvi_app(
   file_dir = getwd(),
   launch.browser = TRUE,
-  port = getOption("shiny.port")
+  port = getOption("shiny.port"),
+  test.mode = FALSE
 )
 }
 \arguments{
@@ -16,6 +17,9 @@ run_ccvi_app(
 \item{launch.browser}{logical. Run CCVI app in browser?}
 
 \item{port}{If launch.browser is FALSE, specify port to run CCVI app}
+
+\item{test.mode}{Should the app be launched using shiny test.mode. Only set
+to TRUE for debugging.}
 }
 \value{
 A shiny app.
