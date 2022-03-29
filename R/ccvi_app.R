@@ -1091,6 +1091,9 @@ ccvi_app <- function(...){
                        com = prevCom)
     })
 
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2ai", suspendWhenHidden = FALSE)
+
     # C2aii
     observe({
       req(doSpatial())
@@ -1135,6 +1138,9 @@ ccvi_app <- function(...){
                        selected = box_val,
                        com = prevCom)
     })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
 
     # C2bi
     observe({
@@ -1181,6 +1187,9 @@ ccvi_app <- function(...){
                        selected = box_val,
                        com = prevCom)
     })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2bi", suspendWhenHidden = FALSE)
 
     # D2 and D3
     observe({
@@ -1234,6 +1243,9 @@ ccvi_app <- function(...){
                        com = prevCom)
     })
 
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_D2", suspendWhenHidden = FALSE)
+
     output$box_D3 <- renderUI({
       # get previous comment
       prevCom <- isolate(input$comD3)
@@ -1259,6 +1271,9 @@ ccvi_app <- function(...){
                        com = prevCom)
     })
 
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_D3", suspendWhenHidden = FALSE)
+
     # When submit button is clicked move to next panel
     observeEvent(input$next4, {
       updateTabsetPanel(session, "tabset",
@@ -1271,6 +1286,7 @@ ccvi_app <- function(...){
 
     # Gather all the form inputs
     vuln_df <- eventReactive(input$calcIndex, {
+      doSpatial()
         vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
         data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
         as_tibble(data)
@@ -1302,6 +1318,7 @@ ccvi_app <- function(...){
     # output$vuln_df_tbl <- renderTable(coms_df() %>% arrange(Code))
 
     index_res <- reactive({
+      req(input$calcIndex)
       z_df <- data.frame(Code = c("Z2", "Z3"),
                          Value1 = as.numeric(c(input$cave, input$mig)))
 
