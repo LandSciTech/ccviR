@@ -44,7 +44,7 @@ MCMT <- rast
 values(MCMT) <- seq(5, 10, length.out = 10000) %>%
   sort() %>% round()
 MWMT <- MCMT
-values(MWMT) <- seq(10, 20, length.out = 10000) %>%
+values(MWMT) <- seq(20, 45, length.out = 10000) %>%
   sort() %>% round()
 
 # MAP is scored based on the range where lower variation in species range is

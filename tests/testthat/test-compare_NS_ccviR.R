@@ -116,18 +116,18 @@ if(interactive()){
                      Migratory = ifelse(mig, "X", ""),
                      GRank = "",
                      SRank = "",
-                     `A >6.0F` = pull(exp_facts, MAT_1),
-                     `A 5.5F` = pull(exp_facts, MAT_2),
-                     `A 5.1F` = pull(exp_facts, MAT_3),
-                     `A 4.5F` = pull(exp_facts, MAT_4),
-                     `A 3.9F` = pull(exp_facts, MAT_5),
-                     `A <3.9F` = pull(exp_facts, MAT_6),
-                     `< -0.119` = pull(exp_facts, CMD_1),
-                     `-0.119` = pull(exp_facts, CMD_2),
-                     `-0.096` = pull(exp_facts, CMD_3),
-                     `-0.073` = pull(exp_facts, CMD_4),
-                     `-0.05` = pull(exp_facts, CMD_5),
-                     `>-0.028` = pull(exp_facts, CMD_6),
+                     `A >6.0F` = pull(exp_facts, MAT_6),
+                     `A 5.5F` = pull(exp_facts, MAT_5),
+                     `A 5.1F` = pull(exp_facts, MAT_4),
+                     `A 4.5F` = pull(exp_facts, MAT_3),
+                     `A 3.9F` = pull(exp_facts, MAT_2),
+                     `A <3.9F` = pull(exp_facts, MAT_1),
+                     `< -0.119` = pull(exp_facts, CMD_6),
+                     `-0.119` = pull(exp_facts, CMD_5),
+                     `-0.096` = pull(exp_facts, CMD_4),
+                     `-0.073` = pull(exp_facts, CMD_3),
+                     `-0.05` = pull(exp_facts, CMD_2),
+                     `>-0.028` = pull(exp_facts, CMD_1),
                      `>7` = pull(exp_facts, CCEI_4),
                      `6-7` = pull(exp_facts, CCEI_3),
                      `4-5` = pull(exp_facts, CCEI_2),
@@ -157,7 +157,7 @@ if(interactive()){
     mutate(across(contains("Value"), as.numeric)) %>%
     split(.$Species)
 
-  exp_ccviR <- exp_facts %>% mutate(species = sp_nm, tax_grp = taxa)
+  exp_ccviR <- exp_facts %>% mutate(species = sp_nm, tax_grp = taxa, range_size = 100)
   cols_to_add <- c(paste0("HTN_", 1:4), "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap")
   exp_ccviR[,cols_to_add] <- NA_real_
   exp_ccviR <- split(exp_ccviR, exp_ccviR$species)
@@ -172,7 +172,8 @@ if(interactive()){
   write.table(NS_table, "clipboard", sep="\t", row.names=FALSE)
 
   #
-  write.csv(NS_table, "tests/testthat/data/NS_table_in.csv")
+  write.csv(NS_table, "tests/testthat/data/NS_table_in.csv", row.names = FALSE)
+  shell.exec(file.path(getwd(),"tests/testthat/data/NS_table_in.csv"))
 
   # open the excel file
   shell.exec(file.path(getwd(), "tests/testthat/data",
@@ -194,7 +195,7 @@ if(interactive()){
 
   ## For ccviR
   ccviR_results <- future_map2(vuln_facts_ccviR, exp_ccviR,
-                               ~calc_vulnerability(exp_df = .y, vuln_df = .x,
+                               ~calc_vulnerability(spat_df = .y, vuln_df = .x,
                                                    tax_grp = .y$tax_grp))
 
   # make into a table similar to NS_table

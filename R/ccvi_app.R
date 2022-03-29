@@ -981,11 +981,11 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.character(spat_res()))
       exp_df <-  spat_res() %>% rowwise() %>%
         mutate(temp_exp = case_when(
-          MAT_1 > 50 ~ 2.4,
-          sum(MAT_1, MAT_2, na.rm = TRUE) >= 75 ~ 2,
-          sum(MAT_1, MAT_2, MAT_3, na.rm = TRUE) >= 60 ~ 1.6,
-          sum(MAT_1, MAT_2, MAT_3, MAT_4, na.rm = TRUE) >= 40 ~ 1.2,
-          sum(MAT_1, MAT_2, MAT_3, MAT_4, MAT_5, na.rm = TRUE) >= 20 ~ 0.8,
+          MAT_6 > 50 ~ 2.4,
+          sum(MAT_6, MAT_5, na.rm = TRUE) >= 75 ~ 2,
+          sum(MAT_6, MAT_5, MAT_4, na.rm = TRUE) >= 60 ~ 1.6,
+          sum(MAT_6, MAT_5, MAT_4, MAT_3, na.rm = TRUE) >= 40 ~ 1.2,
+          sum(MAT_6, MAT_5, MAT_4, MAT_3, MAT_2, na.rm = TRUE) >= 20 ~ 0.8,
           TRUE ~ 0.4
         ),
         temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
@@ -994,18 +994,17 @@ ccvi_app <- function(testmode_in, ...){
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
         rename(`Scenario Name` = .data$scenario_name,
                `Exposure Multiplier` = .data$temp_exp_cave)
-
     }, align = "r")
 
     output$cmd_tbl <- renderTable({
       req(!is.character(spat_res()))
       exp_df <-  spat_res() %>% rowwise() %>%
         mutate(moist_exp = case_when(
-          CMD_1 >= 80 ~ 2,
-          sum(CMD_1, CMD_2, na.rm = TRUE) >= 64 ~ 1.67,
-          sum(CMD_1, CMD_2, CMD_3, na.rm = TRUE) >= 48 ~ 1.33,
-          sum(CMD_1, CMD_2, CMD_3, CMD_4, na.rm = TRUE) >= 32 ~ 1,
-          sum(CMD_1, CMD_2, CMD_3, CMD_4, CMD_5, na.rm = TRUE) >= 16 ~ 0.67,
+          CMD_6 >= 80 ~ 2,
+          sum(CMD_6, CMD_5, na.rm = TRUE) >= 64 ~ 1.67,
+          sum(CMD_6, CMD_5, CMD_4, na.rm = TRUE) >= 48 ~ 1.33,
+          sum(CMD_6, CMD_5, CMD_4, CMD_3, na.rm = TRUE) >= 32 ~ 1,
+          sum(CMD_6, CMD_5, CMD_4, CMD_3, CMD_2, na.rm = TRUE) >= 16 ~ 0.67,
           TRUE ~ 0.33
         ),
         moist_exp_cave = round(.data$moist_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
@@ -1014,7 +1013,6 @@ ccvi_app <- function(testmode_in, ...){
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
         rename(`Scenario Name` = .data$scenario_name,
                `Exposure Multiplier` = .data$moist_exp_cave)
-
     }, align = "r")
 
     output$tbl_ccei <- renderTable({
@@ -1092,8 +1090,8 @@ ccvi_app <- function(testmode_in, ...){
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
-                     names_to = "Temperature Variation Class", values_to = "Proportion of Range") %>%
-        transmute(`Temperature Variation Class` = stringr::str_replace(.data$`Temperature Variation Class`, "Class 1", "Low - 1") %>%
+                     names_to = "Sensitivity Class", values_to = "Proportion of Range") %>%
+        transmute(`Sensitivity Class` = stringr::str_replace(.data$`Sensitivity Class`, "Class 1", "Low - 1") %>%
                     stringr::str_replace("Class 4", "High - 4") %>%
                     stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
         distinct()
@@ -1104,10 +1102,10 @@ ccvi_app <- function(testmode_in, ...){
       prevCom <- isolate(input$comC2ai)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res() %>%
-        mutate(C2ai = case_when(HTN_4 > 10 ~ 0,
-                                HTN_3 > 10 ~ 1,
-                                HTN_2 > 10 ~ 2,
-                                HTN_1 > 10 ~ 3,
+        mutate(C2ai = case_when(HTN_1 > 10 ~ 0,
+                                HTN_2 > 10 ~ 1,
+                                HTN_3 > 10 ~ 2,
+                                HTN_4 > 10 ~ 3,
                                 is.na(HTN_1) ~ NA_real_)) %>%
         pull(.data$C2ai) %>% unique()
 
@@ -1117,6 +1115,9 @@ ccvi_app <- function(testmode_in, ...){
                        selected = box_val,
                        com = prevCom)
     })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2ai", suspendWhenHidden = FALSE)
 
     # C2aii
     observe({
@@ -1164,6 +1165,9 @@ ccvi_app <- function(testmode_in, ...){
                        com = prevCom)
     })
 
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
+
     # C2bi
     observe({
       req(doSpatial())
@@ -1210,6 +1214,9 @@ ccvi_app <- function(testmode_in, ...){
                        selected = box_val,
                        com = prevCom)
     })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2bi", suspendWhenHidden = FALSE)
 
     # D2 and D3
     observe({
@@ -1282,6 +1289,9 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_D2", suspendWhenHidden = FALSE)
+
     output$box_D3 <- renderUI({
       # get previous comment
       prevCom <- isolate(input$comD3)
@@ -1323,6 +1333,9 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_D3", suspendWhenHidden = FALSE)
+
     # When submit button is clicked move to next panel
     observeEvent(input$next4, {
       updateTabsetPanel(session, "tabset",
@@ -1335,6 +1348,7 @@ ccvi_app <- function(testmode_in, ...){
 
     # Gather all the form inputs
     vuln_df <- eventReactive(input$calcIndex, {
+      doSpatial()
         vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
         data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
         as_tibble(data)
@@ -1351,6 +1365,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     index_res <- reactive({
+      req(input$calcIndex)
       z_df <- data.frame(Code = c("Z2", "Z3"),
                          Value1 = as.numeric(c(input$cave, input$mig)))
 

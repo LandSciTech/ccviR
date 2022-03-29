@@ -8,3 +8,5 @@ documents\*
 ^pkgdown$
 ^README\.Rmd$
 ^\.github$
+app.R
+rsconnect

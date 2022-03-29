@@ -65,8 +65,20 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   if(!is.null(rast_nm)){
     if(rast_nm == "hs_rast"){
       pal = c("grey", "#FF0000", "#FFC125", "#008000")
+      brks = 0:3
+    } else if(rast_nm %in% c("cmd", "mat")) {
+      pal = tmaptools::get_brewer_pal("YlOrBr", n = 6, plot = FALSE)
+      brks = 1:7
+      rast_style = "fixed"
+      rast_lbl = as.character(1:6)
+    } else if(rast_nm %in% c("ccei", "htn")) {
+      pal = tmaptools::get_brewer_pal("YlOrBr", n = 4, plot = FALSE)
+      brks = 1:5
+      rast_style = "fixed"
+      rast_lbl = as.character(1:4)
     } else {
       pal = NULL
+      brks = NULL
     }
   } else{
     if(!is.null(rast)){
@@ -92,7 +104,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   if(is.null(poly2)){
     out <-  tmap::tm_shape(rast, name = rast_nm)+
       tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
-                      palette = pal, group = rast_grp)+
+                      palette = pal, group = rast_grp, breaks = brks)+
       tmap::tm_shape(poly1, name = poly1_nm)+
       tmap::tm_borders()+
       tmap::tm_add_legend("fill", labels = c(poly1_nm),
@@ -109,7 +121,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   } else {
     out <-  tmap::tm_shape(rast, name = rast_nm)+
       tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
-                      palette = pal, group = rast_grp)+
+                      palette = pal, group = rast_grp, breaks = brks)+
       tmap::tm_shape(poly1, name = poly1_nm)+
       tmap::tm_borders()+
       tmap::tm_shape(poly2, name = poly2_nm)+
