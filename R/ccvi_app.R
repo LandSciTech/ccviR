@@ -4,12 +4,6 @@
 #' Create the ccviR Shiny application
 #'
 #'
-#' @import shiny
-#' @import dplyr
-#' @import sf
-#' @import shinyFiles
-#' @importFrom raster raster crs
-#' @importFrom tmap tmap_leaflet
 #'
 #' @noRd
 ccvi_app <- function(testmode_in, ...){

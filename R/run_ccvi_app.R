@@ -1,5 +1,3 @@
-
-
 #' Launch the CCVI app
 #'
 #' Launch the ccviR app to calculate the NatureServe Climate Change
@@ -9,6 +7,15 @@
 #' @param file_dir The directory to locate files from
 #' @param launch.browser logical. Run CCVI app in browser?
 #' @param port If launch.browser is FALSE, specify port to run CCVI app
+#' @param test.mode Should the app be launched using shiny test.mode. Only set
+#'   to TRUE for debugging.
+#'
+#' @import shiny
+#' @import dplyr
+#' @import sf
+#' @import shinyFiles
+#' @importFrom raster raster crs
+#' @importFrom tmap tmap_leaflet
 #'
 #' @export
 #'
