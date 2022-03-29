@@ -111,15 +111,17 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     clim_poly <- list.files(in_folder,
                        pattern = make_pat("clim_poly", ".shp"),
                        full.names = TRUE)
+
+    too_long <- purrr::map_lgl(lst(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
+                                   map, mwmt, mcmt, clim_poly),
+                               ~length(.x) > 1)
+    if(any(too_long)){
+      stop("more than one file in ", in_folder,
+           " matches the expected filename for ",
+           paste0(names(too_long)[which(too_long)], sep = ", "), call. = FALSE)
+    }
   }
-  too_long <- purrr::map_lgl(lst(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
-                                 map, mwmt, mcmt, clim_poly),
-                             ~length(.x) > 1)
-  if(any(too_long)){
-    stop("more than one file in ", in_folder,
-         " matches the expected filename for ",
-         paste0(names(too_long)[which(too_long)], sep = ", "), call. = FALSE)
-  }
+
 
   mat_norm <- raster::raster(mat_norm)
 
@@ -187,7 +189,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     ccei_reclass <- raster::reclassify(ccei, rcl_tbl)
 
     raster::writeRaster(ccei_reclass, file.path(out_folder, "CCEI_reclass.tif"),
-                        overwrite = overwrite)
+                        overwrite = overwrite, datatype = "INT2U")
 
     rm(ccei_reclass, rcl_tbl, brs, ccei)
   }
@@ -208,7 +210,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
       map <- raster::raster(map_pth)
       check_crs(map)
       raster::writeRaster(map, file.path(out_folder, "MAP.tif"),
-                          overwrite = overwrite)
+                          overwrite = overwrite, datatype = "INT2U")
       rm(map)
     }
   }
@@ -244,7 +246,7 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
     raster::writeRaster(dif_mt_reclass,
                         file.path(out_folder, "MWMT_MCMT_reclass.tif"),
-                        overwrite = overwrite)
+                        overwrite = overwrite, datatype = "INT2U")
   }
 
   # Climate data polygon boundary
@@ -391,7 +393,7 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
 
   rcl_tbl <- matrix(c(brs[1:6], brs[2:7], rev(1:6)), ncol = 3)
 
-  raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite)
+  raster::reclassify(rast_delta, rcl_tbl, filename = file_nm, overwrite = overwrite, datatype = "INT2U")
 
   return(rcl_tbl)
 }
