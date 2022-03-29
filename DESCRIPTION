@@ -43,7 +43,8 @@ Imports:
     stats,
     utils,
     scales,
-    shinyvalidate
+    shinyvalidate,
+    pkgload
 Suggests: 
     gdalUtils,
     testthat (>= 2.1.0),
