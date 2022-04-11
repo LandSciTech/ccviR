@@ -20,47 +20,32 @@ sample.vec <- function(x, ...) {
 calc_ind_monte <- function(vuln_df){
   vuln_df <- vuln_df %>%
     rowwise() %>%
-    mutate(val = sample.vec(na.omit(c(Value1, Value2, Value3, Value4)), size = 1)) %>%
+    mutate(Value1 = sample.vec(na.omit(c(Value1, Value2, Value3, Value4)), size = 1)) %>%
+    select(-c(Value2, Value3, Value4)) %>%
     ungroup() %>%
-    mutate(score = ifelse(val < 0, 0, exp * val))
+    mutate(score = ifelse(Value1 < 0, 0, exp * Value1))
 
-
-  b_c_score1 <- vuln_df %>% filter(stringr::str_detect(Code, "[B,C]\\d.*")) %>%
+  b_c_score <- vuln_df %>%
+    filter(stringr::str_detect(Code, "[B,C]\\d.*"), score >= 0) %>%
     pull(score) %>% sum(na.rm = TRUE)
 
-  d_score1 <- vuln_df %>% filter(stringr::str_detect(Code, "[D]\\d.*")) %>%
+  d_score <- vuln_df %>%
+    filter(stringr::str_detect(Code, "[D]\\d.*"), score >= 0) %>%
     pull(score) %>% sum(na.rm = TRUE)
-
-  # Convert score to index
-  b_c_index <- case_when(b_c_score1 > 10 ~ "EV",
-                         b_c_score1 > 7 ~ "HV",
-                         b_c_score1 > 4 ~ "MV",
-                         TRUE ~ "LV")
-
-  d_index <- case_when(d_score1 >= 6 ~ "EV",
-                       d_score1 >= 4 ~ "HV",
-                       d_score1 >= 2 ~ "MV",
-                       TRUE ~ "LV")
 
   # sea level rise is greatly increase, either anthro or nat barriers are
   # increase or greatly increase and dispersal is increase or greatly increase
   slr_vuln <- all(vuln_df %>% filter(Code == "B1") %>%
-                    select(val) %>%
+                    select(matches("Value\\d")) %>%
                     max(na.rm = TRUE) == 3,
                   vuln_df %>% filter(Code %in% c("B2a", "B2b")) %>%
-                    select(val) %>%
+                    select(matches("Value\\d")) %>%
                     max(na.rm = TRUE) >= 2,
                   vuln_df %>% filter(Code == "C1") %>%
-                    select(val) %>%
+                    select(matches("Value\\d")) %>%
                     max(na.rm = TRUE) >= 2)
 
-  col_bc_index <- which(comb_index_tbl$Dindex == b_c_index) + 1
-  row_d_index <- which(comb_index_tbl$Dindex == d_index)
-
-  comb_index <- case_when( slr_vuln ~ "EV",
-                           TRUE ~ comb_index_tbl[row_d_index, col_bc_index])
-  return(comb_index)
-
+  ind_from_vuln(b_c_score, d_score, slr_vuln)
 }
 
 
