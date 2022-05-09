@@ -51,14 +51,6 @@ plot_score_index <- function(score_df){
                      b_c_score_lim = ifelse(b_c_score > 18, b_c_score + 5, 20)) %>%
     summarise(across(contains("lim"), .fns = max))
 
-
-  levs <- c("EV", "HV", "MV", "LV", "IE")
-
-  comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
-    transmute(Dindex,
-              Bindex = name %>% stringr::str_remove("bc_") %>% toupper(),
-              value = factor(value, levels = levs))
-
   score_tbl <- expand.grid(b_c_score = seq(0,max_score_bc),
                            d_score = seq(-1, max_score_d)) %>%
     mutate(d_index = case_when(d_score >= 6 ~ "EV",

@@ -8,5 +8,12 @@ comb_index_tbl <- data.frame(Dindex = c("EV", "HV", "MV", "LV", "IE"),
                              bc_ie = c("EV", "HV", "MV", "LV", "IE"),
                              stringsAsFactors = FALSE)
 
+levs <- c("EV", "HV", "MV", "LV", "IE")
+
+comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
+  transmute(Dindex,
+            Bindex = name %>% stringr::str_remove("bc_") %>% toupper(),
+            value = factor(value, levels = levs))
+
 usethis::use_data(comb_index_tbl, overwrite = TRUE)
 usethis::use_data(comb_index_tbl, overwrite = TRUE, internal = TRUE)
