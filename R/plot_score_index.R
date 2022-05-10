@@ -58,16 +58,8 @@ plot_score_index <- function(score_df){
 
   score_tbl <- expand.grid(b_c_score = seq(0,max_score_bc),
                            d_score = seq(-1, max_score_d)) %>%
-    mutate(d_index = case_when(d_score >= 6 ~ "EV",
-                               d_score >= 4 ~ "HV",
-                               d_score >= 2 ~ "MV",
-                               d_score < 0 ~ "IE",
-                               TRUE ~ "LV"),
-           b_c_index = case_when(b_c_score > 10 ~ "EV",
-                                 b_c_score > 7 ~ "HV",
-                                 b_c_score > 4 ~ "MV",
-                                 TRUE ~ "LV")) %>%
-    left_join(comb_index_tbl, by = c(d_index = "Dindex", b_c_index = "Bindex"))
+    mutate(index = ind_from_vuln(b_c_score, d_score, slr_vuln = FALSE) %>%
+             factor(levels = levels(comb_index_tbl$value)))
 
 
   good_shapes <- c(4, 3, 8, 15, 16, 17)
@@ -78,10 +70,10 @@ plot_score_index <- function(score_df){
     shp_vals <- good_shapes[1:nrow(score_pt)]
   }
 
-  ggplot2::ggplot(score_tbl, ggplot2::aes(b_c_score, d_score, fill = value))+
-    ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0.5)+
+  ggplot2::ggplot(score_tbl, ggplot2::aes(b_c_score, d_score, fill = index))+
+    ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0.9)+
     ggplot2::coord_cartesian(xlim = c(0, score_lim$b_c_score_lim),
-                         ylim = c(-1.5, score_lim$d_score_lim))+
+                         ylim = c(-1, score_lim$d_score_lim))+
     ggplot2::scale_fill_manual(values = rev(c("#008000", "#FFC125", "#FF8C00", "#FF0000")))+
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(),
                                 breaks = c(-1:score_lim$d_score_lim))+

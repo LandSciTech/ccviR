@@ -15,8 +15,8 @@ ind_from_vuln <- function(b_c_score, d_score, slr_vuln,
   if(d_ie){
     d_index <- "IE"
   } else {
-    d_index <- as.character(cut(d_score, breaks = c(0, 2, 4, 6, Inf),
-                                       labels = c("LV", "MV", "HV", "EV"),
+    d_index <- as.character(cut(d_score, breaks = c(-1, 0, 2, 4, 6, Inf),
+                                       labels = c("IE", "LV", "MV", "HV", "EV"),
                                        right = FALSE,
                                        include.lowest = TRUE))
   }
