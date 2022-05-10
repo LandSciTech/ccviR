@@ -237,7 +237,7 @@ if(interactive()){
 
     pass <- mismatch %>%
       mutate(conf_val = map2_dbl(ccviR_results[paste0(Species, "_", ID)], index_res,
-                              ~filter(.x$index_conf, index == .y) %>%
+                              ~filter(.x$mc_results, index == .y) %>%
                                 pull(frequency)),
              thold_dif = case_when( ccviR %in% c("Mod", "Low") &
                                       NatureServe %in% c("Mod", "Low") ~

@@ -7,11 +7,8 @@
 plot_score_index(score_df)
 }
 \arguments{
-\item{b_c_score}{Total score in the B and C sections.}
-
-\item{d_score}{Total score in the D section}
-
-\item{n_d_factors}{Number of factors scored in the D section}
+\item{score_df}{A dataframe containing the result of a call to
+\code{calc_vulnerability}.}
 }
 \value{
 ggplot2 graph.
@@ -40,5 +37,6 @@ vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
 
 index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 
-plot_score_index(index_vuln$b_c_score, index_vuln$d_score, index_vuln$n_d_factors)
+plot_score_index(index_vuln)
+
 }

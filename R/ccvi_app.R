@@ -528,7 +528,9 @@ ccvi_app <- function(testmode_in, ...){
                 "exposure, sensitivity and adabptive capacity with the index ",
                 "calculated based on documented or modelled responses to climate change. ",
                 "The plot below demonstrates which of these had the strongest",
-                "influence on the overall calculated index. A score of negative ",
+                "influence on the overall calculated index. The lines indicate",
+                " the range of scores produced my the Monte Carlo simulations. ",
+                "A score of negative ",
                 "one indicates none of the factors in the modelled response to",
                 " climate change section were completed"),
               # Might want to add something like this to change width dependent
@@ -540,7 +542,9 @@ ccvi_app <- function(testmode_in, ...){
               p("The score for each vulnerability factor is determined by the ",
                 "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
                 "multiplied by the exposure multiplier for temperature or moisture,",
-                "whichever is most relevant to that factor. These scores are summed ",
+                "whichever is most relevant to that factor. When multiple values ",
+                "are selected for any of the vulnerability ",
+                "factors the average of the values is used. These scores are summed ",
                 "to determine the index. The plot below demonstrates which factors ",
                 "had the highest scores and how exposure impacted the score."),
               plotly::plotlyOutput("q_score_plt"),
@@ -1437,8 +1441,16 @@ ccvi_app <- function(testmode_in, ...){
 
       spat_df <- spat_res()
 
-      conf_df <- purrr::map_dfr(index_res()$index_conf,
-                                ~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
+      conf_df <- index_res() %>%
+        select(scenario_name, mc_results) %>%
+        mutate(mc_results = purrr::map(mc_results, ~.x$index %>%
+                                         factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
+                                         table() %>%
+                                         prop.table() %>%
+                                         as.data.frame(stringsAsFactors = FALSE) %>%
+                                         `names<-`(c("index", "frequency")))) %>%
+        pull(mc_results) %>%
+        purrr::map_dfr(~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
                                   tidyr::pivot_wider(names_from = "index",
                                                      values_from = "frequency"))
 
