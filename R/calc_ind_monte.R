@@ -8,7 +8,7 @@
 #'
 #'
 
-calc_ind_monte <- function(vuln_df, n_rnds){
+calc_ind_monte <- function(vuln_df, n_rnds, d_ie){
   vuln_df <- filter(vuln_df, !is.na(score), score >= 0) %>%
     mutate(n_boxes = num_not_na(Value1) + num_not_na(Value2) +
              num_not_na(Value3) + num_not_na(Value4),
@@ -41,7 +41,7 @@ calc_ind_monte <- function(vuln_df, n_rnds){
                                  na.rm = TRUE) >= 2,
                              sum(ifelse(Code == "C1", value, NA),
                                  na.rm = TRUE) >= 2)) %>%
-    mutate(index = ind_from_vuln(b_c_score, d_score, slr_vuln))
+    mutate(index = ind_from_vuln(b_c_score, d_score, slr_vuln, d_ie = d_ie))
 
 }
 
