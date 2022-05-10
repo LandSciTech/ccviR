@@ -1414,21 +1414,12 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$ind_score_plt <- renderPlot({
-        plot_score_index(index_res())
+      plot_score_index(index_res())
     })
 
     #output$conf_index <- renderText(index_res()$conf_index)
     output$conf_graph <- renderPlot({
-      index_res() %>% select(scenario_name, index_conf) %>%
-        tidyr::unnest(index_conf) %>%
-        ggplot2::ggplot(ggplot2::aes(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
-                            y = frequency))+
-        ggplot2::geom_col(position = "dodge")+
-        ggplot2::labs(x = "Index",
-                      y = "Proportion of Runs",
-                      main = "Monte Carlo Simulation Results")+
-        ggplot2::ylim (c(NA, 1))+
-        ggplot2::facet_wrap(~scenario_name, ncol = 3)
+      plot_conf_score(index_res())
 
     })
 

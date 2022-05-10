@@ -18,29 +18,27 @@ make_exp_df <- function(exp_lev){
   exp_df_out
 }
 
-test_that("single plot works", {
-  expect_s3_class(plot_score_index(calc_vulnerability(make_exp_df(1), make_vuln_df("nm", 0),
+test_that("plot_conf_score works for single", {
+  expect_s3_class(plot_conf_score(calc_vulnerability(make_exp_df(1), make_vuln_df("nm", 0),
                                                       tax_grp = "Bird")),
                   "ggplot")
 })
 
-test_that("multi plot works", {
+test_that("plot_conf_score multi plot works", {
   exp_df2 <- bind_rows(make_exp_df(1), make_exp_df(2))
   exp_df2[2,1] <- "Scn2"
   exp_df2$range_change <- c(NA, 50)
   exp_df2$range_overlap <- c(NA, 20)
 
-  expect_s3_class(plot_score_index(calc_vulnerability(exp_df2,
+  expect_s3_class(plot_conf_score(calc_vulnerability(exp_df2,
                                                       make_vuln_df("nm", 1),
                                                       tax_grp = "Bird")),
                   "ggplot")
 
-  expect_s3_class(plot_score_index(calc_vulnerability(exp_df2,
+  expect_s3_class(plot_conf_score(calc_vulnerability(exp_df2,
                                                       make_vuln_df("nm", rep(c(0,1), length.out = 27),
                                                                    rep(c(3,2), length.out = 27)),
                                                       tax_grp = "Bird")),
                   "ggplot")
 
 })
-
-

@@ -40,6 +40,11 @@ plot_score_index <- function(score_df){
   score_pt <- score_df %>%
     mutate(d_score = ifelse(n_d_factors == 0, -1, d_score))
 
+  score_pt <- score_pt %>%
+    mutate(index_conf = purrr::map(index_conf,
+                                   ~summarise(.x, across(contains("score"),
+                                                         lst(max, min))))) %>%
+    tidyr::unnest(index_conf)
 
   # max possible score
   max_score_bc <- 22*6.6 + 3
@@ -47,8 +52,8 @@ plot_score_index <- function(score_df){
   max_score_d <- 11
 
   score_lim <- mutate(score_pt,
-                     d_score_lim = ifelse(d_score > 7, d_score + 1, 8),
-                     b_c_score_lim = ifelse(b_c_score > 18, b_c_score + 5, 20)) %>%
+                     d_score_lim = ifelse(d_score_max > 7, d_score_max + 1, 8),
+                     b_c_score_lim = ifelse(b_c_score_max > 18, b_c_score_max + 5, 20)) %>%
     summarise(across(contains("lim"), .fns = max))
 
   score_tbl <- expand.grid(b_c_score = seq(0,max_score_bc),
@@ -82,6 +87,16 @@ plot_score_index <- function(score_df){
                                 breaks = c(-1:score_lim$d_score_lim))+
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(),
                                 breaks = scales::breaks_extended(10))+
+    ggplot2::geom_linerange(data = score_pt,
+                            ggplot2::aes(b_c_score, d_score, ymin = d_score_min,
+                                         ymax = d_score_max),
+                            col = "grey40",
+                            inherit.aes = FALSE)+
+    ggplot2::geom_linerange(data = score_pt,
+                           ggplot2::aes(y = d_score, xmin = b_c_score_min,
+                                        xmax = b_c_score_max),
+                           col = "grey40",
+                           inherit.aes = FALSE)+
     ggplot2::geom_point(data = score_pt,
                         ggplot2::aes(b_c_score, d_score, shape = scenario_name),
                         stroke = 2,
