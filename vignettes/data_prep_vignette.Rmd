@@ -1,0 +1,24 @@
+---
+title: "Preparing Custom Climate Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Preparing Custom Climate Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ccviR)
+```
+
+### Preparing the data
+The first time you use the app you will need to prepare the climate data used to calculate the index. To start we will process the example climate data by clicking the Prepare Climate Data button. This opens a new tab. In this case we don't need to download the data because we are using the demo data. The raw climate data set includes the mean annual temperature (MAT) and climate moisture deficit (CMD) for both historical and future time periods and mean annual precipitation (MAP) and minimum coldest and warmest month temperatures (MCMT and MWMT) for the historical time period. In addition, the climate change exposure index (CCEI) for South/Central America which is provided by NatureServe is also included. The app will use the raw climate data to create the classified versions of the climate data that are used as to calculate the index and save them in the selected folder. 
+
+Start by selecting the folder location of the raw climate data. In the file selector window expand the "clim_files" folder by clicking the arrow and select the "raw" folder. Note the names of the files on the right hand side, when you download the real climate data you will need to re-name the files to match this naming structure or select the files individually. Click "Select" to close the window. Do the same for the output folder, this time selecting the "processed" folder.  Check the "Should existing files in the output folder be overwritten?" box. Then click "Process". A loading symbol will appear and when it is finished a message saying "Processing complete" will appear. This will take longer for the real climate data that covers all of North America so you will need to wait until it is finished before moving on. When it is done click "Finished" to go back to the Welcome page. The next time you use the app you can go straight onto Step 1 without preparing the climate data because it is stored on your computer in the output folder that you selected.
