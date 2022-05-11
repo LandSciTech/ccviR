@@ -85,7 +85,7 @@ ccvi_app <- function(testmode_in, ...){
                            br(), br(),
                            p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
                              tags$ul(
-                               tags$li(labelMandatory("Species range polygon")),
+                               tags$li(labelMandatory("Species North American or global range polygon")),
                                tags$li(labelMandatory("Assessment area polygon")),
                                tags$li("Non-breeding range polygon"),
                                tags$li("Projected range change raster"),
@@ -434,61 +434,30 @@ ccvi_app <- function(testmode_in, ...){
               h4("Section C: Sensitivity and Adaptive Capacity"),
               actionButton("guideC2", "Show guidelines"),
               br(),
-              div(
+              spat_vuln_ui(
                 id = "C2ai",
-                h4("Predicted sensitivity to temperature and moisture changes:"),
-                strong("2a) i) Historical thermal niche."),
-                br(),br(),
-                div(id = "missing_htn",
-                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                    br(),
-                    br()),
-                shinycssloaders::withSpinner(tmap::tmapOutput("map_C2ai", width = "50%")),
-                tableOutput("tbl_C2ai"),
-                uiOutput("box_C2ai")
+                header = "Predicted sensitivity to temperature and moisture changes:",
+                vuln_q_nm = "2a) i) Historical thermal niche."
               ),
-              div(
+              spat_vuln_ui(
                 id = "C2aii",
-                strong("2a) ii) Physiological thermal niche."),
-                br(),br(),
-                div(id = "missing_ptn",
-                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                    br(),
-                    br()),
-                tmap::tmapOutput("map_C2aii", width = "50%"),
-                tableOutput("tbl_C2aii"),
-                uiOutput("box_C2aii")
+                vuln_q_nm = "2a) ii) Physiological thermal niche."
               ),
-              div(
+              spat_vuln_ui(
                 id = "C2bi",
-                strong("2b) i) Historical hydrological niche."),
-                br(),br(),
-                div(id = "missing_map",
-                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                    br(),
-                    br()),
-                tmap::tmapOutput("map_C2bi", width = "50%"),
-                tableOutput("tbl_C2bi"),
-                uiOutput("box_C2bi")
+                vuln_q_nm = "2b) i) Historical hydrological niche."
               ),
               h4("Section D: Documented or Modeled Response to Climate Change"),
               actionButton("guideD2", "Show guidelines"),
               br(),
-              div(
+              spat_vuln_ui(
                 id = "D2_3",
-                h4("Modeled future range change"),
-                br(),
-                div(id = "missing_hs",
-                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
-                    br(),
-                    br()),
-                tmap::tmapOutput("map_D2_3", width = "50%"),
-                tableOutput("tbl_D2_3"),
-                strong("2) Modeled future (2050) change in population or range size."),
-                uiOutput("box_D2"),
-                strong("3) Overlap of modeled future (2050) range with current range"),
-                uiOutput("box_D3")
+                header = "Modeled future range change",
               ),
+              strong("2) Modeled future (2050) change in population or range size."),
+              uiOutput("box_D2"),
+              strong("3) Overlap of modeled future (2050) range with current range"),
+              uiOutput("box_D3"),
               actionButton("next4", "Next", class = "btn-primary")
             )
           )
@@ -1054,24 +1023,27 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # Spatial Vulnerability Questions #========================
-    # C2ai
-    observe({
-      req(doSpatial())
-      if(isTruthy(clim_vars()$htn)){
-        shinyjs::hide("missing_htn")
-        shinyjs::show("map_C2ai")
-      } else {
-        shinyjs::hide("map_C2ai")
-        shinyjs::show("missing_htn")
-      }
-    })
-
     observeEvent(input$guideC2, {
       guideCSpatial()
     })
 
     observeEvent(input$guideD2, {
       guideDSpatial()
+    })
+
+
+    # C2ai
+    observe({
+      req(doSpatial())
+      if(isTruthy(clim_vars()$htn)){
+        shinyjs::hide("missing_C2ai")
+        shinyjs::show("map_C2ai")
+        shinyjs::show("not_missing_C2ai")
+      } else {
+        shinyjs::hide("map_C2ai")
+        shinyjs::hide("not_missing_C2ai")
+        shinyjs::show("missing_C2ai")
+      }
     })
 
     output$map_C2ai <- tmap::renderTmap({
@@ -1107,7 +1079,7 @@ ccvi_app <- function(testmode_in, ...){
                                 is.na(HTN_1) ~ NA_real_)) %>%
         pull(.data$C2ai) %>% unique()
 
-      check_comment_ui("C2ai", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("C2ai", HTML("Calculated effect on vulnerability."),
                        choiceNames = valueNms,
                        choiceValues = valueOpts,
                        selected = box_val,
@@ -1121,11 +1093,13 @@ ccvi_app <- function(testmode_in, ...){
     observe({
       req(doSpatial())
       if(isTruthy(ptn_poly())){
-        shinyjs::hide("missing_ptn")
+        shinyjs::hide("missing_C2aii")
+        shinyjs::show("not_missing_C2aii")
         shinyjs::show("map_C2aii")
       } else {
         shinyjs::hide("map_C2aii")
-        shinyjs::show("missing_ptn")
+        shinyjs::hide("not_missing_C2aii")
+        shinyjs::show("missing_C2aii")
       }
     })
 
@@ -1156,7 +1130,7 @@ ccvi_app <- function(testmode_in, ...){
                                  TRUE ~ 0)) %>%
         pull(.data$C2aii) %>% unique()
 
-      check_comment_ui("C2aii", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("C2aii", HTML("Calculated effect on vulnerability."),
                        choiceNames = valueNms,
                        choiceValues = valueOpts,
                        selected = box_val,
@@ -1170,11 +1144,13 @@ ccvi_app <- function(testmode_in, ...){
     observe({
       req(doSpatial())
       if(isTruthy(clim_vars()$map)){
-        shinyjs::hide("missing_map")
+        shinyjs::hide("missing_C2bi")
+        shinyjs::show("not_missing_C2bi")
         shinyjs::show("map_C2bi")
       } else {
         shinyjs::hide("map_C2bi")
-        shinyjs::show("missing_map")
+        shinyjs::hide("not_missing_C2bi")
+        shinyjs::show("missing_C2bi")
       }
     })
 
@@ -1206,7 +1182,7 @@ ccvi_app <- function(testmode_in, ...){
                                 TRUE ~ 0)) %>%
         pull(.data$C2bi) %>% unique()
 
-      check_comment_ui("C2bi", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+      check_comment_ui("C2bi", HTML("Calculated effect on vulnerability."),
                        choiceNames = valueNms,
                        choiceValues = valueOpts,
                        selected = box_val,
@@ -1220,11 +1196,13 @@ ccvi_app <- function(testmode_in, ...){
     observe({
       req(doSpatial())
       if(isTruthy(hs_rast())){
-        shinyjs::hide("missing_hs")
+        shinyjs::hide("missing_D2_3")
+        shinyjs::show("not_missing_D2_3")
         shinyjs::show("map_D2_3")
       } else {
         shinyjs::hide("map_D2_3")
-        shinyjs::show("missing_hs")
+        shinyjs::hide("not_missing_D2_3")
+        shinyjs::show("missing_D2_3")
       }
     })
 
@@ -1272,14 +1250,14 @@ ccvi_app <- function(testmode_in, ...){
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
         } else {
-          check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+          check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
                            choiceNames = valueNms,
                            choiceValues = valueOpts,
                            selected = box_val,
                            com = prevCom)
         }
       } else {
-        check_comment_ui("D2", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+        check_comment_ui("D2", HTML("Calculated effect on vulnerability."),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
                          selected = box_val,
@@ -1316,14 +1294,14 @@ ccvi_app <- function(testmode_in, ...){
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
         } else {
-          check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+          check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
                            choiceNames = valueNms,
                            choiceValues = valueOpts,
                            selected = box_val,
                            com = prevCom)
         }
       } else {
-        check_comment_ui("D3", HTML("Calculated effect on vulnerability. <font color=\"#FF0000\"><b> Editing this response will override the results of the spatial analysis.</b></font>"),
+        check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
                          selected = box_val,
