@@ -32,7 +32,21 @@ run_ccvi_app("demo")
 ### Getting started
 The Welcome Tab provides information on the Index and the data needed to calculate it.
 
-For the demonstration species all the required data is included in the package, but for a real species you will need download a prepared set of climate data or create your own (see `vignette("data_prep_vignette", package = "ccviR")`) and think about and acquire the data described in Steps 1 and 2 on the Welcome page but for the demonstration we can go ahead and press "Start" to begin calculating the index.
+For the demonstration species all the required data is included in the package, but for a real species you will need download a prepared set of climate data or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
+
+In addition to the climate data the following spatial data sets for each species can be provided: 
+
+* Species North American or global range polygon (required): The complete area occupied by the species in North America.
+* Assessment area polygon (required): The area within which the species vulnerability is being assessed. For example, a country, province, state, or protected area.
+* Non-breeding range polygon: If applicable, the area outside North America occupied in the non-breeding season.
+* Projected range change raster: The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the area was lost, maintained, gained or was never included in the range.  
+* Physiological thermal niche (PTN) polygon: The PTN polygon should include cool or cold environments occupied by the species that may be lost or reduced in the assessment area as a result of climate change.
+
+The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information.
+
+For this example all of the data is provided with the package. 
+
+Press "Start" to begin calculating the index.
 
 ### Species information
 On this page you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Bird". See the NatureServe Guidelines to better understand the meaning of the two check boxes at the end. For the demonstration check the box for migratory species. Click "Next".
@@ -64,15 +78,36 @@ Vulnerability questions are detailed questions that the index uses to score the 
 
 ![](./vulnqs.PNG){width=100%}
 
-Some vulnerability questions are answered based on an analysis of spatial data and these questions are dealt with on the next tab. For the demonstration you can select any check box that you want for each question, try a few different versions and see how it affects the result! There are three sections, 'Section B: Indirect Exposure to Climate Change' and 'Section C: Sensitivity and Adaptive Capacity' Questions that are unknown can be left blank.  Click "Next" to go to the next tab
+Some vulnerability questions are answered based on an analysis of spatial data and these questions are dealt with on the next tab. For the demonstration you can select any check box that you want for each question, try a few different versions and see how it affects the result! Questions that are unknown can be left blank. There are three sections. 'Section B: Indirect Exposure to Climate Change' and 'Section C: Sensitivity and Adaptive Capacity' are required and if less than 10 of the 20 questions are answered the index result will be Insufficient Evidence. 'Section D: Documented or Modeled Response to Climate Change' is optional and if none of the questions are answered the index will be calculated without it. Click "Next" to go to the next tab
 
 ### Spatial Vulnerability Questions
-This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed. Note that if the check box is changed and then the Run button on the Spatial Analysis page is clicked again you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The comments will not be affected though so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. 
+This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed.
+
+![](./spat_vulnqs.PNG){width=100%}
+
+Note that if the check box is changed and then the Run button on the Spatial Analysis page is clicked again you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The comments will not be affected though so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. If the spatial data for a vulnerability question was not provided on the 'Spatial Data Analysis' tab then the map will not be included and the question can be answered using non-spatial information. 
+
+The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple climate scenarios are used.  
+
+![](./spat_vulnqs.PNG){width=100%}
+
 For the demonstration leave the check boxes as they are and then click "Next". 
 
 ### Results
 
-On the Results page click Calculate to calculate the index value. Once loaded this page gives the resulting index value and tables and graphs that explain how the index value was determined. These are explained in the app. Once you are finished with reviewing the results you can save the data as a csv file.
+On the Results page click "Calculate" to calculate the index value. Once loaded the first section presents the climate change vulnerability index and migratory exposure index for each climate scenario. 
+
+![](./results_dials.PNG){width=100%}
+
+The Data Completeness table highlights how many questions were answered in each section. The index is more reliable when more questions are answered. 
+
+To account for uncertainty in the vulnerability questions you can provide more that one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. 1000 simulations are run and in each simulation one of the selected values is picked for each vulnerability question. Then the index is re-calculated. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
+
+![](./results_variation.PNG){width=100%}
+
+The next graph...
+
+Once you are finished with reviewing the results you can save the data as a csv file.
 
 If you go back and change the answer to a vulnerability question you will need to click the Calculate button again to see the updated results. 
 

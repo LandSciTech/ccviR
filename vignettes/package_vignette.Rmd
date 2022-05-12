@@ -78,7 +78,7 @@ plot(mat_classified)
 ## Load species specific spatial data
 The following spatial data sets can be used for each species: 
 
-* Species range polygon (required)
+* Species North American or global range polygon (required)
 * Assessment area polygon (required)
 * Non-breeding range polygon
 * Projected range change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
