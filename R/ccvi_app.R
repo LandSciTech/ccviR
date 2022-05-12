@@ -1246,7 +1246,7 @@ ccvi_app <- function(testmode_in, ...){
         if(raster::nlayers(hs_rast2()) > 1){
           valueNm <- valueNms[ 4- box_val]
           div(strong("Calculated effect on vulnerability."),
-              HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
+              HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
         } else {
@@ -1290,7 +1290,7 @@ ccvi_app <- function(testmode_in, ...){
         if(raster::nlayers(hs_rast2()) > 1){
           valueNm <- valueNms[4 - box_val]
           div(strong("Calculated effect on vulnerability."),
-              HTML("<font color=\"#FF0000\"><b> Spatial results can not be editted when multiple scenarios are provided.</b></font>"),
+              HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
         } else {
