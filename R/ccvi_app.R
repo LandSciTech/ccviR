@@ -498,7 +498,7 @@ ccvi_app <- function(testmode_in, ...){
                 "calculated based on documented or modelled responses to climate change. ",
                 "The plot below demonstrates which of these had the strongest",
                 "influence on the overall calculated index. The lines indicate",
-                " the range of scores produced my the Monte Carlo simulations. ",
+                " the range of scores produced by the Monte Carlo simulations. ",
                 "A score of negative ",
                 "one indicates none of the factors in the modelled response to",
                 " climate change section were completed"),
