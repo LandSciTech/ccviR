@@ -239,7 +239,7 @@ check_polys <- function(poly, rast_crs, var_name){
 
   if(nrow(poly) > 1){
     if(nrow(poly) > 100){
-      warning("The", var_name, "povided contains more than 100 polygons. ",
+      warning("The ", var_name, " povided contains more than 100 polygons. ",
               "These will be unioned to create one polygon. ",
               "If this is not expected please use a different shapefile.",
               call. = FALSE)
