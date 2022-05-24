@@ -415,7 +415,7 @@ ccvi_app <- function(testmode_in, ...){
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                check_comment_ui("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
+                check_comment_ui("D4", "4) Occurrence of protected areas in modeled future distribution.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
                 actionButton("next3", "Next", class = "btn-primary"),
@@ -1378,7 +1378,9 @@ ccvi_app <- function(testmode_in, ...){
 
     output$n_factors <- renderTable({
       facts <- index_res() %>% distinct(across(contains("factors")))
-      tibble(Section = c("Section B", "Section C", "Section D"),
+      tibble(Section = c("Section B: Indirect Exposure to Climate Change",
+                         "Section C: Sensitivity and Adaptive Capacity",
+                         "Section D: Documented or Modeled Response to Climate Change"),
              `Factors completed` = c(paste0(facts$n_b_factors, "/4"),
                                      paste0(facts$n_c_factors, "/16"),
                                      paste0(facts$n_d_factors, "/4")))

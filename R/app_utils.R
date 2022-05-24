@@ -87,12 +87,12 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       pal = c("grey", "#FF0000", "#FFC125", "#008000")
       brks = 0:3
     } else if(rast_nm %in% c("cmd", "mat")) {
-      pal = tmaptools::get_brewer_pal("YlOrBr", n = 6, plot = FALSE)
+      pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
       brks = 1:7
       rast_style = "fixed"
       rast_lbl = as.character(1:6)
     } else if(rast_nm %in% c("ccei", "htn")) {
-      pal = tmaptools::get_brewer_pal("YlOrBr", n = 4, plot = FALSE)
+      pal = c("#FFF7BD", "#FECF66", "#F88B22", "#CC4C02")
       brks = 1:5
       rast_style = "fixed"
       rast_lbl = as.character(1:4)
@@ -164,10 +164,10 @@ index_res_text <- function(ind_freq){
                             index == "LV" ~ "green",
                             TRUE ~ "grey"),
            def = case_when(index == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an index score.",
-                            index == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.",
-                            index == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.",
-                            index == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
-                            index == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.",
+                            index == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear.",
+                            index == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly.",
+                            index == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease.",
+                            index == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially. Actual range boundaries may change.",
                             TRUE ~ ""),
            index = case_when(index == "IE" ~ "Insufficient Evidence",
                             index == "EV" ~ "Extremely Vulnerable",
