@@ -416,7 +416,7 @@ ccvi_app <- function(...){
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                check_comment_ui("D4", "4) Occurrence of protected areas in modeled future (2050) distribution.",
+                check_comment_ui("D4", "4) Occurrence of protected areas in modeled future distribution.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
                 actionButton("next3", "Next", class = "btn-primary"),
@@ -485,9 +485,9 @@ ccvi_app <- function(...){
                     br()),
                 tmap::tmapOutput("map_D2_3", width = "50%"),
                 tableOutput("tbl_D2_3"),
-                strong("2) Modeled future (2050) change in population or range size."),
+                strong("2) Modeled future change in population or range size."),
                 uiOutput("box_D2"),
-                strong("3) Overlap of modeled future (2050) range with current range"),
+                strong("3) Overlap of modeled future range with current range"),
                 uiOutput("box_D3")
               ),
               actionButton("next4", "Next", class = "btn-primary")
@@ -1339,10 +1339,10 @@ ccvi_app <- function(...){
                        ind == "LV" ~ "green",
                        TRUE ~ "grey")
       def <- case_when(ind == "IE" ~ "Information entered about the species' vulnerability is inadequate to calculate an Index score.",
-                       ind == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.",
-                       ind == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050.",
-                       ind == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease by 2050.",
-                       ind == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change.",
+                       ind == "EV" ~ "Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear.",
+                       ind == "HV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease significantly.",
+                       ind == "MV" ~ "Abundance and/or range extent within geographical area assessed likely to decrease.",
+                       ind == "LV" ~ "Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially. Actual range boundaries may change.",
                        TRUE ~ "")
       ind <- case_when(ind == "IE" ~ "Insufficient Evidence",
                        ind == "EV" ~ "Extremely Vulnerable",
