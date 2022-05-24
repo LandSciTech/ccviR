@@ -1378,7 +1378,9 @@ ccvi_app <- function(...){
     })
 
     output$n_factors <- renderTable({
-      tibble(Section = c("Section B", "Section C", "Section D"),
+      tibble(Section = c("Section B: Indirect Exposure to Climate Change",
+                         "Section C: Sensitivity and Adaptive Capacity",
+                         "Section D: Documented or Modeled Response to Climate Change"),
              `Factors completed` = c(paste0(index_res()$n_b_factors, "/4"),
                                      paste0(index_res()$n_c_factors, "/16"),
                                      paste0(index_res()$n_d_factors, "/4")))
