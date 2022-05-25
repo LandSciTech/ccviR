@@ -38,9 +38,9 @@ In addition to the climate data the following spatial data sets for each species
 
 * Species North American or global range polygon (required): The complete area occupied by the species in North America.
 * Assessment area polygon (required): The area within which the species vulnerability is being assessed. For example, a country, province, state, or protected area.
-* Non-breeding range polygon: If applicable, the area outside North America occupied in the non-breeding season.
-* Projected range change raster: The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the area was lost, maintained, gained or was never included in the range.  
 * Physiological thermal niche (PTN) polygon: The PTN polygon should include cool or cold environments occupied by the species that may be lost or reduced in the assessment area as a result of climate change.
+* Non-breeding range polygon: If applicable, the area outside North America occupied in the non-breeding season.
+* Projected range change raster: The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the cell was lost, maintained, gained or was never included in the range.  
 
 The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information.
 
@@ -49,12 +49,13 @@ For this example all of the data is provided with the package.
 Press "Start" to begin calculating the index.
 
 ### Species information
-On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Bird". See the NatureServe Guidelines to better understand the meaning of the two check boxes at the end. For the demonstration check the box for migratory species. Click "Next".
+On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Bird". See the NatureServe Guidelines to better understand the meaning of the cave dwelling and migratory check boxes. For the demonstration check the box for migratory species. Click "Next".
 
 ### Spatial data analysis
 On this tab, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. The prepared climate data can be found under "clim_files > processed > multi_scenario".
 
 ![](./clim_dir.PNG){width=100%}
+
 Then, select the range polygon for the species by selecting the file "rng_poly_high.shp". Select the assessment area by selecting the "assess_poly.shp" file. Select the "nonbreed_poly.shp" for the non-breeding range. Select "PTN_poly.shp" for the physiological thermal niche. And finally, for the projected range change raster hold Ctrl and click "HS_rast_RCP2.6", "HS_rast_RCP4.5", and "HS_rast_RCP8.5". If range change rasters are not available for each scenario a single raster can be used.
 
 ![](./rng_chng_multi.PNG){width=100%}
@@ -109,20 +110,20 @@ The next graph shows how the scores based on exposure, sensitivity and adaptive 
 
 ![](./comb_ind_plot.PNG){width=100%}
 
-The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the quesiton and the exposure multiplier that was applied. 
+The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. 
 
 ![](./vulnq_plot.PNG){width=100%}
 
-Once you are finished with reviewing the results you can save the data as a csv file.
+Once you are finished with reviewing the results you should save the data as a csv file to keep in your records.
 
 If you go back and change the answer to a vulnerability question you will need to click the "Calculate" button again to see the updated results. 
 
 ### Saving the app
-The state of the app can be saved by clicking the "Save" button at the bottom of the Results page. A pop up will appear that asks you to pick a location and name for a folder that will store the app data. Be sure to save this somewhere that is easy to remember because you will need to find it again to load the saved app. The folder name must have only letters or numbers and no spaces. This will create a folder with the given name containing two .rds files that store the values.
+The state of the app can be saved by clicking the "Save" button at the bottom of the Results page. A pop up will appear that asks you to pick a location and name for a folder that will store the app data. Be sure to save this somewhere that is easy to remember because you will need to find it again to load the saved app. The folder name must have only letters or numbers and no spaces. This will create a folder with the given name containing two .rds files that store the app data. To load the app with the saved state click "Load" at the bottom of the Welcome page and select the folder with the saved files. 
 
-This will save the information entered into the app but it will not save the results, so when the app is loaded from the saved file it will re-run the calculations. In addition, only the path to the spatial data is stored not the data itself so the app will not be able to load if data is moved or its name is changed. If the data has moved, you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press "Run" which will re-run the spatial analysis but keep the answers to the non-spatial vulnerability questions from the saved file. 
+This process saves the information entered into the app but will not save the results, so when the app is loaded from the saved file it will re-run the calculations. In addition, only the path to the spatial data is stored, not the data itself, so the app will not be able to load if data is moved or its name is changed. If the data has moved, you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press "Run" which will re-run the spatial analysis but keep the answers to the non-spatial vulnerability questions from the saved file. 
 
-This saving process should be used for convenience only. It is not robust to changes in the app overtime. Therefore, it is recommended that you also download the results as a csv and use this file for long term storage.
+This saving process should be used for convenience only. It is not robust to changes in the app over time. Therefore, it is recommended that you also download the results as a csv and use that file for long term storage.
 
 ## Troubleshooting
 
