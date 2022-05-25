@@ -44,7 +44,7 @@ ccvi_app <- function(testmode_in, ...){
       shinyjs::useShinyjs(),
       shinyjs::inlineCSS(appCSS),
       title = "ccviR app",
-      tags$head(tags$style(type = "text/css",
+      tags$had(tags$style(type = "text/css",
                            ".container-fluid {  max-width: 950px; /* or 950px */}")),
       div(id = "header",
           h1("An app to run the NatureServe CCVI process"),
@@ -558,29 +558,6 @@ ccvi_app <- function(testmode_in, ...){
 
     # Flag for if this is a restored session
     restored <- reactiveValues()
-
-    # Data Preparation #============================
-    prepped_data <- data_prep_server("data_prep_mod")
-
-    output$data_prep_msg <- renderText(prepped_data())
-
-    observeEvent(input$prep_data, {
-      updateTabsetPanel(session, "welcome", selected = "data_prep")
-    })
-
-    observeEvent(input$data_done, {
-      updateTabsetPanel(session, "welcome", selected = "instructions")
-    })
-
-    observeEvent(input$data_reset,{
-      purrr::map(list("data_prep_mod-clim_scn_nm",
-                      "data_prep_mod-folder_input",
-                      "data_prep_mod-folder_output",
-                      "data_prep_mod-paths_input"),
-                 shinyjs::reset)
-      shinyjs::runjs("window.scrollTo(0, 0)")
-
-    })
 
     observeEvent(input$start, {
       updateTabsetPanel(session, "tabset",

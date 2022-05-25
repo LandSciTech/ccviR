@@ -6,65 +6,45 @@
       # shinyjs::useShinyjs(),
       # shinyjs::inlineCSS(appCSS),
       h2("Prepare data for the CCVI App"),
-      p(strong("Step 1: "), "Download climate data from ",
+      p(strong("Step 1: "), "Acquire climate data including: ",
+        "Mean annual temperature (MAT), climate moisture deficeit (CMD), ",
+        "mean annual precipitation (MAP), and minimum coldest and ",
+        "maximum warmest month temperatures (MCMT, MWMT) for a historical period",
+        "and MAT and CMD for a future period. ",
+        "To calculate a migratory exposure index acquire a climate change ",
+        "exposure index (CCEI) raster for the migratory region. For example, ",
+        "the CCEI for South America is available from",
+        a("NatureServe.", href = "https://www.natureserve.org/ccvi-species"),
+        "To download climate data from ",
         a("AdaptWest.", href = "https://adaptwest.databasin.org/pages/adaptwest-climatena/"),
         "Select the bioclimatic variables for the normal period and the desired future climate scenario(s). ",
         "We recommend using the 1961-1990 normal period and ",
-        "the ensemble data for SSP2-4.5 2050s for the future. ",
-        "To include multiple climate scenarios download multiple datasets and ",
-        "then repeat the remaining steps for each scenario. ",
-        "Save the downloaded data in a folder you can easily find."),
+        "the ensemble data for SSP1-2.6, SSP2-4.5 and SSP5-8.5 2050s for the future. ",
+        "Save the downloaded data in a folder you can easily find. ",
+        "When processing multiple climate scenarios the first scenario ",
+        "processed will determine the thresholds used to classify the ",
+        "temperature and moisture exposure based on the median and 1/2 the ",
+        "interquartile range. All scenarios must be processed in one session ",
+        "for the correct thresholds to be applied.",
+        "Repeat steps 2 and three for each scenario."),
 
       p(strong("Step 2:"), "Record a description of the climate data. ",
-        "The Sceanrio Name should be a short form summary of the other fields",
-        " and will be used as a suffix to the saved output data and to identify the scenario.",
-        "The values for the recommended data have already been filled in but ",
-        "should be changed if a different data set is selected."),
-      textInput(NS(id, "clim_scn_nm"),"Scenario Name",
-                value = "ensemble_45_2050s"),
-      textInput(NS(id, "clim_gcm"),"GCM or Ensemble Name",
-                value = "AdaptWest 13 CMIP6 AOGCM Ensemble"),
-      textInput(NS(id, "clim_norm_period"), "Historical normal period",
-                value = "1961-1990"),
-      textInput(NS(id, "clim_fut_period"), "Future period", value = "2050s"),
-      textInput(NS(id, "clim_em_scenario"), "Emissions scenario", value = "SSP2-4.5"),
-      textInput(NS(id, "clim_dat_url"), "Link to Source",
-                value = "https://adaptwest.databasin.org/pages/adaptwest-climatena/"),
+        "The Sceanrio Name should be short and an appropriate title for results. ",
+        "It will be used as a suffix to the saved output data and to identify the scenario."),
+
+      textInput(NS(id, "clim_scn_nm"),"Scenario Name"),
+      textInput(NS(id, "clim_gcm"),"GCM or Ensemble Name"),
+      textInput(NS(id, "clim_norm_period"), "Historical normal period"),
+      textInput(NS(id, "clim_fut_period"), "Future period"),
+      textInput(NS(id, "clim_em_scenario"), "Emissions scenario"),
+      textInput(NS(id, "clim_dat_url"), "Link to Source"),
 
       p(strong("Step 3: "), "Prepare the climate data for use in the app.",
-        "Climate data can be added by selecting file paths for each file",
-        " or selecting a folder that contains all the files with standard names.",
-        " For the output folder make sure to choose a location that is easy to find again",
-        " because you will use the prepared climate data to calculate the index."),
+        "Climate data can be added by selecting file paths for each file. ",
+        "For the output folder make sure to choose a location that is easy to find again ",
+        "because you will use the prepared climate data to calculate the index.",
+        "The output folder should be the same for all scenarios."),
 
-      selectInput(NS(id, "data_as"), "Provide data as:",
-                  list(`Individual file paths` = "paths",
-                       `One folder` = "folder"),
-                  selected = "folder"),
-      shinyjs::hidden(
-        div(
-          id = NS(id, "folder_input"),
-          labelMandatory(strong("Folder location of raw climate data:")),
-          shinyFiles::shinyDirButton(NS(id, "clim_var_dir"), "Choose a folder",
-                                     "Folder location of raw climate data"),
-          verbatimTextOutput(NS(id, "clim_var_dir"), placeholder = TRUE),
-          br(),
-          strong("File names in folder"),
-          tags$ul(
-            tags$li(labelMandatory("MAT: mean annual temperature for the historical normal period")),
-            tags$li(labelMandatory("MAT_2050: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100")),
-            tags$li(labelMandatory("CMD: climate moisture deficit for the historical normal period")),
-            tags$li(labelMandatory("CMD_2050: climate moisture deficit for the future under climate change it can be any number eg 2050, 2100")),
-            tags$li("CCEI: Climate Change Exposure Index from NatureServe website"),
-            tags$li("MAP: mean annual precipitation for the historical normal period"),
-            tags$li("MWMT: mean warmest month temperature for the historical normal period"),
-            tags$li("MCMT: mean coldest month temperature for the historical normal period")
-
-          ),
-          p('Accepted filetypes are ".asc", ".tif", ".nc", ".grd" and ".img"'),
-          tags$ul(tags$li("clim_poly: An optional shapefile with a polygon of the extent of the climate data. It will be created from the climate data if it is missing but it is faster to provide it."))
-        )
-      ),
       div(
         id = NS(id, "paths_input"),
         get_file_ui(NS(id, "mat_norm_pth"), "Historical mean annual temperature", TRUE),
@@ -76,8 +56,8 @@
         get_file_ui(NS(id, "mwmt_pth"), "Mean warmest month temperature"),
         get_file_ui(NS(id, "mcmt_pth"), "Mean coldest month temperature"),
         get_file_ui(NS(id, "clim_poly_pth"), "Climate data extent polygon")
-
       ),
+
       div(
         id = NS(id, "folder_output"),
         labelMandatory(strong("Output folder location of prepared climate data")),
@@ -98,16 +78,7 @@
   # Server #====================================================================
   data_prep_server <- function(id){
     moduleServer(id, function(input, output, session) {
-    observe({
-      if(input$data_as == "folder"){
-        shinyjs::hide("paths_input")
-        shinyjs::show("folder_input")
-      }
-      if(input$data_as == "paths"){
-        shinyjs::hide("folder_input")
-        shinyjs::show("paths_input")
-      }
-    })
+
     # start up Note this time out is because when I disconnected from VPN it
     # made the getVolumes function hang forever because it was looking for
     # drives that were no longer connected. Now it will give an error
