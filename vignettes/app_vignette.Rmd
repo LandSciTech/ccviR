@@ -89,7 +89,7 @@ Note that if the check box is changed and then the "Run" button on the Spatial A
 
 The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple climate scenarios are used.  
 
-![](./spat_vulnqs.PNG){width=100%}
+![](./spat_vulnqs2.PNG){width=100%}
 
 For the demonstration, leave the check boxes as they are and then click "Next". 
 
@@ -105,11 +105,13 @@ To account for uncertainty in the vulnerability questions you can provide more t
 
 ![](./results_variation.PNG){width=100%}
 
-The next graph shows how the scores based on exposure, sensitivity and adaptive capacity are combined with the scores based on documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of score produced by the Monte Carlo simulations.
+The next graph shows how the scores based on exposure, sensitivity and adaptive capacity are combined with the scores based on documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations.
 
-*TODO add picture*
+![](./comb_ind_plot.PNG){width=100%}
 
-The last graph... *TODO*
+The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the quesiton and the exposure multiplier that was applied. 
+
+![](./vulnq_plot.PNG){width=100%}
 
 Once you are finished with reviewing the results you can save the data as a csv file.
 
