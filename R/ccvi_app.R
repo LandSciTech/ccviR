@@ -494,13 +494,13 @@ ccvi_app <- function(testmode_in, ...){
               br(),
               h4("Factors contributing to index value"),
               p("The CCVI is calculated by combining the index calculated based on ",
-                "exposure, sensitivity and adabptive capacity with the index ",
+                "exposure, sensitivity and adaptive capacity with the index ",
                 "calculated based on documented or modelled responses to climate change. ",
                 "The plot below demonstrates which of these had the strongest",
                 "influence on the overall calculated index. The lines indicate",
                 " the range of scores produced by the Monte Carlo simulations. ",
-                "A score of negative ",
-                "one indicates none of the factors in the modelled response to",
+                "A score of negative one on the vertical ",
+                "axis indicates none of the factors in the modelled response to",
                 " climate change section were completed"),
               # Might want to add something like this to change width dependent
               # on n facets https://stackoverflow.com/questions/50914398/increase-plot-size-in-shiny-when-using-ggplot-facets
