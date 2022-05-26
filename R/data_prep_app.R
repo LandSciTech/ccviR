@@ -34,10 +34,9 @@ data_prep_app <- function(testmode_in, ...) {
              br(),
              shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
                                                              placeholder = TRUE)),
-             actionButton("data_done", "Finished", class = "btn-primary"),
+             actionButton("data_reset", "Add Another Scenario"),
              br(),
-             actionButton("data_reset", "Process Another")
-
+             actionButton("data_done", "Close", class = "btn-primary")
     )
   )
 
@@ -47,14 +46,20 @@ data_prep_app <- function(testmode_in, ...) {
 
     output$data_prep_msg <- renderText(prepped_data())
 
-    observeEvent(input$data_reset,{
-      purrr::map(list("data_prep_mod-clim_scn_nm",
-                      "data_prep_mod-folder_input",
-                      "data_prep_mod-folder_output",
-                      "data_prep_mod-paths_input"),
-                 shinyjs::reset)
-      shinyjs::runjs("window.scrollTo(0, 0)")
+    observeEvent(input$data_done, {
+      stopApp()
+    })
 
+
+    observeEvent(input$data_reset,{
+      # File path ids to use with file choose
+       c("clim_scn_nm", "clim_fut_period", "clim_em_scenario",
+         "mat_fut_pth", "cmd_fut_pth", "ccei_pth",
+         "map_pth", "mwmt_pth", "mcmt_pth", "clim_poly_pth") %>%
+        purrr::map(~paste0("data_prep_mod-", .x)) %>%
+        purrr::map(shinyjs::reset)
+
+      shinyjs::runjs("window.scrollTo(0, 0)")
     })
   }
 

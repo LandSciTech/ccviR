@@ -1,10 +1,9 @@
 # Data prep module
 
 # UI #========================================================================
-  data_prep_ui <- function(id){
+
+data_prep_ui <- function(id){
     fluidPage(
-      # shinyjs::useShinyjs(),
-      # shinyjs::inlineCSS(appCSS),
       h2("Prepare data for the CCVI App"),
       p(strong("Step 1: "), "Acquire climate data including: ",
         "Mean annual temperature (MAT), climate moisture deficeit (CMD), ",
@@ -32,12 +31,12 @@
         "The Sceanrio Name should be short and an appropriate title for results. ",
         "It will be used as a suffix to the saved output data and to identify the scenario."),
 
-      textInput(NS(id, "clim_scn_nm"),"Scenario Name"),
-      textInput(NS(id, "clim_gcm"),"GCM or Ensemble Name"),
-      textInput(NS(id, "clim_norm_period"), "Historical normal period"),
-      textInput(NS(id, "clim_fut_period"), "Future period"),
-      textInput(NS(id, "clim_em_scenario"), "Emissions scenario"),
-      textInput(NS(id, "clim_dat_url"), "Link to Source"),
+      textInput(NS(id, "clim_scn_nm"), labelMandatory("Scenario Name")),
+      textInput(NS(id, "clim_gcm"), labelMandatory("GCM or Ensemble Name")),
+      textInput(NS(id, "clim_norm_period"), labelMandatory("Historical normal period")),
+      textInput(NS(id, "clim_fut_period"), labelMandatory("Future period")),
+      textInput(NS(id, "clim_em_scenario"), labelMandatory("Emissions scenario")),
+      textInput(NS(id, "clim_dat_url"), labelMandatory("Link to Source")),
 
       p(strong("Step 3: "), "Prepare the climate data for use in the app.",
         "Climate data can be added by selecting file paths for each file. ",
@@ -86,63 +85,70 @@
       volumes <- c(wd = getShinyOption("file_dir"),
                    Home = fs::path_home(),
                    shinyFiles::getVolumes()())
-    }, timeout = 10, onTimeout = "error")
+    },
+    timeout = 10, onTimeout = "error")
 
     # File path ids to use with file choose
     filePathIds <- c("mat_norm_pth", "mat_fut_pth", "cmd_norm_pth", "cmd_fut_pth",
                      "ccei_pth", "map_pth", "mwmt_pth", "mcmt_pth", "clim_poly_pth")
 
     # Find file paths
-    shinyFiles::shinyDirChoose(input, "clim_var_dir", root = volumes)
-
     shinyFiles::shinyDirChoose(input, "out_folder", root = volumes)
 
     purrr::map(filePathIds, shinyFiles::shinyFileChoose, root = volumes,
                input = input,
                filetypes = c("shp", "tif", "asc", "nc", "grd", "bil", ".img"))
 
-    output$mat_norm_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$mat_norm_pth)$datapath
+    file_pths <- reactive({
+      purrr::map(filePathIds, ~{
+        if(is.integer(input[[.x]])){
+          return(NULL)
+        } else {
+          return(parseFilePaths(volumes, input[[.x]])$datapath)
+        }
+
+      }) %>% purrr::set_names(filePathIds)
     })
 
-    output$mat_fut_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$mat_fut_pth)$datapath
-    })
-
-    output$cmd_norm_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$cmd_norm_pth)$datapath
-    })
-
-    output$cmd_fut_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$cmd_fut_pth)$datapath
-    })
-
-    output$ccei_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$ccei_pth)$datapath
-    })
-
-    output$map_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$map_pth)$datapath
-    })
-
-    output$mwmt_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$mwmt_pth)$datapath
-    })
-
-    output$mcmt_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$mcmt_pth)$datapath
-    })
-
-    output$clim_poly_pth <- renderText({
-      shinyFiles::parseFilePaths(volumes, input$clim_poly_pth)$datapath
-    })
-
-    output$clim_var_dir <- renderText({
-      shinyFiles::parseDirPath(volumes, input$clim_var_dir)
+    # output file paths
+    observe({
+      purrr::walk2(file_pths(), filePathIds, ~{
+        #out_name <- paste0(.y, "_out")
+        out_name <- .y
+        output[[out_name]] <- renderText({.x})
+      })
     })
 
     output$out_folder <- renderText({
       shinyFiles::parseDirPath(volumes, input$out_folder)
+    })
+
+    # Enable the Submit button when all mandatory fields are filled out
+    observe({
+      fieldsMandatory1 <- c("clim_scn_nm", "clim_gcm", "clim_norm_period",
+                            "clim_fut_period", "clim_em_scenario", "clim_dat_url")
+      fieldsMandatory2 <- c("mat_norm_pth", "mat_fut_pth", "cmd_norm_pth",
+                             "cmd_fut_pth")
+
+      mandatoryFilled1 <-
+        vapply(fieldsMandatory1,
+               function(x) {
+                 !is.null(input[[x]]) && input[[x]] != ""
+               },
+               logical(1))
+      mandatoryFilled1 <- all(mandatoryFilled1)
+
+      mandatoryFilled2 <-
+        vapply(fieldsMandatory2,
+               function(x) {
+                 isTruthy(file_pths()[[x]])
+               },
+               logical(1))
+      mandatoryFilled2 <- all(c(mandatoryFilled2,
+                                isTruthy(shinyFiles::parseDirPath(volumes, input$out_folder))))
+
+      shinyjs::toggleState(id = "submit",
+                           condition = all(mandatoryFilled1, mandatoryFilled2))
     })
 
     brks <- reactiveVal(list(brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL))
@@ -175,14 +181,9 @@
                 row.names = FALSE)
 
 
-      if(input$data_as == "folder"||isTRUE(getOption("shiny.testmode"))){
+      if(isTRUE(getOption("shiny.testmode"))){
 
-        if (isTRUE(getOption("shiny.testmode"))) {
-          in_dir <- system.file("extdata/clim_files/raw", package = "ccviR")
-        } else {
-          in_dir <- shinyFiles::parseDirPath(volumes,
-                                             input$clim_var_dir)
-        }
+        in_dir <- system.file("extdata/clim_files/raw", package = "ccviR")
 
         req(in_dir)
         req(out_dir)
@@ -198,17 +199,17 @@
                       brks_cmd = brks()$brks_cmd,
                       brks_ccei = brks()$brks_ccei)
       } else {
-        message("doing indiv files")
+        message("Processing data")
         run_prep_data(
-          shinyFiles::parseFilePaths(volumes, input$mat_norm_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$mat_fut_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$cmd_norm_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$cmd_fut_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$ccei_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$map_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$mwmt_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$mcmt_pth)$datapath,
-          shinyFiles::parseFilePaths(volumes, input$clim_poly_pth)$datapath,
+          file_pths()$mat_norm_pth,
+          file_pths()$mat_fut_pth,
+          file_pths()$cmd_norm_pth,
+          file_pths()$cmd_fut_pth,
+          file_pths()$ccei_pth,
+          file_pths()$map_pth,
+          file_pths()$mwmt_pth,
+          file_pths()$mcmt_pth,
+          file_pths()$clim_poly_pth,
           out_folder = out_dir,
           overwrite = input$allow_over,
           scenario_name = input$clim_scn_nm,
