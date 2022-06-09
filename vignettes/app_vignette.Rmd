@@ -32,7 +32,7 @@ run_ccvi_app("demo")
 ### Getting started
 The Welcome Tab provides information on the Index and the data needed to calculate it.
 
-For the demonstration species all the required data is included in the package, but for a real species you will need download a prepared set of climate data or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
+For the demonstration species all the required data is included in the package, but for a real species you will need to download a prepared set of climate data or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
 
 In addition to the climate data the following spatial data sets for each species can be provided: 
 
@@ -84,7 +84,7 @@ Some vulnerability questions are answered based on an analysis of spatial data a
 ### Spatial Vulnerability Questions
 This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed.
 
-![](./spat_vulnqs.PNG){width=100%}
+![](./spat_vulnqs.PNG){width=75%}
 
 Note that if the check box is changed and then the "Run" button on the Spatial Analysis page is clicked again, you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The comments will not be affected though, so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. If the spatial data for a vulnerability question was not provided on the 'Spatial Data Analysis' tab then the map will not be included and the question can be answered using non-spatial information. 
 
