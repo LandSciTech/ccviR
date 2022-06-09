@@ -7,17 +7,25 @@ labelMandatory <- function(label) {
 }
 
 # Get file path
-get_file_ui <- function(id, title, mandatory = FALSE){
+get_file_ui <- function(id, title, mandatory = FALSE, type = "file",
+                        subtitle = "", multiple = FALSE){
   if(mandatory){
-    label <- labelMandatory(strong(title, ": "))
+    label <- span(labelMandatory(strong(paste0(title, ": "))), subtitle)
   } else {
-    label <- strong(title, ": ")
+    label <- span(strong(paste0(title, ": ")), subtitle)
   }
-  div(label,
-      shinyFiles::shinyFilesButton(id, "Choose file",
-                       title, multiple = FALSE),
-      verbatimTextOutput(id, placeholder = TRUE),
-      br())
+  if(type == "file"){
+    return(div(label,
+               shinyFiles::shinyFilesButton(id, "Choose file",
+                                            title, multiple = multiple),
+               verbatimTextOutput(paste0(id, "_out"), placeholder = TRUE)))
+  } else if(type == "dir"){
+    return(div(label,
+               shinyFiles::shinyDirButton(id, "Choose a folder",
+                                            title, multiple = multiple),
+               verbatimTextOutput(paste0(id, "_out"), placeholder = TRUE)))
+  }
+
 }
 
 check_comment_ui <- function(id, label, com = "", ...){

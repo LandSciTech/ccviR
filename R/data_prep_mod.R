@@ -44,27 +44,17 @@ data_prep_ui <- function(id){
         "because you will use the prepared climate data to calculate the index.",
         "The output folder should be the same for all scenarios."),
 
-      div(
-        id = NS(id, "paths_input"),
-        get_file_ui(NS(id, "mat_norm_pth"), "Historical mean annual temperature", TRUE),
-        get_file_ui(NS(id, "mat_fut_pth"), "Future mean annual temperature", TRUE),
-        get_file_ui(NS(id, "cmd_norm_pth"), "Historical climatic mositure deficit", TRUE),
-        get_file_ui(NS(id, "cmd_fut_pth"), "Future climatic mositure deficit", TRUE),
-        get_file_ui(NS(id, "ccei_pth"), "Climate change exposure index"),
-        get_file_ui(NS(id, "map_pth"), "Historical mean annual precipitation"),
-        get_file_ui(NS(id, "mwmt_pth"), "Mean warmest month temperature"),
-        get_file_ui(NS(id, "mcmt_pth"), "Mean coldest month temperature"),
-        get_file_ui(NS(id, "clim_poly_pth"), "Climate data extent polygon")
-      ),
-
-      div(
-        id = NS(id, "folder_output"),
-        labelMandatory(strong("Output folder location of prepared climate data")),
-        shinyFiles::shinyDirButton(NS(id, "out_folder"), "Choose a folder",
-                                   "Output folder location"),
-        verbatimTextOutput(NS(id, "out_folder"), placeholder = TRUE),
-        br()
-      ),
+      get_file_ui(NS(id, "mat_norm_pth"), "Historical mean annual temperature", TRUE),
+      get_file_ui(NS(id, "mat_fut_pth"), "Future mean annual temperature", TRUE),
+      get_file_ui(NS(id, "cmd_norm_pth"), "Historical climatic mositure deficit", TRUE),
+      get_file_ui(NS(id, "cmd_fut_pth"), "Future climatic mositure deficit", TRUE),
+      get_file_ui(NS(id, "ccei_pth"), "Climate change exposure index"),
+      get_file_ui(NS(id, "map_pth"), "Historical mean annual precipitation"),
+      get_file_ui(NS(id, "mwmt_pth"), "Mean warmest month temperature"),
+      get_file_ui(NS(id, "mcmt_pth"), "Mean coldest month temperature"),
+      get_file_ui(NS(id, "clim_poly_pth"), "Climate data extent polygon"),
+      get_file_ui(NS(id, "out_folder"), "Output folder location", mandatory = TRUE,
+                  type = "dir"),
 
       checkboxInput(NS(id, "allow_over"),
                     "Should existing files in the output folder be overwritten?"),
@@ -113,13 +103,12 @@ data_prep_ui <- function(id){
     # output file paths
     observe({
       purrr::walk2(file_pths(), filePathIds, ~{
-        #out_name <- paste0(.y, "_out")
-        out_name <- .y
+        out_name <- paste0(.y, "_out")
         output[[out_name]] <- renderText({.x})
       })
     })
 
-    output$out_folder <- renderText({
+    output$out_folder_out <- renderText({
       shinyFiles::parseDirPath(volumes, input$out_folder)
     })
 
