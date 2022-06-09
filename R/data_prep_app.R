@@ -54,8 +54,8 @@ data_prep_app <- function(testmode_in, ...) {
     observeEvent(input$data_reset,{
       # File path ids to use with file choose
        c("clim_scn_nm", "clim_fut_period", "clim_em_scenario",
-         "mat_fut_pth", "cmd_fut_pth", "ccei_pth",
-         "map_pth", "mwmt_pth", "mcmt_pth", "clim_poly_pth") %>%
+         "mat_fut_pth_out", "cmd_fut_pth_out", "ccei_pth_out",
+         "map_pth_out", "mwmt_pth_out", "mcmt_pth_out", "clim_poly_pth") %>%
         purrr::map(~paste0("data_prep_mod-", .x)) %>%
         purrr::map(shinyjs::reset)
 

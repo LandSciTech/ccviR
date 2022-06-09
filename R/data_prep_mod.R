@@ -25,7 +25,7 @@ data_prep_ui <- function(id){
         "temperature and moisture exposure based on the median and 1/2 the ",
         "interquartile range. All scenarios must be processed in one session ",
         "for the correct thresholds to be applied.",
-        "Repeat steps 2 and three for each scenario."),
+        "Repeat steps 2 and 3 for each scenario."),
 
       p(strong("Step 2:"), "Record a description of the climate data. ",
         "The Sceanrio Name should be short and an appropriate title for results. ",
