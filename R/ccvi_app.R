@@ -12,11 +12,6 @@ ccvi_app <- function(testmode_in, ...){
 
   fieldsMandatory2 <- c("range_poly_pth", "assess_poly_pth")
 
-  # File path ids to use with file choose
-  filePathIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
-                   "hs_rast_pth", "ptn_poly_pth")
-  names(filePathIds) <- filePathIds
-
   # Input options
   valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
   valueOpts <- c(3, 2, 1, 0)
@@ -166,11 +161,12 @@ ccvi_app <- function(testmode_in, ...){
                 get_file_ui("assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
                 get_file_ui("ptn_poly_pth", "Physiological thermal niche file"),
                 get_file_ui("nonbreed_poly_pth", "Non-breeding Range polygon shapefile"),
-                get_file_ui("hs_rast_pth", "Projected range change raster",
-                            subtitle = "To select multiple scenarios hold ctrl",
-                            multiple = TRUE),
-
-                conditionalPanel(condition = "output.hs_rast_pth_out !== ''",
+                selectInput("rng_chg_used", "Will a projected range change raster be supplied?",
+                            c("No" = "no",
+                              "Yes, one range change raster will be supplied for all scenarios" = "one",
+                              "Yes, multiple range change rasters will be supplied, one for each scenario (Preferred)" = "multiple")),
+                uiOutput("rng_chg_sel_ui"),
+                conditionalPanel(condition = "input.rng_chg_used !== 'no'",
                                  strong("Classification of projected range change raster"),
                                  p("Enter the range of values in the raster corresponding to ",
                                    "lost, maintained, gained and not suitable."),
@@ -597,11 +593,30 @@ ccvi_app <- function(testmode_in, ...){
       shinyjs::toggleState(id = "next2", condition = mandatoryFilled2)
     })
 
+    # update filePathIds based on selection for rng_chg
+    filePathIds <- reactive({
+      # File path ids to use with file choose
+      fileIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth")
+      names(fileIds) <- fileIds
+
+      rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth")
+
+      if(length(rng_chg_pths) > 0){
+        names(rng_chg_pths) <- rng_chg_pths
+
+        return(c(fileIds, rng_chg_pths))
+      } else {
+        return(fileIds)
+      }
+
+    })
+
     # Find file paths
     shinyDirChoose(input, "clim_var_dir", root = volumes)
-    purrr::map(filePathIds, shinyFileChoose, root = volumes, input = input,
-               filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
-
+    observe({
+      purrr::map(filePathIds(), shinyFileChoose, root = volumes, input = input,
+                 filetypes = c("shp", "tif", "asc", "nc", "grd", "bil"))
+    })
 
     # parse file paths
     clim_dir_pth <- reactive({
@@ -620,7 +635,7 @@ ccvi_app <- function(testmode_in, ...){
 
 
     file_pths <- reactive({
-      purrr::map(filePathIds, ~{
+      purrr::map(filePathIds(), ~{
         if(is.integer(input[[.x]])){
           if(!is.null(restored$yes)){
             return(file_pths_restore()[[.x]])
@@ -639,7 +654,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     observe({
-      purrr::walk2(file_pths(), filePathIds, ~{
+      purrr::walk2(file_pths(), filePathIds(), ~{
         out_name <- paste0(.y, "_out")
         output[[out_name]] <- renderText({.x})
       })
@@ -703,28 +718,35 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
+    # use readme to render scenario names for rng chg rasters
+    output$rng_chg_sel_ui <- renderUI({
+      if(input$rng_chg_used == "no"){
+        return(NULL)
+      } else if(input$rng_chg_used == "one"){
+        get_file_ui("rng_chg_pth", "Projected range change raster")
+      } else if (input$rng_chg_used == "multiple"){
+        tagList(
+          strong("Select a projected range change raster for each scenario"),
+          purrr::map2(clim_readme()$Scenario_Name,
+                      1:length(clim_readme()$Scenario_Name),
+                      ~get_file_ui(paste0("rng_chg_pth", "_", .y), .x)),
+          br(), br()
+          )
+
+      }
+    })
+
     hs_rast <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/HS_rast_high.tif",
                            package = "ccviR")
       } else {
-        pth <- file_pths()$hs_rast_pth
-
-        if(length(pth) > 1 & length(clim_readme()$Scenario_Name) > 1){
-          # make sure the order of pth matches scenario_names
-          pth2 <- purrr::map(clim_readme()$Scenario_Name, ~grep(.x, pth, value = TRUE)) %>% unlist()
-
-          if(length(pth2) != length(pth)){
-            return(try(stop("the filename ", setdiff(pth, pth2),
-                            " does not match any of the scenario names: ",
-                            paste0(clim_readme()$Scenario_Name, collapse = ", "),
-                            call. = FALSE)))
-          }
-          pth <- pth2
-        }
+        pth <- file_pths()[stringr::str_subset(names(input), "rng_chg_pth")] %>%
+          unlist()
+        pth <- pth[sort(names(pth))]
       }
 
-      if(!isTruthy(pth)){
+      if(!isTruthy(pth) || length(pth) == 0){
         return(NULL)
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
