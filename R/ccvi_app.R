@@ -33,6 +33,9 @@ ccvi_app <- function(testmode_in, ...){
 
   ggplot2::theme_set(my_theme)
 
+  # Let tmap try to fix polygons that are invalid
+  tmap::tmap_options(check.and.fix = TRUE)
+
   # Header #=================================
   ui <-  function(request){
     fluidPage(
@@ -703,6 +706,7 @@ ccvi_app <- function(testmode_in, ...){
 
       req(root_pth)
       req(clim_readme)
+      print(clim_readme()$Scenario_Name)
 
       clim_vars <- try(get_clim_vars(root_pth, scenario_names = clim_readme()$Scenario_Name))
 
