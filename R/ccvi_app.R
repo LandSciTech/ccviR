@@ -40,7 +40,7 @@ ccvi_app <- function(testmode_in, ...){
       shinyjs::inlineCSS(appCSS),
       title = "ccviR app",
       tags$head(tags$style(type = "text/css",
-                           ".container-fluid {  max-width: 950px; /* or 950px */}")),
+                           ".container-fluid {  max-width: 1050px; /* or 1050px */}")),
       div(id = "header",
           h1("An app to run the NatureServe CCVI process"),
           strong(
@@ -54,8 +54,10 @@ ccvi_app <- function(testmode_in, ...){
             a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"))
       ),
 
-      tabsetPanel(
+      navlistPanel(
         id = "tabset",
+        well = FALSE,
+        widths = c(3, 9),
         # Introduction #===============
         tabPanel(
           "Welcome",
@@ -204,11 +206,24 @@ ccvi_app <- function(testmode_in, ...){
                        " after changing inputs"),
                 br(),
                 actionButton("startSpatial", "Run", class = "btn-primary"),
-                verbatimTextOutput("spat_error")
+                br(),
+                conditionalPanel(
+                  condition = "input.startSpatial > 0",
+                  shinycssloaders::withSpinner(verbatimTextOutput("spat_error"),
+                                               proxy.height = "50px"),
+                  actionButton("next2", "Next", class = "btn-primary"),
+                  br(), br()
+                )
               )
             )
-          ),
+          )
+        ),
+        # Exposure Results #====================================================
+        tabPanel(
+          "Exposure Results",
           fluidRow(
+            column(
+              12,
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
@@ -233,11 +248,12 @@ ccvi_app <- function(testmode_in, ...){
                   tableOutput("tbl_ccei"))
 
               )
+            )
           ),
           fluidRow(
             column(
               12,
-              actionButton("next2", "Next", class = "btn-primary"),
+              actionButton("next3", "Next", class = "btn-primary"),
               br(), br()
             )
           )
@@ -376,7 +392,7 @@ ccvi_app <- function(testmode_in, ...){
                 check_comment_ui("D4", "4) Occurrence of protected areas in modeled future distribution.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                actionButton("next3", "Next", class = "btn-primary"),
+                actionButton("next4", "Next", class = "btn-primary"),
                 br(), br()
               )
             )
@@ -416,65 +432,68 @@ ccvi_app <- function(testmode_in, ...){
               uiOutput("box_D2"),
               strong("3) Overlap of modeled future (2050) range with current range"),
               uiOutput("box_D3"),
-              actionButton("next4", "Next", class = "btn-primary")
+              actionButton("next5", "Next", class = "btn-primary")
             )
           )
         ),
         # Results #===================================
         tabPanel(
-          "Results",
+          "Index Results",
           fluidPage(
             div(
               id = "formData",
               #style = 'width:800px;',
               h3("Results"),
-              h4("Calculate or re-calculate the index"),
-              actionButton("calcIndex", "Calculate", class = "btn-primary"),
+              h5("Click the button to calculate or re-calculate the index"),
+              actionButton("calcIndex", "Calculate", class = "btn-primary")
+              ),
 
-              h4("Data completeness"),
-              tableOutput("n_factors"),
+              conditionalPanel(
+                condition = "output.calcFlag == true",
+                h4("Data completeness"),
+                tableOutput("n_factors"),
 
-              h4("Variation in index"),
-              p("When multiple values are selected for any of the vulnerability ",
-                "factors the average of the values is used to calculate the ",
-                "overall index. To test the uncertainty in the result a Monte Carlo ",
-                "simulation with 1000 runs is carried out. In each simulation run ",
-                "one of the selected values is randomly chosen and the index is ",
-                "calculated. The graph below shows the proportion of runs with each",
-                " index value for each scenario. "),
-              # p("Confidence in the index is:",
-              #   textOutput("conf_index", inline = TRUE)),
-              plotOutput("conf_graph", width = 300, height = 200)
-            ),
-            div(
-              id = "indplt",
-              #style = 'width:800px;',
-              br(),
-              h4("Factors contributing to index value"),
-              p("The CCVI is calculated by combining the index calculated based on ",
-                "exposure, sensitivity and adaptive capacity with the index ",
-                "calculated based on documented or modelled responses to climate change. ",
-                "The plot below demonstrates which of these had the strongest",
-                "influence on the overall calculated index. The lines indicate",
-                " the range of scores produced by the Monte Carlo simulations. ",
-                "A score of negative one on the vertical ",
-                "axis indicates none of the factors in the modelled response to",
-                " climate change section were completed"),
-              # Might want to add something like this to change width dependent
-              # on n facets https://stackoverflow.com/questions/50914398/increase-plot-size-in-shiny-when-using-ggplot-facets
+                h4("Variation in index"),
+                p("When multiple values are selected for any of the vulnerability ",
+                  "factors the average of the values is used to calculate the ",
+                  "overall index. To test the uncertainty in the result a Monte Carlo ",
+                  "simulation with 1000 runs is carried out. In each simulation run ",
+                  "one of the selected values is randomly chosen and the index is ",
+                  "calculated. The graph below shows the proportion of runs with each",
+                  " index value for each scenario. "),
+                # p("Confidence in the index is:",
+                #   textOutput("conf_index", inline = TRUE)),
+                plotOutput("conf_graph", width = 300, height = 200),
+              div(
+                id = "indplt",
+                #style = 'width:800px;',
+                br(),
+                h4("Factors contributing to index value"),
+                p("The CCVI is calculated by combining the index calculated based on ",
+                  "exposure, sensitivity and adaptive capacity with the index ",
+                  "calculated based on documented or modelled responses to climate change. ",
+                  "The plot below demonstrates which of these had the strongest",
+                  "influence on the overall calculated index. The lines indicate",
+                  " the range of scores produced by the Monte Carlo simulations. ",
+                  "A score of negative one on the vertical ",
+                  "axis indicates none of the factors in the modelled response to",
+                  " climate change section were completed"),
+                # Might want to add something like this to change width dependent
+                # on n facets https://stackoverflow.com/questions/50914398/increase-plot-size-in-shiny-when-using-ggplot-facets
 
-              plotOutput("ind_score_plt", height = "300px"),
-              textOutput("slr"),
-              br(), br(),
-              p("The score for each vulnerability factor is determined by the ",
-                "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
-                "multiplied by the exposure multiplier for temperature or moisture,",
-                "whichever is most relevant to that factor. When multiple values ",
-                "are selected for any of the vulnerability ",
-                "factors the average of the values is used. These scores are summed ",
-                "to determine the index. The plot below demonstrates which factors ",
-                "had the highest scores and how exposure impacted the score."),
-              plotly::plotlyOutput("q_score_plt"),
+                plotOutput("ind_score_plt", height = "300px"),
+                textOutput("slr"),
+                br(), br(),
+                p("The score for each vulnerability factor is determined by the ",
+                  "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
+                  "multiplied by the exposure multiplier for temperature or moisture,",
+                  "whichever is most relevant to that factor. When multiple values ",
+                  "are selected for any of the vulnerability ",
+                  "factors the average of the values is used. These scores are summed ",
+                  "to determine the index. The plot below demonstrates which factors ",
+                  "had the highest scores and how exposure impacted the score."),
+                plotly::plotlyOutput("q_score_plt")
+              ),
 
               # helpful for testing
               # shinyjs::runcodeUI(),
@@ -491,7 +510,11 @@ ccvi_app <- function(testmode_in, ...){
             )
           )
         )
-      )
+      ),
+      div(
+        id = "footer",
+        br(),
+        br())
     )
   }
 
@@ -590,7 +613,7 @@ ccvi_app <- function(testmode_in, ...){
       }
 
       shinyjs::toggleState(id = "startSpatial", condition = mandatoryFilled2)
-      shinyjs::toggleState(id = "next2", condition = mandatoryFilled2)
+      shinyjs::toggleState(id = "next2", condition = mandatoryFilled2 & isTruthy(spat_res()))
     })
 
     # update filePathIds based on selection for rng_chg
@@ -812,6 +835,7 @@ ccvi_app <- function(testmode_in, ...){
       if(input$shinyalert > 0){
         doSpatial(doSpatial() +1)
       }
+      shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
 
     # run spatial calculations
@@ -863,6 +887,8 @@ ccvi_app <- function(testmode_in, ...){
       }
       if(is.character(spat_res1())){
         stop(spat_res1(), call. = FALSE)
+      } else {
+        "Spatial analysis complete"
       }
     })
 
@@ -957,6 +983,13 @@ ccvi_app <- function(testmode_in, ...){
     # When next button is clicked move to next panel
     observeEvent(input$next2, {
       updateTabsetPanel(session, "tabset",
+                        selected = "Exposure Results"
+      )
+      shinyjs::runjs("window.scrollTo(0, 0)")
+    })
+    # When next button is clicked move to next panel
+    observeEvent(input$next3, {
+      updateTabsetPanel(session, "tabset",
                         selected = "Vulnerability Questions"
       )
       shinyjs::runjs("window.scrollTo(0, 0)")
@@ -977,7 +1010,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # When next button is clicked move to next panel
-    observeEvent(input$next3, {
+    observeEvent(input$next4, {
       updateTabsetPanel(session, "tabset",
                         selected = "Spatial Vulnerability Questions")
       shinyjs::runjs("window.scrollTo(0, 0)")
@@ -1274,9 +1307,9 @@ ccvi_app <- function(testmode_in, ...){
     outputOptions(output, "box_D3", suspendWhenHidden = FALSE)
 
     # When submit button is clicked move to next panel
-    observeEvent(input$next4, {
+    observeEvent(input$next5, {
       updateTabsetPanel(session, "tabset",
-                        selected = "Results"
+                        selected = "Index Results"
       )
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
@@ -1315,9 +1348,7 @@ ccvi_app <- function(testmode_in, ...){
 
     output$species_name <- renderText(input$species_name)
 
-    # summarize across scenarios
-    # index_sum <- reactive(summarize_scenarios(index_res()))
-
+    # insert index dials for each scenario
     observeEvent(input$calcIndex, {
       removeUI(
         selector = "#*index_result*"
@@ -1336,6 +1367,10 @@ ccvi_app <- function(testmode_in, ...){
                                          .y),
                                   reactive(.x)))
     })
+
+    # a flag to hide results until calculated
+    output$calcFlag <- reactive(isTruthy(out_data()))
+    outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
 
     output$n_factors <- renderTable({
       facts <- index_res() %>% distinct(across(contains("factors")))
