@@ -67,6 +67,9 @@ ccvi_app <- function(testmode_in, ...){
               a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
               "that automates the spatial analysis needed to inform the index. ",
               "The app is based on version 3.02 of the NatureServe CCVI. ",
+              "See the app ",
+              a("tutorial", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html"),
+              "for a demonstration of how to use the app. ",
               "For detailed instructions on how to use the index and definitions ",
               "of the terms used below see the ",
               a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf"),
@@ -75,7 +78,8 @@ ccvi_app <- function(testmode_in, ...){
 
             p(strong("Step 0: "),"The first time you use the app ",
               "you will need to download the climate data used in the app or",
-              " prepare your own using raw climate data."),
+              " prepare your own using raw climate data and the ",
+              a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html")),
             p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
               tags$ul(
                 tags$li(labelMandatory("Species North American or global range polygon")),
