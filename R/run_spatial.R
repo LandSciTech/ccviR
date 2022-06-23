@@ -108,7 +108,8 @@ run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Clip range to climate data polygon and to scale poly
 
-  range_poly_clim <- st_intersection(range_poly, clim_poly) %>% st_set_agr("constant")
+  range_poly_clim <- st_intersection(range_poly, clim_poly) %>%
+    st_set_agr("constant")
   if(nrow(range_poly_clim) == 0){
     stop("The range polygon does not overlap with the climate data extent polygon.",
          call. = FALSE)

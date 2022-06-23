@@ -1222,7 +1222,8 @@ ccvi_app <- function(testmode_in, ...){
       make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
                poly2 = assess_poly(), poly2_nm = "assess_poly",
                rast_nm = "hs_rast",
-               rast_lbl = c("Not suitable", "Lost", "Maintained", "Gained"))
+               rast_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
+                                     value = c(0, 1, 2, 3)))
     })
 
     output$tbl_D2_3 <- renderTable({
