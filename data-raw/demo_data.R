@@ -59,13 +59,13 @@ ecoreg<- read_sf("Ecoregions/ecoregions.shp")
 
 rng_poly <- filter(ecoreg, ECOREGION %in% c(118, 119)) %>%
   st_transform(st_crs(clim_na[[1]])) %>%
-  st_intersection(assess_poly) %>%
-  st_buffer(-100) # avoid validity warning when mapping
+  st_intersection(assess_poly)
 
 # and use 119 as PTN
 ptn_poly <- rng_poly %>% filter(ECOREGION == 119) %>% select(ECOZONE)
 
-rng_poly <- rng_poly %>% summarise(ECOZONE = first(ECOZONE))
+rng_poly <- rng_poly %>% summarise(ECOZONE = first(ECOZONE)) %>%
+  st_buffer(-100) # avoid validity warning when mapping
 
 # make HS rasts by combining clim_dat mat+cmd
 
