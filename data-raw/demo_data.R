@@ -1,6 +1,6 @@
 ## code to prepare `demo_data` dataset and save files to demo app
 
-library(ccviR)
+devtools::load_all(".")
 library(dplyr)
 library(sf)
 library(purrr)
@@ -49,7 +49,7 @@ clim_nb <- raster::stack(clim_na) %>% raster::crop(assess_poly) %>%
 
 raster::writeRaster(clim_nb, "inst/extdata/clim_files/raw/NB",
                     format = "GTiff", bylayer = TRUE,
-                    suffix = "names")
+                    suffix = "names", overwrite = TRUE)
 
 # Species data #================================================================
 # get ecoregions to use as demo range
