@@ -7,8 +7,10 @@
 #' current range represented by an intersection of the predicted future and
 #' current ranges
 #'
-#' @param rast
-#' @param poly
+#' @param rast raster classified so 1 is lost, 2 maintained and 3 gained. Can
+#'   also have 0 is not suitable
+#' @param poly area within which the proportions lost, gained and maintained
+#'   are calculated
 #'
 #' @noRd
 calc_gain_loss <- function(rast, poly, gain_mod){

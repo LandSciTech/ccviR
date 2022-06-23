@@ -39,19 +39,49 @@
 #'   interquartile range
 #'
 #' @return Returns a list of matrices with the breaks used to classify mat, cmd
-#'   and ccei. This list can be used to  Processed data is saved in \code{out_folder}
+#'   and ccei. This list can be supplied to a future call to
+#'   \code{prep_clim_data} in order to use the same breaks for multiple climate
+#'   data sets. Processed data is saved in \code{out_folder}
 #'
 #' @seealso \code{\link{get_clim_vars}} for loading the processed data.
 #'
 #' @export
 #'
 #' @examples
-#' pth_in <- system.file("extData/clim_files/raw", package = "ccviR")
+#' in_folder <- system.file("extData/clim_files/raw", package = "ccviR")
 #'
 #' pth_out <- system.file("extData/clim_files/processed", package = "ccviR")
 #'
-#' run_prep_data(in_folder = pth_in, out_folder = pth_out, overwrite = TRUE)
-run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
+#' # use first scenario to set breaks
+#' brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+#'                            mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
+#'                            cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+#'                            cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
+#'                            map = file.path(in_folder, "NB_norm_MAP.tif"),
+#'                            mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+#'                            mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+#'                            out_folder = pth_out,
+#'                            clim_poly = file.path(system.file("extdata", package = "ccviR"),
+#'                                                  "assess_poly.shp"),
+#'                            overwrite = TRUE,
+#'                            scenario_name = "RCP 4.5")
+#'
+#' prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+#'                mat_fut = file.path(in_folder, "NB_RCP.8.5_MAT.tif"),
+#'                cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+#'                cmd_fut = file.path(in_folder, "NB_RCP.8.5_CMD.tif"),
+#'                map = file.path(in_folder, "NB_norm_MAP.tif"),
+#'                mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+#'                mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+#'                out_folder = pth_out,
+#'                clim_poly = file.path(system.file("extdata", package = "ccviR"),
+#'                                      "assess_poly.shp"),
+#'                overwrite = TRUE,
+#'                scenario_name = "RCP 8.5",
+#'                brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
+#'                brks_ccei = brks_out$brks_ccei)
+
+prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
                           in_folder = NULL, out_folder,
                           reproject = FALSE, overwrite = FALSE,
@@ -307,11 +337,13 @@ run_prep_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 #'
 #' Prepare exposure data into classes based on delta and mean and
 #' 1/2 standard deviation
-#' @param rast_norm
-#' @param rast_fut
-#' @param file_nm
-#' @param do_reproj
-#' @param overwrite
+#' @param rast_norm raster for normal period
+#' @param rast_fut raster for future period
+#' @param file_nm filename
+#' @param reproject Should the raster be projected to longlat?
+#' @param overwrite option passed to \code{writeRaster}
+#' @param type one of "halfIQR" or "sd"
+#' @param brs breaks matrix to use. If not NULL type is ignored
 #'
 #' @noRd
 prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,

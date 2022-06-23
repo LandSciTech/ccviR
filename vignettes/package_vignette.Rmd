@@ -52,7 +52,7 @@ data_pth <- system.file("extdata", package = "ccviR")
 list.files(file.path(data_pth, "clim_files/raw"))
 
 # prepare the data and save it in out_folder
-run_prep_data(in_folder = file.path(data_pth, "clim_files/raw"), 
+prep_clim_data(in_folder = file.path(data_pth, "clim_files/raw"), 
               out_folder = file.path(data_pth, "clim_files/processed"),
               overwrite = TRUE)
 
@@ -109,7 +109,7 @@ clim_dat <- get_clim_vars(file.path(data_pth, "clim_files/processed"))
 Then we can run the spatial data analysis using the species specific data and climate data. The resulting object is a list containing a table with the results of the spatial analysis, `spat_res$spat_table`, and two range polygons which are provided for mapping. `spat_res$range_poly_assess` the range polygon clipped to the assessment area, and `spat_res$range_poly_clim` the range polygon clipped to the extent of the climate data. The first is used for all factors except the historical thermal and hydrological niche which use the range clipped to the extent of the climate data because historical thermal and hydrological niche are used a proxies for the  range of temperature and moisture conditions that the species can tolerate and therefore should reflect as much of the range as possible. If the range_poly provided is completely within the assessment area then these two polygons will be the same
 
 ```{r}
-spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
+spat_res <- analyze_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
                         ptn_poly = PTN_poly, non_breed_poly = nonbreed_poly,
                         hs_rast = HS_rast_high,
                         hs_rcl = hs_rcl_mat,

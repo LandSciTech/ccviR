@@ -1,28 +1,39 @@
 #' Plot scores for each vulnerability question
 #'
-#' A graph to help visualize what factors are influencing the index. Produces a plotly
-#' graphic where the bars are the total score for the factor after modifying it
-#' based on exposure and the dots are the exposure multiplier. Hover to see the
-#' name of the factor.
+#' A graph to help visualize what factors are influencing the index. Produces a
+#' plotly graphic where the bars are the total score for the factor after
+#' modifying it based on exposure. Hover to see the name of the factor and value
+#' of the exposure multiplier. Facets are produced if there are multiple
+#' scenarios
 #'
 #' @param vuln_df the \code{vuln_df} element of the result from
-#'   \code{\link{calc_vulnerability}}.
+#'   \code{\link{calc_vulnerability}} with an added column for the
+#'   scenario_name. See examples.
 #'
 #' @export
 #'
 #' @return plotly graph
 #'
 #' @examples
+#'
+#' # load tidyr for dealing with nested lists in table
+#' library(tidyr)
+#'
 #' base_pth <- system.file("extData", package = "ccviR")
 #'
-#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
+#' # scenario names
+#' scn_nms <- c("RCP 4.5", "RCP 8.5")
 #'
-#' spat_res <- run_spatial(
-#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp"), agr = "constant"),
+#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"), scn_nms)
+#'
+#' spat_res <- analyze_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
-#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
+#'   hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
+#'                           raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+#'   scenario_names = scn_nms
 #' )
 #'
 #' # vulnerability factor table with score 1 (somewhat increase vulnerability)
@@ -31,7 +42,9 @@
 #'
 #' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 #'
-#' plot_q_score(index_vuln$vuln_df)
+#' select(index_vuln, scenario_name, vuln_df) %>%
+#'   unnest(cols = vuln_df) %>%
+#'   plot_q_score()
 
 plot_q_score <- function(vuln_df){
 

@@ -1,9 +1,4 @@
-# get the proportion of poly1 that overlaps poly2
-#' Title
-#'
-#' @param poly1
-#' @param poly2
-#' @param var_name
+#' get the proportion of poly1 that overlaps poly2
 #'
 #' @noRd
 calc_overlap_poly <- function(poly1, poly2, var_name){

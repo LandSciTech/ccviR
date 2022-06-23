@@ -29,7 +29,7 @@ See Guidelines.}
 \item{mig}{0 or 1 is the species migratory?}
 
 \item{use_spatial}{if TRUE then values for factors that are calculated in
-\code{run_spatial} will be set to -1 for Unknown so that they do not
+\code{analyze_spatial} will be set to -1 for Unknown so that they do not
 override the results of the spatial analysis}
 }
 \value{

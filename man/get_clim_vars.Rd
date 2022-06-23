@@ -15,21 +15,25 @@ three are required.}
 \item{scenario_names}{character vector with names that identify multiple
 future climate scenarios. If this is supplied the raster file must include
 the scenario name as a suffix to the pattern mentioned above eg. if there
-are two MAT files "MAT_RCP4.5.tif" and "MAT_RCP8.5.tif" the scenario names
-should be "RCP4.5" and "RCP8.5".}
+are two MAT files "MAT_RCP 4.5.tif" and "MAT_RCP 8.5.tif" the scenario names
+should be "RCP 4.5" and "RCP 8.5". This will happen automatically if the
+scenario name is provided to \code{\link{prep_clim_data}}.}
 }
 \value{
 A list of climate variables with names "mat", "cmd", "map", "ccei",
   "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
-  be sub-lists with an element per scenario.
+  be RasterStacks with one layer per scenario.
 }
 \description{
 Load climate variables and store them in a list that can be used with
-\code{\link{run_spatial}}. The climate variables should first be prepared
-using \code{\link{run_prep_data}}.
+\code{\link{analyze_spatial}}. The climate variables should first be prepared
+using \code{\link{prep_clim_data}}.
 }
 \examples{
 pth <- system.file("extData/clim_files/processed", package = "ccviR")
 
-get_clim_vars(pth)
+# scenario names
+scn_nms <- c("RCP 4.5", "RCP 8.5")
+
+get_clim_vars(pth, scn_nms)
 }

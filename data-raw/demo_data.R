@@ -104,7 +104,7 @@ purrr::walk2(sp_dat, names(sp_dat), write_fun,
 in_folder <- "inst/extdata/clim_files/raw/"
 
 # use first scenario to set breaks
-brks_out <- run_prep_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
                           mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
                           cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
                           cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
@@ -116,7 +116,7 @@ brks_out <- run_prep_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
                           overwrite = TRUE,
                           scenario_name = "RCP 4.5")
 
-run_prep_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
               mat_fut = file.path(in_folder, "NB_RCP.8.5_MAT.tif"),
               cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
               cmd_fut = file.path(in_folder, "NB_RCP.8.5_CMD.tif"),
@@ -142,13 +142,14 @@ write.csv(
   row.names = FALSE
 )
 
+# Use the data #============================================================
 rng_poly <- read_sf("inst/extdata/rng_poly.shp", agr = "constant")
 assess_poly <- read_sf("inst/extdata/assess_poly.shp", agr = "constant")
 HS_rast_high <- raster::stack(raster("inst/extdata/rng_chg_45.tif"),
                               raster("inst/extdata/rng_chg_85.tif"))
 PTN_poly <- read_sf("inst/extdata/ptn_poly.shp", agr = "constant")
 
-spat_res <- run_spatial(range_poly = rng_poly, scale_poly = assess_poly,
+spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
                         ptn_poly = PTN_poly,
                         hs_rast = HS_rast_high,
                         hs_rcl = matrix(c(c(-1, 0), c(1, 2)), ncol = 2),

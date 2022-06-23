@@ -20,13 +20,17 @@
 #' @param ptn_poly Optional. An sf polygon object giving the locations that are
 #'   considered part of the physiological thermal niche (See NatureServe
 #'   Guidelines for definition).
-#' @param hs_rast Optional. A raster with results from a model of the change in
-#'   the species' range caused by climate change.
+#' @param hs_rast Optional. A Raster* object with results from a model of the
+#'   change in the species' range caused by climate change. To supply different
+#'   results for each scenario use a RasterStack and ensure that the order of
+#'   the layers matches the order of \code{scenario_names}.
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 #'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
-#'   details on the matrix format
+#'   details on the matrix format.
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
 #'   in the modeled range change under climate change
+#' @param scenario_names character vector with names that identify multiple
+#'   future climate scenarios.
 #'
 #' @return a list with elements: \code{spat_table} the results of the spatial
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
@@ -35,6 +39,7 @@
 #'
 #'   \code{spat_table} contains the following columns:
 #'   \describe{
+#'     \item{scenario_name}{Name identifying the scenario}
 #'     \item{MAT_#}{The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
 #'     \item{CMD_#}{The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
 #'     \item{CCEI_#}{The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 4 indicates high exposure while Class 1 indicates low exposure }
@@ -51,20 +56,25 @@
 #'
 #' @examples
 #'
-#' base_pth <- system.file("extdata", package = "ccviR")
+#' base_pth <- system.file("extData", package = "ccviR")
 #'
-#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
+#' # scenario names
+#' scn_nms <- c("RCP 4.5", "RCP 8.5")
 #'
-#' run_spatial(
-#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp"), agr = "constant"),
+#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"),
+#'                            scenario_names = scn_nms)
+#'
+#' spat_res <- analyze_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
-#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
+#'   hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
+#'                           raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+#'   scenario_names = scn_nms
 #' )
 
-
-run_spatial <- function(range_poly, scale_poly, clim_vars_lst,
+analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                         non_breed_poly = NULL, ptn_poly = NULL,
                         hs_rast = NULL, hs_rcl = NULL, gain_mod = 1,
                         scenario_names = "Scenario 1"){

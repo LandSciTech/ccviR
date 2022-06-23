@@ -39,7 +39,7 @@ cross2(c(fut_clim, cur_clim), file_nms) %>%
   map(~file.copy(prj_file, file.path(.x[[1]], paste0(.x[[2]], ".prj"))))
 
 # use first scenario to set breaks
-brks_out <- run_prep_data(mat_norm = file.path(cur_clim, "MAT.asc"),
+brks_out <- prep_clim_data(mat_norm = file.path(cur_clim, "MAT.asc"),
                           mat_fut = file.path(fut_clim[[1]], "MAT.asc"),
                           cmd_norm = file.path(cur_clim, "CMD.asc"),
                           cmd_fut = file.path(fut_clim[[1]], "CMD.asc"),
@@ -52,7 +52,7 @@ brks_out <- run_prep_data(mat_norm = file.path(cur_clim, "MAT.asc"),
                           scenario_name = names(fut_clim[1]))
 
 purrr::map(names(fut_clim[2:length(fut_clim)]),
-           ~run_prep_data(mat_norm = file.path(cur_clim, "MAT.asc"),
+           ~prep_clim_data(mat_norm = file.path(cur_clim, "MAT.asc"),
                           mat_fut = file.path(fut_clim[[.x]], "MAT.asc"),
                           cmd_norm = file.path(cur_clim, "CMD.asc"),
                           cmd_fut = file.path(fut_clim[[.x]], "CMD.asc"),

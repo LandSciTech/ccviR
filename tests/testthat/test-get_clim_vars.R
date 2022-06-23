@@ -4,16 +4,19 @@ library("raster", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
-clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"))
+# scenario names
+scn_nms <- c("RCP 4.5", "RCP 8.5")
+clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
+                           scn_nms)
 
 # make the crs's match to avoid warning it has to be verbatim the same
-nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",
-                    quiet = TRUE)
+# nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",
+#                     quiet = TRUE)
 assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
                   quiet = TRUE)
-rng_high <- st_read(file.path(file_dir, "rng_poly_high.shp"), agr = "constant",
+rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
                     quiet = TRUE)
-hs <- raster(file.path(file_dir, "HS_rast_high.tif"))
+hs <- raster(file.path(file_dir, "rng_chg_45.tif"))
 
 # clim_vars[1:5] <- purrr::map(clim_vars[1:5],
 #                              ~`crs<-`(.x, value = "+proj=longlat +datum=WGS84 +no_defs"))
@@ -25,7 +28,7 @@ test_that("basic version works",{
 
 test_that("trimming happens", {
   na_rast <- clim_vars[[1]]
-  na_rast <- setValues(na_rast, NA_real_) %>% shift(dy = 1000)
+  na_rast <- raster::setValues(na_rast, NA_real_) %>% raster::shift(dy = 1000)
 
   na_rast <- raster::merge(na_rast, clim_vars[[1]])
 

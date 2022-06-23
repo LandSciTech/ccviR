@@ -852,7 +852,7 @@ ccvi_app <- function(testmode_in, ...){
       req(clim_vars())
       isolate({
         tryCatch({
-          run_spatial(range_poly = range_poly_in(),
+          analyze_spatial(range_poly = range_poly_in(),
                       non_breed_poly = nonbreed_poly(),
                       scale_poly = assess_poly(),
                       hs_rast = hs_rast(),

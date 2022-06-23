@@ -1,11 +1,10 @@
-# project crs using gdalUtils::gdalwarp
-
-#' Title
+#' project crs using gdalUtils::gdalwarp
 #'
-#' @param rast
-#' @param ref_crs
-#' @param out_path
-#' @param overwrite
+#' @param rast Raster
+#' @param ref_crs crs to transform to
+#' @param out_path path to save output
+#' @param overwrite should files at out_path be overwritten?
+#' @param resamp_method resampling method
 #' @param ...
 #'
 #' @noRd

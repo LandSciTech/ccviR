@@ -1,9 +1,15 @@
 #' Get the proportion of each class in a raster that overlaps a polygon
 #'
-#' @param rast
-#' @param poly
-#' @param var_name
-#' @param val_range
+#' @param rast raster
+#' @param poly polygon
+#' @param var_name variable name for output
+#' @param val_range vector of possible values in raster
+#' @param digits number of digits to round proportion to
+#' @param check_overlap proportion of overlap below which there should be an error
+#' @param return_overlap_as column name for percent overlap in the returned dataframe
+#'
+#' @return a data.frame
+#'
 #'
 #' @noRd
 calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,

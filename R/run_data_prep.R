@@ -4,9 +4,10 @@
 #' \code{vignette("data_prep_vignette", package = "ccviR")} for details on how to use
 #' the app.
 #'
-#' @param file_dir The directory to locate files from
+#' @param file_dir The directory to locate files from or "demo" to use the demo
+#'   data included in the package.
 #' @param launch.browser logical. Run app in browser?
-#' @param port If launch.browser is FALSE, specify port to run CCVI app
+#' @param port If launch.browser is FALSE, specify port to run CCVI app.
 #' @param test.mode Should the app be launched using shiny test.mode. Only set
 #'   to TRUE for debugging.
 #'

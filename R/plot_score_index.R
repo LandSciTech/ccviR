@@ -2,7 +2,12 @@
 #'
 #' A graph to visualize where the result falls relative to the thresholds used
 #' to calculate index values and how the combination of the D score and B/C
-#' score affects the index value.
+#' score affects the overall index value.
+#'
+#' The colours show the location of the thresholds used to determine the index,
+#' the points show the score for each scenario and the lines show the range of
+#' scores produced by the Monte Carlo simulations. Multiple scenarios are
+#' identified by different symbols
 #'
 #' @param score_df A dataframe containing the result of a call to
 #'   \code{calc_vulnerability}.
@@ -13,19 +18,26 @@
 #' @examples
 #' base_pth <- system.file("extData", package = "ccviR")
 #'
-#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"))
+#' # scenario names
+#' scn_nms <- c("RCP 4.5", "RCP 8.5")
 #'
-#' spat_res <- run_spatial(
-#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly_high.shp")),
-#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp")),
+#' clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"),
+#'                            scenario_names = scn_nms)
+#'
+#' spat_res <- analyze_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::raster(file.path(base_pth, "HS_rast_high.tif")),
-#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2)
+#'   hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
+#'                           raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+#'   scenario_names = scn_nms
 #' )
 #'
 #' # vulnerability factor table with score 1 (somewhat increase vulnerability)
 #' # for all factors
 #' vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+#' vuln$Value2[c(5, 7, 9)] <- 3
 #'
 #' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 #'
@@ -82,12 +94,14 @@ plot_score_index <- function(score_df){
     ggplot2::geom_linerange(data = score_pt,
                             ggplot2::aes(b_c_score, d_score, ymin = d_score_min,
                                          ymax = d_score_max),
-                            col = "grey40",
+                            col = "black",
+                            size = 1.25, alpha = 0.4,
                             inherit.aes = FALSE)+
     ggplot2::geom_linerange(data = score_pt,
                            ggplot2::aes(y = d_score, xmin = b_c_score_min,
                                         xmax = b_c_score_max),
-                           col = "grey40",
+                           col = "black",
+                           size = 1.25, alpha = 0.4,
                            inherit.aes = FALSE)+
     ggplot2::geom_point(data = score_pt,
                         ggplot2::aes(b_c_score, d_score, shape = scenario_name),

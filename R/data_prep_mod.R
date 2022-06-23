@@ -179,7 +179,7 @@ data_prep_ui <- function(id){
 
         message("doing folder")
 
-        run_prep_data(in_folder = in_dir,
+        prep_clim_data(in_folder = in_dir,
                       out_folder = out_dir,
                       reproject = FALSE,
                       overwrite = input$allow_over,
@@ -189,7 +189,7 @@ data_prep_ui <- function(id){
                       brks_ccei = brks()$brks_ccei)
       } else {
         message("Processing data")
-        run_prep_data(
+        prep_clim_data(
           file_pths()$mat_norm_pth,
           file_pths()$mat_fut_pth,
           file_pths()$cmd_norm_pth,
