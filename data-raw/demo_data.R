@@ -69,11 +69,14 @@ rng_poly <- rng_poly %>% summarise(ECOZONE = first(ECOZONE)) %>%
 
 # make HS rasts by combining clim_dat mat+cmd
 
-hs_45 <- (clim_nb$RCP.4.5_MAT+clim_nb$RCP.4.5_CMD) < 100
+hs_45 <- (clim_nb$RCP.4.5_MAT*100+clim_nb$RCP.4.5_CMD) < 600 &
+  (clim_nb$RCP.4.5_MAT*100+clim_nb$RCP.4.5_CMD) > 200
 
-hs_85 <- (clim_nb$RCP.8.5_MAT+clim_nb$RCP.8.5_CMD) < 100
+hs_85 <- (clim_nb$RCP.8.5_MAT*100+clim_nb$RCP.8.5_CMD) < 600 &
+  (clim_nb$RCP.8.5_MAT*100+clim_nb$RCP.8.5_CMD) > 200
 
-hs_norm <- (clim_nb$norm_MAT+clim_nb$norm_CMD) < 100
+hs_norm <- (clim_nb$norm_MAT*100+clim_nb$norm_CMD) < 600 &
+  (clim_nb$norm_MAT*100+clim_nb$norm_CMD) > 200
 
 hs_norm <- raster::mask(hs_norm, rng_poly)
 
@@ -81,6 +84,7 @@ hs_norm <- raster::mask(hs_norm, rng_poly)
 rng_chg_45 <- hs_45 - hs_norm
 
 rng_chg_85 <- hs_85 - hs_norm
+
 
 sp_dat <- lst(rng_poly, rng_chg_45, rng_chg_85, assess_poly, ptn_poly)
 
