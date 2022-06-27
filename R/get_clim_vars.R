@@ -85,7 +85,11 @@ load_clim <- function(pth, scenario_names = "scn1"){
 
     out <- purrr::map(pth2, load_clim) %>% purrr::set_names(scenario_names)
 
-    return(raster::stack(out))
+    out <- raster::stack(out)
+
+    out <- check_trim(out)
+
+    return(out)
   }
 
   if(is.null(pth)){
