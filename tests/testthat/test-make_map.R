@@ -3,24 +3,29 @@ library("sf", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 library("raster", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
-clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"))
+
+# scenario names
+scn_nms <- c("RCP 4.5", "RCP 8.5")
+
+clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
+                           scn_nms)
 
 assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
                   quiet = TRUE)
-rng_high <- st_read(file.path(file_dir, "rng_poly_high.shp"), agr = "constant",
+rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
                     quiet = TRUE)
 
-hs <- raster(file.path(file_dir, "HS_rast_high.tif"))
+hs <- raster(file.path(file_dir, "rng_chg_45.tif"))
 
 # hs2 less CC in same area
-hs_stack <- stack(file.path(file_dir, "HS_rast_RCP4.5.tif"),
-                  file.path(file_dir, "HS_rast_high.tif"))
+hs_stack <- stack(file.path(file_dir, "rng_chg_45.tif"),
+                  file.path(file_dir, "rng_chg_45.tif"))
 
 
-map2 <- make_map(rng_high, clim_vars$mat, rast_nm = "mat", poly2 = assess,
+map2 <- make_map(rng_high, clim_vars$mat[[1]], rast_nm = "mat", poly2 = assess,
                  poly2_nm = "assess_poly", rast_grp = "group1")
 
-map1 <- make_map(rng_high, hs_stack, rast_nm = "mat", poly2 = assess,
+map1 <- make_map(rng_high, clim_vars$mat, rast_nm = "mat", poly2 = assess,
                  poly2_nm = "assess_poly",
                  rast_grp = c("Temperature RCP4.5", "Temperature RCP8.5"))
 
