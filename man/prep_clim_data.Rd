@@ -47,9 +47,9 @@ interquartile range}
 }
 \value{
 Returns a list of matrices with the breaks used to classify mat, cmd
-  and ccei. This list can be supplied to a future call to
-  \code{prep_clim_data} in order to use the same breaks for multiple climate
-  data sets. Processed data is saved in \code{out_folder}
+and ccei. This list can be supplied to a future call to
+\code{prep_clim_data} in order to use the same breaks for multiple climate
+data sets. Processed data is saved in \code{out_folder}
 }
 \description{
 Prepare data from raw to form needed for calculating the index. See the
@@ -58,21 +58,21 @@ NatureServe Guidelines for details on how the data is prepared.
 \details{
 Definition of input data sets and file names required in in_folder:
 \describe{
-  \item{mat_norm:}{"MAT" mean annual temperature for the historical normal period}
-  \item{mat_fut:}{"MAT_2050" mean annual temperature for the future under
-  climate change it can be any number eg 2050, 2100}
-  \item{cmd_norm:}{"CMD" climate moisture deficit for the historical normal period}
-  \item{cmd_fut:}{"CMD_2050" climate moisture deficit for the future under
-  climate change it can be any number eg 2050, 2100}
-  \item{ccei:}{"CCEI" Climate Change Exposure Index from NatureServe website}
-  \item{map:}{"MAP" mean annual precipitation for the historical normal period}
-  \item{mwmt:}{"MWMT" mean warmest month temperature for the historical
-  normal period}
-  \item{mcmt:}{"MCMT" mean coldest month temperature for the historical
-  normal period}
-  \item{clim_poly:}{An optional shapefile with a polygon of the range of the
-  climate data. It will be created from the climate data if it is missing
-  but it is faster to provide it.}
+\item{mat_norm:}{"MAT" mean annual temperature for the historical normal period}
+\item{mat_fut:}{"MAT_2050" mean annual temperature for the future under
+climate change it can be any number eg 2050, 2100}
+\item{cmd_norm:}{"CMD" climate moisture deficit for the historical normal period}
+\item{cmd_fut:}{"CMD_2050" climate moisture deficit for the future under
+climate change it can be any number eg 2050, 2100}
+\item{ccei:}{"CCEI" Climate Change Exposure Index from NatureServe website}
+\item{map:}{"MAP" mean annual precipitation for the historical normal period}
+\item{mwmt:}{"MWMT" mean warmest month temperature for the historical
+normal period}
+\item{mcmt:}{"MCMT" mean coldest month temperature for the historical
+normal period}
+\item{clim_poly:}{An optional shapefile with a polygon of the range of the
+climate data. It will be created from the climate data if it is missing
+but it is faster to provide it.}
 }
 Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
 }
@@ -99,9 +99,6 @@ prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
                mat_fut = file.path(in_folder, "NB_RCP.8.5_MAT.tif"),
                cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
                cmd_fut = file.path(in_folder, "NB_RCP.8.5_CMD.tif"),
-               map = file.path(in_folder, "NB_norm_MAP.tif"),
-               mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
-               mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
                out_folder = pth_out,
                clim_poly = file.path(system.file("extdata", package = "ccviR"),
                                      "assess_poly.shp"),

@@ -34,7 +34,7 @@ override the results of the spatial analysis}
 }
 \value{
 a data.frame that can be edited and used as input for \code{vuln_df}
-  in \code{\link{calc_vulnerability}}
+in \code{\link{calc_vulnerability}}
 }
 \description{
 Make an empty vulnerability factor table that can be filled in with the

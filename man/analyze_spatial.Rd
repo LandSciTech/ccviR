@@ -48,24 +48,24 @@ future climate scenarios.}
 }
 \value{
 a list with elements: \code{spat_table} the results of the spatial
-  analysis, \code{range_poly_assess} the range polygon clipped to the
-  assessment area, and \code{range_poly_clim} the range polygon clipped to
-  the extent of the climate data.
+analysis, \code{range_poly_assess} the range polygon clipped to the
+assessment area, and \code{range_poly_clim} the range polygon clipped to
+the extent of the climate data.
 
-  \code{spat_table} contains the following columns:
-  \describe{
-    \item{scenario_name}{Name identifying the scenario}
-    \item{MAT_#}{The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
-    \item{CMD_#}{The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
-    \item{CCEI_#}{The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 4 indicates high exposure while Class 1 indicates low exposure }
-    \item{perc_non_breed_not_over_ccei}{The precentage of the non-breeding range that does not overlap with the CCEI raster data}
-    \item{HTN_#}{The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest}
-    \item{PTN}{The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change}
-    \item{MAP_max/min}{The maximum and minimum historical mean annual precipitation in the species' range}
-    \item{range_change}{The projected decrease in range size as a percentage of current range size. Negative numbers indicate an increase in range size}
-    \item{range_overlap}{The percentage of the current range that is projected to remain in the future range.}
-    \item{range_size}{The area of the species' range in m2}
-    }
+\code{spat_table} contains the following columns:
+\describe{
+\item{scenario_name}{Name identifying the scenario}
+\item{MAT_#}{The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
+\item{CMD_#}{The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest}
+\item{CCEI_#}{The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 4 indicates high exposure while Class 1 indicates low exposure }
+\item{perc_non_breed_not_over_ccei}{The precentage of the non-breeding range that does not overlap with the CCEI raster data}
+\item{HTN_#}{The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest monts. Class 1 has the smallest variation and Class 4 is the largest}
+\item{PTN}{The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change}
+\item{MAP_max/min}{The maximum and minimum historical mean annual precipitation in the species' range}
+\item{range_change}{The projected decrease in range size as a percentage of current range size. Negative numbers indicate an increase in range size}
+\item{range_overlap}{The percentage of the current range that is projected to remain in the future range.}
+\item{range_size}{The area of the species' range in m2}
+}
 }
 \description{
 Run the required spatial analysis to create the \code{spat_df} input for

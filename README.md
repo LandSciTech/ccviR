@@ -4,9 +4,13 @@
 # ccviR
 
 <!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-*This application/package is under active development*
+*This application/package is under active development. Backwards
+compatibility is not guaranteed*
 
 The ccviR package implements the [NatureServe Climate Change
 Vulnerability Index (CCVI) version
@@ -27,20 +31,7 @@ You can install the development version of ccviR from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("see24/ccviR")
-```
-
-Or clicking the “Latest Release” in the right-side menu of the GitHub
-repository, downloading the .zip file containing the package and
-installing it and its dependencies with:
-
-``` r
-install.packages(c('dplyr', 'raster', 'sf', 'purrr', 'tidyr', 'shiny', 'stringr',
-                    'units', 'exactextractr', 'shinyFiles', 'shinyjs', 'tmap', 
-                    'ggplot2', 'shinycssloaders', 'R.utils', 'fs', 'plotly',
-                    'rgdal', 'scales', 'shinyvalidate'))
-
-install.packages("path/to/zip/file", repos = NULL)
+devtools::install_github("LandSciTech/ccviR")
 ```
 
 ## Launching the app
@@ -59,6 +50,32 @@ as the default data location.
 ``` r
 run_ccvi_app()
 ```
+
+## Comparison to the NatureServe CCVI tool
+
+ccviR uses the same vulnerability factors and scoring algorithm as the
+original NatureServe Excel spreadsheet. The index values, scores and
+Monte Carlo uncertainty analysis produced are the same.
+
+### New Features
+
+-   Spatial analyses are included in the package so no GIS skills are
+    needed.
+-   Uses climate data from the whole species range rather than the range
+    in the assessment area to score thermal and hydrological niche
+    factors.
+-   Simultaneously calculates the index for multiple scenarios such as,
+    emissions scenarios, time horizons or GCMs
+-   A function to classify new climate data sets into exposure
+    categories
+-   Plots that explain the drivers of the index value
+-   Allows the full assessment to be carried out in a reproducible
+    environment
+-   Simplifies synthetic analyses across many species, groups or regions
+-   The Shiny app provides a Graphical User Interface to calculate the
+    NatureServe CCVI
+-   The App allows users to calculate the index without knowing R
+-   Makes the NatureServe CCVI accessible to a wider audience
 
 ## Additional Help
 

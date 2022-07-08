@@ -9,7 +9,7 @@ get_clim_vars(root_pth, scenario_names = "scn1")
 \arguments{
 \item{root_pth}{A folder location where all the climate data is stored. The
 names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
-"MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
+  "MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
 three are required.}
 
 \item{scenario_names}{character vector with names that identify multiple
@@ -21,8 +21,8 @@ scenario name is provided to \code{\link{prep_clim_data}}.}
 }
 \value{
 A list of climate variables with names "mat", "cmd", "map", "ccei",
-  "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
-  be RasterStacks with one layer per scenario.
+"htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
+be RasterStacks with one layer per scenario.
 }
 \description{
 Load climate variables and store them in a list that can be used with

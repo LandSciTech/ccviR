@@ -61,3 +61,4 @@ Depends:
 URL: https://github.com/see24/ccviR,
     https://landscitech.github.io/ccviR/
 BugReports: https://github.com/see24/ccviR/issues
+Roxygen: list(markdown = TRUE)
