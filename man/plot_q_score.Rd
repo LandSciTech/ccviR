@@ -23,8 +23,8 @@ scenarios
 }
 \examples{
 
-# load tidyr for dealing with nested lists in table
-library(tidyr)
+# load dplyr for dealing with nested lists in table
+library(dplyr)
 
 base_pth <- system.file("extData", package = "ccviR")
 
@@ -49,7 +49,7 @@ vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
 
 index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 
-select(index_vuln, scenario_name, vuln_df) \%>\%
-  unnest(cols = vuln_df) \%>\%
+bind_rows(index_vuln$vuln_df \%>\% `names<-`(index_vuln$scenario_name),
+          .id = "scenario_name") \%>\%
   plot_q_score()
 }
