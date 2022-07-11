@@ -1,0 +1,39 @@
+---
+date: "Created on `r format(Sys.time(), '%B %d, %Y')`"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+params: 
+    set_title: "ccviR Report"
+    index_res: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
+title: "`r params$set_title`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+index_res <- params$index_res
+
+library(purrr)
+library(dplyr)
+library(ccviR)
+
+```
+
+### CCVI Results
+#### Climate Change Vulnerability Index
+```{r, ind_gaude}
+# plotly graphics don't show up in pdf. Either output to png or just print the text. 
+walk2(index_res$index, index_res$scenario_name, 
+      ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
+    nms = c("Insufficient Evidence",
+               "Less Vulnerable",
+               "Moderately Vulnerable",
+               "Highly Vulnerable",
+               "Extremely Vulnerable"),
+    cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
+              "#FF0000"),
+    ttl = .y) %>% print()) 
+
+
+```
+
