@@ -1,5 +1,8 @@
 plot_spat_res <- function(mat, cmd){
-
+  col_mat <- colmat(6, bottomleft = "green", bottomright = "blue",
+                    upperleft = "orange", upperright = "magenta", do_plot = F)
+  bivar_map <- bivar_map(cmd, mat)
+  raster::plot(bivar_map, col = as.vector(col_mat), legend = FALSE, axes = FALSE, box = FALSE)
 }
 
 
