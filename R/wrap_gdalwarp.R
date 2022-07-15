@@ -19,3 +19,5 @@ wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE,
   #                            ...))
   NULL
 }
+
+
