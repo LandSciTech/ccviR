@@ -1,39 +1,82 @@
 ---
 date: "Created on `r format(Sys.time(), '%B %d, %Y')`"
-output: pdf_document
+output:
+  pdf_document: 
+    keep_tex: true
+    includes:
+      in_header: columns.tex
 editor_options: 
   chunk_output_type: console
 params: 
     set_title: "ccviR Report"
     index_res: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
-title: "`r params$set_title`"
+    clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP 4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP 4.5.tif", package = "ccviR"))
+    sp_name: "Common Name (Scientific Name)"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 index_res <- params$index_res
+clim_vars <- params$clim_vars
 
 library(purrr)
 library(dplyr)
 library(ccviR)
 
+cols <- c("#808080", "#008000", "#FFC125", "#FF8C00", "#FF0000")
+cols <- c("gray", "green", "yellow", "orange", "red")
+nms <- c("Insufficient Evidence", "Less Vulnerable", "Moderately Vulnerable",
+         "Highly Vulnerable", "Extremely Vulnerable")
+# function to color index value text
+index_col <- function(ind){
+  switch (ind,
+    "EV" = sprintf("\\textcolor{%s}{%s}", cols[5], nms[5]),
+    "HV" = sprintf("\\textcolor{%s}{%s}", cols[4], nms[4]),
+    "MV" = sprintf("\\textcolor{%s}{%s}", cols[3], nms[3]),
+    "LV" = sprintf("\\textcolor{%s}{%s}", cols[2], nms[2]),
+    "IE" = sprintf("\\textcolor{%s}{%s}", cols[1], nms[1]),
+    
+  )
+}
+
 ```
 
-### CCVI Results
-#### Climate Change Vulnerability Index
+
+
+
+:::::: {.cols data-latex=""}
+
+::: {.col data-latex="{0.55\textwidth}"}
+
+```{=latex}
+\Huge{`r params$sp_name`}
+```
+
 ```{r, ind_gaude}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
-walk2(index_res$index, index_res$scenario_name, 
-      ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
-    nms = c("Insufficient Evidence",
-               "Less Vulnerable",
-               "Moderately Vulnerable",
-               "Highly Vulnerable",
-               "Extremely Vulnerable"),
-    cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
-              "#FF0000"),
-    ttl = .y) %>% print()) 
+# walk2(index_res$index, index_res$scenario_name, 
+#       ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
+#     nms = c("Insufficient Evidence",
+#                "Less Vulnerable",
+#                "Moderately Vulnerable",
+#                "Highly Vulnerable",
+#                "Extremely Vulnerable"),
+#     cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
+#               "#FF0000"),
+#     ttl = .y) %>% print()) 
 
-
+ccviR:::plot_spat_res(raster::raster(clim_vars$mat), raster::raster(clim_vars$cmd))
 ```
 
+:::
+
+::: {.col data-latex="{0.05\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.4\textwidth}"}
+\Huge`r index_col(index_res$index[1])`
+:::
+::::::
