@@ -1,152 +1,165 @@
 ## code to prepare `demo_data` dataset and save files to demo app
 
-library(raster)
-library(ccviR)
+devtools::load_all(".")
 library(dplyr)
 library(sf)
+library(purrr)
 
-# Make demo raster datasets that are more vulerable/exposed at the top
-rast <- matrix(0, nrow = 100, ncol = 100) %>%
-  raster()
+# plan is to use a subset of the NA climate data ie a province and potentially
+# aggregate the raster to save space
 
-rast <- setExtent(rast, extent(0, 1000, 0, 1000))
+# Climate Data #================================================================
+# raw climate data
+# location of folders with future climate data names will become scenario names
+fut_clim <- list(`RCP 4.5` = "../Climate_data/data/NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII",
+                 `RCP 8.5` = "../Climate_data/data/NA_ENSEMBLE_rcp85_2050s_Bioclim_ASCII")
 
-# MAT and CMD want difference to be higher at the top
-MAT <- rast
-values(MAT) <- seq(5, 10, length.out = 10000) %>%
-  sort(decreasing = TRUE) %>% round()
-MAT_2050 <- MAT
-values(MAT_2050) <- seq(10, 30, length.out = 10000) %>%
-  sort(decreasing = TRUE) %>% round()
+# location of folder with climate normals data
+cur_clim <- "../Climate_data/data/NA_NORM_6190_Bioclim_ASCII"
 
-CMD <- MAT - 5
-CMD_2050 <- MAT_2050 - 5
+file_nms <- c("MAT", "CMD", "MAP", "MWMT", "MCMT")
 
-# CCEI 0-25
-CCEI <- rast
-values(CCEI) <- seq(0, 25, length.out = 10000) %>% sort(decreasing = TRUE) %>%
-  round()
-CCEI <- shift(CCEI, dy = -1000)
+# Need to copy the prj file in so that all the crs is used
+prj_file <- "../Climate_data/data/NA_Reference_files_ASCII/ClimateNA_ID.prj"
 
-# MWMT MCMT more difference between the two is less exposure
-MCMT <- rast
-values(MCMT) <- seq(5, 10, length.out = 10000) %>%
-  sort() %>% round()
-MWMT <- MCMT
-values(MWMT) <- seq(20, 45, length.out = 10000) %>%
-  sort() %>% round()
+cross2(c(fut_clim, cur_clim), file_nms) %>%
+  map(~file.copy(prj_file, file.path(.x[[1]], paste0(.x[[2]], ".prj"))))
 
-# MAP is scored based on the range where lower variation in species range is
-# more vulnerable
-MAP <- rast
-values(MAP) <- c(rep(seq(1, 100), 50),
-                      rep(seq(1, 1000), 5))
+clim_fls <- cross2(fut_clim, c("MAT", "CMD")) %>%
+  set_names(cross2(names(fut_clim), c("MAT", "CMD")) %>%
+              map(~paste(unlist(.x), collapse = "_"))) %>%
+  c(cross2(cur_clim, file_nms) %>%
+      set_names(cross2("norm", file_nms) %>%
+                  map(~paste(unlist(.x), collapse = "_")))) %>%
+  map(~list.files(.x[[1]], pattern = paste0(.x[[2]], ".asc"), full.names = TRUE))
 
-# 7 is gain, 1 is lost, rest is maint, is assessed over the whole assessment
-# area so should be 0 or NA outside range
-HS_rast_high <- rast
-values(HS_rast_high) <- c(sample(c(0:7, 1, 1, 1, 1), 3000, replace = TRUE),
-                          rep(0, 4000),
-                          rep(0, 3000))
+clim_na <- map(clim_fls, raster::raster)
 
-HS_rast_med <- rast
-values(HS_rast_med) <- c(rep(0, 3000),
-                         sample(c(0:7), 4000, replace = TRUE),
-                         rep(0, 3000))
+# get Canadian provinces
+can_poly <- raster::getData("GADM", country = "CAN", level = 1)
 
-HS_rast_low <- rast
-values(HS_rast_low) <- c(rep(0, 3000),
-                         rep(0, 4000),
-                         sample(c(0:7, 6, 6, 6, 6), 3000, replace = TRUE))
+can_poly <- st_as_sf(can_poly)
 
-# Should be a polygon of areas with special temperature regime
-PTN_poly <- st_polygon(list(matrix(c(0.5, 0.5, 1,
-                                1, 0, 1, 0.5, 0.5)*1000,
-                              ncol = 2, byrow = TRUE))) %>%
-  st_sfc() %>% st_sf()
+assess_poly <- filter(can_poly, NAME_1 == "New Brunswick") %>%
+  st_transform(st_crs(clim_na[[1]]))
 
-rng_poly_high <- st_polygon(list(matrix(c(0, 0.75, 1, 0.75, 1,
-                                          1, 0, 1, 0, 0.75)*1000,
-                                        ncol = 2, byrow = TRUE))) %>%
-  st_sfc() %>% st_sf()
+# crop to NB and aggregate to make files small
+clim_nb <- raster::stack(clim_na) %>% raster::crop(assess_poly) %>%
+  raster::aggregate(fact = 10, fun = mean)
 
-rng_poly_med <- st_polygon(list(matrix(c(0, 0.25, 1, 0.25, 1,
-                                          0.5, 0, 0.5, 0, 0.25)*1000,
-                                        ncol = 2, byrow = TRUE))) %>%
-  st_sfc() %>% st_sf()
+raster::writeRaster(clim_nb, "inst/extdata/clim_files/raw/NB",
+                    format = "GTiff", bylayer = TRUE,
+                    suffix = "names", overwrite = TRUE)
 
-rng_poly_low <- st_polygon(list(matrix(c(0, 0, 1, 0, 1,
-                                         0.25, 0, 0.25, 0, 0)*1000,
-                                       ncol = 2, byrow = TRUE))) %>%
-  st_sfc() %>% st_sf()
+# Species data #================================================================
+# get ecoregions to use as demo range
+unzip("../Climate_data/data/ecoregion_shp.zip")
 
-nonbreed_poly <-  st_polygon(list(matrix(c(0, 0, 1, 0, 1,
-                                           -0.25, 0, -0.25, 0, 0)*1000,
-                                         ncol = 2, byrow = TRUE))) %>%
-  st_sfc() %>% st_sf()
+ecoreg<- read_sf("Ecoregions/ecoregions.shp")
 
-assess_poly <- st_bbox(MAT) %>% st_as_sfc() %>% st_as_sf()
+rng_poly <- filter(ecoreg, ECOREGION %in% c(118, 119)) %>%
+  st_transform(st_crs(clim_na[[1]])) %>%
+  st_intersection(assess_poly)
 
-# spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
-#                         non_breed_poly = nonbreed_poly,
-#                         clim_vars_lst = list(mat = MAT_rast, cmd = CMD_rast,
-#                                              ccei = CCEI_rast, htn = HTN_rast,
-#                                              ptn = PTN_poly, map = MAP_rast),
-#                                              hs_rast = mask(HS_rast, rng_poly_high))
+# and use 119 as PTN
+ptn_poly <- rng_poly %>% filter(ECOREGION == 119) %>% select(ECOZONE)
+
+rng_poly <- rng_poly %>% summarise(ECOZONE = first(ECOZONE)) %>%
+  st_buffer(-100) # avoid validity warning when mapping
+
+# make HS rasts by combining clim_dat mat+cmd
+
+hs_45 <- (clim_nb$RCP.4.5_MAT*100+clim_nb$RCP.4.5_CMD) < 600 &
+  (clim_nb$RCP.4.5_MAT*100+clim_nb$RCP.4.5_CMD) > 200
+
+hs_85 <- (clim_nb$RCP.8.5_MAT*100+clim_nb$RCP.8.5_CMD) < 600 &
+  (clim_nb$RCP.8.5_MAT*100+clim_nb$RCP.8.5_CMD) > 200
+
+hs_norm <- (clim_nb$norm_MAT*100+clim_nb$norm_CMD) < 600 &
+  (clim_nb$norm_MAT*100+clim_nb$norm_CMD) > 200
+
+hs_norm <- raster::mask(hs_norm, rng_poly)
+
+# 0 is maintained 1 is gained, -1 would be lost
+rng_chg_45 <- hs_45 - hs_norm
+
+rng_chg_85 <- hs_85 - hs_norm
 
 
-#
-# vuln_df <- make_vuln_df(0)
-#
-# vuln_df$Value1[1:15] <- c(0,0, 0,0,0,0, -1, -1, -1, -1, 0, 0, 0, 0, 0)
-# vuln_df$Value1[26:29] <- c(-1, -1, -1, -1)
-#
-# res <- calc_vulnerability(spat_res, vuln_df)
+sp_dat <- lst(rng_poly, rng_chg_45, rng_chg_85, assess_poly, ptn_poly)
 
-# save the data to extdata so that it can be used with the app for a demo
-clim_dat <- lst(MAT, MAT_2050, CMD, CMD_2050, CCEI, MWMT, MCMT, MAP)
-
-sp_dat <- lst(rng_poly_high, rng_poly_med, rng_poly_low, nonbreed_poly,
-              HS_rast_high, HS_rast_med, HS_rast_low,
-              assess_poly, PTN_poly)
-
-write_fun <- function(x, nm, dir, crs_use){
+write_fun <- function(x, nm, dir){
   if(inherits(x, "Raster")){
-    crs(x) <- paste0("EPSG:", crs_use)
     if(nm == "CCEI"){
-      writeRaster(x, paste0(dir, nm, ".img"), overwrite = TRUE)
+      raster::writeRaster(x, paste0(dir, nm, ".img"), overwrite = TRUE)
     } else {
-      writeRaster(x, paste0(dir, nm, ".tif"), overwrite = TRUE)
+      raster::writeRaster(x, paste0(dir, nm, ".tif"), overwrite = TRUE)
     }
   }
   if(inherits(x, "sf")){
-    x <- st_set_crs(x, crs_use)
-    write_sf(x, paste0(dir, nm, ".shp"))
+    write_sf(sf::st_make_valid(x), paste0(dir, nm, ".shp"))
   }
 }
 
-purrr::walk2(clim_dat, names(clim_dat), write_fun,
-             dir = "inst/extdata/clim_files/raw/",
-             crs_use = 3162)
 purrr::walk2(sp_dat, names(sp_dat), write_fun,
-             dir = "inst/extdata/",
-             crs_use = 3162)
+             dir = "inst/extdata/")
 
-run_prep_data(in_folder = "inst/extdata/clim_files/raw",
+# Prepare the data #============================================================
+in_folder <- "inst/extdata/clim_files/raw/"
+
+# use first scenario to set breaks
+brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+                          mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
+                          cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+                          cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
+                          map = file.path(in_folder, "NB_norm_MAP.tif"),
+                          mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+                          mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+                          out_folder = "inst/extdata/clim_files/processed/",
+                          clim_poly = "inst/extdata/assess_poly.shp",
+                          overwrite = TRUE,
+                          scenario_name = "RCP 4.5")
+
+prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+              mat_fut = file.path(in_folder, "NB_RCP.8.5_MAT.tif"),
+              cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+              cmd_fut = file.path(in_folder, "NB_RCP.8.5_CMD.tif"),
+              map = file.path(in_folder, "NB_norm_MAP.tif"),
+              mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+              mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
               out_folder = "inst/extdata/clim_files/processed/",
-              reproject = F, overwrite = T)
+              clim_poly = "inst/extdata/assess_poly.shp",
+              overwrite = TRUE,
+              scenario_name = "RCP 8.5",
+              brks_mat = brks_out$brks_mat,
+              brks_cmd = brks_out$brks_cmd)
 
-rng_poly_high <- read_sf("inst/extdata/rng_poly_high.shp", agr = "constant")
+# make readme csv
+write.csv(
+  data.frame(`Scenario_Name` = names(fut_clim),
+             `GCM or Ensemble name` = "AdaptWest 15 CMIP5 AOGCM Ensemble",
+             `Historical normal period` = "1961-1990",
+             `Future period` = "2050s",
+             `Emissions scenario` = names(fut_clim),
+             `Link to source` = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
+  file.path("inst/extdata/clim_files/processed/", "climate_data_readme.csv"),
+  row.names = FALSE
+)
+
+# Use the data #============================================================
+rng_poly <- read_sf("inst/extdata/rng_poly.shp", agr = "constant")
 assess_poly <- read_sf("inst/extdata/assess_poly.shp", agr = "constant")
-HS_rast_high <- raster("inst/extdata/HS_rast_high.tif")
-PTN_poly <- read_sf("inst/extdata/PTN_poly.shp", agr = "constant")
-nonbreed_poly <- read_sf("inst/extdata/nonbreed_poly.shp", agr = "constant")
+HS_rast_high <- raster::stack(raster("inst/extdata/rng_chg_45.tif"),
+                              raster("inst/extdata/rng_chg_85.tif"))
+PTN_poly <- read_sf("inst/extdata/ptn_poly.shp", agr = "constant")
 
-spat_res <- run_spatial(range_poly = rng_poly_high, scale_poly = assess_poly,
-                        ptn_poly = PTN_poly, non_breed_poly = nonbreed_poly,
+spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
+                        ptn_poly = PTN_poly,
                         hs_rast = HS_rast_high,
-                        hs_rcl = matrix(c(c(0:7), c(0, 1, 2,2,2,2,2,3)), ncol = 2),
-                        clim_vars_lst = get_clim_vars("inst/extdata/clim_files/processed/"))
+                        hs_rcl = matrix(c(c(-1, 0), c(1, 2)), ncol = 2),
+                        scenario_names = names(fut_clim),
+                        clim_vars_lst = get_clim_vars("inst/extdata/clim_files/processed/",
+                                                      scenario_names = names(fut_clim)))
 
 vuln_df <- make_vuln_df("sp_name", 0)
 
@@ -155,3 +168,5 @@ vuln_df$Value1[26:29] <- c(0, -1, -1, 0)
 
 res <- calc_vulnerability(spat_res$spat_table, vuln_df, tax_grp = "Bird")
 
+unlink("Ecoregions", recursive = TRUE)
+unlink("gadm36_CAN_1_sp.rds", recursive = TRUE)

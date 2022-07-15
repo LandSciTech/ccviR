@@ -1,9 +1,5 @@
-# Get the min and max of raster that overlaps a polygon
-#' Title
+#' Get the min and max of raster that overlaps a polygon
 #'
-#' @param rast
-#' @param poly
-#' @param var_name
 #' @noRd
 calc_min_max_raster <- function(rast, poly, var_name){
 

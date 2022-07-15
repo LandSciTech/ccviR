@@ -1,25 +1,35 @@
 #' Load climate variables
 #'
 #' Load climate variables and store them in a list that can be used with
-#' \code{\link{run_spatial}}. The climate variables should first be prepared
-#' using \code{\link{run_prep_data}}.
+#' \code{\link{analyze_spatial}}. The climate variables should first be prepared
+#' using \code{\link{prep_clim_data}}.
 #'
 #' @param root_pth A folder location where all the climate data is stored. The
 #'   names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
 #'   "MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
 #'   three are required.
+#' @param scenario_names character vector with names that identify multiple
+#'   future climate scenarios. If this is supplied the raster file must include
+#'   the scenario name as a suffix to the pattern mentioned above eg. if there
+#'   are two MAT files "MAT_RCP 4.5.tif" and "MAT_RCP 8.5.tif" the scenario names
+#'   should be "RCP 4.5" and "RCP 8.5". This will happen automatically if the
+#'   scenario name is provided to \code{\link{prep_clim_data}}.
 #'
 #' @return A list of climate variables with names "mat", "cmd", "map", "ccei",
-#'   "htn", "clim_poly"
+#'   "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
+#'   be RasterStacks with one layer per scenario.
 #'
 #' @export
 #'
 #' @examples
 #' pth <- system.file("extData/clim_files/processed", package = "ccviR")
 #'
-#' get_clim_vars(pth)
+#' # scenario names
+#' scn_nms <- c("RCP 4.5", "RCP 8.5")
+#'
+#' get_clim_vars(pth, scn_nms)
 
-get_clim_vars <- function(root_pth){
+get_clim_vars <- function(root_pth, scenario_names = "scn1"){
   if(!dir.exists(root_pth)){
     stop("directory ", root_pth," does not exist", call. = FALSE)
   }
@@ -28,14 +38,14 @@ get_clim_vars <- function(root_pth){
             "MWMT.*tif$|HTN.*tif$", "clim_poly.*shp")
   err <- c(T, T, F, F, F, T)
 
-  clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y)) %>%
-    purrr::map(load_clim) %>%
+  clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y, scenario_names)) %>%
+    purrr::map(load_clim, scenario_names) %>%
     purrr::set_names(c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
 
   return(clim_vars)
 }
 
-check_clim <- function(root_pth, pattern, error){
+check_clim <- function(root_pth, pattern, error, scenario_names = "scn1"){
   pth <- list.files(root_pth, pattern = pattern, full.names = TRUE)
 
   if(length(pth) == 0){
@@ -47,15 +57,41 @@ check_clim <- function(root_pth, pattern, error){
       return(NULL)
     }
   }
+
   if(length(pth) > 1){
-    stop("More than one file matching the expression: ", pattern,
-         ". Please remove duplicates",
-         call. = FALSE)
+    if(length(pth) != length(scenario_names)){
+      stop("The number of files matching the expression: ", pattern,
+           " does not match the number of scenario names. ",
+           "Please provide one file per scenario",
+           call. = FALSE)
+    }
   }
+
   pth
 }
 
-load_clim <- function(pth){
+load_clim <- function(pth, scenario_names = "scn1"){
+
+  if(length(pth) > 1){
+    # make sure the order of pth matches scenario_names
+    pth2 <- purrr::map(scenario_names, ~grep(.x, pth, value = TRUE)) %>% unlist()
+
+    if(length(pth2) != length(pth)){
+      stop("the filename ", setdiff(pth, pth2),
+           " does not match any of the scenario_names. ",
+           paste0(scenario_names, collapse = ", "),
+           call. = FALSE)
+    }
+
+    out <- purrr::map(pth2, load_clim) %>% purrr::set_names(scenario_names)
+
+    out <- raster::stack(out)
+
+    out <- check_trim(out)
+
+    return(out)
+  }
+
   if(is.null(pth)){
     return(NULL)
   }

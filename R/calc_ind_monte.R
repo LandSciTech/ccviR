@@ -8,59 +8,45 @@
 #'
 #'
 
-# sample samples 1:x if x has length 1
-sample.vec <- function(x, ...) {
-  if(length(x) == 1) {
-    return(x)
-  } else {
-    sample(x, ...)
-  }
+calc_ind_monte <- function(vuln_df, n_rnds, d_ie){
+  vuln_df <- filter(vuln_df, !is.na(score), score >= 0) %>%
+    mutate(n_boxes = num_not_na(Value1) + num_not_na(Value2) +
+             num_not_na(Value3) + num_not_na(Value4),
+           thold = 1/n_boxes)
+
+  n_facts <- nrow(vuln_df)
+
+  vuln_df <- vuln_df[rep(seq_len(n_facts), n_rnds), ]
+
+  vuln_df <- vuln_df %>%
+    mutate(round_id = rep(seq_len(n_rnds), n_facts) %>% sort(),
+           rnd_num = runif(n()),
+           which_val = ifelse(rnd_num < thold, 1,
+                              ifelse(rnd_num < thold *2, 2,
+                                     ifelse(rnd_num < thold*3, 3, 4)))) %>%
+    select(round_id, Code, matches("Value\\d"), exp, which_val) %>%
+    tidyr::pivot_longer(matches("Value\\d"), names_to = "box", values_to = "value") %>%
+    mutate(box = stringr::str_extract(box, "\\d") %>% as.numeric()) %>%
+    filter(box == which_val) %>%
+    mutate(score = value * exp)
+
+  vuln_sum_df <- vuln_df %>% group_by(round_id) %>%
+    summarise(b_c_score = sum(ifelse(stringr::str_detect(Code, "[B,C]\\d.*"),
+                                     score, NA), na.rm = TRUE),
+              d_score = sum(ifelse(stringr::str_detect(Code, "[D]\\d.*"),
+                                   score, NA), na.rm = TRUE),
+              slr_vuln = all(sum(ifelse(Code == "B1", value, NA),
+                                 na.rm = TRUE) == 3,
+                             sum(ifelse(Code %in% c("B2a", "B2b"), value, NA),
+                                 na.rm = TRUE) >= 2,
+                             sum(ifelse(Code == "C1", value, NA),
+                                 na.rm = TRUE) >= 2)) %>%
+    mutate(index = ind_from_vuln(b_c_score, d_score, slr_vuln, d_ie = d_ie))
+
 }
 
-calc_ind_monte <- function(vuln_df){
-  vuln_df <- vuln_df %>%
-    rowwise() %>%
-    mutate(val = sample.vec(na.omit(c(Value1, Value2, Value3, Value4)), size = 1)) %>%
-    ungroup() %>%
-    mutate(score = ifelse(val < 0, 0, exp * val))
-
-
-  b_c_score1 <- vuln_df %>% filter(stringr::str_detect(Code, "[B,C]\\d.*")) %>%
-    pull(score) %>% sum(na.rm = TRUE)
-
-  d_score1 <- vuln_df %>% filter(stringr::str_detect(Code, "[D]\\d.*")) %>%
-    pull(score) %>% sum(na.rm = TRUE)
-
-  # Convert score to index
-  b_c_index <- case_when(b_c_score1 > 10 ~ "EV",
-                         b_c_score1 > 7 ~ "HV",
-                         b_c_score1 > 4 ~ "MV",
-                         TRUE ~ "LV")
-
-  d_index <- case_when(d_score1 >= 6 ~ "EV",
-                       d_score1 >= 4 ~ "HV",
-                       d_score1 >= 2 ~ "MV",
-                       TRUE ~ "LV")
-
-  # sea level rise is greatly increase, either anthro or nat barriers are
-  # increase or greatly increase and dispersal is increase or greatly increase
-  slr_vuln <- all(vuln_df %>% filter(Code == "B1") %>%
-                    select(val) %>%
-                    max(na.rm = TRUE) == 3,
-                  vuln_df %>% filter(Code %in% c("B2a", "B2b")) %>%
-                    select(val) %>%
-                    max(na.rm = TRUE) >= 2,
-                  vuln_df %>% filter(Code == "C1") %>%
-                    select(val) %>%
-                    max(na.rm = TRUE) >= 2)
-
-  col_bc_index <- which(comb_index_tbl$Dindex == b_c_index) + 1
-  row_d_index <- which(comb_index_tbl$Dindex == d_index)
-
-  comb_index <- case_when( slr_vuln ~ "EV",
-                           TRUE ~ comb_index_tbl[row_d_index, col_bc_index])
-  return(comb_index)
-
+num_not_na <- function(x){
+  as.numeric(!is.na(x))
 }
 
 

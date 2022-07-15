@@ -5,7 +5,7 @@
 \alias{comb_index_tbl}
 \title{Combined index lookup table}
 \format{
-An object of class \code{data.frame} with 5 rows and 6 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 25 rows and 3 columns.
 }
 \usage{
 comb_index_tbl

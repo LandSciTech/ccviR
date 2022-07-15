@@ -32,36 +32,101 @@ run_ccvi_app("demo")
 ### Getting started
 The Welcome Tab provides information on the Index and the data needed to calculate it.
 
-### Preparing the data
-The first time you use the app you will need to prepare the climate data used to calculate the index. To start, we will process the example climate data by clicking the Prepare Climate Data button. This opens a new tab. In this case we don't need to download the data because we are using the demo data. The raw climate data set includes the mean annual temperature (MAT) and climate moisture deficit (CMD) for both historical and future time periods, and mean annual precipitation (MAP) and minimum coldest and warmest month temperatures (MCMT and MWMT) for the historical time period. In addition, the climate change exposure index (CCEI) for South/Central America which is provided by NatureServe is included. The app will use the raw climate data to create the classified versions of the climate data that are used to calculate the index and save them in the selected folder. 
+For the demonstration species all the required data is included in the package, but for a real species you will need to download a prepared set of climate data or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
 
-Start by selecting the folder location of the raw climate data. In the file selector window expand the "clim_files" folder by clicking the arrow and select the "raw" folder. Note the names of the files on the right hand side. When you download the real climate data, you will need to re-name the files to match this naming structure or select the files individually. Click "Select" to close the window. Do the same for the output folder, this time selecting the "processed" folder.  Check the "Should existing files in the output folder be overwritten?" box. Then click "Process". A loading symbol will appear and when it is finished a message saying "Processing complete" will appear. This will take longer for the real climate data that covers all of North America so you will need to wait until it is finished before moving on. When it is done click "Finished" to go back to the Welcome page. The next time you use the app you can go straight onto Step 1 without preparing the climate data because it is stored on your computer in the output folder that you selected.
+In addition to the climate data the following spatial data sets for each species can be provided: 
 
-For a real species you will then need to think about and acquire the data described in Steps 1 and 2 on the Welcome page, but for the demonstration we go ahead and press "Start" to begin calculating the index.
+* Species North American or global range polygon (required): The complete area occupied by the species in North America.
+* Assessment area polygon (required): The area within which the species vulnerability is being assessed. For example, a country, province, state, or protected area.
+* Physiological thermal niche (PTN) polygon: The PTN polygon should include cool or cold environments occupied by the species that may be lost or reduced in the assessment area as a result of climate change.
+* Non-breeding range polygon: If applicable, the area outside North America occupied in the non-breeding season.
+* Projected range change raster: The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the cell was lost, maintained, gained or was never included in the range.  
+
+The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information.
+
+For this example all of the data is provided with the package. 
+
+Press "Start" to begin calculating the index.
 
 ### Species information
-On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Bird". See the NatureServe Guidelines to better understand the meaning of the two check boxes at the end. For the demonstration check the box for migratory species. Click "Next".
+On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Vascular Plant". See the NatureServe Guidelines to better understand the meaning of the cave dwelling and migratory check boxes. For the demonstration do not check either. Click "Next".
 
 ### Spatial data analysis
-On this tab, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. Select the folder location of the climate data prepared in the previous step ie "clim_files > processed". Then, select the range polygon for the species by selecting the file "rng_poly_high.shp". Select the assessment area by selecting the "assess_poly.shp" file. Select "PTN_poly.shp" for the physiological thermal niche. Select the "nonbreed_poly.shp" for the non-breeding range. And finally, select "HS_rast_high.tif" for the projected range change raster. New inputs will show up to specify how the raster should be classified into lost, gained, maintained or not suitable. For the example use the default values, which are for a raster where lost is 1, maintained is 2-6,  gained is 7 and 0 is not suitable. Note that if you wanted to ignore gains you could set the gain multiplier to 0, but we will leave it at 1 and assume that the model has already accounted for whether habitat gains are likely to be realized. Then click "Run". A loading symbol will appear while the data is being processed. Then interactive maps of climate change exposure will be displayed. The real climate data will cover all of North America. The exposure maps are classified into 6 classes and the proportion of the species range in each class is displayed in the table. The exposure multiplier is determined by the level of exposure and is used to modify the sensitivity and adaptive capacity components of the index based on exposure to climate change. A similar analysis is done for the non-breeding range of the species. See the NatureServe guidelines for a full description of how the migratory exposure index is calculated. Once you have finished exploring the maps click "Next".
+On this tab, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. The prepared climate data can be found under "clim_files > processed".
+
+![](./clim_dir.PNG){width=100%}
+
+Then, select the range polygon for the species by selecting the file "rng_poly.shp", the assessment area by selecting the "assess_poly.shp" file and the "ptn_poly.shp" for the physiological thermal niche. Leave the non-breeeding range blank since we are assuming this species is not migratory. For the projected range change raster, select "Yes, multiple range change rasters will be provided, one for each scenario." This will open a new section where you can select a raster file for each scenario, select "rng_chg_45.tif" for the RCP 4.5 scenario and "rng_chg_85.tif" for the RCP 8.5 scenario. If range change rasters are not available for each scenario a single raster can be used but this assumes the projected range change is the same in all scenarios.
+
+![](./rng_chng_multi.PNG){width=100%}
+
+Next, specify how the raster should be classified into lost, gained, maintained or not suitable. For the example use the default values, which are for a raster where lost is -1, maintained in 0,  gained is 1 and not suitable is not used so it is flagged with 99. The the gain multiplier allows you to ignore gains by setting it to 0 but we will leave it at 1 which assumes that the model has already accounted for whether habitat gains are likely to be realized. 
+
+![](./gain_mod_run.PNG){width=100%}
+
+Then click "Run". A loading symbol will appear while the data is being processed.
+When the processing is complete click "Next". 
+
+On the Exposure Results page there are interactive maps of climate change exposure. The real climate data will cover all of North America but for the demonstration we are using a subset from New Brunswick. The exposure maps are classified into 6 classes and the proportion of the species range in each class is displayed in the table. The exposure multiplier is determined by the level of exposure and is used to modify the sensitivity and adaptive capacity components of the index based on exposure to climate change. To view the map for different scenarios click the layer symbol and toggle each layer on or off. 
+
+![](./temp_exp1.PNG){width=100%}
+
+![](./temp_exp2.PNG){width=100%}
+
+The non-breeding range of the species is used to determine the migratory exposure index based on the climate change exposure index (CCEI). The CCEI is a metric of climate change exposure that indicates the level of exposure to both temperature and moisture change using the Euclidean distance, see the NatureServe guidelines for a full description. Since our demonstration species is non-migratory this section is blank.  
+
+Once you have finished exploring the maps click "Next".
 
 ### Vulnerability questions
-Vulnerability questions are detailed questions that the index uses to score the species' indirect exposure, sensitivity, adaptive capacity and modeled or documented responses to climate change. Descriptions of how to interpret and score the questions are available in the NatureServe guidelines which are included as a pop-up if you click the "Show guidelines" button. Some vulnerability questions are answered based on an analysis of spatial data and these questions are dealt with on the next tab. For the demonstration, you can select any check box that you want for each question. Try a few different versions and see how it affects the result! Click "Next" to go to the next tab.
+Vulnerability questions are detailed questions that the index uses to score the species' indirect exposure, sensitivity, adaptive capacity and modeled or documented responses to climate change. Descriptions of how to interpret and score the questions are available in the NatureServe guidelines which are included as a pop-up if you click the "Show guidelines" button. 
+
+![](./vulnqs.PNG){width=100%}
+
+Some vulnerability questions are answered based on an analysis of spatial data and these questions are dealt with on the next tab. For the demonstration, you can select any check box that you want for each question. You can check more than one box to reflect uncertainty. Try a few different versions and see how it affects the result! Questions that are unknown can be left blank. There are three sections. 'Section B: Indirect Exposure to Climate Change' and 'Section C: Sensitivity and Adaptive Capacity' are required and if less than 10 of the 20 questions are answered the index result will be Insufficient Evidence. 'Section D: Documented or Modeled Response to Climate Change' is optional and if none of the questions are answered the index will be calculated without it. Click "Next" to go to the next tab.
 
 ### Spatial Vulnerability Questions
-This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed. Note that if the check box is changed and then the Run button on the Spatial Analysis page is clicked again, you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The comments will not be affected though so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. 
+This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed.
+
+![](./spat_vulnqs.PNG){width=75%}
+
+Note that if the check box is changed and then the "Run" button on the Spatial Analysis page is clicked again, you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The comments will not be affected though, so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. If the spatial data for a vulnerability question was not provided on the 'Spatial Data Analysis' tab then the map will not be included and the question can be answered using non-spatial information or left blank for unknown. 
+
+The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple change rasters are used.  
+
+![](./spat_vulnqs2.PNG){width=100%}
+
 For the demonstration, leave the check boxes as they are and then click "Next". 
 
 ### Results
 
-On the Results page, click "Calculate" to calculate the index value. Once loaded this page gives the resulting index value and tables and graphs that explain how the index value was determined. These are explained in the app. Once you are finished with reviewing the results you can save the data as a csv file.
+On the Results page, click "Calculate" to calculate the index value. Once loaded the first section presents the climate change vulnerability index and migratory exposure index for each climate scenario. 
 
-If you go back and change the answer to a vulnerability question, you will need to click the "Calculate" button again to see the updated results. 
+![](./results_dials.PNG){width=100%}
+
+The Data Completeness table highlights how many questions were answered in each section. The index is more reliable when more questions are answered. 
+
+To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. 1000 simulations are run and in each simulation one of the selected values is picked for each vulnerability question. Then the index is re-calculated. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
+
+![](./results_variation.PNG){width=100%}
+
+The next graph shows how the scores based on exposure, sensitivity and adaptive capacity are combined with the scores based on documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations.
+
+![](./comb_ind_plot.PNG){width=100%}
+
+The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. 
+
+![](./vulnq_plot.PNG){width=100%}
+
+Once you are finished with reviewing the results you should save the data as a csv file to keep in your records.
+
+If you go back and change the answer to a vulnerability question you will need to click the "Calculate" button again to see the updated results. 
 
 ### Saving the app
-The state of the app can be saved by clicking the "Save" button at the bottom of the Results page. A pop up will appear that asks you to pick a location and name for a folder that will store the app data. Be sure to save this somewhere that is easy to remember because you will need to find it again to load the saved app. The folder name must have only letters or numbers and no spaces. This will create a folder with the given name containing two .rds files that store the values.
+The state of the app can be saved by clicking the "Save" button at the bottom of the Results page. A pop up will appear that asks you to pick a location and name for a folder that will store the app data. Be sure to save this somewhere that is easy to remember because you will need to find it again to load the saved app. The folder name must have only letters or numbers and no spaces. This will create a folder with the given name containing two .rds files that store the app data. To load the app with the saved state click "Load" at the bottom of the Welcome page and select the folder with the saved files. 
 
-This will save the information entered into the app but it will not save the results, so when the app is loaded from the saved file it will re-run the calculations. In addition, only the path to the spatial data is stored not the data itself so the app will not be able to load if data is moved or its name is changed. If the data has moved, you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press "Run" which will re-run the spatial analysis but keep the answers to the non-spatial vulnerability questions from the saved file. 
+This process saves the information entered into the app but will not save the results, so when the app is loaded from the saved file it will re-run the calculations. In addition, only the path to the spatial data is stored, not the data itself, so the app will not be able to load if data is moved or its name is changed. If the data has moved, you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press "Run" which will re-run the spatial analysis but keep the answers to the non-spatial vulnerability questions from the saved file. 
+
+This saving process should be used for convenience only. It is not robust to changes in the app over time. Therefore, it is recommended that you also download the results as a csv and use that file for long term storage.
 
 ## Troubleshooting
 
