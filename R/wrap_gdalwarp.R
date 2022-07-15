@@ -11,14 +11,12 @@
 #' @noRd
 wrap_gdalwarp <- function(rast, ref_crs, out_path, overwrite = FALSE,
                           resamp_method = "near", ...){
-  if(!requireNamespace("gdalUtils", quietly = TRUE)){
-    stop("package gdalUtils is required for this function. Call" ,
-         "install.packages(\"gdalUtils\") to install it.")
-  }
-  input <- raster(rast)
-  src_crs <- input %>% raster::crs() %>% .@projargs
-  gdalUtils::gdalwarp(rast, out_path, src_crs, ref_crs,
-                      overwrite = overwrite,
-                      r = resamp_method,
-                      ...)
+  # Not working
+  # input <- raster(rast)
+  # src_crs <- input %>% raster::crs() %>% .@projargs
+  # sf::gdal_utils("warp", raster::filename(rast), out_path, quiet = FALSE,
+  #                options = c(s_srs = src_crs, t_srs = ref_crs,
+  #                            r = resamp_method, overwrite = overwrite,
+  #                            ...))
+  NULL
 }
