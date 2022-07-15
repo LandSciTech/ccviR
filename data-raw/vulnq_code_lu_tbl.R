@@ -10,4 +10,5 @@ vulnq_code_lu_tbl <- mutate_all(lu_tbl, stringr::str_trim) %>%
 
 
 usethis::use_data(vulnq_code_lu_tbl, overwrite = TRUE)
+# need to include all object for internal because they are saved together.
 usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, overwrite = TRUE, internal = TRUE)

@@ -15,7 +15,7 @@
 #'   See Guidelines.
 #' @param mig 0 or 1 is the species migratory?
 #' @param use_spatial if TRUE then values for factors that are calculated in
-#'   \code{run_spatial} will be set to -1 for Unknown so that they do not
+#'   \code{analyze_spatial} will be set to -1 for Unknown so that they do not
 #'   override the results of the spatial analysis
 #'
 #' @return a data.frame that can be edited and used as input for \code{vuln_df}
@@ -38,8 +38,8 @@ make_vuln_df <- function(sp_nm, val1 = -1, val2 = NA, val3 = NA, val4 = NA,
   vuln_qs <- vulnq_code_lu_tbl %>%
     mutate(Species = sp_nm,
            Value1 = val1, Value2 = val2, Value3 = val3, Value4 = val4) %>%
-    mutate(Value1 = ifelse(!is.na(is_spatial) & is_spatial == 1 & use_spatial,
-                           -1, Value1))
+    mutate(across(matches("Value\\d"), ~ifelse(!is.na(is_spatial) & is_spatial == 1 & use_spatial & !is.na(.x),
+                           -1, .x)))
   vuln_qs <- bind_rows(cave_mig, vuln_qs) %>%
     select(!matches("Value\\d"), everything())
 

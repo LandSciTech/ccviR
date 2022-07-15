@@ -1,6 +1,6 @@
 Package: ccviR
 Title: Calculate the NatureServe Climate Change Vulnerability Index in R
-Version: 0.0.0.9006
+Version: 0.0.1.9000
 Authors@R: c(person(given = "Sarah",
   family = "Endicott",
   role = c("aut", "cre"),
@@ -60,3 +60,4 @@ Depends:
 URL: https://github.com/see24/ccviR,
     https://landscitech.github.io/ccviR/
 BugReports: https://github.com/see24/ccviR/issues
+Roxygen: list(markdown = TRUE)
