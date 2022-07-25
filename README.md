@@ -80,6 +80,8 @@ Monte Carlo uncertainty analysis produced are the same.
 ## Additional Help
 
 See `vignette("app_vignette", package = "ccviR")` for a more detailed
-description of how to use the app and
+description of how to use the app,
+`vignette("data_prep_vignette", package = "ccviR")` for how to use and
+app to prepare custom climate data sets, and
 `vignette("package_vignette", package = "ccviR")` for a tutorial on how
 to use the package to calculate the index directly in R.
