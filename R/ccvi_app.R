@@ -694,7 +694,7 @@ ccvi_app <- function(testmode_in, ...){
     clim_readme <- reactive({
       req(clim_dir_pth())
       if(!file.exists(fs::path(clim_dir_pth(), "climate_data_readme.csv"))){
-        stop("The climate folder is missing the required readme file",
+        stop("The climate folder is missing the required climate_data_readme.csv file",
              call. = FALSE)
       }
       utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),

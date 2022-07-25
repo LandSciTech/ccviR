@@ -136,12 +136,12 @@ prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
 
 # make readme csv
 write.csv(
-  data.frame(`Scenario_Name` = names(fut_clim),
-             `GCM or Ensemble name` = "AdaptWest 15 CMIP5 AOGCM Ensemble",
-             `Historical normal period` = "1961-1990",
-             `Future period` = "2050s",
-             `Emissions scenario` = names(fut_clim),
-             `Link to source` = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
+  data.frame(Scenario_Name = names(fut_clim),
+             GCM_or_Ensemble_name = "AdaptWest 15 CMIP5 AOGCM Ensemble",
+             Historical_normal_period = "1961-1990",
+             Future_period = "2050s",
+             Emissions_scenario = names(fut_clim),
+             Link_to_source = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
   file.path("inst/extdata/clim_files/processed/", "climate_data_readme.csv"),
   row.names = FALSE
 )
