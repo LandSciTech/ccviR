@@ -16,4 +16,19 @@ comb_index_tbl <- comb_index_tbl %>% tidyr::pivot_longer(-Dindex) %>%
             value = factor(value, levels = levs))
 
 usethis::use_data(comb_index_tbl, overwrite = TRUE)
-usethis::use_data(comb_index_tbl, overwrite = TRUE, internal = TRUE)
+
+
+## code to prepare `vulnq_code_lu_tbl` dataset goes here
+
+# made a csv with the codes and questions but need to tidy it up
+
+lu_tbl <- read.csv("../CCVI_analysis/data/Code_Q_lookup.csv")
+
+vulnq_code_lu_tbl <- mutate_all(lu_tbl, stringr::str_trim) %>%
+  mutate(Question = stringr::str_remove(Question, "^..?\\)\\s") %>%
+           stringr::str_to_sentence())
+
+
+usethis::use_data(vulnq_code_lu_tbl, overwrite = TRUE)
+# need to include all object for internal because they are saved together.
+usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, overwrite = TRUE, internal = TRUE)

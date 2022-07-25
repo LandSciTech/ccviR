@@ -49,9 +49,9 @@
 plot_q_score <- function(vuln_df){
 
   if(!"Question" %in% names(vuln_df)){
-    vuln_df <- left_join(vuln_df, ccviR::vulnq_code_lu_tbl, by = "Code")
+    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code")
   } else {
-    vuln_df <- left_join(vuln_df, ccviR::vulnq_code_lu_tbl, by = "Code") %>%
+    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code") %>%
       rename(Question = "Question.y")
   }
 
