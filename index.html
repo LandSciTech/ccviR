@@ -42,7 +42,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ccviR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9006</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9000</span>
       </span>
     </div>
 
@@ -60,6 +60,9 @@
   <ul class="dropdown-menu" role="menu">
 <li>
       <a href="articles/app_vignette.html">Using the ccviR app</a>
+    </li>
+    <li>
+      <a href="articles/data_prep_vignette.html">Preparing Custom Climate Data</a>
     </li>
     <li>
       <a href="articles/package_vignette.html">Using the ccviR package</a>
@@ -90,35 +93,47 @@
 <div class="page-header"><h1 id="ccvir">ccviR<a class="anchor" aria-label="anchor" href="#ccvir"></a>
 </h1></div>
 <!-- badges: start -->
-<!-- badges: end -->
-<p><em>This application/package is under active development</em></p>
+<p><em>This application/package is under active development. Backwards compatibility is not guaranteed</em></p>
 <p>The ccviR package implements the <a href="https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index" class="external-link">NatureServe Climate Change Vulnerability Index (CCVI) version 3.02</a> in an R package and Shiny App. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. The app provides an interactive application designed to offer a user-friendly and simple interface for calculating the NatureServe CCVI. See <a href="https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html" class="external-link">Young et. al (2012)</a> and <a href="https://doi.org/10.1002/wsb.478" class="external-link">Young et. al. (2015)</a> for a detailed description of the index.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the development version of ccviR from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"see24/ccviR"</span><span class="op">)</span></code></pre></div>
-<p>Or clicking the “Latest Release” in the right-side menu of the GitHub repository, downloading the .zip file containing the package and installing it and its dependencies with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'dplyr'</span>, <span class="st">'raster'</span>, <span class="st">'sf'</span>, <span class="st">'purrr'</span>, <span class="st">'tidyr'</span>, <span class="st">'shiny'</span>, <span class="st">'stringr'</span>,
-                    <span class="st">'units'</span>, <span class="st">'exactextractr'</span>, <span class="st">'shinyFiles'</span>, <span class="st">'shinyjs'</span>, <span class="st">'tmap'</span>, 
-                    <span class="st">'ggplot2'</span>, <span class="st">'shinycssloaders'</span>, <span class="st">'R.utils'</span>, <span class="st">'fs'</span>, <span class="st">'plotly'</span>,
-                    <span class="st">'rgdal'</span>, <span class="st">'scales'</span>, <span class="st">'shinyvalidate'</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"path/to/zip/file"</span>, repos <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"LandSciTech/ccviR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="launching-the-app">Launching the app<a class="anchor" aria-label="anchor" href="#launching-the-app"></a>
 </h2>
 <p>The code below will open the app in your default browser with an example data set available.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/see24/ccviR" class="external-link">ccviR</a></span><span class="op">)</span>
-<span class="fu"><a href="reference/run_ccvi_app.html">run_ccvi_app</a></span><span class="op">(</span><span class="st">"demo"</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/see24/ccviR" class="external-link">ccviR</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/run_ccvi_app.html">run_ccvi_app</a></span><span class="op">(</span><span class="st">"demo"</span><span class="op">)</span></span></code></pre></div>
 <p>While the following will open the app with the current working directory as the default data location.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="reference/run_ccvi_app.html">run_ccvi_app</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/run_ccvi_app.html">run_ccvi_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="comparison-to-the-natureserve-ccvi-tool">Comparison to the NatureServe CCVI tool<a class="anchor" aria-label="anchor" href="#comparison-to-the-natureserve-ccvi-tool"></a>
+</h2>
+<p>ccviR uses the same vulnerability factors and scoring algorithm as the original NatureServe Excel spreadsheet. The index values, scores and Monte Carlo uncertainty analysis produced are the same.</p>
+<div class="section level3">
+<h3 id="new-features">New Features<a class="anchor" aria-label="anchor" href="#new-features"></a>
+</h3>
+<ul>
+<li>Spatial analyses are included in the package so no GIS skills are needed.</li>
+<li>Uses climate data from the whole species range rather than the range in the assessment area to score thermal and hydrological niche factors.</li>
+<li>Simultaneously calculates the index for multiple scenarios such as, emissions scenarios, time horizons or GCMs</li>
+<li>A function to classify new climate data sets into exposure categories</li>
+<li>Plots that explain the drivers of the index value</li>
+<li>Allows the full assessment to be carried out in a reproducible environment</li>
+<li>Simplifies synthetic analyses across many species, groups or regions</li>
+<li>The Shiny app provides a Graphical User Interface to calculate the NatureServe CCVI</li>
+<li>The App allows users to calculate the index without knowing R</li>
+<li>Makes the NatureServe CCVI accessible to a wider audience</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="additional-help">Additional Help<a class="anchor" aria-label="anchor" href="#additional-help"></a>
@@ -160,7 +175,12 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+</ul>
+</div>
 
   </div>
 </div>
@@ -173,7 +193,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

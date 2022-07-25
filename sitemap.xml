@@ -7,6 +7,9 @@
     <loc>https://landscitech.github.io/ccviR/articles/app_vignette.html</loc>
   </url>
   <url>
+    <loc>https://landscitech.github.io/ccviR/articles/data_prep_vignette.html</loc>
+  </url>
+  <url>
     <loc>https://landscitech.github.io/ccviR/articles/index.html</loc>
   </url>
   <url>
@@ -17,6 +20,9 @@
   </url>
   <url>
     <loc>https://landscitech.github.io/ccviR/index.html</loc>
+  </url>
+  <url>
+    <loc>https://landscitech.github.io/ccviR/reference/analyze_spatial.html</loc>
   </url>
   <url>
     <loc>https://landscitech.github.io/ccviR/reference/calc_vulnerability.html</loc>
@@ -43,13 +49,13 @@
     <loc>https://landscitech.github.io/ccviR/reference/plot_score_index.html</loc>
   </url>
   <url>
+    <loc>https://landscitech.github.io/ccviR/reference/prep_clim_data.html</loc>
+  </url>
+  <url>
     <loc>https://landscitech.github.io/ccviR/reference/run_ccvi_app.html</loc>
   </url>
   <url>
-    <loc>https://landscitech.github.io/ccviR/reference/run_prep_data.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/run_spatial.html</loc>
+    <loc>https://landscitech.github.io/ccviR/reference/run_data_prep.html</loc>
   </url>
   <url>
     <loc>https://landscitech.github.io/ccviR/reference/trim_ras.html</loc>

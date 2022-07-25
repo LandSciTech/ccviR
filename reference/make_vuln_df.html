@@ -22,7 +22,7 @@ instructions on how to score species. Values can be -1: Unknown, 0: Neutral,
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ccviR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.0.9006</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9000</span>
       </span>
     </div>
 
@@ -38,6 +38,9 @@ instructions on how to score species. Values can be -1: Unknown, 0: Neutral,
   </a>
   <ul class="dropdown-menu" role="menu"><li>
       <a href="../articles/app_vignette.html">Using the ccviR app</a>
+    </li>
+    <li>
+      <a href="../articles/data_prep_vignette.html">Preparing Custom Climate Data</a>
     </li>
     <li>
       <a href="../articles/package_vignette.html">Using the ccviR package</a>
@@ -73,45 +76,63 @@ instructions on how to score species. Values can be -1: Unknown, 0: Neutral,
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">make_vuln_df</span><span class="op">(</span>
-  <span class="va">sp_nm</span>,
-  val1 <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,
-  val2 <span class="op">=</span> <span class="cn">NA</span>,
-  val3 <span class="op">=</span> <span class="cn">NA</span>,
-  val4 <span class="op">=</span> <span class="cn">NA</span>,
-  cave <span class="op">=</span> <span class="fl">0</span>,
-  mig <span class="op">=</span> <span class="fl">0</span>,
-  use_spatial <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">make_vuln_df</span><span class="op">(</span></span>
+<span>  <span class="va">sp_nm</span>,</span>
+<span>  val1 <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>,</span>
+<span>  val2 <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  val3 <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  val4 <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  cave <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  mig <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  use_spatial <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>sp_nm</dt>
 <dd><p>Species name</p></dd>
+
+
 <dt>val1</dt>
 <dd><p>A single number to fill the first column with. The default -1 for
 Unknown should be used in most cases.</p></dd>
+
+
 <dt>val2, val3, val4</dt>
 <dd><p>Additional values. Use default NA</p></dd>
+
+
 <dt>cave</dt>
 <dd><p>0 or 1 For whether the species is cave or ground water dependent.
 See Guidelines.</p></dd>
+
+
 <dt>mig</dt>
 <dd><p>0 or 1 is the species migratory?</p></dd>
+
+
 <dt>use_spatial</dt>
 <dd><p>if TRUE then values for factors that are calculated in
-<code>run_spatial</code> will be set to -1 for Unknown so that they do not
+<code>analyze_spatial</code> will be set to -1 for Unknown so that they do not
 override the results of the spatial analysis</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a data.frame that can be edited and used as input for <code>vuln_df</code>  in <code><a href="calc_vulnerability.html">calc_vulnerability</a></code></p>
+    
+
+<p>a data.frame that can be edited and used as input for <code>vuln_df</code></p>
+
+
+<p>in <code><a href="calc_vulnerability.html">calc_vulnerability</a></code></p>
+
+
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="fu">make_vuln_df</span><span class="op">(</span><span class="st">"sfa"</span>, cave <span class="op">=</span> <span class="fl">1</span>, mig <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">make_vuln_df</span><span class="op">(</span><span class="st">"sfa"</span>, cave <span class="op">=</span> <span class="fl">1</span>, mig <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Species  Code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      sfa    Z2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2      sfa    Z3</span>
@@ -216,7 +237,7 @@ override the results of the spatial analysis</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
