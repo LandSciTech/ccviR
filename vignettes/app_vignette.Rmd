@@ -32,7 +32,7 @@ run_ccvi_app("demo")
 ### Getting started
 The Welcome Tab provides information on the Index and the data needed to calculate it.
 
-For the demonstration species all the required data is included in the package, but for a real species you will need to download a prepared set of climate data or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
+For the demonstration species all the required data is included in the package, but for a real species you will need to either, [download](https://drive.google.com/file/d/1U6iVI60NvpFY_0cfnpe3gNw2Xpg66sJ4/view?usp=sharing) a prepared set of climate data, unzip it and store it in a convenient folder, or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
 
 In addition to the climate data the following spatial data sets for each species can be provided: 
 
@@ -52,26 +52,26 @@ Press "Start" to begin calculating the index.
 On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Vascular Plant". See the NatureServe Guidelines to better understand the meaning of the cave dwelling and migratory check boxes. For the demonstration do not check either. Click "Next".
 
 ### Spatial data analysis
-On this tab, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. The prepared climate data can be found under "clim_files > processed".
+On this tab, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. For the "Folder location of prepared climate data" you need to tell the app where you stored the climate data that it should use. This will either be the folder that you unzipped the downloaded climate data into or the output folder you selected in the data preparation app. For this example the prepared climate data can be found under "clim_files > processed".
 
 ![](./clim_dir.PNG){width=100%}
 
 Then, select the range polygon for the species by selecting the file "rng_poly.shp", the assessment area by selecting the "assess_poly.shp" file and the "ptn_poly.shp" for the physiological thermal niche. Leave the non-breeeding range blank since we are assuming this species is not migratory. For the projected range change raster, select "Yes, multiple range change rasters will be provided, one for each scenario." This will open a new section where you can select a raster file for each scenario, select "rng_chg_45.tif" for the RCP 4.5 scenario and "rng_chg_85.tif" for the RCP 8.5 scenario. If range change rasters are not available for each scenario a single raster can be used but this assumes the projected range change is the same in all scenarios.
 
-![](./rng_chng_multi.PNG){width=100%}
+![](./rng_chng_multi.PNG){width=75%}
 
 Next, specify how the raster should be classified into lost, gained, maintained or not suitable. For the example use the default values, which are for a raster where lost is -1, maintained in 0,  gained is 1 and not suitable is not used so it is flagged with 99. The the gain multiplier allows you to ignore gains by setting it to 0 but we will leave it at 1 which assumes that the model has already accounted for whether habitat gains are likely to be realized. 
 
-![](./gain_mod_run.PNG){width=100%}
+![](./gain_mod_run.PNG){width=75%}
 
 Then click "Run". A loading symbol will appear while the data is being processed.
 When the processing is complete click "Next". 
 
 On the Exposure Results page there are interactive maps of climate change exposure. The real climate data will cover all of North America but for the demonstration we are using a subset from New Brunswick. The exposure maps are classified into 6 classes and the proportion of the species range in each class is displayed in the table. The exposure multiplier is determined by the level of exposure and is used to modify the sensitivity and adaptive capacity components of the index based on exposure to climate change. To view the map for different scenarios click the layer symbol and toggle each layer on or off. 
 
-![](./temp_exp1.PNG){width=100%}
+![](./temp_exp1.PNG){width=75%}
 
-![](./temp_exp2.PNG){width=100%}
+![](./temp_exp2.PNG){width=75%}
 
 The non-breeding range of the species is used to determine the migratory exposure index based on the climate change exposure index (CCEI). The CCEI is a metric of climate change exposure that indicates the level of exposure to both temperature and moisture change using the Euclidean distance, see the NatureServe guidelines for a full description. Since our demonstration species is non-migratory this section is blank.  
 
@@ -80,7 +80,7 @@ Once you have finished exploring the maps click "Next".
 ### Vulnerability questions
 Vulnerability questions are detailed questions that the index uses to score the species' indirect exposure, sensitivity, adaptive capacity and modeled or documented responses to climate change. Descriptions of how to interpret and score the questions are available in the NatureServe guidelines which are included as a pop-up if you click the "Show guidelines" button. 
 
-![](./vulnqs.PNG){width=100%}
+![](./vulnqs.PNG){width=75%}
 
 Some vulnerability questions are answered based on an analysis of spatial data and these questions are dealt with on the next tab. For the demonstration, you can select any check box that you want for each question. You can check more than one box to reflect uncertainty. Try a few different versions and see how it affects the result! Questions that are unknown can be left blank. There are three sections. 'Section B: Indirect Exposure to Climate Change' and 'Section C: Sensitivity and Adaptive Capacity' are required and if less than 10 of the 20 questions are answered the index result will be Insufficient Evidence. 'Section D: Documented or Modeled Response to Climate Change' is optional and if none of the questions are answered the index will be calculated without it. Click "Next" to go to the next tab.
 
@@ -93,7 +93,7 @@ Note that if the check box is changed and then the "Run" button on the Spatial A
 
 The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple change rasters are used.  
 
-![](./spat_vulnqs2.PNG){width=100%}
+![](./spat_vulnqs2.PNG){width=75%}
 
 For the demonstration, leave the check boxes as they are and then click "Next". 
 
@@ -101,17 +101,17 @@ For the demonstration, leave the check boxes as they are and then click "Next".
 
 On the Results page, click "Calculate" to calculate the index value. Once loaded the first section presents the climate change vulnerability index and migratory exposure index for each climate scenario. 
 
-![](./results_dials.PNG){width=100%}
+![](./results_dials.PNG){width=75%}
 
 The Data Completeness table highlights how many questions were answered in each section. The index is more reliable when more questions are answered. 
 
 To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. 1000 simulations are run and in each simulation one of the selected values is picked for each vulnerability question. Then the index is re-calculated. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
 
-![](./results_variation.PNG){width=100%}
+![](./results_variation.PNG){width=75%}
 
 The next graph shows how the scores based on exposure, sensitivity and adaptive capacity are combined with the scores based on documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations.
 
-![](./comb_ind_plot.PNG){width=100%}
+![](./comb_ind_plot.PNG){width=75%}
 
 The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. 
 
