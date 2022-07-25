@@ -57,21 +57,21 @@ plt_index_gauge <- function(ind, type, codes, nms, cols, ttl){
                       code = codes,
                       col = cols,
                       text_ang = angles,
-                      text_y = r2*sin(text_ang),
-                      text_x = sqrt(r2^2 - text_y^2),
+                      text_y = r2*sin(.data$text_ang),
+                      text_x = sqrt(r2^2 - .data$text_y^2),
                       gauge_vals = seq(from = 100/n,
                                        to = 100, by = 100/n)) %>%
-    mutate(text_x = ifelse(text_ang > 90*pi/180, cent_x + text_x,
-                           cent_x - text_x),
-           text_y = cent_y + 2*text_y)
+    mutate(text_x = ifelse(.data$text_ang > 90*pi/180, cent_x + .data$text_x,
+                           cent_x - .data$text_x),
+           text_y = cent_y + 2*.data$text_y)
 
 
   val_df <- data.frame(code = ind) %>%
     left_join(tickannot, by = "code") %>%
-    mutate(arrow_y = r1*sin(text_ang),
-           arrow_x = sqrt(r1^2 - arrow_y^2)) %>%
-    mutate(arrow_x = ifelse(text_ang > 90*pi/180, arrow_x*-1, arrow_x),
-           arrow_y = arrow_y*2)
+    mutate(arrow_y = r1*sin(.data$text_ang),
+           arrow_x = sqrt(r1^2 - .data$arrow_y^2)) %>%
+    mutate(arrow_x = ifelse(.data$text_ang > 90*pi/180, .data$arrow_x*-1, .data$arrow_x),
+           arrow_y = .data$arrow_y*2)
 
   annot <- list(x = cent_x, y = cent_y , text = val_df$name,
                 showarrow = FALSE,

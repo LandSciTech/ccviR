@@ -1,15 +1,15 @@
 plot_conf_score <- function(score_df){
 
-  score_df %>% select(scenario_name, mc_results) %>%
-    mutate(mc_results = purrr::map(mc_results, ~.x$index %>%
+  score_df %>% select(.data$scenario_name, .data$mc_results) %>%
+    mutate(mc_results = purrr::map(.data$mc_results, ~.x$index %>%
                                      factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
                                      table() %>%
                                      prop.table() %>%
                                      as.data.frame(stringsAsFactors = FALSE) %>%
                                      `names<-`(c("index", "frequency")))) %>%
-    tidyr::unnest(mc_results) %>%
-    ggplot2::ggplot(ggplot2::aes(x = factor(index, levels = c( "EV", "HV", "MV", "LV", "IE")),
-                                 y = frequency))+
+    tidyr::unnest(.data$mc_results) %>%
+    ggplot2::ggplot(ggplot2::aes(x = factor(.data$index, levels = c( "EV", "HV", "MV", "LV", "IE")),
+                                 y = .data$frequency))+
     ggplot2::geom_col(position = "dodge")+
     ggplot2::labs(x = "Index",
                   y = "Proportion of Runs",

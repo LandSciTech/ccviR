@@ -50,13 +50,13 @@ plot_score_index <- function(score_df){
   }
 
   score_pt <- score_df %>%
-    mutate(d_score = ifelse(n_d_factors == 0, -1, d_score))
+    mutate(d_score = ifelse(.data$n_d_factors == 0, -1, .data$d_score))
 
   score_pt <- score_pt %>%
-    mutate(mc_results = purrr::map(mc_results,
+    mutate(mc_results = purrr::map(.data$mc_results,
                                    ~summarise(.x, across(contains("score"),
                                                          lst(max, min))))) %>%
-    tidyr::unnest(mc_results)
+    tidyr::unnest(.data$mc_results)
 
   # max possible score
   max_score_bc <- 22*6.6 + 3
@@ -64,13 +64,13 @@ plot_score_index <- function(score_df){
   max_score_d <- 11
 
   score_lim <- mutate(score_pt,
-                     d_score_lim = ifelse(d_score_max > 7, d_score_max + 1, 8),
-                     b_c_score_lim = ifelse(b_c_score_max > 18, b_c_score_max + 5, 20)) %>%
+                     d_score_lim = ifelse(.data$d_score_max > 7, .data$d_score_max + 1, 8),
+                     b_c_score_lim = ifelse(.data$b_c_score_max > 18, .data$b_c_score_max + 5, 20)) %>%
     summarise(across(contains("lim"), .fns = max))
 
-  score_tbl <- expand.grid(b_c_score = seq(0,max_score_bc),
+  score_tbl <- expand.grid(b_c_score = seq(0, max_score_bc),
                            d_score = seq(-1, max_score_d)) %>%
-    mutate(index = ind_from_vuln(b_c_score, d_score, slr_vuln = FALSE) %>%
+    mutate(index = ind_from_vuln(.data$b_c_score, .data$d_score, slr_vuln = FALSE) %>%
              factor(levels = levels(comb_index_tbl$value)))
 
 
@@ -82,7 +82,7 @@ plot_score_index <- function(score_df){
     shp_vals <- good_shapes[1:nrow(score_pt)]
   }
 
-  ggplot2::ggplot(score_tbl, ggplot2::aes(b_c_score, d_score, fill = index))+
+  ggplot2::ggplot(score_tbl, ggplot2::aes(.data$b_c_score, .data$d_score, fill = .data$index))+
     ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0.9)+
     ggplot2::coord_cartesian(xlim = c(0, score_lim$b_c_score_lim),
                          ylim = c(-1, score_lim$d_score_lim))+
@@ -92,19 +92,19 @@ plot_score_index <- function(score_df){
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(),
                                 breaks = scales::breaks_extended(10))+
     ggplot2::geom_linerange(data = score_pt,
-                            ggplot2::aes(b_c_score, d_score, ymin = d_score_min,
-                                         ymax = d_score_max),
+                            ggplot2::aes(.data$b_c_score, .data$d_score, ymin = .data$d_score_min,
+                                         ymax = .data$d_score_max),
                             col = "black",
                             size = 1.25, alpha = 0.4,
                             inherit.aes = FALSE)+
     ggplot2::geom_linerange(data = score_pt,
-                           ggplot2::aes(y = d_score, xmin = b_c_score_min,
-                                        xmax = b_c_score_max),
+                           ggplot2::aes(y = .data$d_score, xmin = .data$b_c_score_min,
+                                        xmax = .data$b_c_score_max),
                            col = "black",
                            size = 1.25, alpha = 0.4,
                            inherit.aes = FALSE)+
     ggplot2::geom_point(data = score_pt,
-                        ggplot2::aes(b_c_score, d_score, shape = scenario_name),
+                        ggplot2::aes(.data$b_c_score, .data$d_score, shape = .data$scenario_name),
                         stroke = 2,
                         size = 2,
                         inherit.aes = FALSE)+

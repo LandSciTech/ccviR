@@ -10,7 +10,7 @@ editor_options:
 params: 
     set_title: "ccviR Report"
     index_res: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
-    clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP 4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP 4.5.tif", package = "ccviR"))
+    clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP_4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP_4.5.tif", package = "ccviR"))
     sp_name: "Common Name (Scientific Name)"
 ---
 

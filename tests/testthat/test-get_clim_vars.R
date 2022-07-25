@@ -27,17 +27,17 @@ test_that("trimming happens", {
 
   # copy MAT
   dir.create(file.path(file_dir, "temp"))
-  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP 4.5.tif"),
-            file.path(file_dir, "temp/MAT_reclassRCP 4.5.tif"))
-  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP 8.5.tif"),
-            file.path(file_dir, "temp/MAT_reclassRCP 8.5.tif"))
+  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"),
+            file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"))
+  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"),
+            file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"))
 
   # remove MAT
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP 4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP 8.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
 
   # replace MAT
-  purrr::map2(unstack(na_rast), scn_nms,
+  purrr::map2(unstack(na_rast), stringr::str_replace_all(scn_nms, "\\s", "_"),
        ~writeRaster(.x,
                     file.path(file_dir,
                               paste0("clim_files/processed/MAT_rast_na", .y, ".tif"))))
@@ -48,10 +48,10 @@ test_that("trimming happens", {
   }, "doing trim" )
 
   # return MAT
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP 4.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP 4.5.tif")))
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP 8.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP 8.5.tif")))
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"),
+                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif")))
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
+                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
 
   expect_equal(raster::values(clim_vars[[1]][[1]]),
                raster::values(clim_vars2[[1]][[1]]))
@@ -63,20 +63,20 @@ test_that("error when two files or missing files",{
                "number of files matching")
 
   #remove MAT na_rast from previous test
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_naRCP 4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_naRCP 8.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_naRCP_4.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_naRCP_8.5.tif"))
 
   # missing MAT
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP 4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP 8.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
   expect_error(get_clim_vars(file.path(file_dir, "clim_files/processed")),
                "There is no file in")
 
   # return MAT
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP 4.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP 4.5.tif")))
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP 8.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP 8.5.tif")))
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"),
+                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif")))
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
+                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
 
   # other files are allowed to be missing
   file.copy(file.path(file_dir, "clim_files/processed/MWMT_MCMT_reclass.tif"),

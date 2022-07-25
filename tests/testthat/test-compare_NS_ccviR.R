@@ -15,7 +15,7 @@
 # 3) calculate the index and compare. Investigate reasons for differences. There
 # have been some differences recorded already so will have to confirm that ours
 # is good.
-if(interactive()){
+if(FALSE){
   # 0 Setup #=======================================
   library(dplyr)
   library(ccviR)

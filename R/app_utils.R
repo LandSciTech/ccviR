@@ -95,9 +95,9 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       pal = c("grey", "#FF0000", "#FFC125", "#008000")
       brks = 0:3
       rast_lbl <- bind_cols(rast_lbl, pal = pal) %>%
-        filter(value %in% raster::unique(rast))
-      pal <- pull(rast_lbl, pal)
-      rast_lbl <- pull(rast_lbl, label)
+        filter(.data$value %in% raster::unique(rast))
+      pal <- pull(rast_lbl, .data$pal)
+      rast_lbl <- pull(rast_lbl, .data$label)
     } else if(rast_nm %in% c("cmd", "mat")) {
       pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
       brks = 1:7
@@ -219,5 +219,5 @@ widen_vuln_coms <- function(vuln_df, coms_df){
     rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
                        stringr::str_extract(.x, "^.*(?=_)")) %>%
                  stringr::str_remove("_Value")) %>%
-    select(order(colnames(.)))
+    select(order(colnames(.data)))
 }

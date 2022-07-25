@@ -1,22 +1,42 @@
 ## code to prepare `climate_data_pkg` to store climate data on OSF to be
 
 library(purrr)
+
 # Download the climate data from adaptwest
-out_folder <- "../Climate_data/data/ccviR_data_pkg/CMIP5_ENSEMBLE_rcp45_rcp85_2050_NORM_6190"
+dat_pth <- "D:/Ilona/Climate_data/data/"
+
+out_folder <- file.path(dat_pth, "ccviR_data_pkg/CMIP5_ENSEMBLE_rcp45_rcp85_2050_NORM_6190")
 
 if(!dir.exists(out_folder)){
   dir.create(out_folder)
 }
 
+
+# # GADM is too detailed but does have sable island
+# clim_poly <- sf::st_as_sf(raster::getData(country = c("CAN", "USA", "MEX"), level = 0))
+#
+# # world does not have sable island
+# NAm <- geodata::world(path = ".") %>% st_as_sf() %>% filter(GID_0 %in% c("CAN", "USA", "MEX"))
+#
+# # get sable island
+# plot(clim_poly %>% st_as_sf() %>% st_geometry())
+# ext <- raster::drawExtent()
+#
+# sable <- st_crop(clim_poly %>% st_as_sf(), ext)
+#
+# NAm2 <- bind_rows(NAm, sable)
+#
+# write_sf(NAm2, "../Climate_data/data/North_Am_w_sable.shp")
+
 # location of file with area that climate data is from in this case NA
-clim_poly <- file.path("../Climate_data/data/ccviR_data_pkg/CMIP5_ENSEMBLE_rcp45_2050_NORM_8110", "clim_poly.shp")
+clim_poly <- file.path(dat_pth, "North_Am_w_sable.shp")
 
 # location of folders with future climate data names will become scenario names
-fut_clim <- list(`RCP 4.5` = "../Climate_data/data/NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII",
-                 `RCP 8.5` = "../Climate_data/data/NA_ENSEMBLE_rcp85_2050s_Bioclim_ASCII")
+fut_clim <- list(`RCP 4.5` = file.path(dat_pth, "NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII"),
+                 `RCP 8.5` = file.path(dat_pth, "NA_ENSEMBLE_rcp85_2050s_Bioclim_ASCII"))
 
 # location of folder with climate normals data
-cur_clim <- "../Climate_data/data/NA_NORM_6190_Bioclim_ASCII"
+cur_clim <- file.path(dat_pth, "NA_NORM_6190_Bioclim_ASCII")
 
 file_nms <- c("MAT", "CMD", "MAP", "MWMT", "MCMT")
 
@@ -33,7 +53,7 @@ write.csv(
 )
 
 # Need to copy the prj file in so that all the crs is used
-prj_file <- "../Climate_data/data/NA_Reference_files_ASCII/ClimateNA_ID.prj"
+prj_file <- file.path(dat_pth, "NA_Reference_files_ASCII/ClimateNA_ID.prj")
 
 cross2(c(fut_clim, cur_clim), file_nms) %>%
   map(~file.copy(prj_file, file.path(.x[[1]], paste0(.x[[2]], ".prj"))))

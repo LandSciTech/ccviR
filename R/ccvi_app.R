@@ -1363,7 +1363,8 @@ ccvi_app <- function(testmode_in, ...){
         selector = "#*index_result*"
       )
 
-      ind_ls <- index_res() %>% arrange(desc(scenario_name)) %>% split(index_res()$scenario_name)
+      ind_ls <- index_res() %>% arrange(desc(.data$scenario_name)) %>%
+        split(index_res()$scenario_name)
 
       purrr::map(1:length(ind_ls),
                  ~insertUI(selector = paste0("#", "calcIndex"),
@@ -1395,7 +1396,7 @@ ccvi_app <- function(testmode_in, ...){
       if(!any(index_res()$slr_vuln)){
         return(NULL)
       }
-      scn_slr <- filter(index_res(), slr_vuln) %>% pull(scenario_name)
+      scn_slr <- filter(index_res(), .data$slr_vuln) %>% pull(.data$scenario_name)
       paste0("The index value for this species in scenario ",
              paste0(scn_slr, collapse = ", "), " was increased to ",
              "'Extremely Vulnerable' because it is vulnerable to rising ",
@@ -1414,8 +1415,8 @@ ccvi_app <- function(testmode_in, ...){
 
     output$q_score_plt <- plotly::renderPlotly({
       index_res() %>%
-        select(scenario_name, vuln_df) %>%
-        tidyr::unnest(vuln_df) %>%
+        select(.data$scenario_name, .data$vuln_df) %>%
+        tidyr::unnest(.data$vuln_df) %>%
         plot_q_score()
     })
 
@@ -1427,14 +1428,14 @@ ccvi_app <- function(testmode_in, ...){
       spat_df <- spat_res()
 
       conf_df <- index_res() %>%
-        select(scenario_name, mc_results) %>%
-        mutate(mc_results = purrr::map(mc_results, ~.x$index %>%
+        select(.data$scenario_name, .data$mc_results) %>%
+        mutate(mc_results = purrr::map(.data$mc_results, ~.x$index %>%
                                          factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
                                          table() %>%
                                          prop.table() %>%
                                          as.data.frame(stringsAsFactors = FALSE) %>%
                                          `names<-`(c("index", "frequency")))) %>%
-        pull(mc_results) %>%
+        pull(.data$mc_results) %>%
         purrr::map_dfr(~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
                                   tidyr::pivot_wider(names_from = "index",
                                                      values_from = "frequency"))
@@ -1454,8 +1455,8 @@ ccvi_app <- function(testmode_in, ...){
                  b_c_score = index_res()$b_c_score,
                  d_score = index_res()$d_score) %>%
         bind_cols(conf_df, spat_df, vuln_df,
-                  clim_readme() %>% select(-Scenario_Name)) %>%
-        select(scenario_name, everything())
+                  clim_readme() %>% select(-.data$Scenario_Name)) %>%
+        select(.data$scenario_name, everything())
     })
 
     exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))

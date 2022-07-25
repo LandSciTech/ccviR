@@ -112,7 +112,7 @@ Below is an example of how the MAT is classified by `prep_clim_data`. The change
 mat_norm <- raster(file.path(data_pth, "clim_files/raw/NB_norm_MAT.tif"))
 mat_fut <- raster(file.path(data_pth, "clim_files/raw/NB_RCP.4.5_MAT.tif"))
 
-mat_classified <- raster(file.path(data_pth, "clim_files/processed/MAT_reclassRCP 4.5.tif"))
+mat_classified <- raster(file.path(data_pth, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
 
 brks$brks_mat
 
@@ -173,7 +173,7 @@ spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
 We can look at how the spatial analysis was done for the RCP 4.5 scenario by plotting the appropriate range polygon and climate data to see how they overlap.
 
 ```{r fig.height=4, fig.width=4}
-plot(clim_dat$mat$RCP.4.5, col = pal)
+plot(clim_dat$mat$RCP_4.5, col = pal)
 
 plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
 

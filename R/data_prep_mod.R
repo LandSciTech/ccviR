@@ -160,8 +160,8 @@ data_prep_ui <- function(id){
       }
 
       if(file.exists(fs::path(out_dir, "climate_data_readme.csv"))){
-        clim_readme_cur <- read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
-          mutate(across(where(is.numeric), as.character))
+        clim_readme_cur <- utils::read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
+          mutate(across(everything(), as.character))
 
         clim_readme <- bind_rows(clim_readme_cur, clim_readme) %>%
           distinct(.data$Scenario_Name, .keep_all = TRUE)

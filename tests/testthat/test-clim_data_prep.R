@@ -43,10 +43,10 @@ test_that("works with demo data",{
 
   # check that the scn2 data is higher
   mat_45 <- raster::raster(file.path(pth_base,
-                                     "processed/MAT_reclassRCP 4.5.tif"))
+                                     "processed/MAT_reclassRCP_4.5.tif"))
 
   mat_85 <- raster::raster(file.path(pth_base,
-                                     "processed/MAT_reclassRCP 8.5.tif"))
+                                     "processed/MAT_reclassRCP_8.5.tif"))
 
   expect_gt(raster::cellStats(mat_85, mean), raster::cellStats(mat_45, mean))
   # # to start delete contents of processed data

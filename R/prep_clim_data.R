@@ -84,6 +84,10 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           reproject = FALSE, overwrite = FALSE,
                           scenario_name = "", brks_mat = NULL,
                           brks_cmd = NULL, brks_ccei = NULL){
+
+  # remove spaces from scenario_name
+  scenario_name <- stringr::str_replace_all(scenario_name, "\\s", "_")
+
   if(length(out_folder) == 0 || missing(out_folder)){
     stop("out_folder is missing with no default")
   }
