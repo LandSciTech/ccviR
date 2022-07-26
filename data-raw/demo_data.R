@@ -170,3 +170,15 @@ res <- calc_vulnerability(spat_res$spat_table, vuln_df, tax_grp = "Bird")
 
 unlink("Ecoregions", recursive = TRUE)
 unlink("gadm36_CAN_1_sp.rds", recursive = TRUE)
+
+# this is supposed to fix the executable files error in R-CMD-CHK
+# see: https://stackoverflow.com/questions/70713010/convincing-r-that-the-dbf-file-associated-with-a-shp-file-is-not-an-executable
+not_exe_fun <- function(fn){
+  sz = file.info(fn)$size
+  r = readBin(fn, raw(), sz)
+  r[2] = as.raw(121) ## make it 2021 instead of 2022
+  writeBin(r, fn)
+}
+
+list.files("inst/extdata", pattern = "dbf", recursive = TRUE, full.names = TRUE) |>
+  purrr::walk(not_exe_fun)
