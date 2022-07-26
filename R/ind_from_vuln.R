@@ -23,7 +23,7 @@ ind_from_vuln <- function(b_c_score, d_score, slr_vuln,
 
   index <- as.data.frame(lst(d_index, b_c_index)) %>%
     left_join(comb_index_tbl, by = c(d_index = "Dindex", b_c_index = "Bindex")) %>%
-    pull(value) %>% as.character()
+    pull(.data$value) %>% as.character()
 
   index[which(slr_vuln)] <- "EV"
 

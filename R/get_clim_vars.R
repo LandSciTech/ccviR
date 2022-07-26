@@ -22,7 +22,7 @@
 #' @export
 #'
 #' @examples
-#' pth <- system.file("extData/clim_files/processed", package = "ccviR")
+#' pth <- system.file("extdata/clim_files/processed", package = "ccviR")
 #'
 #' # scenario names
 #' scn_nms <- c("RCP 4.5", "RCP 8.5")
@@ -33,6 +33,9 @@ get_clim_vars <- function(root_pth, scenario_names = "scn1"){
   if(!dir.exists(root_pth)){
     stop("directory ", root_pth," does not exist", call. = FALSE)
   }
+
+  # remove spaces from scenario_names
+  scenario_names <- stringr::str_replace_all(scenario_names, "\\s", "_")
 
   pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
             "MWMT.*tif$|HTN.*tif$", "clim_poly.*shp")

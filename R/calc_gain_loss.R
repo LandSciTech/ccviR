@@ -17,8 +17,8 @@ calc_gain_loss <- function(rast, poly, gain_mod){
 
   out <- calc_prop_raster(rast, poly, var_name = "HS", val_range = 0:3,
                           digits = 10) %>%
-    transmute(range_change = ((HS_1 - HS_3 * gain_mod)/(HS_1 + HS_2) * 100) %>% round(3),
-              range_overlap = (HS_2/(HS_1 + HS_2) * 100) %>% round(3))
+    transmute(range_change = ((.data$HS_1 - .data$HS_3 * gain_mod)/(.data$HS_1 + .data$HS_2) * 100) %>% round(3),
+              range_overlap = (.data$HS_2/(.data$HS_1 + .data$HS_2) * 100) %>% round(3))
 
   return(out)
 }

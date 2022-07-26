@@ -136,12 +136,12 @@ prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
 
 # make readme csv
 write.csv(
-  data.frame(`Scenario_Name` = names(fut_clim),
-             `GCM or Ensemble name` = "AdaptWest 15 CMIP5 AOGCM Ensemble",
-             `Historical normal period` = "1961-1990",
-             `Future period` = "2050s",
-             `Emissions scenario` = names(fut_clim),
-             `Link to source` = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
+  data.frame(Scenario_Name = names(fut_clim),
+             GCM_or_Ensemble_name = "AdaptWest 15 CMIP5 AOGCM Ensemble",
+             Historical_normal_period = "1961-1990",
+             Future_period = "2050s",
+             Emissions_scenario = names(fut_clim),
+             Link_to_source = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
   file.path("inst/extdata/clim_files/processed/", "climate_data_readme.csv"),
   row.names = FALSE
 )
@@ -170,3 +170,15 @@ res <- calc_vulnerability(spat_res$spat_table, vuln_df, tax_grp = "Bird")
 
 unlink("Ecoregions", recursive = TRUE)
 unlink("gadm36_CAN_1_sp.rds", recursive = TRUE)
+
+# this is supposed to fix the executable files error in R-CMD-CHK
+# see: https://stackoverflow.com/questions/70713010/convincing-r-that-the-dbf-file-associated-with-a-shp-file-is-not-an-executable
+not_exe_fun <- function(fn){
+  sz = file.info(fn)$size
+  r = readBin(fn, raw(), sz)
+  r[2] = as.raw(121) ## make it 2021 instead of 2022
+  writeBin(r, fn)
+}
+
+list.files("inst/extdata", pattern = "dbf", recursive = TRUE, full.names = TRUE) |>
+  purrr::walk(not_exe_fun)

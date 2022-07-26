@@ -52,9 +52,9 @@ ccvi_app <- function(testmode_in, ...){
             span("With support from: ECCC"),
             br(),
             span("Code"),
-            a("on GitHub", href = "https://github.com/see24/ccviR"),
+            a("on GitHub", href = "https://github.com/see24/ccviR", target="_blank"),
             HTML("&bull;"),
-            a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"))
+            a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"))
       ),
 
       navlistPanel(
@@ -67,22 +67,23 @@ ccvi_app <- function(testmode_in, ...){
           fluidPage(
             h2("Welcome"),
             p("This app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
-              a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index"),
+              a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"),
               "that automates the spatial analysis needed to inform the index. ",
               "The app is based on version 3.02 of the NatureServe CCVI. ",
               "See the app ",
-              a("tutorial", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html"),
+              a("tutorial", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),
               "for a demonstration of how to use the app. ",
               "For detailed instructions on how to use the index and definitions ",
               "of the terms used below see the ",
-              a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf"),
+              a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf", target="_blank"),
               "Required datasets are indicated with ", labelMandatory("a"), "."),
             h3("Preparing to use the app"),
 
-            p(strong("Step 0: "),"The first time you use the app ",
-              "you will need to download the climate data used in the app or",
+            p(strong("Step 0: "),"The first time you use the app you can either",
+              a("download", href = "https://drive.google.com/file/d/1U6iVI60NvpFY_0cfnpe3gNw2Xpg66sJ4/view?usp=sharing", target="_blank"),
+              "a pre-prepared climate data set used in the app or",
               " prepare your own using raw climate data and the ",
-              a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html")),
+              a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html", target="_blank")),
             p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
               tags$ul(
                 tags$li(labelMandatory("Species North American or global range polygon")),
@@ -694,7 +695,7 @@ ccvi_app <- function(testmode_in, ...){
     clim_readme <- reactive({
       req(clim_dir_pth())
       if(!file.exists(fs::path(clim_dir_pth(), "climate_data_readme.csv"))){
-        stop("The climate folder is missing the required readme file",
+        stop("The climate folder is missing the required climate_data_readme.csv file",
              call. = FALSE)
       }
       utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
@@ -1363,7 +1364,8 @@ ccvi_app <- function(testmode_in, ...){
         selector = "#*index_result*"
       )
 
-      ind_ls <- index_res() %>% arrange(desc(scenario_name)) %>% split(index_res()$scenario_name)
+      ind_ls <- index_res() %>% arrange(desc(.data$scenario_name)) %>%
+        split(index_res()$scenario_name)
 
       purrr::map(1:length(ind_ls),
                  ~insertUI(selector = paste0("#", "calcIndex"),
@@ -1395,7 +1397,7 @@ ccvi_app <- function(testmode_in, ...){
       if(!any(index_res()$slr_vuln)){
         return(NULL)
       }
-      scn_slr <- filter(index_res(), slr_vuln) %>% pull(scenario_name)
+      scn_slr <- filter(index_res(), .data$slr_vuln) %>% pull(.data$scenario_name)
       paste0("The index value for this species in scenario ",
              paste0(scn_slr, collapse = ", "), " was increased to ",
              "'Extremely Vulnerable' because it is vulnerable to rising ",
@@ -1414,8 +1416,8 @@ ccvi_app <- function(testmode_in, ...){
 
     output$q_score_plt <- plotly::renderPlotly({
       index_res() %>%
-        select(scenario_name, vuln_df) %>%
-        tidyr::unnest(vuln_df) %>%
+        select(.data$scenario_name, .data$vuln_df) %>%
+        tidyr::unnest(.data$vuln_df) %>%
         plot_q_score()
     })
 
@@ -1427,14 +1429,14 @@ ccvi_app <- function(testmode_in, ...){
       spat_df <- spat_res()
 
       conf_df <- index_res() %>%
-        select(scenario_name, mc_results) %>%
-        mutate(mc_results = purrr::map(mc_results, ~.x$index %>%
+        select(.data$scenario_name, .data$mc_results) %>%
+        mutate(mc_results = purrr::map(.data$mc_results, ~.x$index %>%
                                          factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
                                          table() %>%
                                          prop.table() %>%
                                          as.data.frame(stringsAsFactors = FALSE) %>%
                                          `names<-`(c("index", "frequency")))) %>%
-        pull(mc_results) %>%
+        pull(.data$mc_results) %>%
         purrr::map_dfr(~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
                                   tidyr::pivot_wider(names_from = "index",
                                                      values_from = "frequency"))
@@ -1454,8 +1456,8 @@ ccvi_app <- function(testmode_in, ...){
                  b_c_score = index_res()$b_c_score,
                  d_score = index_res()$d_score) %>%
         bind_cols(conf_df, spat_df, vuln_df,
-                  clim_readme() %>% select(-Scenario_Name)) %>%
-        select(scenario_name, everything())
+                  clim_readme() %>% select(-.data$Scenario_Name)) %>%
+        select(.data$scenario_name, everything())
     })
 
     exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))

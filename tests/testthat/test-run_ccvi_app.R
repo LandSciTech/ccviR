@@ -22,4 +22,4 @@ library(shinytest)
 # # To record a new test
 # shinytest::recordTest("tests/testthat/app")
 
-file.remove("app/Rplots.pdf")
+# file.remove("app/Rplots.pdf")

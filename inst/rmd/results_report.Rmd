@@ -10,8 +10,9 @@ editor_options:
 params: 
     set_title: "ccviR Report"
     index_res: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
-    clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP 4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP 4.5.tif", package = "ccviR"))
+    clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP_4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP_4.5.tif", package = "ccviR"))
     sp_name: "Common Name (Scientific Name)"
+    sp_rng: !r system.file("extdata/rng_poly.shp", package = "ccviR")
 ---
 
 ```{r setup, include=FALSE}
@@ -46,11 +47,26 @@ index_col <- function(ind){
 
 :::::: {.cols data-latex=""}
 
-::: {.col data-latex="{0.55\textwidth}"}
+::: {.col data-latex="{0.475\textwidth}"}
 
 ```{=latex}
-\Huge{`r params$sp_name`}
+\large{`r params$sp_name`}
 ```
+
+```{=latex}
+\large{`r index_col(index_res$index[1])`}
+```
+
+
+:::
+
+::: {.col data-latex="{0.05\textwidth}"}
+\ 
+<!-- an empty Div (with a white space), serving as
+a column separator -->
+:::
+
+::: {.col data-latex="{0.475\textwidth}"}
 
 ```{r, ind_gaude}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
@@ -68,15 +84,10 @@ index_col <- function(ind){
 ccviR:::plot_spat_res(raster::raster(clim_vars$mat), raster::raster(clim_vars$cmd))
 ```
 
-:::
+```{r}
+tmap::qtm(sf::read_sf(params$sp_rng))
+params$sp_rng
+```
 
-::: {.col data-latex="{0.05\textwidth}"}
-\ 
-<!-- an empty Div (with a white space), serving as
-a column separator -->
-:::
-
-::: {.col data-latex="{0.4\textwidth}"}
-\Huge`r index_col(index_res$index[1])`
 :::
 ::::::

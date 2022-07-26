@@ -19,7 +19,7 @@
 #' # load dplyr for dealing with nested lists in table
 #' library(dplyr)
 #'
-#' base_pth <- system.file("extData", package = "ccviR")
+#' base_pth <- system.file("extdata", package = "ccviR")
 #'
 #' # scenario names
 #' scn_nms <- c("RCP 4.5", "RCP 8.5")
@@ -49,21 +49,21 @@
 plot_q_score <- function(vuln_df){
 
   if(!"Question" %in% names(vuln_df)){
-    vuln_df <- left_join(vuln_df, ccviR::vulnq_code_lu_tbl, by = "Code")
+    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code")
   } else {
-    vuln_df <- left_join(vuln_df, ccviR::vulnq_code_lu_tbl, by = "Code") %>%
+    vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code") %>%
       rename(Question = "Question.y")
   }
 
   vuln_df <- mutate(vuln_df,
-                    score = ifelse(score <= 0, 0.001, score),
-                    custom_tooltip = paste0(Question, ":\n",
-                                            "Exposure Multiplier: ", exp, "\n",
-                                            "Score: ", round(score, 2))) %>%
-    filter(!is.na(score))
+                    score = ifelse(.data$score <= 0, 0.001, .data$score),
+                    custom_tooltip = paste0(.data$Question, ":\n",
+                                            "Exposure Multiplier: ", .data$exp, "\n",
+                                            "Score: ", round(.data$score, 2))) %>%
+    filter(!is.na(.data$score))
 
   plt <- ggplot2::ggplot(vuln_df,
-                         ggplot2::aes(x = Code, y = score, text = custom_tooltip))+
+                         ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip))+
     # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
     ggplot2::geom_point(size = 0.1, color = "grey35")+
     ggplot2::geom_col(color = "grey35")+

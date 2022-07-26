@@ -5,4 +5,8 @@
 /data/
 inst/doc
 /documents/
-docs
+docs/
+inst/rmd/results_report_files/
+inst/rmd/*.pdf
+inst/rmd/results_report.tex
+rsconnect/

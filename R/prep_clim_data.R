@@ -48,9 +48,9 @@
 #' @export
 #'
 #' @examples
-#' in_folder <- system.file("extData/clim_files/raw", package = "ccviR")
+#' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
 #'
-#' pth_out <- system.file("extData/clim_files/processed", package = "ccviR")
+#' pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
 #'
 #' # use first scenario to set breaks
 #' brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
@@ -84,6 +84,10 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           reproject = FALSE, overwrite = FALSE,
                           scenario_name = "", brks_mat = NULL,
                           brks_cmd = NULL, brks_ccei = NULL){
+
+  # remove spaces from scenario_name
+  scenario_name <- stringr::str_replace_all(scenario_name, "\\s", "_")
+
   if(length(out_folder) == 0 || missing(out_folder)){
     stop("out_folder is missing with no default")
   }
