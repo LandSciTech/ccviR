@@ -59,10 +59,10 @@ s <- hexSticker::sticker(mp, package = "ccviR",
                          s_x = 1, s_y = 1,
                          s_width = 1.5, s_height = 2,
                          h_fill = "white",
-                         h_color = "#008000",
+                         h_color = "black",
                          white_around_sticker = TRUE,
                          filename = paste0(temp_fn, ".png"))
 
 plot(s)
 
-use_logo(paste0(temp_fn, ".png"))
+usethis::use_logo(paste0(temp_fn, ".png"))
