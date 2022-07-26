@@ -8,4 +8,5 @@ inst/doc
 docs/
 inst/rmd/results_report_files/
 inst/rmd/*.pdf
+inst/rmd/*.tex
 rsconnect/
