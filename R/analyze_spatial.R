@@ -56,7 +56,7 @@
 #'
 #' @examples
 #'
-#' base_pth <- system.file("extData", package = "ccviR")
+#' base_pth <- system.file("extdata", package = "ccviR")
 #'
 #' # scenario names
 #' scn_nms <- c("RCP 4.5", "RCP 8.5")
