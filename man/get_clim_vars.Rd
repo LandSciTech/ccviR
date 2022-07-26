@@ -30,7 +30,7 @@ Load climate variables and store them in a list that can be used with
 using \code{\link{prep_clim_data}}.
 }
 \examples{
-pth <- system.file("extData/clim_files/processed", package = "ccviR")
+pth <- system.file("extdata/clim_files/processed", package = "ccviR")
 
 # scenario names
 scn_nms <- c("RCP 4.5", "RCP 8.5")

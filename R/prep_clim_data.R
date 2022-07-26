@@ -48,9 +48,9 @@
 #' @export
 #'
 #' @examples
-#' in_folder <- system.file("extData/clim_files/raw", package = "ccviR")
+#' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
 #'
-#' pth_out <- system.file("extData/clim_files/processed", package = "ccviR")
+#' pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
 #'
 #' # use first scenario to set breaks
 #' brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
