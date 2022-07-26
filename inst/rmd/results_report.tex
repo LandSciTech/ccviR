@@ -6,8 +6,8 @@
 ]{article}
 \usepackage{amsmath,amssymb}
 \usepackage{lmodern}
-\usepackage{ifxetex,ifluatex}
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+\usepackage{iftex}
+\ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
@@ -74,22 +74,22 @@
     {}%
 }
 \makeatother
-\ifluatex
+\ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 
 \author{}
-\date{\vspace{-2.5em}Created on July 12, 2022}
+\date{\vspace{-2.5em}Created on July 26, 2022}
 
 \begin{document}
 
 \begin{cols}
 
-\begin{col}{0.55\textwidth}
+\begin{col}{0.475\textwidth}
 
-\Huge{Common Name (Scientific Name)}
+\large{Common Name (Scientific Name)}
 
-\includegraphics{results_report_files/figure-latex/ind_gaude-1.pdf}
+\large{\textcolor{red}{Extremely Vulnerable}}
 
 \end{col}
 
@@ -98,8 +98,15 @@
 
 \end{col}
 
-\begin{col}{0.4\textwidth}
-\Huge\textcolor{red}{Extremely Vulnerable}
+\begin{col}{0.475\textwidth}
+
+\includegraphics{results_report_files/figure-latex/ind_gaude-1.pdf}
+
+\includegraphics{results_report_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\begin{verbatim}
+## [1] "C:/Users/endicotts/Documents/R/R-4.1.2/library/ccviR/extdata/rng_poly.shp"
+\end{verbatim}
 
 \end{col}
 
