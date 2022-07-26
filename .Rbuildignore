@@ -10,3 +10,4 @@ documents\*
 ^\.github$
 rsconnect
 ^app\.R$
+^LICENSE\.md$

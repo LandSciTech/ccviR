@@ -18,7 +18,7 @@ Description: The ccviR package implements the
   CCVI. See Young et. al (2012) <doi:10.7208/9780226074641-007> and 
   Young et. al. (2015) <doi:10.1002/wsb.478> for a detailed description of the 
   index.
-License: TBD
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 

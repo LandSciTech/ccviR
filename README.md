@@ -7,6 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/LandSciTech/ccviR/workflows/R-CMD-check/badge.svg)](https://github.com/LandSciTech/ccviR/actions)
 <!-- badges: end -->
 
 *This application/package is under active development. Backwards
@@ -81,7 +82,7 @@ Monte Carlo uncertainty analysis produced are the same.
 
 See `vignette("app_vignette", package = "ccviR")` for a more detailed
 description of how to use the app,
-`vignette("data_prep_vignette", package = "ccviR")` for how to use and
+`vignette("data_prep_vignette", package = "ccviR")` for how to use an
 app to prepare custom climate data sets, and
 `vignette("package_vignette", package = "ccviR")` for a tutorial on how
 to use the package to calculate the index directly in R.
