@@ -189,14 +189,13 @@ for which the range within the extent of the climate data is used.</p>
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">base_pth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extData"</span>, package <span class="op">=</span> <span class="st">"ccviR"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">base_pth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"ccviR"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># scenario names</span></span></span>
 <span class="r-in"><span><span class="va">scn_nms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP 8.5"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">clim_vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="get_clim_vars.html">get_clim_vars</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">base_pth</span>, <span class="st">"clim_files/processed"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                           scenario_names <span class="op">=</span> <span class="va">scn_nms</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> directory /clim_files/processed does not exist</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">spat_res</span> <span class="op">&lt;-</span> <span class="fu">analyze_spatial</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  range_poly <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">base_pth</span>, <span class="st">"rng_poly.shp"</span><span class="op">)</span>, agr <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span>,</span></span>
@@ -208,7 +207,8 @@ for which the range within the extent of the climate data is used.</p>
 <span class="r-in"><span>  scenario_names <span class="op">=</span> <span class="va">scn_nms</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> performing spatial analysis</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in setdiff(names(clim_vars_lst), c("mat", "cmd", "map", "ccei",     "htn", "clim_poly")):</span> object 'clim_vars' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> exact_extract may perform poorly when extracting from a RasterStack. It is recommended to use a SpatRaster from the terra package instead. Convert using terra::rast(x)</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> exact_extract may perform poorly when extracting from a RasterStack. It is recommended to use a SpatRaster from the terra package instead. Convert using terra::rast(x)</span>
 </code></pre></div>
     </div>
   </div>
