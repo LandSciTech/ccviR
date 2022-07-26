@@ -1,8 +1,25 @@
 plot_spat_res <- function(mat, cmd){
   col_mat <- colmat(6, bottomleft = "green", bottomright = "blue",
                     upperleft = "orange", upperright = "magenta", do_plot = F)
-  bivar_map <- bivar_map(cmd, mat)
-  raster::plot(bivar_map, col = as.vector(col_mat), legend = FALSE, axes = FALSE, box = FALSE)
+  bivar_ras <- bivar_map(cmd, mat)
+
+  bivar_out <- tmap::qtm(bivar_ras, raster.palette = as.vector(col_mat) |> setNames(1:36),
+                         raster.style = "cat", layout.legend.show = FALSE,
+                         layout.inner.margins = c(0.3, 0, 0, 0))
+
+  bivar_leg <- raster(matrix(1:36, nrow = 6)) %>% raster::flip() %>%
+    raster::`projection<-`("EPSG:4326") |>
+    tmap::qtm(raster.palette = as.vector(col_mat) |> setNames(1:36),
+              raster.style = "cat", layout.legend.show = FALSE, layout.frame = FALSE,
+              layout.inner.margins = c(0.1, 0.1, 0, 0))
+
+  # not quite working
+  cowplot::ggdraw()+
+    cowplot::draw_grob(tmap::tmap_grob(bivar_out))+
+    cowplot::draw_grob(tmap::tmap_grob(bivar_leg), height =  0.3, valign = 1)+
+    cowplot::draw_label(expression(Moisture ~ Exposure~symbol('\256')), y = 0, vjust = 0, size = 10)+
+    cowplot::draw_label(expression(Temperature ~ Exposure~symbol('\256')), y = 0, x = 0.39,
+                        vjust = 0, hjust = 0, angle = 90, size = 10)
 }
 
 

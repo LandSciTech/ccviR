@@ -3,22 +3,28 @@ date: "Created on `r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document: 
     keep_tex: true
+    fig_caption: true
     includes:
       in_header: columns.tex
 editor_options: 
   chunk_output_type: console
 params: 
-    set_title: "ccviR Report"
     index_res: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
     clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP_4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP_4.5.tif", package = "ccviR"))
     sp_name: "Common Name (Scientific Name)"
-    sp_rng: !r system.file("extdata/rng_poly.shp", package = "ccviR")
+    vuln_df: !r list("vuln_df")
+    spat_res: !r system.file("extdata/rng_poly.shp", package = "ccviR")
+    scale_poly: !r system.file("extdata/assess_poly.shp", package = "ccviR")
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 index_res <- params$index_res
 clim_vars <- params$clim_vars
+spat_res <- params$spat_res
+vuln_df <- params$vuln_df
+scale_poly <- params$scale_poly
+
 
 library(purrr)
 library(dplyr)
@@ -80,13 +86,11 @@ a column separator -->
 #     cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
 #               "#FF0000"),
 #     ttl = .y) %>% print()) 
-
-ccviR:::plot_spat_res(raster::raster(clim_vars$mat), raster::raster(clim_vars$cmd))
+ccviR:::plot_spat_res(clim_vars$mat, clim_vars$cmd)
 ```
 
-```{r}
-tmap::qtm(sf::read_sf(params$sp_rng))
-params$sp_rng
+```{r range_map}
+tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_poly_clim)
 ```
 
 :::
