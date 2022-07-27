@@ -37,7 +37,7 @@ test_that("creating raster works",{
 
 
 test_that("map looks right",{
-  spat_res_map <- plot_spat_res(mat, cmd)
+  spat_res_map <- plot_bivar_exp(mat, cmd)
 
   expect_s3_class(spat_res_map, "tmap")
 })

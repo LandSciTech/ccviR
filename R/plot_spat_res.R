@@ -1,25 +1,45 @@
-plot_spat_res <- function(mat, cmd){
-  col_mat <- colmat(6, bottomleft = "green", bottomright = "blue",
-                    upperleft = "orange", upperright = "magenta", do_plot = F)
+plot_bivar_exp <- function(mat, cmd){
+  col_mat <- colmat(6, bottomleft = "#f3f3f3", bottomright = "#509dc2",
+                    upperleft = "#f3b300", upperright = "#000000", do_plot = F)
   bivar_ras <- bivar_map(cmd, mat)
 
-  bivar_out <- tmap::qtm(bivar_ras, raster.palette = as.vector(col_mat) |> setNames(1:36),
-                         raster.style = "cat", layout.legend.show = FALSE,
-                         layout.inner.margins = c(0.3, 0, 0, 0))
-
+  # using ggplot and rasterVis is better than tmap for keeping the legend
+  # aligned well
   bivar_leg <- raster(matrix(1:36, nrow = 6)) %>% raster::flip() %>%
-    raster::`projection<-`("EPSG:4326") |>
-    tmap::qtm(raster.palette = as.vector(col_mat) |> setNames(1:36),
-              raster.style = "cat", layout.legend.show = FALSE, layout.frame = FALSE,
-              layout.inner.margins = c(0.1, 0.1, 0, 0))
+    rasterVis::gplot()+
+    ggplot2::geom_tile(ggplot2::aes(fill = as.factor(value)))+
+    ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
+                               name = NULL, na.value = "white")+
+    ggplot2::guides(fill = "none")+
+    ggplot2::coord_equal()+
+    ggplot2::labs(x = expression(Moisture ~ Exposure~symbol('\256')),
+                  y = expression(Temperature ~ Exposure~symbol('\256')))+
+    ggplot2::theme(line = ggplot2::element_blank(), rect = ggplot2::element_blank(),
+                   text = ggplot2::element_text(family = "", face = "plain",
+                                                colour = "black", size = 9, lineheight = 0.9,
+                                                hjust = 0.5, vjust = 0.5, angle = 0, margin = ggplot2::margin(),
+                                                debug = FALSE), axis.text = ggplot2::element_blank(),
+                   axis.ticks.length = ggplot2::unit(0, "pt"))
 
-  # not quite working
-  cowplot::ggdraw()+
-    cowplot::draw_grob(tmap::tmap_grob(bivar_out))+
-    cowplot::draw_grob(tmap::tmap_grob(bivar_leg), height =  0.3, valign = 1)+
-    cowplot::draw_label(expression(Moisture ~ Exposure~symbol('\256')), y = 0, vjust = 0, size = 10)+
-    cowplot::draw_label(expression(Temperature ~ Exposure~symbol('\256')), y = 0, x = 0.39,
-                        vjust = 0, hjust = 0, angle = 90, size = 10)
+  ras_ext <- raster::extent(bivar_ras)
+
+  leg_start_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/20
+  leg_end_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/2
+  leg_top_y <- ras_ext@ymax - (ras_ext@ymax - ras_ext@ymin)/20
+  leg_bottom_y <-  ras_ext@ymax - (ras_ext@xmax - ras_ext@xmin)/2
+
+  bivar_plt <- rasterVis::gplot(bivar_ras)+
+    ggplot2::geom_tile(ggplot2::aes(fill = as.factor(value)))+
+    ggplot2::theme_void()+
+    ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
+                               name = NULL, na.value = "white")+
+    ggplot2::guides(fill = "none")+
+    ggplot2::coord_equal()+
+    ggplot2::theme(plot.margin = ggplot2::unit(c(0.01,0.333,0.01,0.01), "npc"))+
+    ggplot2::annotation_custom(ggplot2::ggplotGrob(bivar_leg),
+                               xmin = leg_start_x, xmax = leg_end_x,
+                               ymin = leg_bottom_y, ymax = leg_top_y)
+  bivar_plt
 }
 
 
