@@ -38,6 +38,7 @@ plot_bivar_exp <- function(mat, cmd, leg_rel_size = 2.5,
 
   bivar_ras <- bivar_map(cmd, mat)
 
+  names(bivar_ras) <- names(mat)
   # using ggplot and rasterVis is better than tmap for keeping the legend
   # aligned well
   bivar_leg <- raster(matrix(1:36, nrow = 6)) %>% raster::flip() %>%
@@ -69,12 +70,17 @@ plot_bivar_exp <- function(mat, cmd, leg_rel_size = 2.5,
     ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")+
-    ggplot2::coord_equal()+
-    ggplot2::theme(plot.margin = ggplot2::unit(c(0.01,0.333,0.01,0.01), "npc"))+
-    ggplot2::annotation_custom(ggplot2::ggplotGrob(bivar_leg),
-                               xmin = leg_start_x, xmax = leg_end_x,
-                               ymin = leg_bottom_y, ymax = leg_top_y)
-  bivar_plt
+    ggplot2::coord_equal()
+    # ggplot2::theme(plot.margin = ggplot2::unit(c(0.01,0.333,0.01,0.01), "npc"))
+    # ggplot2::annotation_custom(ggplot2::ggplotGrob(bivar_leg),
+    #                            xmin = leg_start_x, xmax = leg_end_x,
+    #                            ymin = leg_bottom_y, ymax = leg_top_y)
+
+  if(raster::nlayers(bivar_ras) > 1){
+    bivar_plt <- bivar_plt + ggplot2::facet_wrap(~ variable)
+  }
+
+  ggpubr::ggarrange(bivar_plt,bivar_leg, widths = c(4, 1))
 }
 
 # derived from this blog post https://rfunctions.blogspot.com/2015/03/bivariate-maps-bivariatemap-function.html

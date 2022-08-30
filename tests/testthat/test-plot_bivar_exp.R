@@ -1,5 +1,4 @@
 
-library("raster", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
 
