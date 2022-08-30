@@ -1,6 +1,11 @@
-plot_bivar_exp <- function(mat, cmd){
-  col_mat <- colmat(6, bottomleft = "#f3f3f3", bottomright = "#509dc2",
-                    upperleft = "#f3b300", upperright = "#000000", do_plot = F)
+plot_bivar_exp <- function(mat, cmd, leg_rel_size = 2.5,
+                           palette = c(bottomleft = "green", bottomright = "blue",
+                                       upperleft = "orange", upperright = "magenta")){
+  col_mat <- colmat(6, bottomleft = palette["bottomleft"],
+                    bottomright = palette["bottomright"],
+                    upperleft = palette["upperleft"],
+                    upperright = palette["upperright"], do_plot = F)
+
   bivar_ras <- bivar_map(cmd, mat)
 
   # using ggplot and rasterVis is better than tmap for keeping the legend
@@ -12,8 +17,8 @@ plot_bivar_exp <- function(mat, cmd){
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")+
     ggplot2::coord_equal()+
-    ggplot2::labs(x = expression(Moisture ~ Exposure~symbol('\256')),
-                  y = expression(Temperature ~ Exposure~symbol('\256')))+
+    ggplot2::labs(x = expression(Drier~symbol('\256')),
+                  y = expression(Warmer~symbol('\256')))+
     ggplot2::theme(line = ggplot2::element_blank(), rect = ggplot2::element_blank(),
                    text = ggplot2::element_text(family = "", face = "plain",
                                                 colour = "black", size = 9, lineheight = 0.9,
@@ -24,9 +29,9 @@ plot_bivar_exp <- function(mat, cmd){
   ras_ext <- raster::extent(bivar_ras)
 
   leg_start_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/20
-  leg_end_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/2
+  leg_end_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/leg_rel_size
   leg_top_y <- ras_ext@ymax - (ras_ext@ymax - ras_ext@ymin)/20
-  leg_bottom_y <-  ras_ext@ymax - (ras_ext@xmax - ras_ext@xmin)/2
+  leg_bottom_y <-  ras_ext@ymax - (ras_ext@xmax - ras_ext@xmin)/leg_rel_size
 
   bivar_plt <- rasterVis::gplot(bivar_ras)+
     ggplot2::geom_tile(ggplot2::aes(fill = as.factor(value)))+
@@ -42,7 +47,7 @@ plot_bivar_exp <- function(mat, cmd){
   bivar_plt
 }
 
-
+# derived from this blog post https://rfunctions.blogspot.com/2015/03/bivariate-maps-bivariatemap-function.html
 colmat <- function(nclass = 10,
                    upperleft = grDevices::rgb(0, 150, 235, maxColorValue = 255),
                    upperright = grDevices::rgb(130, 0, 80, maxColorValue = 255),
