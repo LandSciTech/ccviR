@@ -5,7 +5,7 @@ output:
     keep_tex: true
     fig_caption: true
     includes:
-      in_header: columns.tex
+      #in_header: columns.tex # supposed to make 2 col layout but too advanced for me
 editor_options: 
   chunk_output_type: console
 params: 
@@ -51,9 +51,9 @@ index_col <- function(ind){
 
 
 
-:::::: {.cols data-latex=""}
+<!-- :::::: {.cols data-latex=""} -->
 
-::: {.col data-latex="{0.475\textwidth}"}
+<!-- ::: {.col data-latex="{0.475\textwidth}"} -->
 
 ```{=latex}
 \large{`r params$sp_name`}
@@ -64,15 +64,15 @@ index_col <- function(ind){
 ```
 
 
-:::
+<!-- ::: -->
 
-::: {.col data-latex="{0.05\textwidth}"}
-\ 
-<!-- an empty Div (with a white space), serving as
-a column separator -->
-:::
+<!-- ::: {.col data-latex="{0.05\textwidth}"} -->
+<!-- \  -->
+<!-- <!-- an empty Div (with a white space), serving as -->
+<!-- a column separator --> -->
+<!-- ::: -->
 
-::: {.col data-latex="{0.475\textwidth}"}
+<!-- ::: {.col data-latex="{0.475\textwidth}"} -->
 
 ```{r, ind_gaude}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
@@ -86,12 +86,12 @@ a column separator -->
 #     cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
 #               "#FF0000"),
 #     ttl = .y) %>% print()) 
-ccviR:::plot_spat_res(clim_vars$mat, clim_vars$cmd)
+plot_bivar_exp(clim_vars$mat, clim_vars$cmd)
 ```
 
 ```{r range_map}
 tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_poly_clim)
 ```
 
-:::
-::::::
+<!-- ::: -->
+<!-- :::::: -->
