@@ -1,4 +1,5 @@
 ---
+title: "Climate Change Vulnerability Index Result Summary"
 date: "Created on `r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document: 
@@ -55,15 +56,18 @@ index_col <- function(ind){
 
 <!-- ::: {.col data-latex="{0.475\textwidth}"} -->
 
+#`r params$sp_name`
+
+## Index value
+
 ```{=latex}
-\large{`r params$sp_name`}
+\huge{`r index_col(index_res$index[1])`}
 ```
 
+## Migratory exposure value
 ```{=latex}
 \large{`r index_col(index_res$index[1])`}
 ```
-
-
 <!-- ::: -->
 
 <!-- ::: {.col data-latex="{0.05\textwidth}"} -->
