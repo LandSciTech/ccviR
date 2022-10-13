@@ -1,3 +1,3 @@
 "Scenario_Name","GCM_or_Ensemble_name","Historical_normal_period","Future_period","Emissions_scenario","Link_to_source"
 "RCP 4.5","AdaptWest 15 CMIP5 AOGCM Ensemble","1961-1990","2050s","RCP 4.5","https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
-"RCP8.5","AdaptWest 15 CMIP5 AOGCM Ensemble","1961-1990","2050s","RCP8.5","https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
+"RCP 8.5","AdaptWest 15 CMIP5 AOGCM Ensemble","1961-1990","2050s","RCP8.5","https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
