@@ -207,7 +207,7 @@ mig_exp_text <- function(mig_freq){
 }
 
 widen_vuln_coms <- function(vuln_df, coms_df){
-  vuln_df %>%
+  vuln_df <- vuln_df %>%
     select(.data$Code, matches("Value\\d")) %>%
     filter(!.data$Code %in% c("Z2", "Z3")) %>%
     arrange(.data$Code) %>%
@@ -218,6 +218,7 @@ widen_vuln_coms <- function(vuln_df, coms_df){
                        values_from = c("Comment","Value")) %>%
     rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
                        stringr::str_extract(.x, "^.*(?=_)")) %>%
-                 stringr::str_remove("_Value")) %>%
-    select(order(colnames(.data)))
+                 stringr::str_remove("_Value"))
+
+  select(vuln_df, order(colnames(vuln_df)))
 }
