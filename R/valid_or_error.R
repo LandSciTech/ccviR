@@ -10,6 +10,21 @@ valid_or_error <- function(poly, var_name){
            call. = FALSE)
     }
   }
+
+  if(any(st_geometry_type(poly) == "GEOMETRYCOLLECTION")){
+    poly <- sf::st_collection_extract(poly, "POLYGON")
+  }
+
+  if(nrow(poly) > 1){
+    if(nrow(poly) > 100){
+      warning("The ", var_name, " povided contains more than 100 polygons. ",
+              "These will be unioned to create one polygon. ",
+              "If this is not expected please use a different shapefile.",
+              call. = FALSE)
+    }
+    poly <- sf::st_union(poly) %>% sf::st_as_sf()
+  }
+
   poly
 }
 
