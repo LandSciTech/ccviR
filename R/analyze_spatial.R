@@ -256,10 +256,10 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
+  poly <- sf::st_transform(poly, rast_crs)
+
   poly <- valid_or_error(poly, var_name)
 
-
-  poly <- sf::st_transform(poly, rast_crs)
   return(poly)
 }
 
