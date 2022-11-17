@@ -32,5 +32,5 @@ test_that("paramerterized render works", {
                                   spat_res = spat_res,
                                   vuln_df = vuln,
                                   scale_poly = scale_poly,
-                                  sp_name = "Test Species (Genus species"))
+                                  sp_name = "Test Species (Genus species)"))
 })

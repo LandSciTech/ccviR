@@ -1,12 +1,19 @@
 ---
-title: "Climate Change Vulnerability Index Result Summary"
-date: "Created on `r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document: 
     keep_tex: true
     fig_caption: true
-    includes:
+    # includes:
       #in_header: columns.tex # supposed to make 2 col layout but too advanced for me
+header-includes:
+- \usepackage{fancyhdr}
+- \pagestyle{plain}
+- \pagestyle{fancy}
+- \fancyhead[L,R]{}
+- \fancyhead[C]{Climate Change Vulnerability Index Report}
+- \fancyfoot[R]{Report generated with the ccviR app on \today}
+- \fancyfoot[L]{\thepage}
+- \fancyfoot[C]{}
 editor_options: 
   chunk_output_type: console
 params: 
@@ -52,33 +59,22 @@ index_col <- function(ind){
 
 
 
-<!-- :::::: {.cols data-latex=""} -->
+# `r params$sp_name`
 
-<!-- ::: {.col data-latex="{0.475\textwidth}"} -->
+## Climate Change Vulnerability Index: \LARGE`r index_col(index_res$index[1])`
 
-#`r params$sp_name`
 
-## Index value
+## Migratory Exposure Index: \Large`r index_col(index_res$index[1])`
 
-```{=latex}
-\huge{`r index_col(index_res$index[1])`}
+
+## Species range
+```{r range_map, fig.cap= "Map of the species range (shaded) and the assessment area (grey outline)."}
+tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_poly_clim)
 ```
 
-## Migratory exposure value
-```{=latex}
-\large{`r index_col(index_res$index[1])`}
-```
-<!-- ::: -->
 
-<!-- ::: {.col data-latex="{0.05\textwidth}"} -->
-<!-- \  -->
-<!-- <!-- an empty Div (with a white space), serving as -->
-<!-- a column separator --> -->
-<!-- ::: -->
-
-<!-- ::: {.col data-latex="{0.475\textwidth}"} -->
-
-```{r, ind_gaude}
+## Exposure 
+```{r, bivar_exp,fig.height= 2.5, fig.cap="Map of exposure based on both change in temperature and change in moisture regime."}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
 # walk2(index_res$index, index_res$scenario_name, 
 #       ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
@@ -93,9 +89,4 @@ index_col <- function(ind){
 plot_bivar_exp(clim_vars$mat, clim_vars$cmd)
 ```
 
-```{r range_map}
-tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_poly_clim)
-```
-
-<!-- ::: -->
-<!-- :::::: -->
+## Vulnerability Factors
