@@ -256,4 +256,7 @@ combine_outdata <- function(out_data_lst){
 
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
 
-
+update_restored <- function(df){
+  # match column names to inputs and/or maybe reactive values?
+  # will need some sort of lookup for what type of input needs to be updated
+}

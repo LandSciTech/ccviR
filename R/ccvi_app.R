@@ -517,10 +517,10 @@ ccvi_app <- function(testmode_in, ...){
       ),
       div(
         id = "footer",
-        br(), br(),
-        downloadButton("downloadData", "Save progress"),
-        br(), br(),
-
+        style = "float:right",
+        br(), br(), br(), br(),
+        downloadButton("downloadData", "Save progress",
+                       class = "btn-primary", icon = shiny::icon("save")),
         br(),
         br(),
         br())
@@ -557,6 +557,14 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # restore a previous session
+    shinyFileChoose("loadcsv", root = volumes, input = input,
+                    filetypes = "csv")
+    restored_df <- reactive({
+      read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
+    })
+
+    observe(print(restored_df))
+
     load_bookmark_server("load", volumes)
 
     # Species Info #=================
