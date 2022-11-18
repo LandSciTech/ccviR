@@ -138,13 +138,13 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
                       palette = pal, group = rast_grp, breaks = brks)+
       tmap::tm_shape(poly1, name = poly1_nm)+
-      tmap::tm_borders()+
+      tmap::tm_borders(col = "black", lwd = 2)+
       tmap::tm_add_legend("fill", labels = c(poly1_nm),
                           col = c("black"))+
       tmap::tm_facets(as.layers = TRUE)
   } else if(is.null(rast)){
     out <- tmap::tm_shape(poly1, name = poly1_nm)+
-      tmap::tm_borders()+
+      tmap::tm_borders(col = "black", lwd = 2)+
       tmap::tm_shape(poly2, name = poly2_nm)+
       tmap::tm_borders(col = "red")+
       tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
@@ -155,7 +155,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
                       palette = pal, group = rast_grp, breaks = brks)+
       tmap::tm_shape(poly1, name = poly1_nm)+
-      tmap::tm_borders()+
+      tmap::tm_borders(col = "black", lwd = 2)+
       tmap::tm_shape(poly2, name = poly2_nm)+
       tmap::tm_borders(col = "red")+
       tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
@@ -207,7 +207,7 @@ mig_exp_text <- function(mig_freq){
 }
 
 widen_vuln_coms <- function(vuln_df, coms_df){
-  vuln_df %>%
+  vuln_df <- vuln_df %>%
     select(.data$Code, matches("Value\\d")) %>%
     filter(!.data$Code %in% c("Z2", "Z3")) %>%
     arrange(.data$Code) %>%
@@ -218,6 +218,7 @@ widen_vuln_coms <- function(vuln_df, coms_df){
                        values_from = c("Comment","Value")) %>%
     rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
                        stringr::str_extract(.x, "^.*(?=_)")) %>%
-                 stringr::str_remove("_Value")) %>%
-    select(order(colnames(.data)))
+                 stringr::str_remove("_Value"))
+
+  select(vuln_df, order(colnames(vuln_df)))
 }

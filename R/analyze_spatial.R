@@ -256,19 +256,10 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
+  poly <- sf::st_transform(poly, rast_crs)
+
   poly <- valid_or_error(poly, var_name)
 
-  if(nrow(poly) > 1){
-    if(nrow(poly) > 100){
-      warning("The ", var_name, " povided contains more than 100 polygons. ",
-              "These will be unioned to create one polygon. ",
-              "If this is not expected please use a different shapefile.",
-              call. = FALSE)
-    }
-    poly <- sf::st_union(poly) %>% sf::st_as_sf()
-  }
-
-  poly <- sf::st_transform(poly, rast_crs)
   return(poly)
 }
 
