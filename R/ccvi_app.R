@@ -111,8 +111,12 @@ ccvi_app <- function(testmode_in, ...){
             br(),
             strong("Or load data from a previous assessment"),
             br(),
-            load_bookmark_ui("load"),
+            #load_bookmark_ui("load"),
+            shinyFilesButton("loadcsv", "Select file", "Select file", multiple = FALSE),
             br(),
+            strong("Download column definitions for saved data"),
+            br(),
+            downloadButton("downloadDefs", "Download csv"),
             br(),
             h3("References"),
             p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
@@ -502,25 +506,22 @@ ccvi_app <- function(testmode_in, ...){
                   "had the highest scores and how exposure impacted the score."),
                 plotly::plotlyOutput("q_score_plt")
               ),
+              actionButton("restart", "Assess another species",
+                           class = "btn-primary"),
 
               # helpful for testing
               # shinyjs::runcodeUI(),
-
-              br(), br(),
-              downloadButton("downloadData", "Download results as csv"),
-              downloadButton("downloadDefs", "Download column definitions"),
-              br(), br(),
-              actionButton("restart", "Assess another species",
-                           class = "btn-primary"),
-              br(),
-              br(),
-              save_bookmark_ui("save")
             )
           )
         )
       ),
       div(
         id = "footer",
+        br(), br(),
+        downloadButton("downloadData", "Save progress"),
+        br(), br(),
+
+        br(),
         br(),
         br())
     )
@@ -1327,16 +1328,14 @@ ccvi_app <- function(testmode_in, ...){
     # Calculate Index value #================================
 
     # Gather all the form inputs
-    vuln_df <- eventReactive(input$calcIndex, {
-      doSpatial()
-        vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
-        data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
-        as_tibble(data)
+    vuln_df <- reactive({
+      vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
+      data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
+      as_tibble(data)
     })
 
     # gather comments
     coms_df <- reactive({
-      req(input$calcIndex)
       com_ins <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*")
 
       data <- purrr::map_df(com_ins,
@@ -1380,7 +1379,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # a flag to hide results until calculated
-    output$calcFlag <- reactive(isTruthy(out_data()))
+    output$calcFlag <- reactive(isTruthy(index_res()))
     outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
 
     output$n_factors <- renderTable({
@@ -1421,12 +1420,36 @@ ccvi_app <- function(testmode_in, ...){
         plot_q_score()
     })
 
-    # Make csv
-    out_data <- reactive({
+    # Make out_data #========================================================
+    out_data_lst <- reactiveValues()
+
+    observe({
+      message("start out_data")
+      sp_dat <- data.frame(species_name = input$species_name,
+                           common_name = input$common_name,
+                           geo_location = input$geo_location,
+                           assessor = input$assessor_name,
+                           taxonomic_group = input$tax_grp,
+                           migratory = input$mig,
+                           cave_grnd_water = input$cave)
+      res_df <- widen_vuln_coms(vuln_df(), coms_df = coms_df())
+
+      out_data_lst$start <- bind_cols(sp_dat, res_df)
+    })
+
+    observeEvent(spat_res(), {
+      message("spat out_data")
+      spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
+                                       gain_mod_comm = input$gain_mod_comm)
+      clim_rdme <- clim_readme() %>% select(-.data$Scenario_Name)
+      out_data_lst$spat <- bind_cols(spat_df, clim_rdme)
+    })
+
+    observeEvent(index_res(), {
+      req(index_res())
+      message("index out_data")
       vuln_df <- purrr::map_dfr(index_res()$vuln_df, widen_vuln_coms,
                                 coms_df = coms_df())
-
-      spat_df <- spat_res()
 
       conf_df <- index_res() %>%
         select(.data$scenario_name, .data$mc_results) %>%
@@ -1438,29 +1461,19 @@ ccvi_app <- function(testmode_in, ...){
                                          `names<-`(c("index", "frequency")))) %>%
         pull(.data$mc_results) %>%
         purrr::map_dfr(~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
-                                  tidyr::pivot_wider(names_from = "index",
-                                                     values_from = "frequency"))
+                         tidyr::pivot_wider(names_from = "index",
+                                            values_from = "frequency"))
 
-      data.frame(species_name = input$species_name,
-                 common_name = input$common_name,
-                 geo_location = input$geo_location,
-                 assessor = input$assessor_name,
-                 taxonomic_group = input$tax_grp,
-                 migratory = input$mig,
-                 cave_grnd_water = input$cave,
-                 gain_mod = input$gain_mod,
-                 gain_mod_comm = input$gain_mod_comm,
-                 CCVI_index = index_res()$index,
-                 CCVI_conf_index = index_res()$conf_index,
-                 mig_exposure = index_res()$mig_exp,
-                 b_c_score = index_res()$b_c_score,
-                 d_score = index_res()$d_score) %>%
-        bind_cols(conf_df, spat_df, vuln_df,
-                  clim_readme() %>% select(-.data$Scenario_Name)) %>%
-        select(.data$scenario_name, everything())
+      ind_df <- data.frame(CCVI_index = index_res()$index,
+                           CCVI_conf_index = index_res()$conf_index,
+                           mig_exposure = index_res()$mig_exp,
+                           b_c_score = index_res()$b_c_score,
+                           d_score = index_res()$d_score)
+
+      out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
     })
 
-    exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))
+    exportTestValues(out_data = out_data_lst$index %>% select(-contains("MC_freq")))
 
     # helpful for testing
     #shinyjs::runcodeServer()
@@ -1470,7 +1483,7 @@ ccvi_app <- function(testmode_in, ...){
         paste("CCVI_data-", Sys.Date(), ".csv", sep="")
       },
       content = function(file) {
-        write.csv(out_data(), file, row.names = FALSE)
+        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), file, row.names = FALSE)
       }
     )
 

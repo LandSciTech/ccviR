@@ -222,3 +222,38 @@ widen_vuln_coms <- function(vuln_df, coms_df){
 
   select(vuln_df, order(colnames(vuln_df)))
 }
+
+combine_outdata <- function(out_data_lst){
+  if(!is.null(out_data_lst$index)){
+    out_data_lst$start <- out_data_lst$start %>%
+      select(-any_of(colnames(out_data_lst$index)))
+  }
+
+  bind_cols(out_data_lst) %>%
+    select(any_of(c(
+      'scenario_name', 'species_name', 'common_name', 'geo_location', 'assessor',
+      'taxonomic_group', 'migratory', 'cave_grnd_water', 'CCVI_index',
+      'CCVI_conf_index', 'mig_exposure', 'b_c_score', 'd_score',
+      'MC_freq_EV', 'MC_freq_HV', 'MC_freq_MV', 'MC_freq_LV', 'MC_freq_IE',
+      'MAT_1', 'MAT_2', 'MAT_3', 'MAT_4', 'MAT_5', 'MAT_6', 'CMD_1', 'CMD_2', 'CMD_3',
+      'CMD_4', 'CMD_5', 'CMD_6', 'CCEI_1', 'CCEI_2', 'CCEI_3', 'CCEI_4',
+      'prop_non_breed_over_ccei', 'HTN_1', 'HTN_2', 'HTN_3', 'HTN_4', 'PTN',
+      'MAP_max', 'MAP_min', 'range_change', 'range_overlap', 'range_size',
+      'gain_mod', 'gain_mod_comm',
+      'B1', 'B1_Comment', 'B2a', 'B2a_Comment', 'B2b', 'B2b_Comment', 'B3', 'B3_Comment',
+      'C1', 'C1_Comment', 'C2ai', 'C2ai_Comment', 'C2aii', 'C2aii_Comment', 'C2bi',
+      'C2bi_Comment', 'C2bii', 'C2bii_Comment', 'C2c', 'C2c_Comment', 'C2d',
+      'C2d_Comment', 'C3', 'C3_Comment', 'C4a', 'C4a_Comment', 'C4b', 'C4b_Comment',
+      'C4c', 'C4c_Comment', 'C4d', 'C4d_Comment', 'C4e', 'C4e_Comment', 'C4f',
+      'C4f_Comment', 'C4g', 'C4g_Comment', 'C5a', 'C5a_Comment', 'C5b', 'C5b_Comment',
+      'C5c', 'C5c_Comment', 'C6', 'C6_Comment', 'D1', 'D1_Comment', 'D2', 'D2_Comment',
+      'D3', 'D3_Comment', 'D4', 'D4_Comment', 'GCM_or_Ensemble_name',
+      'Historical_normal_period', 'Future_period', 'Emissions_scenario',
+      'Link_to_source'
+    )))
+
+}
+
+# read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
+
+
