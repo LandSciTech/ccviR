@@ -5,7 +5,7 @@ library(purrr)
 # Download the climate data from adaptwest
 dat_pth <- "D:/Ilona/Climate_data/data/"
 
-out_folder <- file.path(dat_pth, "ccviR_data_pkg/CMIP5_ENSEMBLE_rcp45_rcp85_2050_NORM_6190")
+out_folder <- file.path(dat_pth, "ccviR_data_pkg/CMIP5_ENSEMBLE_rcp45_rcp85_2080_NORM_6190")
 
 if(!dir.exists(out_folder)){
   dir.create(out_folder)
@@ -32,8 +32,8 @@ if(!dir.exists(out_folder)){
 clim_poly <- file.path(dat_pth, "North_Am_w_sable.shp")
 
 # location of folders with future climate data names will become scenario names
-fut_clim <- list(`RCP 4.5` = file.path(dat_pth, "NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII"),
-                 `RCP 8.5` = file.path(dat_pth, "NA_ENSEMBLE_rcp85_2050s_Bioclim_ASCII"))
+fut_clim <- list(`RCP 4.5` = file.path(dat_pth, "NA_ENSEMBLE_rcp45_2080s_Bioclim_ASCII"),
+                 `RCP 8.5` = file.path(dat_pth, "NA_ENSEMBLE_rcp85_2080s_Bioclim_ASCII"))
 
 # location of folder with climate normals data
 cur_clim <- file.path(dat_pth, "NA_NORM_6190_Bioclim_ASCII")
@@ -45,7 +45,7 @@ write.csv(
   data.frame(Scenario_Name = names(fut_clim),
              GCM_or_Ensemble_name = "AdaptWest 15 CMIP5 AOGCM Ensemble",
              Historical_normal_period = "1961-1990",
-             Future_period = "2050s",
+             Future_period = "2080s",
              Emissions_scenario = names(fut_clim),
              Link_to_source = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
   file.path(out_folder, "climate_data_readme.csv"),
@@ -89,5 +89,14 @@ purrr::map(names(fut_clim[2:length(fut_clim)]),
 
 beepr::beep()
 
-
-
+# make a combined readme to enable choosing from the data package options
+rdmes <- list.files(file.path(dat_pth, "ccviR_data_pkg"), pattern = "readme", recursive = TRUE) %>%
+  set_names(.)
+map_dfr(rdmes, ~read.csv(file.path(dat_pth, "ccviR_data_pkg", .x)),
+        .id = "Folder_name") %>%
+  mutate(Folder_name = gsub("/climate_data_readme.csv", "", Folder_name)) %>%
+  select(-Scenario_Name) %>% group_by(across(-Emissions_scenario)) %>%
+  summarise(Emissions_scenarios = paste0(Emissions_scenario, collapse = ", ")) %>%
+  write.csv(file.path(dat_pth, "ccviR_data_pkg", "ccviR_Data_Packages",
+                      "Data_Package_Descriptions.csv"),
+            row.names = FALSE)
