@@ -184,22 +184,11 @@ ccvi_app <- function(testmode_in, ...){
                                  strong("Classification of projected range change raster"),
                                  p("Enter the range of values in the raster corresponding to ",
                                    "lost, maintained, gained and not suitable."),
-                                 strong("Lost: "),
-                                 tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
-                                 tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
+                                 from_to_ui("Lost:", "lost", c(-1, -1)),
+                                 from_to_ui("Maintained:", "maint", c(0, 0)),
+                                 from_to_ui("Gained:", "gain", c(1,1)),
+                                 from_to_ui("Not Suitable:", "ns", c(99, 99)),
                                  br(),
-                                 strong("Maintained: "),
-                                 tags$div(numericInput("maint_from", "From", 2), style="display:inline-block"),
-                                 tags$div(numericInput("maint_to", "To", 6), style="display:inline-block"),
-                                 br(),
-                                 strong("Gained: "),
-                                 tags$div(numericInput("gain_from", "From", 7), style="display:inline-block"),
-                                 tags$div(numericInput("gain_to", "To", 7), style="display:inline-block"),
-                                 br(),
-                                 strong("Not Suitable: "),
-                                 tags$div(numericInput("ns_from", "From", 0), style="display:inline-block"),
-                                 tags$div(numericInput("ns_to", "To", 0), style="display:inline-block"),
-                                 br(), br(),
                                  strong("Gain modifier"),
                                  p("Range gains predicted based on future climate projections should be ",
                                    "interpreted cautiously. It is important to consider whether ",
@@ -563,7 +552,7 @@ ccvi_app <- function(testmode_in, ...){
       read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
     })
 
-    observe(print(restored_df))
+    observe(print(restored_df()))
 
     load_bookmark_server("load", volumes)
 

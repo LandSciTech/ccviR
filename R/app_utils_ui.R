@@ -58,3 +58,13 @@ spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
     }
   ))
 }
+
+from_to_ui <- function(header, id, vals){
+  tagList(
+    strong(header),
+    tags$div(numericInput(paste0(id, "_from"), "From", vals[1]), style="display:inline-block"),
+    tags$div(numericInput(paste0(id, "_to"), "To", vals[2]), style="display:inline-block"),
+    br()
+  )
+
+}
