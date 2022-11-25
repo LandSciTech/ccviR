@@ -155,10 +155,8 @@ widen_vuln_coms <- function(vuln_df, coms_df){
     tidyr::unite("Value", .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
     left_join(coms_df, by = "Code") %>%
     tidyr::pivot_wider(names_from = "Code",
-                       values_from = c("Comment","Value")) %>%
-    rename_all(~paste0(stringr::str_extract(.x, "[B,C,D]\\d.*"), "_",
-                       stringr::str_extract(.x, "^.*(?=_)")) %>%
-                 stringr::str_remove("_Value"))
+                       values_from = c("com","Value")) %>%
+    rename_all(~stringr::str_remove(.x, "Value_"))
 
   select(vuln_df, order(colnames(vuln_df)))
 }
@@ -180,14 +178,14 @@ combine_outdata <- function(out_data_lst){
       'prop_non_breed_over_ccei', 'HTN_1', 'HTN_2', 'HTN_3', 'HTN_4', 'PTN',
       'MAP_max', 'MAP_min', 'range_change', 'range_overlap', 'range_size',
       'gain_mod', 'gain_mod_comm',
-      'B1', 'B1_Comment', 'B2a', 'B2a_Comment', 'B2b', 'B2b_Comment', 'B3', 'B3_Comment',
-      'C1', 'C1_Comment', 'C2ai', 'C2ai_Comment', 'C2aii', 'C2aii_Comment', 'C2bi',
-      'C2bi_Comment', 'C2bii', 'C2bii_Comment', 'C2c', 'C2c_Comment', 'C2d',
-      'C2d_Comment', 'C3', 'C3_Comment', 'C4a', 'C4a_Comment', 'C4b', 'C4b_Comment',
-      'C4c', 'C4c_Comment', 'C4d', 'C4d_Comment', 'C4e', 'C4e_Comment', 'C4f',
-      'C4f_Comment', 'C4g', 'C4g_Comment', 'C5a', 'C5a_Comment', 'C5b', 'C5b_Comment',
-      'C5c', 'C5c_Comment', 'C6', 'C6_Comment', 'D1', 'D1_Comment', 'D2', 'D2_Comment',
-      'D3', 'D3_Comment', 'D4', 'D4_Comment', 'GCM_or_Ensemble_name',
+      'B1', 'com_B1', 'B2a', 'com_B2a', 'B2b', 'com_B2b', 'B3', 'com_B3',
+      'C1', 'com_C1', 'C2ai', 'com_C2ai', 'C2aii', 'com_C2aii', 'C2bi',
+      'com_C2bi', 'C2bii', 'com_C2bii', 'C2c', 'com_C2c', 'C2d',
+      'com_C2d', 'C3', 'com_C3', 'C4a', 'com_C4a', 'C4b', 'com_C4b',
+      'C4c', 'com_C4c', 'C4d', 'com_C4d', 'C4e', 'com_C4e', 'C4f',
+      'com_C4f', 'C4g', 'com_C4g', 'C5a', 'com_C5a', 'C5b', 'com_C5b',
+      'C5c', 'com_C5c', 'C6', 'com_C6', 'D1', 'com_D1', 'D2', 'com_D2',
+      'D3', 'com_D3', 'D4', 'com_D4', 'GCM_or_Ensemble_name',
       'Historical_normal_period', 'Future_period', 'Emissions_scenario',
       'Link_to_source'
     )))
@@ -199,4 +197,44 @@ combine_outdata <- function(out_data_lst){
 update_restored <- function(df){
   # match column names to inputs and/or maybe reactive values?
   # will need some sort of lookup for what type of input needs to be updated
+  df_coms <- df %>% select(matches("^com_")) %>%
+    tidyr::pivot_longer(everything(), names_to = "input",
+                        names_prefix = "com_",
+                        values_to = "comment",
+                        values_transform = as.character) %>%
+    mutate(comment = ifelse(is.na(comment), "", comment))
+
+  df2 <- df %>% select(-matches("^com_")) %>%
+    tidyr::pivot_longer(everything(), names_to = "input",
+                             values_to = "value",
+                             values_transform = as.character) %>%
+    left_join(df_coms, by = "input") %>%
+    left_join( ui_build_table %>% select(id, update_fun), by = c("input" = "id")) %>%
+    filter(!is.na(update_fun)) %>%
+    rowwise() %>%
+    mutate(arg_name = intersect( c("selected", "value"), formalArgs(update_fun)))
+
+  # run the appropriate update function for each input
+  # tricky part is supplying the right argument name for the update fun
+
+  purrr::pwalk(df2, update_call)
 }
+
+# build the call to update function from the inputs
+update_call <- function(input, update_fun, value, arg_name, comment){
+  update_fun <- get(update_fun)
+  print(update_fun)
+  arg_name <- sym(arg_name)
+  if(!is.na(comment)){
+    if(arg_name == "value"){
+      update_fun(inputId = input, value = value, com = comment)
+    }
+  } else {
+    if(arg_name == "value"){
+      update_fun(inputId = input, value = value)
+    } else if(arg_name == "selected"){
+      update_fun(inputId = input, selected = value)
+    }
+  }
+}
+

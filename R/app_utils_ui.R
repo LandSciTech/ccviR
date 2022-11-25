@@ -8,24 +8,30 @@ labelMandatory <- function(label) {
 
 # Get file path
 get_file_ui <- function(id, title, mandatory = FALSE, type = "file",
-                        subtitle = "", multiple = FALSE){
+                        subtitle = "", multiple = FALSE, spinner = FALSE){
+  title2 <- strong(paste0(title, ": "))
   if(mandatory){
-    label <- span(labelMandatory(strong(paste0(title, ": "))), subtitle)
-  } else {
-    label <- span(strong(paste0(title, ": ")), subtitle)
+    title2 <- labelMandatory(title2)
   }
-  if(type == "file"){
-    return(div(label,
-               shinyFiles::shinyFilesButton(id, "Choose file",
-                                            title, multiple = multiple),
-               verbatimTextOutput(paste0(id, "_out"), placeholder = TRUE)))
-  } else if(type == "dir"){
-    return(div(label,
-               shinyFiles::shinyDirButton(id, "Choose a folder",
-                                          title, multiple = multiple),
-               verbatimTextOutput(paste0(id, "_out"), placeholder = TRUE)))
+  label <- span(title2, subtitle)
+
+  text_out <- verbatimTextOutput(paste0(id, "_out"), placeholder = TRUE)
+  if(spinner){
+    text_out <- shinycssloaders::withSpinner(text_out, proxy.height = "100px")
   }
 
+  button <- switch(type,
+                   file = shinyFiles::shinyFilesButton(id, "Choose file",
+                                                       title, multiple = multiple),
+                   dir = shinyFiles::shinyDirButton(id, "Choose a folder",
+                                                    title, multiple = multiple))
+
+    return(div(label, button, text_out))
+}
+
+updateGet_file_ui <- function(id){
+  #Not currently updating
+  NULL
 }
 
 check_comment_ui <- function(id, label, com = "", ...){
@@ -37,6 +43,11 @@ check_comment_ui <- function(id, label, com = "", ...){
                     value = com)
   )
 
+}
+
+updateCheck_comment_ui <- function(inputId, value, com){
+  updateCheckboxGroupInput(inputId = inputId, selected = value)
+  updateTextAreaInput(inputId = inputId, value = ifelse(is.na(com), "", com))
 }
 
 spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
@@ -59,7 +70,14 @@ spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
   ))
 }
 
-from_to_ui <- function(header, id, vals){
+updateSpat_vuln_ui <- function(inputId, value, com){
+  # Could the spat_res object be recreated from the file...? If yes wouldn't
+  # need to do this...except for the comment so probably better it comes from
+  # the file rather than the spat_res object in case it has been changed.
+  updateCheck_comment_ui(inputId, value, com)
+}
+
+from_to_ui <- function(id, header, vals){
   tagList(
     strong(header),
     tags$div(numericInput(paste0(id, "_from"), "From", vals[1]), style="display:inline-block"),
@@ -67,4 +85,9 @@ from_to_ui <- function(header, id, vals){
     br()
   )
 
+}
+
+updateFrom_to_ui <- function(inputId, vals){
+  updateNumericInput(paste0(inputId, "_from"), value = vals[1])
+  updateNumericInput(paste0(inputId, "_to"), value = vals[2])
 }

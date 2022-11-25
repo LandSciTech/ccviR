@@ -165,11 +165,9 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "spatial",
                 h3("Spatial data analysis"),
-                labelMandatory(strong("Folder location of prepared climate data:")),
-                shinyDirButton("clim_var_dir", "Choose a folder",
-                               "Folder location of prepared climate data"),
-                shinycssloaders::withSpinner(verbatimTextOutput("clim_var_dir_out", placeholder = TRUE), proxy.height = "100px"),
-                verbatimTextOutput("clim_var_error"),
+                get_file_ui("clim_var_dir", "Folder location of prepared climate data",
+                            type = "dir", mandatory = TRUE, spinner = TRUE),
+                verbatimTextOutput("clim_var_error", ),
                 br(),
                 get_file_ui("range_poly_pth", "Range polygon shapefile", mandatory = TRUE),
                 get_file_ui("assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
@@ -184,10 +182,10 @@ ccvi_app <- function(testmode_in, ...){
                                  strong("Classification of projected range change raster"),
                                  p("Enter the range of values in the raster corresponding to ",
                                    "lost, maintained, gained and not suitable."),
-                                 from_to_ui("Lost:", "lost", c(-1, -1)),
-                                 from_to_ui("Maintained:", "maint", c(0, 0)),
-                                 from_to_ui("Gained:", "gain", c(1,1)),
-                                 from_to_ui("Not Suitable:", "ns", c(99, 99)),
+                                 from_to_ui("lost", "Lost:",  c(-1, -1)),
+                                 from_to_ui("maint", "Maintained:", c(0, 0)),
+                                 from_to_ui("gain", "Gained:", c(1,1)),
+                                 from_to_ui("ns", "Not Suitable:", c(99, 99)),
                                  br(),
                                  strong("Gain modifier"),
                                  p("Range gains predicted based on future climate projections should be ",
@@ -508,7 +506,7 @@ ccvi_app <- function(testmode_in, ...){
         id = "footer",
         style = "float:right",
         br(), br(), br(), br(),
-        downloadButton("downloadData", "Save progress",
+        shinySaveButton("downloadData", "Save progress", "Save app data as a csv file",
                        class = "btn-primary", icon = shiny::icon("save")),
         br(),
         br(),
@@ -535,9 +533,6 @@ ccvi_app <- function(testmode_in, ...){
            "information", call. = FALSE)
     }
 
-    # Flag for if this is a restored session
-    restored <- reactiveValues()
-
     observeEvent(input$start, {
       updateTabsetPanel(session, "tabset",
                         selected = "Species Information"
@@ -546,10 +541,19 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # restore a previous session
+    # Flag for if this is a restored session
+    restored <- reactiveValues()
+
     shinyFileChoose("loadcsv", root = volumes, input = input,
                     filetypes = "csv")
-    restored_df <- reactive({
-      read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
+    restored_df <- eventReactive(input$loadcsv, {
+      if(!is.integer(input$loadcsv)){
+        df <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
+
+        update_restored(df)
+
+        return(TRUE)
+      }
     })
 
     observe(print(restored_df()))
@@ -1252,7 +1256,7 @@ ccvi_app <- function(testmode_in, ...){
               HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
         } else {
-          check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
+          check_comment_ui("D2", HTML("Calculated effect on vulnerability."),
                            choiceNames = valueNms,
                            choiceValues = valueOpts,
                            selected = box_val,
@@ -1337,7 +1341,7 @@ ccvi_app <- function(testmode_in, ...){
 
       data <- purrr::map_df(com_ins,
                             ~data.frame(Code = stringr::str_remove(.x, "com"),
-                                        Comment = input[[.x]]))
+                                        com = input[[.x]]))
     })
 
     index_res <- reactive({
@@ -1425,10 +1429,10 @@ ccvi_app <- function(testmode_in, ...){
       sp_dat <- data.frame(species_name = input$species_name,
                            common_name = input$common_name,
                            geo_location = input$geo_location,
-                           assessor = input$assessor_name,
-                           taxonomic_group = input$tax_grp,
-                           migratory = input$mig,
-                           cave_grnd_water = input$cave)
+                           assessor_name = input$assessor_name,
+                           tax_grp = input$tax_grp,
+                           mig = input$mig,
+                           cave = input$cave)
       res_df <- widen_vuln_coms(vuln_df(), coms_df = coms_df())
 
       out_data_lst$start <- bind_cols(sp_dat, res_df)
@@ -1475,14 +1479,16 @@ ccvi_app <- function(testmode_in, ...){
     # helpful for testing
     #shinyjs::runcodeServer()
 
-    output$downloadData <- downloadHandler(
-      filename = function() {
-        paste("CCVI_data-", Sys.Date(), ".csv", sep="")
-      },
-      content = function(file) {
-        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), file, row.names = FALSE)
+    # save the data to a file
+    shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
+
+    observeEvent(input$downloadData, {
+      if(!is.integer(input$downloadData)){
+        filename <- parseSavePath(roots = volumes, input$downloadData)$datapath
+        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
+                  row.names = FALSE)
       }
-    )
+    })
 
     output$downloadDefs <- downloadHandler(
       filename = "CCVI_column_definitions_results.csv",

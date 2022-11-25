@@ -30,5 +30,16 @@ vulnq_code_lu_tbl <- mutate_all(lu_tbl, stringr::str_trim) %>%
 
 
 usethis::use_data(vulnq_code_lu_tbl, overwrite = TRUE)
+
+# table for updating inputs based on saved file
+ui_build_table <- read.csv("data-raw/ui_build_table.csv")
+
+# create the update fun from input fun
+ui_build_table <- ui_build_table %>%
+  mutate(update_fun = gsub("(^)([[:alpha:]])", "update\\U\\1\\2", input_fun ,perl = TRUE))
+
+
+usethis::use_data(ui_build_table, overwrite = TRUE)
+
 # need to include all object for internal because they are saved together.
-usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, overwrite = TRUE, internal = TRUE)
+usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, overwrite = TRUE, internal = TRUE)
