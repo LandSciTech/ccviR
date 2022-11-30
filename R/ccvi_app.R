@@ -550,7 +550,7 @@ ccvi_app <- function(testmode_in, ...){
       if(!is.integer(input$loadcsv)){
         df <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
 
-        update_restored(df)
+        update_restored(df, session)
 
         return(TRUE)
       }

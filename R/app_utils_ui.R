@@ -45,9 +45,11 @@ check_comment_ui <- function(id, label, com = "", ...){
 
 }
 
-updateCheck_comment_ui <- function(inputId, value, com){
-  updateCheckboxGroupInput(inputId = inputId, selected = value)
-  updateTextAreaInput(inputId = inputId, value = ifelse(is.na(com), "", com))
+updateCheck_comment_ui <- function(inputId, value, com, session){
+  updateCheckboxGroupInput(session = session, inputId = inputId,
+                           selected = value)
+  updateTextAreaInput(session = session, inputId = paste0("com", inputId),
+                      value = ifelse(is.na(com), "", com))
 }
 
 spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
@@ -70,11 +72,11 @@ spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
   ))
 }
 
-updateSpat_vuln_ui <- function(inputId, value, com){
+updateSpat_vuln_ui <- function(inputId, value, com, session){
   # Could the spat_res object be recreated from the file...? If yes wouldn't
   # need to do this...except for the comment so probably better it comes from
   # the file rather than the spat_res object in case it has been changed.
-  updateCheck_comment_ui(inputId, value, com)
+  updateCheck_comment_ui(inputId, value, com, session)
 }
 
 from_to_ui <- function(id, header, vals){
@@ -87,7 +89,7 @@ from_to_ui <- function(id, header, vals){
 
 }
 
-updateFrom_to_ui <- function(inputId, vals){
-  updateNumericInput(paste0(inputId, "_from"), value = vals[1])
-  updateNumericInput(paste0(inputId, "_to"), value = vals[2])
+updateFrom_to_ui <- function(inputId, vals, session){
+  updateNumericInput(session = session, paste0(inputId, "_from"), value = vals[1])
+  updateNumericInput(session = session, paste0(inputId, "_to"), value = vals[2])
 }

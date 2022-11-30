@@ -169,8 +169,8 @@ combine_outdata <- function(out_data_lst){
 
   bind_cols(out_data_lst) %>%
     select(any_of(c(
-      'scenario_name', 'species_name', 'common_name', 'geo_location', 'assessor',
-      'taxonomic_group', 'migratory', 'cave_grnd_water', 'CCVI_index',
+      'scenario_name', 'species_name', 'common_name', 'geo_location', 'assessor_name',
+      'tax_grp', 'mig', 'cave', 'CCVI_index',
       'CCVI_conf_index', 'mig_exposure', 'b_c_score', 'd_score',
       'MC_freq_EV', 'MC_freq_HV', 'MC_freq_MV', 'MC_freq_LV', 'MC_freq_IE',
       'MAT_1', 'MAT_2', 'MAT_3', 'MAT_4', 'MAT_5', 'MAT_6', 'CMD_1', 'CMD_2', 'CMD_3',
@@ -194,7 +194,7 @@ combine_outdata <- function(out_data_lst){
 
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
 
-update_restored <- function(df){
+update_restored <- function(df, session){
   # match column names to inputs and/or maybe reactive values?
   # will need some sort of lookup for what type of input needs to be updated
   df_coms <- df %>% select(matches("^com_")) %>%
@@ -217,23 +217,21 @@ update_restored <- function(df){
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
 
-  purrr::pwalk(df2, update_call)
+  purrr::pwalk(df2, update_call, session = session)
 }
 
 # build the call to update function from the inputs
-update_call <- function(input, update_fun, value, arg_name, comment){
+update_call <- function(input, update_fun, value, arg_name, comment, session){
   update_fun <- get(update_fun)
-  print(update_fun)
-  arg_name <- sym(arg_name)
   if(!is.na(comment)){
     if(arg_name == "value"){
-      update_fun(inputId = input, value = value, com = comment)
+      update_fun(session = session, inputId = input, value = value, com = comment)
     }
   } else {
     if(arg_name == "value"){
-      update_fun(inputId = input, value = value)
+      update_fun(session = session, inputId = input, value = value)
     } else if(arg_name == "selected"){
-      update_fun(inputId = input, selected = value)
+      update_fun(session = session, inputId = input, selected = value)
     }
   }
 }
