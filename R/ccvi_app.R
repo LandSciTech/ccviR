@@ -541,11 +541,9 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # restore a previous session
-    # Flag for if this is a restored session
-    restored <- reactiveValues()
-
     shinyFileChoose("loadcsv", root = volumes, input = input,
                     filetypes = "csv")
+
     restored_df <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
         df <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
@@ -556,6 +554,7 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
+    # Flag for a restored session NULL if not
     observe(print(restored_df()))
 
     load_bookmark_server("load", volumes)
@@ -654,9 +653,7 @@ ccvi_app <- function(testmode_in, ...){
     # parse file paths
     clim_dir_pth <- reactive({
       if(is.integer(input$clim_var_dir)){
-        if(!is.null(restored$yes)){
-          return(clim_dir_pth_restore())
-        } else if (isTRUE(getOption("shiny.testmode"))) {
+        if (isTRUE(getOption("shiny.testmode"))) {
           return(system.file("extdata/clim_files/processed", package = "ccviR"))
         } else {
           return(NULL)
@@ -670,9 +667,9 @@ ccvi_app <- function(testmode_in, ...){
     file_pths <- reactive({
       purrr::map(filePathIds(), ~{
         if(is.integer(input[[.x]])){
-          if(!is.null(restored$yes)){
-            return(file_pths_restore()[[.x]])
-          }
+          # if(!is.null(restored$yes)){
+          #   return(file_pths_restore()[[.x]])
+          # }
             return(NULL)
           } else {
           return(parseFilePaths(volumes, input[[.x]])$datapath)
@@ -817,10 +814,11 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     doSpatial <- reactiveVal(FALSE)
+    repeatSpatial <- reactiveVal(FALSE)
 
     observe({
-      if(!is.null(restored$yes)){
-        doSpatial(1)
+      if(!is.null(restored_df())){
+        repeatSpatial(TRUE)
         message("doSpatial restore")
       }
     })
@@ -836,7 +834,7 @@ ccvi_app <- function(testmode_in, ...){
           modalButton("Cancel")
         ),
         title = "Do you want to run the spatial analysis?"))
-      if(input$startSpatial == 1){
+      if(!repeatSpatial()){
         shinyjs::click("shinyalert")
       }
     })
@@ -844,7 +842,8 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(input$shinyalert, {
       removeModal()
       if(input$shinyalert > 0){
-        doSpatial(doSpatial() +1)
+        doSpatial(TRUE)
+        repeatSpatial(TRUE)
       }
       shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
@@ -903,15 +902,63 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
+    # When next button is clicked move to next panel
+    observeEvent(input$next2, {
+      updateTabsetPanel(session, "tabset",
+                        selected = "Exposure Results"
+      )
+      shinyjs::runjs("window.scrollTo(0, 0)")
+    })
+
+    # calculate exp multipliers and vuln Q values for spat
+    spat_res2 <- reactive({
+      req(spat_res())
+      apply_spat_tholds(spat_res(), input$cave)
+
+    })
+
     # Make maps
     output$texp_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
+      req(doSpatial())
 
       isolate(
         make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
                  rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
       )
     })
+
+    output$cmd_map <- tmap::renderTmap({
+      req(!is.character(spat_res()))
+      req(doSpatial())
+      isolate(
+        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
+                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+      )
+    })
+
+    output$texp_tbl <- renderTable({
+      req(!is.character(spat_res()))
+      req(doSpatial())
+      exp_df <-  spat_res2() %>% rowwise() %>%
+        select(.data$scenario_name, contains("MAT"), .data$temp_exp_cave) %>%
+        rename_at(vars(contains("MAT")),
+                  ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
+        rename(`Scenario Name` = .data$scenario_name,
+               `Exposure Multiplier` = .data$temp_exp_cave)
+    }, align = "r")
+
+    output$cmd_tbl <- renderTable({
+      req(!is.character(spat_res()))
+      req(doSpatial())
+      exp_df <-  spat_res2() %>% rowwise() %>%
+        select(.data$scenario_name, contains("CMD"), .data$moist_exp_cave) %>%
+        rename_at(vars(contains("CMD")),
+                  ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
+        rename(`Scenario Name` = .data$scenario_name,
+               `Exposure Multiplier` = .data$moist_exp_cave)
+    }, align = "r")
+
 
     observe({
       req(doSpatial())
@@ -926,6 +973,7 @@ ccvi_app <- function(testmode_in, ...){
 
     output$ccei_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
+      req(doSpatial())
       req(clim_vars()$ccei)
       req(isolate(nonbreed_poly()))
       isolate(
@@ -934,55 +982,10 @@ ccvi_app <- function(testmode_in, ...){
       )
     })
 
-    output$cmd_map <- tmap::renderTmap({
-      req(!is.character(spat_res()))
-      isolate(
-        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
-                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
-      )
-    })
-
-    output$texp_tbl <- renderTable({
-      req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>% rowwise() %>%
-        mutate(temp_exp = case_when(
-          MAT_6 > 50 ~ 2.4,
-          sum(MAT_6, MAT_5, na.rm = TRUE) >= 75 ~ 2,
-          sum(MAT_6, MAT_5, MAT_4, na.rm = TRUE) >= 60 ~ 1.6,
-          sum(MAT_6, MAT_5, MAT_4, MAT_3, na.rm = TRUE) >= 40 ~ 1.2,
-          sum(MAT_6, MAT_5, MAT_4, MAT_3, MAT_2, na.rm = TRUE) >= 20 ~ 0.8,
-          TRUE ~ 0.4
-        ),
-        temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
-        select(.data$scenario_name, contains("MAT"), .data$temp_exp_cave) %>%
-        rename_at(vars(contains("MAT")),
-                  ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$temp_exp_cave)
-    }, align = "r")
-
-    output$cmd_tbl <- renderTable({
-      req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>% rowwise() %>%
-        mutate(moist_exp = case_when(
-          CMD_6 >= 80 ~ 2,
-          sum(CMD_6, CMD_5, na.rm = TRUE) >= 64 ~ 1.67,
-          sum(CMD_6, CMD_5, CMD_4, na.rm = TRUE) >= 48 ~ 1.33,
-          sum(CMD_6, CMD_5, CMD_4, CMD_3, na.rm = TRUE) >= 32 ~ 1,
-          sum(CMD_6, CMD_5, CMD_4, CMD_3, CMD_2, na.rm = TRUE) >= 16 ~ 0.67,
-          TRUE ~ 0.33
-        ),
-        moist_exp_cave = round(.data$moist_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
-        select(.data$scenario_name, contains("CMD"), .data$moist_exp_cave) %>%
-        rename_at(vars(contains("CMD")),
-                  ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$moist_exp_cave)
-    }, align = "r")
-
     output$tbl_ccei <- renderTable({
       req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>%
+      req(doSpatial())
+      exp_df <-  spat_res2() %>%
         select(.data$scenario_name,
                contains("CCEI", ignore.case = FALSE)) %>%
         rename_at(vars(contains("CCEI")),
@@ -991,13 +994,6 @@ ccvi_app <- function(testmode_in, ...){
 
     }, align = "r")
 
-    # When next button is clicked move to next panel
-    observeEvent(input$next2, {
-      updateTabsetPanel(session, "tabset",
-                        selected = "Exposure Results"
-      )
-      shinyjs::runjs("window.scrollTo(0, 0)")
-    })
     # When next button is clicked move to next panel
     observeEvent(input$next3, {
       updateTabsetPanel(session, "tabset",
@@ -1036,20 +1032,8 @@ ccvi_app <- function(testmode_in, ...){
       guideDSpatial()
     })
 
-
     # C2ai
-    observe({
-      req(doSpatial())
-      if(isTruthy(clim_vars()$htn)){
-        shinyjs::hide("missing_C2ai")
-        shinyjs::show("map_C2ai")
-        shinyjs::show("not_missing_C2ai")
-      } else {
-        shinyjs::hide("map_C2ai")
-        shinyjs::hide("not_missing_C2ai")
-        shinyjs::show("missing_C2ai")
-      }
-    })
+    observe({spat_vuln_hide("C2ai", clim_vars()$htn, doSpatial(), restored_df())})
 
     output$map_C2ai <- tmap::renderTmap({
       req(doSpatial())
@@ -1060,7 +1044,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2ai <- renderTable({
-      exp_df <-  spat_res() %>%
+      req(doSpatial)
+      exp_df <-  spat_res2() %>%
         select(contains("HTN")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
@@ -1072,41 +1057,25 @@ ccvi_app <- function(testmode_in, ...){
         distinct()
     }, align = "r")
 
-    output$box_C2ai <- renderUI({
-      # get previous comment
-      prevCom <- isolate(input$comC2ai)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(C2ai = case_when(HTN_1 > 10 ~ 0,
-                                HTN_2 > 10 ~ 1,
-                                HTN_3 > 10 ~ 2,
-                                HTN_4 > 10 ~ 3,
-                                is.na(HTN_1) ~ NA_real_)) %>%
-        pull(.data$C2ai) %>% unique()
+    # create reactive for value used to choose checkbox b/c can't depend on
+    # spat_res2 directly or it never renders when restoring
+    box_val <- reactiveVal()
 
-      check_comment_ui("C2ai", HTML("Calculated effect on vulnerability."),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+    observe({
+      if(isTruthy(spat_res2())){
+        box_val(spat_res2())
+      }
+    })
+
+    output$box_C2ai <- renderUI({
+      render_spat_vuln_box("C2ai", box_val(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_C2ai", suspendWhenHidden = FALSE)
 
     # C2aii
-    observe({
-      req(doSpatial())
-      if(isTruthy(ptn_poly())){
-        shinyjs::hide("missing_C2aii")
-        shinyjs::show("not_missing_C2aii")
-        shinyjs::show("map_C2aii")
-      } else {
-        shinyjs::hide("map_C2aii")
-        shinyjs::hide("not_missing_C2aii")
-        shinyjs::show("missing_C2aii")
-      }
-    })
+    observe({spat_vuln_hide("C2aii", ptn_poly(), doSpatial(), restored_df())})
 
     output$map_C2aii <- tmap::renderTmap({
       req(doSpatial())
@@ -1124,40 +1093,14 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$box_C2aii <- renderUI({
-      # get previous comment
-      prevCom <- isolate(input$comC2aii)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(C2aii = case_when(PTN > 90 ~ 3,
-                                 PTN > 50 ~ 2,
-                                 PTN > 10 ~ 1,
-                                 is.na(PTN) ~ NA_real_,
-                                 TRUE ~ 0)) %>%
-        pull(.data$C2aii) %>% unique()
-
-      check_comment_ui("C2aii", HTML("Calculated effect on vulnerability."),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+      render_spat_vuln_box("C2aii", box_val(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
 
     # C2bi
-    observe({
-      req(doSpatial())
-      if(isTruthy(clim_vars()$map)){
-        shinyjs::hide("missing_C2bi")
-        shinyjs::show("not_missing_C2bi")
-        shinyjs::show("map_C2bi")
-      } else {
-        shinyjs::hide("map_C2bi")
-        shinyjs::hide("not_missing_C2bi")
-        shinyjs::show("missing_C2bi")
-      }
-    })
+    observe({spat_vuln_hide("C2bi", clim_vars()$map, doSpatial(), restored_df())})
 
     output$map_C2bi <- tmap::renderTmap({
       req(doSpatial())
@@ -1175,23 +1118,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$box_C2bi <- renderUI({
-      # get previous comment
-      prevCom <- isolate(input$comC2bi)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(range_MAP = .data$MAP_max - .data$MAP_min,
-               C2bi = case_when(range_MAP < 100 ~ 3,
-                                range_MAP < 254 ~ 2,
-                                range_MAP < 508 ~ 1,
-                                is.na(range_MAP) ~ NA_real_,
-                                TRUE ~ 0)) %>%
-        pull(.data$C2bi) %>% unique()
-
-      check_comment_ui("C2bi", HTML("Calculated effect on vulnerability."),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+      render_spat_vuln_box("C2bi", box_val(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1199,16 +1126,7 @@ ccvi_app <- function(testmode_in, ...){
 
     # D2 and D3
     observe({
-      req(doSpatial())
-      if(isTruthy(hs_rast())){
-        shinyjs::hide("missing_D2_3")
-        shinyjs::show("not_missing_D2_3")
-        shinyjs::show("map_D2_3")
-      } else {
-        shinyjs::hide("map_D2_3")
-        shinyjs::hide("not_missing_D2_3")
-        shinyjs::show("missing_D2_3")
-      }
+      spat_vuln_hide("D2_3", hs_rast(), doSpatial(), restored_df())
     })
 
     # reclassify raster
@@ -1240,12 +1158,7 @@ ccvi_app <- function(testmode_in, ...){
       # get previous comment
       prevCom <- isolate(input$comD2)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(D2 = case_when(range_change > 99 ~ 3,
-                              range_change > 50 ~ 2,
-                              range_change > 20 ~ 1,
-                              is.na(range_change) ~ NA_real_,
-                              TRUE ~ 0)) %>%
+      box_val <- spat_res2() %>%
         pull(.data$D2)
 
       if(!is.null(hs_rast())){
@@ -1278,18 +1191,7 @@ ccvi_app <- function(testmode_in, ...){
       # get previous comment
       prevCom <- isolate(input$comD3)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(D2 = case_when(range_change > 99 ~ 3,
-                              range_change > 50 ~ 2,
-                              range_change > 20 ~ 1,
-                              is.na(range_change) ~ NA_real_,
-                              TRUE ~ 0),
-               D3 = case_when(D2 == 3 ~ 0,
-                              range_overlap == 0 ~ 3,
-                              range_overlap < 30 ~ 2,
-                              range_overlap < 60 ~ 1,
-                              is.na(range_overlap) ~ NA_real_,
-                              TRUE ~ 0)) %>%
+      box_val <- spat_res2() %>%
         pull(.data$D3)
 
       if(!is.null(hs_rast())){
@@ -1425,7 +1327,6 @@ ccvi_app <- function(testmode_in, ...){
     out_data_lst <- reactiveValues()
 
     observe({
-      message("start out_data")
       sp_dat <- data.frame(species_name = input$species_name,
                            common_name = input$common_name,
                            geo_location = input$geo_location,
@@ -1485,9 +1386,26 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(input$downloadData, {
       if(!is.integer(input$downloadData)){
         filename <- parseSavePath(roots = volumes, input$downloadData)$datapath
-        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
-                  row.names = FALSE)
+        saveAttempt <- tryCatch({
+          write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
+                  row.names = FALSE)},
+          error = function(e){
+            showModal(modalDialog(
+              p("File could not be saved. Is it open?"),
+              footer = tagList(
+                actionButton("retry", "Retry"),
+                modalButton("Cancel")
+              ),
+              title = "Error Permission Denied"))
+          })
       }
+    })
+
+    # Retry save if there was an error due to open file
+    observeEvent(input$retry, {
+      # doesn't quite work but better than nothing
+      removeModal()
+      shinyjs::click("downloadData")
     })
 
     output$downloadDefs <- downloadHandler(

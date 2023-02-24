@@ -236,3 +236,43 @@ update_call <- function(input, update_fun, value, arg_name, comment, session){
   }
 }
 
+spat_vuln_hide <- function(id, check_exists, do_spat, restored){
+  mis <- paste0("missing_", id)
+  mapid <- paste0("map_", id)
+  nmis <- paste0("not_missing", id)
+
+  if(isTruthy(do_spat)){
+    if(isTruthy(check_exists)){
+      shinyjs::hide(mis)
+      shinyjs::show(mapid)
+      shinyjs::show(nmis)
+    } else {
+      shinyjs::hide(mapid)
+      shinyjs::hide(nmis)
+      shinyjs::show(mis)
+    }
+  } else if(isTruthy(restored)){
+    shinyjs::hide(mis)
+    shinyjs::hide(mapid)
+    shinyjs::show(nmis)
+  }
+}
+
+render_spat_vuln_box <- function(id, spat_df, input, valueNms, valueOpts){
+  com_id <- paste0("com", id)
+  # get previous comment
+  prevCom <- isolate(input[[com_id]])
+  prevCom <- ifelse(is.null(prevCom), "", prevCom)
+
+  if(isTruthy(spat_df)){
+    box_val <- spat_df[[id]] %>% unique()
+  } else {
+    box_val <- NULL
+  }
+
+  check_comment_ui(id, HTML("Calculated effect on vulnerability."),
+                   choiceNames = valueNms,
+                   choiceValues = valueOpts,
+                   selected = box_val,
+                   com = prevCom)
+}
