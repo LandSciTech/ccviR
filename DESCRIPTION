@@ -52,7 +52,8 @@ Suggests:
     shinytest,
     future,
     furrr,
-    readxl
+    readxl,
+    shinytest2
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Depends: 

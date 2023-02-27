@@ -1426,61 +1426,6 @@ ccvi_app <- function(testmode_in, ...){
       shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
     })
 
-    # Bookmarking #=============================================================
-
-    # this part is not allowed to be inside the module
-    latestBookmarkURL <- reactiveVal()
-
-    onBookmarked(
-      fun = function(url) {
-        latestBookmarkURL(parseQueryString(url))
-        showNotification("Session saved",
-                         duration = 10, type = "message")
-      }
-    )
-
-    save_bookmark_server("save", latestBookmarkURL(), volumes)
-
-    # Need to explicitly save and restore reactive values.
-    onBookmark(fun = function(state){
-      state$values$file_pths <- file_pths()
-      state$values$clim_dir <- clim_dir_pth()
-    })
-
-    file_pths_restore <- reactiveVal()
-    clim_dir_pth_restore <- reactiveVal()
-
-    onRestore(fun = function(state){
-      message("Restoring session")
-      file_pths_restore(state$values$file_pths)
-      clim_dir_pth_restore (state$values$clim_dir)
-      restored$yes <- TRUE
-    })
-
-    # exclude shiny file choose and map and plotly input vals that might be
-    # causing trouble
-    # ExcludedIDs <- reactiveVal(value = NULL)
-    # IncludedIDs <- reactiveVal(value = NULL)
-
-    observe({
-      patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir",
-                                "guide", "tabset", "next", "restart", "shinyalert"),
-                              collapse = "|")
-
-      toExclude <- grep(patsToExclude, names(input), value = TRUE)
-
-      setBookmarkExclude(toExclude)
-      # ExcludedIDs(toExclude)
-      # IncludedIDs(setdiff(names(input), toExclude))
-    })
-#
-#     output$ExcludedIDsOut <- renderText({
-#       paste("ExcludedIDs:", paste(ExcludedIDs(), collapse = ", "))
-#     })
-#     output$IncludedIDsOut <- renderText({
-#       paste("IncludedIDs:", paste(IncludedIDs(), collapse = ", "))
-#     })
-
   }
 
   onStop(function(){options(testmode_in)})
