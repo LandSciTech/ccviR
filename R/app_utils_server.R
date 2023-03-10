@@ -194,6 +194,7 @@ combine_outdata <- function(out_data_lst){
 
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
 
+# Update UI based on values loaded from csv
 update_restored <- function(df, session){
   # match column names to inputs and/or maybe reactive values?
   # will need some sort of lookup for what type of input needs to be updated
@@ -275,4 +276,42 @@ render_spat_vuln_box <- function(id, spat_df, input, valueNms, valueOpts){
                    choiceValues = valueOpts,
                    selected = box_val,
                    com = prevCom)
+}
+
+# recreate index_res object on loading from csv
+recreate_index_res <- function(df){
+  spat_res <- apply_spat_tholds(df, df$cave) %>%
+    split(.$scenario_name)
+
+  index_res <- df %>%
+    select(.data$scenario_name, index = .data$CCVI_index,
+           conf_index = .data$CCVI_conf_index,
+           contains("MC_freq"),
+           mig_exp = .data$mig_exposure, .data$b_c_score, .data$d_score,
+           -starts_with("com"),
+           matches("^[B,C,D]\\d.*")) %>%
+    mutate(across(matches("^[B,C,D]\\d.*"), as.character)) %>%
+    tidyr::pivot_longer(matches("^[B,C,D]\\d.*"), names_to = "Code",
+                        values_to = "Value") %>%
+    tidyr::separate(.data$Value, into = (paste0("Value", 1:4)), fill = "right",
+                    sep = ", ", convert = TRUE) %>%
+    tidyr::nest(vuln_df = c(.data$Code, contains("Value"))) %>%
+    mutate(vuln_df = purrr::map2(vuln_df, spat_res, ~calc_vuln_score(.x, .y))) %>%
+    tidyr::pivot_longer(contains("MC_freq"), names_to = "mc_index",
+                        names_prefix = "MC_freq_",
+                        values_to = "prop") %>%
+    tidyr::nest(mc_results = c(.data$mc_index, .data$prop)) %>%
+    mutate(mc_results = purrr::map(
+      .data$mc_results,
+      ~.x %>% rowwise() %>%
+        mutate(index = list(rep(mc_index, 1000*prop))) %>%
+        tidyr::unnest(cols = c(index)) %>%
+        transmute(round_id = 1:n(), index, d_score = NA, b_c_score = NA)
+    )) %>%
+    mutate(n_b_factors = purrr::map_dbl(vuln_df, get_n_factors, "B"),
+           n_c_factors = purrr::map_dbl(vuln_df, get_n_factors, "C"),
+           n_d_factors = purrr::map_dbl(vuln_df, get_n_factors, "D"))
+
+  return(index_res)
+
 }

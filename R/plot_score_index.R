@@ -63,9 +63,13 @@ plot_score_index <- function(score_df){
 
   max_score_d <- 11
 
-  score_lim <- mutate(score_pt,
-                     d_score_lim = ifelse(.data$d_score_max > 7, .data$d_score_max + 1, 8),
-                     b_c_score_lim = ifelse(.data$b_c_score_max > 18, .data$b_c_score_max + 5, 20)) %>%
+  score_lim <- mutate(
+    score_pt,
+    d_score_max = ifelse(is.na(d_score_max), max(d_score), d_score_max),
+    b_c_score_max = ifelse(is.na(b_c_score_max), max(b_c_score), b_c_score_max),
+    d_score_lim = ifelse(.data$d_score_max > 7, .data$d_score_max + 1, 8),
+    b_c_score_lim = ifelse(.data$b_c_score_max > 18, .data$b_c_score_max + 5, 20)
+  ) %>%
     summarise(across(contains("lim"), .fns = max))
 
   score_tbl <- expand.grid(b_c_score = seq(0, max_score_bc),

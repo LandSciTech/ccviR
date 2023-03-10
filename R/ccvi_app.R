@@ -544,11 +544,15 @@ ccvi_app <- function(testmode_in, ...){
     shinyFileChoose("loadcsv", root = volumes, input = input,
                     filetypes = "csv")
 
+    index_res <- reactiveVal()
+
     restored_df <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
-        df <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
+        df_loaded <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
 
-        update_restored(df, session)
+        update_restored(df_loaded, session)
+
+        index_res(recreate_index_res(df_loaded))
 
         return(TRUE)
       }
@@ -1246,8 +1250,7 @@ ccvi_app <- function(testmode_in, ...){
                                         com = input[[.x]]))
     })
 
-    index_res <- reactive({
-      req(input$calcIndex)
+    observeEvent(input$calcIndex,{
       z_df <- data.frame(Code = c("Z2", "Z3"),
                          Value1 = as.numeric(c(input$cave, input$mig)))
 
@@ -1255,13 +1258,14 @@ ccvi_app <- function(testmode_in, ...){
         mutate(Species = input$species_name)
 
       index <- calc_vulnerability(spat_res(), vuln_df, input$tax_grp)
-      index
+      index_res(index)
     })
 
     output$species_name <- renderText(input$species_name)
 
     # insert index dials for each scenario
-    observeEvent(input$calcIndex, {
+    observe({
+      req(index_res())
       removeUI(
         selector = "#*index_result*"
       )
