@@ -113,7 +113,7 @@ bivar_map <- function(rasterx, rastery, nclass = 6) {
     mutate(Var1 = .data$Var1 *10,
            Var3 = .data$Var1 + .data$Var2,
            value = 1:n()) %>%
-    dplyr::select(.data$Var3, .data$value)
+    dplyr::select("Var3", "value")
 
   classify_col <- Vectorize(function(x, y) {
     col_grid$value[which(col_grid$Var1 == x & col_grid$Var2 == y)]

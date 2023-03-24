@@ -148,7 +148,7 @@ mig_exp_text <- function(mig_freq){
 
 widen_vuln_coms <- function(vuln_df, coms_df){
   vuln_df <- vuln_df %>%
-    select(.data$Code, matches("Value\\d")) %>%
+    select("Code", matches("Value\\d")) %>%
     filter(!.data$Code %in% c("Z2", "Z3")) %>%
     arrange(.data$Code) %>%
     mutate_all(as.character) %>%
@@ -284,7 +284,7 @@ recreate_index_res <- function(df){
     split(.$scenario_name)
 
   index_res <- df %>%
-    select(.data$scenario_name, index = .data$CCVI_index,
+    select("scenario_name", index = .data$CCVI_index,
            conf_index = .data$CCVI_conf_index,
            contains("MC_freq"),
            mig_exp = .data$mig_exposure, .data$b_c_score, .data$d_score,

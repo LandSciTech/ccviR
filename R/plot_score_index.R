@@ -56,7 +56,7 @@ plot_score_index <- function(score_df){
     mutate(mc_results = purrr::map(.data$mc_results,
                                    ~summarise(.x, across(contains("score"),
                                                          lst(max, min))))) %>%
-    tidyr::unnest(.data$mc_results)
+    tidyr::unnest("mc_results")
 
   # max possible score
   max_score_bc <- 22*6.6 + 3
@@ -99,13 +99,13 @@ plot_score_index <- function(score_df){
                             ggplot2::aes(.data$b_c_score, .data$d_score, ymin = .data$d_score_min,
                                          ymax = .data$d_score_max),
                             col = "black",
-                            size = 1.25, alpha = 0.4,
+                            linewidth = 1.25, alpha = 0.4,
                             inherit.aes = FALSE)+
     ggplot2::geom_linerange(data = score_pt,
                            ggplot2::aes(y = .data$d_score, xmin = .data$b_c_score_min,
                                         xmax = .data$b_c_score_max),
                            col = "black",
-                           size = 1.25, alpha = 0.4,
+                           linewidth = 1.25, alpha = 0.4,
                            inherit.aes = FALSE)+
     ggplot2::geom_point(data = score_pt,
                         ggplot2::aes(.data$b_c_score, .data$d_score, shape = .data$scenario_name),

@@ -96,7 +96,8 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Check scenario names match raster stacks
   rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "Raster")) %>%
-    purrr::splice(hs_rast = hs_rast) %>%
+    list(hs_rast = hs_rast) %>%
+    purrr::list_flatten() %>%
     purrr::compact() %>%
     purrr::map_dbl(raster::nlayers)
 

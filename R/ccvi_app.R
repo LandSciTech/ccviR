@@ -945,7 +945,7 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.character(spat_res()))
       req(doSpatial())
       exp_df <-  spat_res2() %>% rowwise() %>%
-        select(.data$scenario_name, contains("MAT"), .data$temp_exp_cave) %>%
+        select("scenario_name", contains("MAT"), "temp_exp_cave") %>%
         rename_at(vars(contains("MAT")),
                   ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
         rename(`Scenario Name` = .data$scenario_name,
@@ -956,7 +956,7 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.character(spat_res()))
       req(doSpatial())
       exp_df <-  spat_res2() %>% rowwise() %>%
-        select(.data$scenario_name, contains("CMD"), .data$moist_exp_cave) %>%
+        select("scenario_name", contains("CMD"), "moist_exp_cave") %>%
         rename_at(vars(contains("CMD")),
                   ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
         rename(`Scenario Name` = .data$scenario_name,
@@ -990,7 +990,7 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.character(spat_res()))
       req(doSpatial())
       exp_df <-  spat_res2() %>%
-        select(.data$scenario_name,
+        select("scenario_name",
                contains("CCEI", ignore.case = FALSE)) %>%
         rename_at(vars(contains("CCEI")),
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
@@ -1116,7 +1116,7 @@ ccvi_app <- function(testmode_in, ...){
 
     output$tbl_C2bi <- renderTable({
       exp_df <-  spat_res() %>%
-        select(.data$MAP_max, .data$MAP_min) %>%
+        select("MAP_max", "MAP_min") %>%
         rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
         distinct()
     })
@@ -1322,7 +1322,7 @@ ccvi_app <- function(testmode_in, ...){
 
     output$q_score_plt <- plotly::renderPlotly({
       index_res() %>%
-        select(.data$scenario_name, .data$vuln_df) %>%
+        select("scenario_name", "vuln_df") %>%
         tidyr::unnest(.data$vuln_df) %>%
         plot_q_score()
     })
@@ -1347,7 +1347,7 @@ ccvi_app <- function(testmode_in, ...){
       message("spat out_data")
       spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
                                        gain_mod_comm = input$gain_mod_comm)
-      clim_rdme <- clim_readme() %>% select(-.data$Scenario_Name)
+      clim_rdme <- clim_readme() %>% select(-"Scenario_Name")
       out_data_lst$spat <- bind_cols(spat_df, clim_rdme)
     })
 
@@ -1358,7 +1358,7 @@ ccvi_app <- function(testmode_in, ...){
                                 coms_df = coms_df())
 
       conf_df <- index_res() %>%
-        select(.data$scenario_name, .data$mc_results) %>%
+        select("scenario_name", "mc_results") %>%
         mutate(mc_results = purrr::map(.data$mc_results, ~.x$index %>%
                                          factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
                                          table() %>%
