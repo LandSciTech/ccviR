@@ -1,3 +1,3 @@
-library(ccviR)
+options(shiny.testmode = TRUE)
 
-run_ccvi_app("demo")
+ccviR:::ccvi_app()

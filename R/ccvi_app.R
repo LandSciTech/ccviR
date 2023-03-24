@@ -230,7 +230,7 @@ ccvi_app <- function(testmode_in, ...){
                 tableOutput("texp_tbl")
               ),
               div(
-                id = "cmd_map",
+                id = "cmd_map_div",
                 h3("Moisture exposure"),
                 tmap::tmapOutput("cmd_map"),
                 tableOutput("cmd_tbl")
@@ -516,6 +516,8 @@ ccvi_app <- function(testmode_in, ...){
 
   # Server #========================
   server <- function(input, output, session) {
+    file_pths <- NULL
+
     # start up Note this time out is because when I disconnected from VPN it
     # made the getVolumes function hang forever because it was looking for
     # drives that were no longer connected. Now it will give an error
@@ -612,6 +614,21 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # Spatial Analysis #===============
+
+    file_pths <- reactive({
+      purrr::map(filePathIds(), ~{
+        if(is.integer(input[[.x]])){
+          # if(!is.null(restored$yes)){
+          #   return(file_pths_restore()[[.x]])
+          # }
+          return(NULL)
+        } else {
+          return(parseFilePaths(volumes, input[[.x]])$datapath)
+        }
+
+      })
+    })
+
     # Enable the Submit button when all mandatory fields are filled out
     observe({
       mandatoryFilled2 <-
@@ -665,21 +682,6 @@ ccvi_app <- function(testmode_in, ...){
       }  else {
         return(parseDirPath(volumes, input$clim_var_dir))
       }
-    })
-
-
-    file_pths <- reactive({
-      purrr::map(filePathIds(), ~{
-        if(is.integer(input[[.x]])){
-          # if(!is.null(restored$yes)){
-          #   return(file_pths_restore()[[.x]])
-          # }
-            return(NULL)
-          } else {
-          return(parseFilePaths(volumes, input[[.x]])$datapath)
-        }
-
-      })
     })
 
     # output file paths
@@ -1379,7 +1381,7 @@ ccvi_app <- function(testmode_in, ...){
       out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
     })
 
-    exportTestValues(out_data = out_data_lst$index %>% select(-contains("MC_freq")))
+    # exportTestValues(out_data = out_data_lst$index %>% select(-contains("MC_freq")))
 
     # helpful for testing
     #shinyjs::runcodeServer()

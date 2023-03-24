@@ -1,4 +1,1 @@
-library(testthat)
-library(ccviR)
-
-test_check("ccviR")
+shinytest2::test_app()

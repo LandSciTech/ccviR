@@ -54,7 +54,7 @@ updateCheck_comment_ui <- function(inputId, value, com, session){
 
 spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
   tagList(div(
-    id = id,
+    id = paste0("div1_", id),
     if(!is.null(header)) {h4(header)},
     if(!is.null(vuln_q_nm)) {strong(vuln_q_nm)},
     br(),br(),
