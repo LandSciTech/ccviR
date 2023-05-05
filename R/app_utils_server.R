@@ -19,9 +19,9 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                      rast_lbl = NULL, rast_grp = NULL){
 
   # Name of input data layers for mapping
-  rast_nms <- list(Temperature = "mat",
-                   Precipitation = "map",
-                   Moisture = "cmd",
+  rast_nms <- list(`Temperature class` = "mat",
+                   `Historical precipitation (mm)` = "map",
+                   `Moisture class` = "cmd",
                    `Climate change exposure index` = "ccei",
                    `Historical thermal niche` = "htn",
                    `Modeled range change` = "hs_rast")
