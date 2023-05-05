@@ -22,6 +22,39 @@ test_that("basic version works",{
   expect_is(clim_vars, "list")
 })
 
+test_that("error if no crs",{
+  clim_vars_ncrs <- clim_vars
+  crs(clim_vars_ncrs[[1]]) <- ""
+
+  raster::writeRaster(clim_vars_ncrs[[1]],
+                      file.path(file_dir, "clim_files/processed/MAT_reclass"),
+                      bylayer = TRUE, suffix = "names", format = "GTiff")
+
+  # copy MAT
+  dir.create(file.path(file_dir, "temp"))
+  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"),
+            file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"))
+  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"),
+            file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"))
+
+  # remove MAT
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
+
+  expect_message(expect_error(get_clim_vars(file.path(file_dir, "clim_files/processed"),
+                             scn_nms),
+               "does not have a CRS"))
+
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"),
+                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif")))
+  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
+                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
+
+  #remove MAT na_rast from previous test
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclass_RCP_4.5.tif"))
+  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclass_RCP_8.5.tif"))
+})
+
 test_that("trimming happens", {
   na_rast <- raster::extend(clim_vars[[1]], 20)
 

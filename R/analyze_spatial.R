@@ -257,6 +257,12 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
+  if(is.na(st_crs(poly))){
+    stop(var_name, " does not have a CRS.",
+         " \nPlease load a file with a valid Coordinate Reference System",
+         call. = FALSE)
+  }
+
   poly <- sf::st_transform(poly, rast_crs)
 
   poly <- valid_or_error(poly, var_name)

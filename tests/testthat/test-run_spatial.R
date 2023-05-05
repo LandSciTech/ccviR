@@ -97,6 +97,13 @@ test_that("Non matching crs are handled reasonably", {
   expect_equal(as.numeric(res[1,-c(1,27)]), as.numeric(res2[1,-c(1,27)]))
   # the range size is different after transforming but I think that is expected
 
+  # if crs of a variable is missing give error that explains
+  rng_high_ncrs <- st_set_crs(rng_high, NA)
+  expect_error(analyze_spatial(rng_high_ncrs, assess, clim_vars[c(1:2, 6)],
+                               scenario_names = scn_nms),
+               "does not have a CRS")
+
+
 })
 
 test_that("Multiple polygons are merged", {

@@ -105,17 +105,31 @@ load_clim <- function(pth, scenario_names = "scn1"){
       if(nrow(out) > 1){
         out <- st_union(out) %>% st_as_sf()
       }
+
+      if(is.na(st_crs(out))){
+        stop("The file at ", pth, " does not have a CRS.",
+             " \nPlease load a file with a valid Coordinate Reference System",
+             call. = FALSE)
+      }
       return(out)
     } else {
       out <- raster::raster(pth)
+      if(is.na(raster::crs(out))){
+        stop("The file at ", pth, " does not have a CRS.",
+             " \nPlease load a file with a valid Coordinate Reference System",
+             call. = FALSE)
+      }
+      return(out)
     }
   },
   error = function(cond){
-    message(pth)
+    message("Erorr loading:", pth)
     stop(cond)
   })
 
   out <- check_trim(out)
+
+
 
   out
 
@@ -150,7 +164,7 @@ check_trim <- function(rast){
   do_trim <- sum(!is.na(rast[1:10,]))
   if(do_trim == 0){
     message("doing trim")
-    rast <- trim_ras(rast)
+    rast <- raster::trim(rast)
   }
   return(rast)
 }
