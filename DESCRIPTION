@@ -39,12 +39,10 @@ Imports:
     R.utils,
     fs,
     plotly,
-    rgdal,
     stats,
     utils,
     scales,
-    shinyvalidate,
-    pkgload
+    shinyvalidate
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
