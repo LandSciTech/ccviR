@@ -190,7 +190,15 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     if(st_crs(range_poly) != st_crs(ptn_poly)){
       ptn_poly <- st_transform(ptn_poly, st_crs(range_poly))
     }
+
     ptn_perc <- calc_overlap_poly(range_poly, ptn_poly, "PTN")
+
+    if(ptn_perc$PTN == 0){
+      if(!st_intersects(scale_poly, ptn_poly, sparse = FALSE)[1,1]){
+        stop("The phsiological thermal niche polygon does not overlap the assessment area",
+             call. = FALSE)
+      }
+    }
   }
 
   # Historical Hydrological niche

@@ -73,6 +73,13 @@ test_that("Nonoverlaping poly and raster",{
                                non_breed_poly = nonbreed,
                                scenario_names = scn_nms),
                "does not overlap")
+
+  # ptn should not be allowed to be not overlapping assess
+  expect_error(analyze_spatial(rng_high, assess, clim_vars[c(1:2, 4, 6)],
+                               ptn_poly = nonbreed,
+                               scenario_names = scn_nms),
+               "does not overlap")
+
 })
 
 test_that("Non matching crs are handled reasonably", {
