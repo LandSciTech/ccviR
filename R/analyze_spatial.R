@@ -20,12 +20,12 @@
 #' @param ptn_poly Optional. An sf polygon object giving the locations that are
 #'   considered part of the physiological thermal niche (See NatureServe
 #'   Guidelines for definition).
-#' @param hs_rast Optional. A Raster* object with results from a model of the
+#' @param hs_rast Optional. A SpatRaster object with results from a model of the
 #'   change in the species' range caused by climate change. To supply different
-#'   results for each scenario use a RasterStack and ensure that the order of
+#'   results for each scenario use a raster with multiple layers and ensure that the order of
 #'   the layers matches the order of \code{scenario_names}.
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
-#'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
+#'   lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
 #'   details on the matrix format.
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
 #'   in the modeled range change under climate change
@@ -68,8 +68,8 @@
 #'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
-#'                           raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rast = terra::rast(terra::rast(file.path(base_pth, "rng_chg_45.tif")),
+#'                           terra::rast(file.path(base_pth, "rng_chg_85.tif"))),
 #'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
 #'   scenario_names = scn_nms
 #' )
@@ -94,12 +94,15 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
          call. = FALSE)
   }
 
+# TODO: stopped here on terraizeing need to do something different with the list
+# maybe sds or sprc? But how to handle the nulls?
+
   # Check scenario names match raster stacks
-  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "Raster")) %>%
+  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "SpatRaster")) %>%
     list(hs_rast = hs_rast) %>%
     purrr::list_flatten() %>%
     purrr::compact() %>%
-    purrr::map_dbl(raster::nlayers)
+    purrr::map_dbl(terra::nlyr)
 
   if(!all(rast_lyrs %in% c(1, length(scenario_names)))){
     stop("rasters must have one layer or length(scenario_names) layers. ",
@@ -220,9 +223,9 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
       stop("hs_rcl is required when hs_rast is not NULL", call. = FALSE)
     }
 
-    hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
+    hs_rast <- terra::classify(hs_rast, rcl = hs_rcl, right = NA)
 
-    if(any(raster::maxValue(hs_rast) > 3)){
+    if(any(terra::minmax(hs_rast)[2,] > 3)){
       stop("Reclassified range change raster values outside the expected range of 0-3 were found. ",
            "Check that all range change raster values are included in the reclassification matrix")
     }

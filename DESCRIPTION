@@ -42,7 +42,8 @@ Imports:
     stats,
     utils,
     scales,
-    shinyvalidate
+    shinyvalidate,
+    terra
 Suggests: 
     testthat (>= 2.1.0),
     knitr,
