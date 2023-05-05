@@ -3,14 +3,17 @@
 #' Create a map of exposure to climate change based on both change in
 #' temperature and change in climate moisture deficit.
 #'
-#' @param mat RasterLayer of classified mean annual temperature exposure
-#' @param cmd RasterLayer of classified climate moisture deficit exposure
+#' @param mat RasterLayer of classified mean annual temperature exposure.
+#' @param cmd RasterLayer of classified climate moisture deficit exposure.
+#' @param scale_poly sf polygon of the assessment area.
+#' @param rng_poly sf polygon of the species range. Optional.
 #' @param leg_rel_size numeric, shrinkage of the legend size relative to the
 #'   plot. Default is 2.5 larger numbers will make the legend smaller
 #' @param palette named vector of colours in each corner of the bivariate scale.
 #'   Required names are bottomleft, bottomright, upperleft, and upperright.
 #'
-#' @return a ggplot object
+#' @return a list containing 2 ggplot objects "plot" containing the exposure map
+#'   and "legend" containing the legend
 #' @export
 #'
 #' @examples
@@ -26,9 +29,14 @@
 #' mat <- clim_vars$mat$RCP_4.5
 #' cmd <- clim_vars$cmd$RCP_4.5
 #'
-#' plot_bivar_exp(mat, cmd)
+#' assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
+#'                   quiet = TRUE)
+#' rng <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
+#'                quiet = TRUE)
 #'
-plot_bivar_exp <- function(mat, cmd, leg_rel_size = 2.5,
+#' plot_bivar_exp(mat, cmd, assess, rng)
+#'
+plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size = 2.5,
                            palette = c(bottomleft = "green", bottomright = "blue",
                                        upperleft = "orange", upperright = "magenta")){
   col_mat <- colmat(6, bottomleft = palette["bottomleft"],
@@ -38,12 +46,11 @@ plot_bivar_exp <- function(mat, cmd, leg_rel_size = 2.5,
 
   bivar_ras <- bivar_map(cmd, mat)
 
-  names(bivar_ras) <- names(mat)
-  # using ggplot and rasterVis is better than tmap for keeping the legend
-  # aligned well
+  # using ggplot better than tmap for keeping the legend aligned well
   bivar_leg <- raster(matrix(1:36, nrow = 6)) %>% raster::flip() %>%
-    rasterVis::gplot()+
-    ggplot2::geom_tile(ggplot2::aes(fill = as.factor(value)))+
+    raster::as.data.frame(xy = TRUE) %>%
+    ggplot2::ggplot()+
+    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(layer)))+
     ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")+
@@ -59,28 +66,42 @@ plot_bivar_exp <- function(mat, cmd, leg_rel_size = 2.5,
 
   ras_ext <- raster::extent(bivar_ras)
 
+  rast_df <- raster::as.data.frame(bivar_ras, xy = TRUE)
+
+
+  rast_df <- rast_df %>% tidyr::pivot_longer(names(bivar_ras),
+                                             names_to = "layer_name",
+                                             values_to = "value")
+
+
   leg_start_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/20
   leg_end_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/leg_rel_size
   leg_top_y <- ras_ext@ymax - (ras_ext@ymax - ras_ext@ymin)/20
   leg_bottom_y <-  ras_ext@ymax - (ras_ext@xmax - ras_ext@xmin)/leg_rel_size
 
-  bivar_plt <- rasterVis::gplot(bivar_ras)+
-    ggplot2::geom_tile(ggplot2::aes(fill = as.factor(value)))+
+  bivar_plt <- ggplot2::ggplot()+
+    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(value)),
+                         data = rast_df)+
+    ggplot2::geom_sf(data = scale_poly, fill = NA, col = "black")+
     ggplot2::theme_void()+
     ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
                                name = NULL, na.value = "white")+
-    ggplot2::guides(fill = "none")+
-    ggplot2::coord_equal()
+    ggplot2::guides(fill = "none")
     # ggplot2::theme(plot.margin = ggplot2::unit(c(0.01,0.333,0.01,0.01), "npc"))
     # ggplot2::annotation_custom(ggplot2::ggplotGrob(bivar_leg),
     #                            xmin = leg_start_x, xmax = leg_end_x,
     #                            ymin = leg_bottom_y, ymax = leg_top_y)
 
-  if(raster::nlayers(bivar_ras) > 1){
-    bivar_plt <- bivar_plt + ggplot2::facet_wrap(~ variable)
+  if(!is.null(rng_poly)){
+    bivar_plt <- bivar_plt+
+      ggplot2::geom_sf(data = rng_poly, fill = NA, col = "black", linewidth = 1)
   }
 
-  ggpubr::ggarrange(bivar_plt,bivar_leg, widths = c(4, 1))
+  if(raster::nlayers(bivar_ras) > 1){
+    bivar_plt <- bivar_plt + ggplot2::facet_wrap(~layer_name)
+  }
+
+  list(plot = bivar_plt, legend = bivar_leg)
 }
 
 # derived from this blog post https://rfunctions.blogspot.com/2015/03/bivariate-maps-bivariatemap-function.html
@@ -120,6 +141,8 @@ bivar_map <- function(rasterx, rastery, nclass = 6) {
   })
 
   r <- raster::reclassify(rasterx + rastery*10, rcl = col_grid)
+  names(r) <- names(rasterx)
+  return(r)
 }
 
 

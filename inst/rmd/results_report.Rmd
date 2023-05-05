@@ -86,7 +86,9 @@ tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_po
 #     cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
 #               "#FF0000"),
 #     ttl = .y) %>% print()) 
-plot_bivar_exp(clim_vars$mat, clim_vars$cmd)
+plot_bivar_exp(clim_vars$mat, clim_vars$cmd, scale_poly, spat_res$range_poly_clim)
+
+
 ```
 
 ## Vulnerability Factors

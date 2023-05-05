@@ -7,15 +7,21 @@
 plot_bivar_exp(
   mat,
   cmd,
+  scale_poly,
+  rng_poly = NULL,
   leg_rel_size = 2.5,
   palette = c(bottomleft = "green", bottomright = "blue", upperleft = "orange",
     upperright = "magenta")
 )
 }
 \arguments{
-\item{mat}{RasterLayer of classified mean annual temperature exposure}
+\item{mat}{RasterLayer of classified mean annual temperature exposure.}
 
-\item{cmd}{RasterLayer of classified climate moisture deficit exposure}
+\item{cmd}{RasterLayer of classified climate moisture deficit exposure.}
+
+\item{scale_poly}{sf polygon of the assessment area.}
+
+\item{rng_poly}{sf polygon of the species range. Optional.}
 
 \item{leg_rel_size}{numeric, shrinkage of the legend size relative to the
 plot. Default is 2.5 larger numbers will make the legend smaller}
@@ -24,7 +30,8 @@ plot. Default is 2.5 larger numbers will make the legend smaller}
 Required names are bottomleft, bottomright, upperleft, and upperright.}
 }
 \value{
-a ggplot object
+a list containing 2 ggplot objects "plot" containing the exposure map
+and "legend" containing the legend
 }
 \description{
 Create a map of exposure to climate change based on both change in
@@ -43,6 +50,11 @@ clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
 mat <- clim_vars$mat$RCP_4.5
 cmd <- clim_vars$cmd$RCP_4.5
 
-plot_bivar_exp(mat, cmd)
+assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
+                  quiet = TRUE)
+rng <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
+               quiet = TRUE)
+
+plot_bivar_exp(mat, cmd, assess, rng)
 
 }

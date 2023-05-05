@@ -11,6 +11,11 @@ clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
 mat <- clim_vars$mat$RCP_4.5
 cmd <- clim_vars$cmd$RCP_4.5
 
+assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
+                  quiet = TRUE)
+rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
+                    quiet = TRUE)
+
 # based on pals::stevens.purplegold looks nice, not as easy to follow
 # col_mat <- colmat(6, bottomleft = "#e8e8e8", bottomright = "#c8b35a",
 #                   upperleft = "#9972af", upperright = "#804d36", do_plot = F)
@@ -36,7 +41,13 @@ test_that("creating raster works",{
 
 
 test_that("map looks right",{
-  spat_res_map <- plot_bivar_exp(mat, cmd)
+  spat_res_map <- plot_bivar_exp(mat, cmd, assess, rng_high)
 
-  expect_s3_class(spat_res_map, "ggplot")
+  expect_s3_class(spat_res_map$plot, "ggplot")
+})
+
+test_that("works for multi", {
+  expect_s3_class(plot_bivar_exp(clim_vars$mat, clim_vars$cmd,
+                                 assess, rng_high)$plot,
+                  "ggplot")
 })
