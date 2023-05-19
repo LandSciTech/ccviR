@@ -34,8 +34,10 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
     if(rast_nm == "hs_rast"){
       pal = c("grey", "#FF0000", "#FFC125", "#008000")
       brks = 0:3
+      rast_vals <- terra::unique(rast, incomparables = TRUE) %>% unlist() %>%
+        unique()
       rast_lbl <- bind_cols(rast_lbl, pal = pal) %>%
-        filter(.data$value %in% raster::unique(rast))
+        filter(.data$value %in% rast_vals)
       pal <- pull(rast_lbl, .data$pal)
       rast_lbl <- pull(rast_lbl, .data$label)
     } else if(rast_nm %in% c("cmd", "mat")) {
@@ -63,7 +65,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
 
   if(!is.null(rast)){
-    if(raster::nlayers(rast) == 1){
+    if(terra::nlyr(rast) == 1){
       rast_grp <- rast_nm
     } else {
       if(is.null(rast_grp)){

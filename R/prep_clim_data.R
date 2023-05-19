@@ -96,7 +96,6 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     stop("out_folder does not exist", call. = FALSE)
   }
 
-  # TODO: Figure out if we should match Sarah O's intervals for reclassing.
   ext_accept <- c(".asc", ".tif", ".nc", ".grd", ".img")
 
   make_pat <- function(x, ext_accept){
@@ -164,16 +163,16 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
 
-  mat_norm <- raster::raster(mat_norm)
+  mat_norm <- terra::rast(mat_norm)
 
-  mat_fut <- raster::raster(mat_fut)
+  mat_fut <- terra::rast(mat_fut)
 
-  cmd_norm <- raster::raster(cmd_norm)
+  cmd_norm <- terra::rast(cmd_norm)
 
-  cmd_fut <- raster::raster(cmd_fut)
+  cmd_fut <- terra::rast(cmd_fut)
 
   if(!is.null(ccei) && length(ccei) > 0){
-    ccei <- raster::raster(ccei)
+    ccei <- terra::rast(ccei)
   } else {
     ccei <- NULL
   }
@@ -185,13 +184,13 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   if(!is.null(mwmt) && length(mwmt) > 0){
-    mwmt <- raster::raster(mwmt)
+    mwmt <- terra::rast(mwmt)
   } else {
     mwmt <- NULL
   }
 
   if(!is.null(mcmt) && length(mcmt) > 0){
-    mcmt <- raster::raster(mcmt)
+    mcmt <- terra::rast(mcmt)
   } else {
     mcmt <- NULL
   }
@@ -236,9 +235,9 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
       rcl_tbl_ccei <- brks_ccei
     }
 
-    ccei_reclass <- raster::reclassify(ccei, rcl_tbl_ccei, right = NA)
+    ccei_reclass <- terra::classify(ccei, rcl_tbl_ccei, right = NA)
 
-    raster::writeRaster(ccei_reclass,
+    terra::writeRaster(ccei_reclass,
                         file.path(out_folder,
                                   paste0("CCEI_reclass", scenario_name, ".tif")),
                         overwrite = overwrite, datatype = "INT2U")
@@ -261,9 +260,9 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                     file.path(out_folder, "MAP.tif"),
                     resamp_method = "bilinear")
     } else {
-      map <- raster::raster(map_pth)
+      map <- terra::rast(map_pth)
       check_crs(map)
-      raster::writeRaster(map, file.path(out_folder, "MAP.tif"),
+      terra::writeRaster(map, file.path(out_folder, "MAP.tif"),
                           overwrite = overwrite, datatype = "INT2U")
       rm(map)
     }
@@ -279,15 +278,15 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     if(reproject){
       ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
-      file_in <- raster::filename(dif_mt)
+      file_in <- terra::sources(dif_mt)
       if(file_in == ""){
-        file_in <- raster::rasterTmpFile()
-        raster::writeRaster(dif_mt, file_in)
+        file_in <- tempfile()
+        terra::writeRaster(dif_mt, file_in)
       }
 
       # project raster to WGS84
       dif_mt <- wrap_gdalwarp(file_in, ref_crs,
-                              raster::rasterTmpFile(),
+                              tempfile(),
                               resamp_method = "bilinear",
                               output_Raster = TRUE)
     }
@@ -296,9 +295,9 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
     rcl_tbl <- matrix(c(brs[1:4], brs[2:5], rev(1:4)), ncol = 3)
 
-    dif_mt_reclass <- raster::reclassify(dif_mt, rcl_tbl, right = NA)
+    dif_mt_reclass <- terra::classify(dif_mt, rcl_tbl, right = NA)
 
-    raster::writeRaster(dif_mt_reclass,
+    terra::writeRaster(dif_mt_reclass,
                         file.path(out_folder, "MWMT_MCMT_reclass.tif"),
                         overwrite = overwrite, datatype = "INT2U")
   }
@@ -314,16 +313,16 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   if(is.null(clim_poly)){
     # make polygon boundary from raster data
     message("creating clim_poly from raster data")
-    mat <- raster::raster(file.path(out_folder,
+    mat <- terra::rast(file.path(out_folder,
                                     paste0("MAT_reclass", scenario_name, ".tif")))
-    mat <- raster::extend(mat, c(100,100), snap = "out")
+    mat <- terra::extend(mat, c(100,100), snap = "out")
 
-    clim_bound <- raster::rasterToContour(is.na(mat), levels = 1)
+    clim_bound <- terra::as.contour(is.na(mat), levels = 1)
 
     clim_poly <- clim_bound %>% sf::st_as_sf() %>%
       sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
       sf::st_union() %>%
-      sf::st_buffer(dist = 2 * raster::xres(mat))
+      sf::st_buffer(dist = 2 * terra::xres(mat))
 
   }
   sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
@@ -353,15 +352,15 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
 
   if(reproject){
     ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
-    file_in <- raster::filename(rast_delta)
+    file_in <- terra::sources(rast_delta)
     if(file_in == ""){
-      file_in <- raster::rasterTmpFile()
-      raster::writeRaster(rast_delta, file_in)
+      file_in <- tempfile()
+      terra::writeRaster(rast_delta, file_in)
     }
     # project raster to WGS84 and save to file_nm
     rast_delta <- wrap_gdalwarp(file_in, ref_crs,
                                 overwrite = overwrite,
-                                raster::rasterTmpFile(),
+                                tempfile(),
                                 resamp_method = "bilinear",
                                 output_Raster = TRUE)
   }
@@ -404,34 +403,35 @@ prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
 prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
                             file_nm, overwrite, brs = NULL){
 
-  min_delta <- round(raster::cellStats(rast_delta, "min") -1, 3)
+  min_delta <- round(terra::global(rast_delta, "min", na.rm = TRUE)[1,1] -1, 3)
 
-  max_delta <- round(raster::cellStats(rast_delta, "max") +1, 3)
+  max_delta <- round(terra::global(rast_delta, "max", na.rm = TRUE)[1,1] +1, 3)
 
   if(is.null(brs)){
     if(type == "sd"){
-      mean_delta <- round(raster::cellStats(rast_delta, "mean"), 3)
+      mean_delta <- round(terra::global(rast_delta, "mean", na.rm = TRUE)[1,1], 3)
 
-      std_delta <- round(raster::cellStats(rast_delta, "sd")/sd_div, 3)
+      std_delta <- round(terra::global(rast_delta, "sd", na.rm = TRUE)[1,1]/sd_div, 3)
 
       brs <- c(min_delta, mean_delta-3*std_delta, mean_delta-2*std_delta,
                mean_delta-std_delta,
                mean_delta, mean_delta + std_delta, mean_delta + 2*std_delta,
                mean_delta + 3*std_delta, max_delta)
     } else if(type == "IQR"){
-      med_delta <- round(stats::median(raster::sampleRegular(rast_delta, 1000000),
-                                       na.rm = TRUE), 3)
 
-      iqr_delta <- round(stats::IQR(raster::sampleRegular(rast_delta, 1000000),
-                                    na.rm = TRUE)/sd_div, 3)
+      samp_vals <-  terra::spatSample(rast_delta, 1000000, method = "regular")[,1]
+
+      med_delta <- round(stats::median(samp_vals,na.rm = TRUE),3)
+      iqr_delta <- round(stats::IQR(samp_vals, na.rm = TRUE)/sd_div, 3)
 
       brs <- c(min_delta, med_delta-3*iqr_delta, med_delta-2*iqr_delta,
                med_delta-iqr_delta,
                med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
                med_delta + 3*iqr_delta, max_delta)
     } else if(type == "quantile"){
-      brs <- raster::quantile(rast_delta,
-                              probs = seq(0, 1, 1/6))
+      brs <- terra::global(terra::rast(hs), fun = quantile, na.rm = T,
+                           probs = seq(0, 1, 1/6)) %>%
+        unlist()
       # make sure min and max included
       brs[1] <- brs[1] - 1
       brs[7] <- brs[7] + 1
@@ -466,16 +466,16 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
     rcl_tbl[nrow(rcl_tbl),2] <- max(max_delta, rcl_tbl[nrow(rcl_tbl),2])
   }
 
-  raster::reclassify(rast_delta, rcl_tbl, right = NA, filename = file_nm,
+  terra::classify(rast_delta, rcl_tbl, right = NA, filename = file_nm,
                      overwrite = overwrite, datatype = "INT2U")
 
   return(rcl_tbl)
 }
 
 check_crs <- function(rast){
-  if(is.na(raster::crs(rast))){
-    stop("the raster ", raster::filename(rast),
-         " has no CRS. Please provide a file with CRS information",
+  if(is.na(terra::crs(rast))||terra::crs(rast) == ""){
+    stop("The raster ", terra::sources(rast), " does not have a CRS.",
+         " \nPlease load a file with a valid Coordinate Reference System",
          call. = FALSE)
   }
 }

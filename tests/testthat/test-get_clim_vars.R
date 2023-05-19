@@ -26,9 +26,9 @@ test_that("error if no crs",{
   clim_vars_ncrs <- clim_vars
   crs(clim_vars_ncrs[[1]]) <- ""
 
-  raster::writeRaster(clim_vars_ncrs[[1]],
-                      file.path(file_dir, "clim_files/processed/MAT_reclass"),
-                      bylayer = TRUE, suffix = "names", format = "GTiff")
+  terra::writeRaster(clim_vars_ncrs[[1]],
+                      paste0(file.path(file_dir, "clim_files/processed/MAT_reclass"),
+                             "_", names(clim_vars_ncrs[[1]]), ".tif"))
 
   # copy MAT
   dir.create(file.path(file_dir, "temp"))
@@ -59,6 +59,7 @@ test_that("trimming happens", {
   na_rast <- raster::extend(clim_vars[[1]], 20)
 
   # copy MAT
+  unlink(file.path(file_dir, "temp"), recursive = TRUE)
   dir.create(file.path(file_dir, "temp"))
   file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"),
             file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"))
@@ -70,10 +71,11 @@ test_that("trimming happens", {
   file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
 
   # replace MAT
-  purrr::map2(unstack(na_rast), stringr::str_replace_all(scn_nms, "\\s", "_"),
-       ~writeRaster(.x,
-                    file.path(file_dir,
-                              paste0("clim_files/processed/MAT_rast_na", .y, ".tif"))))
+  terra::writeRaster(na_rast,
+                     file.path(file_dir,
+                               paste0("clim_files/processed/MAT_rast_na",
+                                      stringr::str_replace_all(scn_nms, "\\s", "_"),
+                                      ".tif")))
 
   expect_message({
     clim_vars2 <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
@@ -86,8 +88,8 @@ test_that("trimming happens", {
   expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
                         file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
 
-  expect_equal(raster::values(clim_vars[[1]][[1]]),
-               raster::values(clim_vars2[[1]][[1]]))
+  expect_equal(terra::values(clim_vars[[1]][[1]]),
+               terra::values(clim_vars2[[1]][[1]]))
 
 })
 

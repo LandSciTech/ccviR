@@ -47,10 +47,10 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
   bivar_ras <- bivar_map(cmd, mat)
 
   # using ggplot better than tmap for keeping the legend aligned well
-  bivar_leg <- raster(matrix(1:36, nrow = 6)) %>% raster::flip() %>%
-    raster::as.data.frame(xy = TRUE) %>%
+  bivar_leg <- terra::rast(matrix(1:36, nrow = 6)) %>% terra::flip() %>%
+    terra::as.data.frame(xy = TRUE) %>%
     ggplot2::ggplot()+
-    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(layer)))+
+    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(lyr.1)))+
     ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")+
@@ -64,9 +64,9 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                                                 debug = FALSE), axis.text = ggplot2::element_blank(),
                    axis.ticks.length = ggplot2::unit(0, "pt"))
 
-  ras_ext <- raster::extent(bivar_ras)
+  ras_ext <- terra::ext(bivar_ras)
 
-  rast_df <- raster::as.data.frame(bivar_ras, xy = TRUE)
+  rast_df <- terra::as.data.frame(bivar_ras, xy = TRUE)
 
 
   rast_df <- rast_df %>% tidyr::pivot_longer(names(bivar_ras),
@@ -74,10 +74,10 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                                              values_to = "value")
 
 
-  leg_start_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/20
-  leg_end_x <- ras_ext@xmax + (ras_ext@xmax - ras_ext@xmin)/leg_rel_size
-  leg_top_y <- ras_ext@ymax - (ras_ext@ymax - ras_ext@ymin)/20
-  leg_bottom_y <-  ras_ext@ymax - (ras_ext@xmax - ras_ext@xmin)/leg_rel_size
+  leg_start_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/20
+  leg_end_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
+  leg_top_y <- ras_ext$ymax - (ras_ext$ymax - ras_ext$ymin)/20
+  leg_bottom_y <-  ras_ext$ymax - (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
 
   bivar_plt <- ggplot2::ggplot()+
     ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(value)),
@@ -97,7 +97,7 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
       ggplot2::geom_sf(data = rng_poly, fill = NA, col = "black", linewidth = 1)
   }
 
-  if(raster::nlayers(bivar_ras) > 1){
+  if(terra::nlyr(bivar_ras) > 1){
     bivar_plt <- bivar_plt + ggplot2::facet_wrap(~layer_name)
   }
 
@@ -105,7 +105,7 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
 }
 
 # derived from this blog post https://rfunctions.blogspot.com/2015/03/bivariate-maps-bivariatemap-function.html
-colmat <- function(nclass = 10,
+colmat <- function(nclass = 6,
                    upperleft = grDevices::rgb(0, 150, 235, maxColorValue = 255),
                    upperright = grDevices::rgb(130, 0, 80, maxColorValue = 255),
                    bottomleft = "grey",
@@ -119,8 +119,8 @@ colmat <- function(nclass = 10,
     col.matrix[nclass +1 - i, ] <- grDevices::colorRampPalette(my.col)(nclass)
   }
   if(do_plot){
-    raster(matrix(1:36, nrow = 6)) %>% raster::flip() %>%
-      raster::plot(col = as.vector(col.matrix), frame.plot = F, axes = F, box = F,
+    terra::rast(matrix(1:nclass^2, nrow = nclass)) %>% terra::flip() %>%
+      terra::plot(col = as.vector(col.matrix), frame.plot = F, axes = F, box = F,
            add = F, legend = F)
   }
 
@@ -140,7 +140,7 @@ bivar_map <- function(rasterx, rastery, nclass = 6) {
     col_grid$value[which(col_grid$Var1 == x & col_grid$Var2 == y)]
   })
 
-  r <- raster::reclassify(rasterx + rastery*10, rcl = col_grid)
+  r <- terra::classify(rasterx + rastery*10, rcl = col_grid)
   names(r) <- names(rasterx)
   return(r)
 }

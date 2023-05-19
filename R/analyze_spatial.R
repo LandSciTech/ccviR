@@ -68,9 +68,9 @@
 #'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = terra::rast(terra::rast(file.path(base_pth, "rng_chg_45.tif")),
-#'                           terra::rast(file.path(base_pth, "rng_chg_85.tif"))),
-#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+#'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+#'                           file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
 #'   scenario_names = scn_nms
 #' )
 
@@ -94,13 +94,13 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
          call. = FALSE)
   }
 
-# TODO: stopped here on terraizeing need to do something different with the list
-# maybe sds or sprc? But how to handle the nulls?
+  # check all rasts are SpatRaster and convert if not
+  clim_vars_lst <- purrr::map2(clim_vars_lst, names(clim_vars_lst), check_rast)
+  hs_rast <- check_rast(hs_rast, var_name = "hs_rast")
 
   # Check scenario names match raster stacks
   rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "SpatRaster")) %>%
-    list(hs_rast = hs_rast) %>%
-    purrr::list_flatten() %>%
+    c(hs_rast = hs_rast) %>%
     purrr::compact() %>%
     purrr::map_dbl(terra::nlyr)
 
@@ -281,4 +281,21 @@ check_polys <- function(poly, rast_crs, var_name){
   return(poly)
 }
 
+check_rast <- function(ras, var_name){
+  if(!is(ras, "SpatRaster")){
+    if(is(ras, "Raster")){
+      ras <- as(ras, "SpatRaster")
+    }else {
+      return(ras)
+    }
+  }
+
+  if(is.na(terra::crs(ras))||terra::crs(ras) == ""){
+    stop("The raster ", var_name, " does not have a CRS.",
+         " \nPlease load a file with a valid Coordinate Reference System",
+         call. = FALSE)
+  }
+
+  return(ras)
+}
 

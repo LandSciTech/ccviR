@@ -788,7 +788,7 @@ ccvi_app <- function(testmode_in, ...){
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
-        check_trim(raster::stack(pth))
+        check_trim(terra::rast(pth))
       }
 
 
@@ -1138,7 +1138,7 @@ ccvi_app <- function(testmode_in, ...){
     # reclassify raster
     hs_rast2 <- reactive({
       req(hs_rast())
-      rast <- raster::reclassify(hs_rast(),
+      rast <- terra::classify(hs_rast(),
                                  rcl = hs_rcl_mat(), right = NA)
     })
 
@@ -1168,7 +1168,7 @@ ccvi_app <- function(testmode_in, ...){
         pull(.data$D2)
 
       if(!is.null(hs_rast())){
-        if(raster::nlayers(hs_rast2()) > 1){
+        if(terra::nlyr(hs_rast2()) > 1){
           valueNm <- valueNms[ 4- box_val]
           div(strong("Calculated effect on vulnerability."),
               HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
@@ -1201,7 +1201,7 @@ ccvi_app <- function(testmode_in, ...){
         pull(.data$D3)
 
       if(!is.null(hs_rast())){
-        if(raster::nlayers(hs_rast2()) > 1){
+        if(terra::nlyr(hs_rast2()) > 1){
           valueNm <- valueNms[4 - box_val]
           div(strong("Calculated effect on vulnerability."),
               HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),

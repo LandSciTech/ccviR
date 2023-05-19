@@ -22,7 +22,7 @@ scenario name is provided to \code{\link{prep_clim_data}}.}
 \value{
 A list of climate variables with names "mat", "cmd", "map", "ccei",
 "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
-be RasterStacks with one layer per scenario.
+be SpatRasters with one layer per scenario.
 }
 \description{
 Load climate variables and store them in a list that can be used with

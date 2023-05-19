@@ -36,7 +36,7 @@ test_that("color matrix works", {
 test_that("creating raster works",{
   bivar_map <- bivar_map(cmd, mat)
 
-  expect_s4_class(bivar_map, "Raster")
+  expect_s4_class(bivar_map, "SpatRaster")
 })
 
 

@@ -114,7 +114,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
       return(out)
     } else {
       out <- terra::rast(pth)
-      if(is.na(terra::crs(out))){
+      if(is.na(terra::crs(out))||terra::crs(out) == ""){
         stop("The file at ", pth, " does not have a CRS.",
              " \nPlease load a file with a valid Coordinate Reference System",
              call. = FALSE)
