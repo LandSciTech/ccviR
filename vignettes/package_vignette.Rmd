@@ -20,7 +20,7 @@ The ccviR package implements the [NatureServe Climate Change Vulnerability Index
 The NatureServe CCVI is a trait based climate change vulnerability assessment framework that can also include observed and modeled responses to climate change. The NatureServe CCVI includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity and optionally incorporates the results of documented or modeled responses to climate change. Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change, which is used to determine an exposure multiplier. Sensitivity and adaptive capacity and responses to climate change are assessed by scoring vulnerability factors (23 and 4 respectively), on a scale from ‘neutral’ (0)  to ‘greatly increases vulnerability’ (3). Factors that cannot be answered can be left blank and contribute 0 to the total score, but if fewer than 13 are scored the index value can not be calculated. The sensitivity and adaptive capacity section scores are then multiplied by an exposure multiplier and summed, while the scores for the response to climate change section are simply summed. An index value is then determined for each section by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section. The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence if not enough factors of the CCVI are scored. For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) and the references below.
 
 ## Preparing the climate data
-You can skip this step by using pre-prepared climate data available for download [here](https://drive.google.com/file/d/1U6iVI60NvpFY_0cfnpe3gNw2Xpg66sJ4/view?usp=sharing)
+You can skip this step by using pre-prepared climate data available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link)
 
 Step 1: Acquire climate data. We recommend the climate data for North America from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/) but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 and SSP5-8.5 for the 2050s for the future. Save the downloaded data in a folder you can easily find.
 
@@ -48,7 +48,6 @@ The thresholds for classifying data are based on those provided in the NatureSer
 ```{r data_prep}
 
 library(ccviR)
-library(raster)
 library(sf)
 library(dplyr)
 
@@ -95,7 +94,7 @@ It is recommended to store readme file with the climate data to record where the
 ```{r readme}
 # make readme csv
 write.csv(
-  data.frame(Scenario_Name = c("RCP 4.5", "RCP8.5"),
+  data.frame(Scenario_Name = c("RCP 4.5", "RCP 8.5"),
              GCM_or_Ensemble_name = "AdaptWest 15 CMIP5 AOGCM Ensemble",
              Historical_normal_period = "1961-1990",
              Future_period = "2050s",
@@ -111,19 +110,19 @@ Below is an example of how the MAT is classified by `prep_clim_data`. The change
 
 
 ```{r fig.height=4, fig.width=4}
-mat_norm <- raster(file.path(data_pth, "clim_files/raw/NB_norm_MAT.tif"))
-mat_fut <- raster(file.path(data_pth, "clim_files/raw/NB_RCP.4.5_MAT.tif"))
+mat_norm <- terra::rast(file.path(data_pth, "clim_files/raw/NB_norm_MAT.tif"))
+mat_fut <- terra::rast(file.path(data_pth, "clim_files/raw/NB_RCP.4.5_MAT.tif"))
 
-mat_classified <- raster(file.path(data_pth, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
+mat_classified <- terra::rast(file.path(data_pth, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
 
 brks$brks_mat
 
 pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
 
-plot(mat_norm - mat_fut, 
+terra::plot(mat_norm - mat_fut, 
      col = colorRampPalette(rev(pal))(50))
 
-plot(mat_classified, col = pal)
+terra::plot(mat_classified, col = pal)
 
 ```
 
@@ -142,8 +141,8 @@ For this example all of the data is provided with the package.
 ```{r load_sp_data}
 rng_poly <- read_sf(file.path(data_pth, "rng_poly.shp"), agr = "constant")
 assess_poly <- read_sf(file.path(data_pth, "assess_poly.shp"), agr = "constant")
-rng_chg <- stack(file.path(data_pth, "rng_chg_45.tif"), 
-                 file.path(data_pth, "rng_chg_85.tif"))
+rng_chg <- terra::rast(c(file.path(data_pth, "rng_chg_45.tif"), 
+                 file.path(data_pth, "rng_chg_85.tif")))
 PTN_poly <- read_sf(file.path(data_pth, "PTN_poly.shp"), agr = "constant")
 
 # the range change raster has values from -1, 0 and 1, this matrix is used to
@@ -175,7 +174,7 @@ spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
 We can look at how the spatial analysis was done for the RCP 4.5 scenario by plotting the appropriate range polygon and climate data to see how they overlap.
 
 ```{r fig.height=4, fig.width=4}
-plot(clim_dat$mat$RCP_4.5, col = pal)
+terra::plot(clim_dat$mat$RCP_4.5, col = pal)
 
 plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
 

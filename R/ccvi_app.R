@@ -80,7 +80,7 @@ ccvi_app <- function(testmode_in, ...){
             h3("Preparing to use the app"),
 
             p(strong("Step 0: "),"The first time you use the app you can either",
-              a("download", href = "https://drive.google.com/file/d/1U6iVI60NvpFY_0cfnpe3gNw2Xpg66sJ4/view?usp=sharing", target="_blank"),
+              a("download", href = "https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link", target="_blank"),
               "a pre-prepared climate data set used in the app or",
               " prepare your own using raw climate data and the ",
               a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html", target="_blank")),

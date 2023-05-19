@@ -32,7 +32,7 @@ run_ccvi_app("demo")
 ### Getting started
 The Welcome Tab provides information on the Index and the data needed to calculate it.
 
-For the demonstration species all the required data is included in the package, but for a real species you will need to either, [download](https://drive.google.com/file/d/1U6iVI60NvpFY_0cfnpe3gNw2Xpg66sJ4/view?usp=sharing) a prepared set of climate data, unzip it and store it in a convenient folder, or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
+For the demonstration species all the required data is included in the package, but for a real species you will need to either, [download](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link) a prepared set of climate data, unzip it and store it in a convenient folder, or create your own (see `vignette("data_prep_vignette", package = "ccviR")`). 
 
 In addition to the climate data the following spatial data sets for each species can be provided: 
 

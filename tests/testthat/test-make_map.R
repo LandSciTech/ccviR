@@ -15,11 +15,11 @@ assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
 rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
                     quiet = TRUE)
 
-hs <- raster(file.path(file_dir, "rng_chg_45.tif"))
+hs <- terra::rast(file.path(file_dir, "rng_chg_45.tif"))
 
 # hs2 less CC in same area
-hs_stack <- stack(file.path(file_dir, "rng_chg_45.tif"),
-                  file.path(file_dir, "rng_chg_45.tif"))
+hs_stack <- terra::rast(c(file.path(file_dir, "rng_chg_45.tif"),
+                  file.path(file_dir, "rng_chg_45.tif")))
 
 
 map2 <- make_map(rng_high, clim_vars$mat[[1]], rast_nm = "mat", poly2 = assess,

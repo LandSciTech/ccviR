@@ -98,7 +98,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   clim_vars_lst <- purrr::map2(clim_vars_lst, names(clim_vars_lst), check_rast)
   hs_rast <- check_rast(hs_rast, var_name = "hs_rast")
 
-  # Check scenario names match raster stacks
+  # Check scenario names match raster layers
   rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "SpatRaster")) %>%
     c(hs_rast = hs_rast) %>%
     purrr::compact() %>%

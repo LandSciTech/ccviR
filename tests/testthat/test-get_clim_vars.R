@@ -1,6 +1,5 @@
 context("test loading climate variables")
 library("sf", quietly = TRUE)
-library("raster", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
@@ -15,7 +14,7 @@ assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
                   quiet = TRUE)
 rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
                     quiet = TRUE)
-hs <- raster(file.path(file_dir, "rng_chg_45.tif"))
+hs <- raster::raster(file.path(file_dir, "rng_chg_45.tif"))
 
 
 test_that("basic version works",{
@@ -24,7 +23,7 @@ test_that("basic version works",{
 
 test_that("error if no crs",{
   clim_vars_ncrs <- clim_vars
-  crs(clim_vars_ncrs[[1]]) <- ""
+  terra::crs(clim_vars_ncrs[[1]]) <- ""
 
   terra::writeRaster(clim_vars_ncrs[[1]],
                       paste0(file.path(file_dir, "clim_files/processed/MAT_reclass"),
