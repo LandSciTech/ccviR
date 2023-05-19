@@ -43,7 +43,8 @@ Imports:
     utils,
     scales,
     shinyvalidate,
-    terra
+    terra,
+    methods
 Suggests: 
     testthat (>= 2.1.0),
     knitr,

@@ -50,9 +50,9 @@ clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
 mat <- clim_vars$mat$RCP_4.5
 cmd <- clim_vars$cmd$RCP_4.5
 
-assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
+assess <- sf::st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
                   quiet = TRUE)
-rng <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
+rng <- sf::st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
                quiet = TRUE)
 
 plot_bivar_exp(mat, cmd, assess, rng)

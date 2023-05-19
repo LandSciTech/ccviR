@@ -15,7 +15,6 @@
 #' @import dplyr
 #' @import sf
 #' @import shinyFiles
-#' @importFrom raster raster crs
 #' @importFrom tmap tmap_leaflet
 #'
 #' @export

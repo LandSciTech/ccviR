@@ -429,7 +429,7 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
                med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
                med_delta + 3*iqr_delta, max_delta)
     } else if(type == "quantile"){
-      brs <- terra::global(terra::rast(hs), fun = quantile, na.rm = T,
+      brs <- terra::global(rast_delta, fun = quantile, na.rm = T,
                            probs = seq(0, 1, 1/6)) %>%
         unlist()
       # make sure min and max included

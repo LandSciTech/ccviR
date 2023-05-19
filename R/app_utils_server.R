@@ -212,7 +212,7 @@ update_restored <- function(df, session){
                              values_to = "value",
                              values_transform = as.character) %>%
     left_join(df_coms, by = "input") %>%
-    left_join( ui_build_table %>% select(id, update_fun), by = c("input" = "id")) %>%
+    left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
     filter(!is.na(update_fun)) %>%
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(update_fun)))
@@ -282,8 +282,8 @@ render_spat_vuln_box <- function(id, spat_df, input, valueNms, valueOpts){
 
 # recreate index_res object on loading from csv
 recreate_index_res <- function(df){
-  spat_res <- apply_spat_tholds(df, df$cave) %>%
-    split(.$scenario_name)
+  spat_res <- apply_spat_tholds(df, df$cave)
+  spat_res <- split(spat_res, spat_res$scenario_name)
 
   index_res <- df %>%
     select("scenario_name", index = .data$CCVI_index,
@@ -298,7 +298,7 @@ recreate_index_res <- function(df){
     tidyr::separate(.data$Value, into = (paste0("Value", 1:4)), fill = "right",
                     sep = ", ", convert = TRUE) %>%
     tidyr::nest(vuln_df = c(.data$Code, contains("Value"))) %>%
-    mutate(vuln_df = purrr::map2(vuln_df, spat_res, ~calc_vuln_score(.x, .y))) %>%
+    mutate(vuln_df = purrr::map2(.data$vuln_df, spat_res, ~calc_vuln_score(.x, .y))) %>%
     tidyr::pivot_longer(contains("MC_freq"), names_to = "mc_index",
                         names_prefix = "MC_freq_",
                         values_to = "prop") %>%

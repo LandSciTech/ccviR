@@ -29,9 +29,9 @@
 #' mat <- clim_vars$mat$RCP_4.5
 #' cmd <- clim_vars$cmd$RCP_4.5
 #'
-#' assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
+#' assess <- sf::st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
 #'                   quiet = TRUE)
-#' rng <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
+#' rng <- sf::st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
 #'                quiet = TRUE)
 #'
 #' plot_bivar_exp(mat, cmd, assess, rng)
@@ -50,7 +50,8 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
   bivar_leg <- terra::rast(matrix(1:36, nrow = 6)) %>% terra::flip() %>%
     terra::as.data.frame(xy = TRUE) %>%
     ggplot2::ggplot()+
-    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(lyr.1)))+
+    ggplot2::geom_raster(ggplot2::aes(x = .data[["x"]], y = .data[["y"]],
+                                      fill = as.factor(.data[["lyr.1"]])))+
     ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")+
@@ -80,7 +81,8 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
   leg_bottom_y <-  ras_ext$ymax - (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
 
   bivar_plt <- ggplot2::ggplot()+
-    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = as.factor(value)),
+    ggplot2::geom_raster(ggplot2::aes(x = .data[["x"]], y = .data[["y"]],
+                                      fill = as.factor(.data[["value"]])),
                          data = rast_df)+
     ggplot2::geom_sf(data = scale_poly, fill = NA, col = "black")+
     ggplot2::theme_void()+
