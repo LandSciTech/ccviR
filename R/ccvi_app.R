@@ -720,7 +720,7 @@ ccvi_app <- function(testmode_in, ...){
 
     range_poly_in <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        sf::st_read(system.file("extdata/rng_poly_high.shp",
+        sf::st_read(system.file("extdata/rng_poly.shp",
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
@@ -732,8 +732,10 @@ ccvi_app <- function(testmode_in, ...){
 
     nonbreed_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/nonbreed_poly.shp",
-                           package = "ccviR")
+        # not currently included in package
+        # pth <- system.file("extdata/nonbreed_poly.shp",
+        #                    package = "ccviR")
+        pth <- file_pths()$nonbreed_poly_pth
       } else {
         pth <- file_pths()$nonbreed_poly_pth
       }
@@ -775,7 +777,7 @@ ccvi_app <- function(testmode_in, ...){
 
     hs_rast <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/HS_rast_high.tif",
+        pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
       } else {
         pth <- file_pths()[stringr::str_subset(names(input), "rng_chg_pth")] %>%
@@ -796,7 +798,7 @@ ccvi_app <- function(testmode_in, ...){
 
     ptn_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/ptn_poly.shp", package = "ccviR")
+        pth <- system.file("extdata/PTN_poly.shp", package = "ccviR")
       } else {
         pth <- file_pths()$ptn_poly_pth
       }
@@ -1381,7 +1383,7 @@ ccvi_app <- function(testmode_in, ...){
       out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
     })
 
-    # exportTestValues(out_data = out_data_lst$index %>% select(-contains("MC_freq")))
+    exportTestValues(out_data = out_data_lst$index %>% select(-contains("MC_freq")))
 
     # helpful for testing
     #shinyjs::runcodeServer()
