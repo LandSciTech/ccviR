@@ -213,9 +213,9 @@ update_restored <- function(df, session){
                              values_transform = as.character) %>%
     left_join(df_coms, by = "input") %>%
     left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
-    filter(!is.na(update_fun)) %>%
+    filter(!is.na(.data$update_fun)) %>%
     rowwise() %>%
-    mutate(arg_name = intersect( c("selected", "value"), formalArgs(update_fun)))
+    mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
@@ -310,9 +310,9 @@ recreate_index_res <- function(df){
         tidyr::unnest(cols = c(index)) %>%
         transmute(round_id = 1:n(), index, d_score = NA, b_c_score = NA)
     )) %>%
-    mutate(n_b_factors = purrr::map_dbl(vuln_df, get_n_factors, "B"),
-           n_c_factors = purrr::map_dbl(vuln_df, get_n_factors, "C"),
-           n_d_factors = purrr::map_dbl(vuln_df, get_n_factors, "D"))
+    mutate(n_b_factors = purrr::map_dbl(.data$vuln_df, get_n_factors, "B"),
+           n_c_factors = purrr::map_dbl(.data$vuln_df, get_n_factors, "C"),
+           n_d_factors = purrr::map_dbl(.data$vuln_df, get_n_factors, "D"))
 
   return(index_res)
 
