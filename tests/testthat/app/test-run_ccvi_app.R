@@ -68,7 +68,8 @@ test_that("{shinytest2} recording: ccviR", {
                     params = list(out_data = out_data,
                                   clim_vars = clim_vars,
                                   scale_poly = scale_poly,
-                                  range_poly = range_poly))
+                                  range_poly = range_poly),
+                    envir = new.env())
 
 
 })

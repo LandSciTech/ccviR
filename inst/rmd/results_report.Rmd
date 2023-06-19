@@ -6,16 +6,31 @@ output:
     # includes:
       #in_header: columns.tex # supposed to make 2 col layout but too advanced for me
 header-includes:
-- \usepackage{fancyhdr}
-- \pagestyle{plain}
-- \pagestyle{fancy}
-- \fancyhead[L,R]{}
-- \fancyhead[C]{Climate Change Vulnerability Index Report}
-- \fancyfoot[R]{Report generated with the ccviR app on \today}
-- \fancyfoot[L]{\thepage}
-- \fancyfoot[C]{}
-- \usepackage{float}
-- \floatplacement{figure}{H}
+  - \usepackage{fancyhdr}
+  - \pagestyle{plain}
+  - \pagestyle{fancy}
+  - \fancyhead[L,R]{}
+  - \fancyhead[C]{Climate Change Vulnerability Index Report}
+  - \fancyfoot[R]{Report generated with the ccviR app on \today}
+  - \fancyfoot[L]{\thepage}
+  - \fancyfoot[C]{}
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+  - \usepackage{booktabs}
+  - \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage{wrapfig}
+  - \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage[utf8]{inputenc}
+  - \usepackage{makecell}
+  - \usepackage{xcolor}
 editor_options: 
   chunk_output_type: console
 params: 
@@ -36,6 +51,7 @@ scale_poly <- params$scale_poly
 library(purrr)
 library(dplyr)
 library(ccviR)
+library(kableExtra)
 
 cols <- c("#808080", "#008000", "#FFC125", "#FF8C00", "#FF0000")
 cols <- c("gray", "green", "yellow", "orange", "red")
@@ -106,6 +122,8 @@ gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot),
                                               c(1,1,1,1,2)))
 ```
 
+::: {.landscape data-latex=""}
+
 ## Vulnerability Factors
 ```{r vuln_table, results='asis'}
 coms <- out_data %>% 
@@ -126,12 +144,17 @@ vuln_tbl <- full_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>%
   select(scenario_name, Question, Code, Score, Comments)
 
 vuln_tbl %>% nest_by(scenario_name) %>% pull(data) %>% 
- purrr::walk2( out_data$scenario_name,
-               ~print(knitr::kable(.x, digits = 3, 
-                                   format = "latex", caption = .y)))
+  purrr::walk2(out_data$scenario_name,
+               ~print(kbl(.x, digits = 3, booktabs = FALSE, longtable = TRUE,
+                          label = .y,
+                          format = "latex", caption = .y, linesep = "") %>% 
+                        column_spec(1, "20em") %>%
+                        column_spec(4, "20em") %>%
+                        kable_styling(latex_options = c("repeat_header"))))
   
 
 
 
 ```
 
+:::
