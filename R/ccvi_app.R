@@ -1383,7 +1383,7 @@ ccvi_app <- function(testmode_in, ...){
       out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
     })
 
-    exportTestValues(out_data = out_data_lst$index %>% select(-contains("MC_freq")))
+    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # helpful for testing
     #shinyjs::runcodeServer()

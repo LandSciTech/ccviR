@@ -44,37 +44,31 @@ test_that("{shinytest2} recording: ccviR", {
               label = "Spatial Vuln Qs are calculated")
 
   app$click("next5", wait_ = FALSE)
-  app$click("calcIndex")
+  app$click("calcIndex", wait_ = FALSE)
 
   out_data <- app$get_values(export = TRUE)$export$out_data
 
+  out_data <- combine_outdata(out_data)
+
   expect_true(all(out_data$CCVI_index == "EV"))
 
-  #
-  # app$click("clim_var_dir")
-  # app$click("range_poly_pth")
-  # app$click("assess_poly_pth")
-  # app$click("startSpatial")
-  # app$click("shinyalert")
-  # app$click("shinyalert")
-  # # Update output value
-  # app$click("ptn_poly_pth")
-  # # Update output value
-  # # Update unbound `input` value
-  # # Update output value
-  # # Update unbound `input` value
-  # # Update output value
-  # app$click("nonbreed_poly_pth")
-  # # Update output value
-  # app$click("next2")
-  # app$set_inputs(tabset = "Spatial Data Analysis")
-  # app$click("startSpatial")
-  # app$click("shinyalert")
-  # app$click("shinyalert")
-  # app$click("startSpatial")
-  # app$click("shinyalert")
-  # app$click("shinyalert")
-  # app$click("next2")
-  # app$set_inputs(tabset = "Spatial Data Analysis")
+  # check report works
+  base_pth <- system.file("extdata", package = "ccviR")
+
+  # scenario names
+  scn_nms <- c("RCP 4.5", "RCP 8.5")
+
+  clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"),
+                             scenario_names = scn_nms)
+
+  range_poly <- sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant")
+  scale_poly <- sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant")
+
+  rmarkdown::render(file.path(base_pth, "../rmd/results_report.rmd"),
+                    params = list(out_data = out_data,
+                                  clim_vars = clim_vars,
+                                  scale_poly = scale_poly,
+                                  range_poly = range_poly))
+
 
 })

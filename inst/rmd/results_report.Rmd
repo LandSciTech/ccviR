@@ -14,23 +14,22 @@ header-includes:
 - \fancyfoot[R]{Report generated with the ccviR app on \today}
 - \fancyfoot[L]{\thepage}
 - \fancyfoot[C]{}
+- \usepackage{float}
+- \floatplacement{figure}{H}
 editor_options: 
   chunk_output_type: console
 params: 
-    index_res: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
+    out_data: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
     clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP_4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP_4.5.tif", package = "ccviR"))
-    sp_name: "Common Name (Scientific Name)"
-    vuln_df: !r list("vuln_df")
-    spat_res: !r system.file("extdata/rng_poly.shp", package = "ccviR")
+    range_poly: !r system.file("extdata/rng_poly.shp", package = "ccviR")
     scale_poly: !r system.file("extdata/assess_poly.shp", package = "ccviR")
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-index_res <- params$index_res
+out_data <- params$out_data
 clim_vars <- params$clim_vars
-spat_res <- params$spat_res
-vuln_df <- params$vuln_df
+range_poly <- params$range_poly
 scale_poly <- params$scale_poly
 
 
@@ -41,15 +40,16 @@ library(ccviR)
 cols <- c("#808080", "#008000", "#FFC125", "#FF8C00", "#FF0000")
 cols <- c("gray", "green", "yellow", "orange", "red")
 nms <- c("Insufficient Evidence", "Less Vulnerable", "Moderately Vulnerable",
-         "Highly Vulnerable", "Extremely Vulnerable")
+         "Highly Vulnerable", "Extremely Vulnerable", "Not Applicable")
 # function to color index value text
 index_col <- function(ind){
-  switch (ind,
-    "EV" = sprintf("\\textcolor{%s}{%s}", cols[5], nms[5]),
-    "HV" = sprintf("\\textcolor{%s}{%s}", cols[4], nms[4]),
-    "MV" = sprintf("\\textcolor{%s}{%s}", cols[3], nms[3]),
-    "LV" = sprintf("\\textcolor{%s}{%s}", cols[2], nms[2]),
-    "IE" = sprintf("\\textcolor{%s}{%s}", cols[1], nms[1]),
+  case_when(
+    ind == "EV" ~ sprintf("\\textcolor{%s}{%s}", cols[5], nms[5]),
+    ind == "HV" ~ sprintf("\\textcolor{%s}{%s}", cols[4], nms[4]),
+    ind == "MV" ~ sprintf("\\textcolor{%s}{%s}", cols[3], nms[3]),
+    ind == "LV" ~ sprintf("\\textcolor{%s}{%s}", cols[2], nms[2]),
+    ind == "IE" ~ sprintf("\\textcolor{%s}{%s}", cols[1], nms[1]),
+    ind == "N/A" ~ sprintf("\\textcolor{%s}{%s}", cols[1], nms[6])
     
   )
 }
@@ -61,15 +61,26 @@ index_col <- function(ind){
 
 # `r params$sp_name`
 
-## Climate Change Vulnerability Index: \LARGE`r index_col(index_res$index[1])`
+## Climate Change Vulnerability Index
+```{r results='asis'}
+text <- paste0("### ", out_data$scenario_name, ": ", "\\LARGE", index_col(out_data$CCVI_index),
+               collapse = "\n")
+cat(text)
+```
 
 
-## Migratory Exposure Index: \Large`r index_col(index_res$index[1])`
+## Migratory Exposure Index
+```{r results='asis'}
+text <- paste0("### ", out_data$scenario_name, ": ", "\\Large",
+               index_col(out_data$mig_exposure),
+               collapse = "\n")
+cat(text)
+```
 
 
 ## Species range
 ```{r range_map, fig.cap= "Map of the species range (shaded) and the assessment area (grey outline)."}
-tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_poly_clim)
+tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(range_poly)
 ```
 
 
@@ -86,9 +97,41 @@ tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(spat_res$range_po
 #     cols = c("#808080", "#008000", "#FFC125", "#FF8C00",
 #               "#FF0000"),
 #     ttl = .y) %>% print()) 
-plot_bivar_exp(clim_vars$mat, clim_vars$cmd, scale_poly, spat_res$range_poly_clim)
+bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, scale_poly, range_poly)
+
+gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot), 
+                                     ggplot2::ggplotGrob(bivar_exp_plot$legend)), 
+                        layout_matrix = rbind(c(1,1,1,1,2),
+                                              c(1,1,1,1,2),
+                                              c(1,1,1,1,2)))
+```
+
+## Vulnerability Factors
+```{r vuln_table, results='asis'}
+coms <- out_data %>% 
+  select(scenario_name, matches("com_[B,C,D]\\d.*")) %>% 
+  tidyr::pivot_longer(contains("com"), names_to = "Code", values_to = "Comments",
+                      names_prefix = "com_") 
+
+vuln_qs <- out_data %>% 
+  select(scenario_name, matches("^[B,C,D]\\d.*")) %>% 
+  tidyr::pivot_longer(-scenario_name, names_to = "Code", values_to = "Score")
+
+valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
+names(valueNms) <- c(3, 2, 1, 0)
+
+vuln_tbl <- full_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>% 
+  left_join(vulnq_code_lu_tbl,by = join_by(Code)) %>% 
+  mutate(Score = paste0(valueNms[as.character(Score)], " (", Score, ")")) %>% 
+  select(scenario_name, Question, Code, Score, Comments)
+
+vuln_tbl %>% nest_by(scenario_name) %>% pull(data) %>% 
+ purrr::walk2( out_data$scenario_name,
+               ~print(knitr::kable(.x, digits = 3, 
+                                   format = "latex", caption = .y)))
+  
+
 
 
 ```
 
-## Vulnerability Factors
