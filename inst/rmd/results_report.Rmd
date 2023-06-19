@@ -6,14 +6,6 @@ output:
     # includes:
       #in_header: columns.tex # supposed to make 2 col layout but too advanced for me
 header-includes:
-  - \usepackage{fancyhdr}
-  - \pagestyle{plain}
-  - \pagestyle{fancy}
-  - \fancyhead[L,R]{}
-  - \fancyhead[C]{Climate Change Vulnerability Index Report}
-  - \fancyfoot[R]{Report generated with the ccviR app on \today}
-  - \fancyfoot[L]{\thepage}
-  - \fancyfoot[C]{}
   - \usepackage{float}
   - \floatplacement{figure}{H}
   - \usepackage{booktabs}
