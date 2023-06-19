@@ -14,6 +14,7 @@ test_that("{shinytest2} recording: ccviR", {
   app$set_inputs(assessor_name = "Sarah",
                  geo_location = "Canada",
                  species_name = "Bubo scandiacus",
+                 common_name = "Snowy Owl",
                  tax_grp = "Bird")
   app$click("next1")
   app$click("startSpatial")
@@ -29,7 +30,13 @@ test_that("{shinytest2} recording: ccviR", {
   inps_to_set <- lapply(seq_along(non_spat_qs), function(x) rep("1")) %>%
     setNames(non_spat_qs)
 
+  # set a few to not one or multiple to make report more realistic
+  inps_to_set$B1 <- c("2", "3")
+  inps_to_set$B2a <- "0"
+  inps_to_set$B3 <- NULL
+
   do.call(app$set_inputs, inps_to_set)
+
 
   app$click("next4")
 

@@ -45,7 +45,8 @@ library(dplyr)
 library(ccviR)
 library(kableExtra)
 
-cols <- c("#808080", "#008000", "#FFC125", "#FF8C00", "#FF0000")
+# defined as latex colors below
+cols1 <- c("#808080", "#008000", "#FFC125", "#FF8C00", "#FF0000")
 cols <- c("gray", "green", "yellow", "orange", "red")
 nms <- c("Insufficient Evidence", "Less Vulnerable", "Moderately Vulnerable",
          "Highly Vulnerable", "Extremely Vulnerable", "Not Applicable")
@@ -62,12 +63,26 @@ index_col <- function(ind){
   )
 }
 
+if(unique(out_data$common_name) == ""){
+  ttl_name <- paste0("*", unique(out_data$species_name), "*")
+} else {
+  ttl_name <- paste0(unique(out_data$common_name),
+                     " (*", unique(out_data$species_name), "*)")
+}
+
+
 ```
 
-
-
-
-# `r params$sp_name`
+<!-- make LaTeX colours that match our hex code colors -->
+\definecolor{gray}{HTML}{808080}
+\definecolor{green}{HTML}{008000}
+\definecolor{yellow}{HTML}{FFC125}
+\definecolor{orange}{HTML}{FF8C00}
+\definecolor{red}{HTML}{FF0000}
+---
+title: `r ttl_name`
+subtitle: Climate Change Vulnerability Index Report
+---
 
 ## Climate Change Vulnerability Index
 ```{r results='asis'}
@@ -123,22 +138,34 @@ coms <- out_data %>%
   tidyr::pivot_longer(contains("com"), names_to = "Code", values_to = "Comments",
                       names_prefix = "com_") 
 
+valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral", "Unknown")
+names(valueNms) <- c(3, 2, 1, 0, -1)
+cols2 <- cols %>% setNames(rev(names(valueNms)))
+
+
 vuln_qs <- out_data %>% 
   select(scenario_name, matches("^[B,C,D]\\d.*")) %>% 
-  tidyr::pivot_longer(-scenario_name, names_to = "Code", values_to = "Score")
+  tidyr::pivot_longer(-scenario_name, names_to = "Code", values_to = "Score") %>% 
+  tidyr::separate(Score, into = paste0("Value", 1:4), fill = "right", sep = ", ",
+                  convert = TRUE) %>%
+  mutate(score = 1) %>% 
+  filter_applicable_qs(out_data$tax_grp, c("Vascular Plant", "Nonvascular Plant")) %>% 
+  filter(!is.na(score)) %>% 
+  rowwise() %>% 
+  mutate(Score = c(.data$Value1, .data$Value2, .data$Value3, .data$Value4) %>% 
+           na.omit() %>% range() %>%  
+           unique() %>% as.character() %>% 
+           {text_spec(valueNms[.], background = cols2[.])} %>% paste0(collapse = " - "))
 
-valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
-names(valueNms) <- c(3, 2, 1, 0)
 
-vuln_tbl <- full_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>% 
+vuln_tbl <- left_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>% 
   left_join(vulnq_code_lu_tbl,by = join_by(Code)) %>% 
-  mutate(Score = paste0(valueNms[as.character(Score)], " (", Score, ")")) %>% 
   select(scenario_name, Question, Code, Score, Comments)
 
 vuln_tbl %>% nest_by(scenario_name) %>% pull(data) %>% 
   purrr::walk2(out_data$scenario_name,
                ~print(kbl(.x, digits = 3, booktabs = FALSE, longtable = TRUE,
-                          label = .y,
+                          label = .y, escape = FALSE,
                           format = "latex", caption = .y, linesep = "") %>% 
                         column_spec(1, "20em") %>%
                         column_spec(4, "20em") %>%
