@@ -493,11 +493,16 @@ ccvi_app <- function(testmode_in, ...){
                   "had the highest scores and how exposure impacted the score."),
                 plotly::plotlyOutput("q_score_plt")
               ),
+              br(),
+              br(),
               actionButton("restart", "Assess another species",
                            class = "btn-primary"),
+              br(),
+              br(),
+              downloadButton("report", "Generate report", class = "btn-primary"),
 
               # helpful for testing
-              # shinyjs::runcodeUI(),
+              shinyjs::runcodeUI()
             )
           )
         )
@@ -1386,7 +1391,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # helpful for testing
-    #shinyjs::runcodeServer()
+    shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
@@ -1422,6 +1427,35 @@ ccvi_app <- function(testmode_in, ...){
         out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                     package = "ccviR"))
         write.csv(out, file, row.names = FALSE)
+      }
+    )
+
+    output$report <- downloadHandler(
+      # For PDF output, change this to "report.pdf"
+      filename = "report.pdf",
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy(system.file("rmd/results_report.Rmd", package = "ccviR"),
+                  tempReport, overwrite = TRUE)
+
+        # Set up parameters to pass to Rmd document
+        params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
+                                       combine_outdata(),
+                                     clim_vars = clim_vars(),
+                                     scale_poly = assess_poly(),
+                                     range_poly = range_poly())
+
+        # Knit the document, passing in the `params` list, and eval it in a
+        # child of the global environment (this isolates the code in the document
+        # from the code in this app).
+        rmarkdown::render(tempReport, output_file = "report.pdf",
+                          params = params,
+                          envir = new.env(parent = globalenv()))
+        file.copy(file.path(tempdir(), 'report.pdf'), file)
+
       }
     )
 

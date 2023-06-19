@@ -39,6 +39,9 @@ clim_vars <- params$clim_vars
 range_poly <- params$range_poly
 scale_poly <- params$scale_poly
 
+library(tinytex)
+
+options(tinytex.verbose = TRUE)
 
 library(purrr)
 library(dplyr)
@@ -64,10 +67,10 @@ index_col <- function(ind){
 }
 
 if(unique(out_data$common_name) == ""){
-  ttl_name <- paste0("*", unique(out_data$species_name), "*")
+  ttl_name <- paste0("_", unique(out_data$species_name), "_")
 } else {
   ttl_name <- paste0(unique(out_data$common_name),
-                     " (*", unique(out_data$species_name), "*)")
+                     " (_", unique(out_data$species_name), "_)")
 }
 
 
