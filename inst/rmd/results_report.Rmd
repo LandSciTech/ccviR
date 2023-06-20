@@ -152,7 +152,7 @@ vuln_qs <- out_data %>%
   tidyr::separate(Score, into = paste0("Value", 1:4), fill = "right", sep = ", ",
                   convert = TRUE) %>%
   mutate(score = 1) %>% 
-  filter_applicable_qs(out_data$tax_grp, c("Vascular Plant", "Nonvascular Plant")) %>% 
+  ccviR:::filter_applicable_qs(out_data$tax_grp, c("Vascular Plant", "Nonvascular Plant")) %>% 
   filter(!is.na(score)) %>% 
   rowwise() %>% 
   mutate(Score = c(.data$Value1, .data$Value2, .data$Value3, .data$Value4) %>% 

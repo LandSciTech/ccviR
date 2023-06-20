@@ -23,7 +23,6 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
-    raster,
     sf,
     purrr,
     tidyr,
@@ -46,13 +45,14 @@ Imports:
     terra,
     methods
 Suggests: 
-    testthat (>= 2.1.0),
+    testthat (>= 3.0.0),
     knitr,
     rmarkdown,
     shinytest,
     future,
     furrr,
     readxl,
+    raster,
     shinytest2
 RoxygenNote: 7.2.1
 VignetteBuilder: knitr
@@ -62,3 +62,4 @@ URL: https://github.com/see24/ccviR,
     https://landscitech.github.io/ccviR/
 BugReports: https://github.com/see24/ccviR/issues
 Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3

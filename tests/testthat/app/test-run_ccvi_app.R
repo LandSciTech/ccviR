@@ -55,28 +55,39 @@ test_that("{shinytest2} recording: ccviR", {
 
   out_data <- app$get_values(export = TRUE)$export$out_data
 
-  out_data <- combine_outdata(out_data)
+  out_data <- ccviR:::combine_outdata(out_data)
 
   expect_true(all(out_data$CCVI_index == "EV"))
 
-  # check report works
-  base_pth <- system.file("extdata", package = "ccviR")
+  path <- app$get_download("report", filename = tempfile(fileext = ".pdf"))
 
-  # scenario names
-  scn_nms <- c("RCP 4.5", "RCP 8.5")
+  expect_snapshot_file(path, "rmd_report", variant = app$get_variant())
 
-  clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"),
-                             scenario_names = scn_nms)
+  # to see file in interactive session:
+  # system(paste0('open "', path, '"'))
 
-  range_poly <- sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant")
-  scale_poly <- sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant")
+  # not needed for testing but useful for interactive report rendering
+  if(FALSE){
+    # check report works
+    base_pth <- system.file("extdata", package = "ccviR")
 
-  rmarkdown::render(file.path(base_pth, "../rmd/results_report.rmd"),
-                    params = list(out_data = out_data,
-                                  clim_vars = clim_vars,
-                                  scale_poly = scale_poly,
-                                  range_poly = range_poly),
-                    envir = new.env())
+    # scenario names
+    scn_nms <- c("RCP 4.5", "RCP 8.5")
+
+    clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"),
+                               scenario_names = scn_nms)
+
+    range_poly <- sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant")
+    scale_poly <- sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant")
+
+    rmarkdown::render(file.path(base_pth, "../rmd/results_report.rmd"),
+                      params = list(out_data = out_data,
+                                    clim_vars = clim_vars,
+                                    scale_poly = scale_poly,
+                                    range_poly = range_poly),
+                      envir = new.env())
+  }
+
 
 
 })
