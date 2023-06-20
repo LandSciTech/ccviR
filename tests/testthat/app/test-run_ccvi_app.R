@@ -61,7 +61,7 @@ test_that("{shinytest2} recording: ccviR", {
 
   # not working in test environment but works manually so leaving for now.
 
-  # path <- app$get_download("report", filename = tempfile(fileext = ".pdf"))
+  # path <- app$get_download("report")
   #
   # expect_snapshot_file(path, "rmd_report", variant = app$get_variant())
 

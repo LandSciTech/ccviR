@@ -1,4 +1,4 @@
-context("test loading climate variables")
+# test loading climate variables
 library("sf", quietly = TRUE)
 
 # load the demo data
@@ -18,7 +18,7 @@ hs <- raster::raster(file.path(file_dir, "rng_chg_45.tif"))
 
 
 test_that("basic version works",{
-  expect_is(clim_vars, "list")
+  expect_type(clim_vars, "list")
 })
 
 test_that("error if no crs",{

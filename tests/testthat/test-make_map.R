@@ -33,7 +33,7 @@ map1 <- make_map(rng_high, clim_vars$mat, rast_nm = "mat", poly2 = assess,
 # Issue sent to tmap about these warnings https://github.com/r-tmap/tmap/issues/630
 # group does not work at the moment
 test_that("map gets made",
-          expect_s3_class(map1, "tmap"))
+          {expect_s3_class(map1, "tmap")})
 
 # Visually inspect the maps
 if(interactive()){

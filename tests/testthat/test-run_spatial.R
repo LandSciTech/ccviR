@@ -1,4 +1,4 @@
-context("test the spatial process")
+# test the spatial process
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
 
@@ -94,7 +94,7 @@ test_that("Non matching crs are handled reasonably", {
 
   # the crs is different but they do overlap
   rng_high_lcctrans <- sf::st_transform(rng_high, crs = "+proj=lcc +lon_0=-90 +lat_1=33 +lat_2=45")
-  expect_is(res <- analyze_spatial(rng_high_lcctrans, assess, clim_vars[c(1:2, 6)],
+  expect_s3_class(res <- analyze_spatial(rng_high_lcctrans, assess, clim_vars[c(1:2, 6)],
                                    scenario_names = scn_nms)$spat_table,
                  "data.frame")
 

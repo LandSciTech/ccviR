@@ -1,4 +1,4 @@
-context("Test the prep_clim_data function")
+# Test the prep_clim_data function
 pth_base <- system.file("extdata/clim_files", package = "ccviR")
 
 test_that("works with demo data",{
