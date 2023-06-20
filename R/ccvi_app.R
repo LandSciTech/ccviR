@@ -717,7 +717,6 @@ ccvi_app <- function(testmode_in, ...){
 
       req(root_pth)
       req(clim_readme)
-      print(clim_readme()$Scenario_Name)
 
       clim_vars <- try(get_clim_vars(root_pth, scenario_names = clim_readme()$Scenario_Name))
 

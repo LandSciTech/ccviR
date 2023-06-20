@@ -22,7 +22,7 @@ rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
 
 # Ilona's suggested colours
 col_mat <- colmat(6, bottomleft = "green", bottomright = "blue",
-                  upperleft = "orange", upperright = "magenta", do_plot = T)
+                  upperleft = "orange", upperright = "magenta", do_plot = F)
 
 test_that("color matrix works", {
   expect_true(inherits(col_mat, "matrix"))
