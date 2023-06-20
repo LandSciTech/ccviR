@@ -3,7 +3,7 @@ library(shinytest2)
 # call for snapshot review
 # testthat::snapshot_review('run_ccvi_app/', path = 'tests/testthat/app/')
 
-test_that("{shinytest2} recording: ccviR", {
+test_that("{shinytest2} app test", {
   # Don't run these tests on the CRAN build servers
   skip_on_cran()
   app <- AppDriver$new(".", name = "ccviR", seed = 7)
@@ -24,7 +24,7 @@ test_that("{shinytest2} recording: ccviR", {
   app$click("next2")
 
   # set all check boxes other than spatial vuln to 1
-  non_spat_qs <- vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 0) %>%
+  non_spat_qs <- ccviR::vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 0) %>%
     dplyr::pull(Code)
 
   inps_to_set <- lapply(seq_along(non_spat_qs), function(x) rep("1")) %>%
@@ -40,7 +40,7 @@ test_that("{shinytest2} recording: ccviR", {
 
   app$click("next4")
 
-  spat_qs <- vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 1) %>%
+  spat_qs <- ccviR::vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 1) %>%
     dplyr::pull(Code)
 
   spat_vals <- app$get_values(input = spat_qs)
