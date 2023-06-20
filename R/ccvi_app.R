@@ -501,8 +501,8 @@ ccvi_app <- function(testmode_in, ...){
               br(),
               downloadButton("report", "Generate report", class = "btn-primary"),
 
-              # helpful for testing
-              shinyjs::runcodeUI()
+              # # helpful for testing
+              # shinyjs::runcodeUI()
             )
           )
         )
@@ -1389,8 +1389,8 @@ ccvi_app <- function(testmode_in, ...){
 
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
-    # helpful for testing
-    shinyjs::runcodeServer()
+    # # helpful for testing
+    # shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
