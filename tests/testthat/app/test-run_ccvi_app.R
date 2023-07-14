@@ -38,6 +38,12 @@ test_that("{shinytest2} app test", {
 
   do.call(app$set_inputs, inps_to_set)
 
+  # add long comments for all
+  com_labels <- paste0("com", vulnq_code_lu_tbl$Code)
+  com_to_set <- lapply(seq_along(com_labels), function(x) stringi::stri_rand_lipsum(1)) %>%
+    setNames(com_labels)
+
+  do.call(app$set_inputs, com_to_set)
 
   app$click("next4")
 
@@ -60,11 +66,12 @@ test_that("{shinytest2} app test", {
 
   expect_true(all(out_data$CCVI_index == "EV"))
 
-  # not working in test environment but works manually so leaving for now.
+  # delay to allow rendering
+  app$wait_for_idle(duration = 500, timeout = 30*1000)
 
-  # path <- app$get_download("report")
-  #
-  # expect_snapshot_file(path, "rmd_report", variant = app$get_variant())
+  path <- app$get_download("report")
+
+  expect_snapshot_file(path, "rmd_report", variant = app$get_variant())
 
   # to see file in interactive session:
   # system(paste0('open "', path, '"'))
