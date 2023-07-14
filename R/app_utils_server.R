@@ -189,8 +189,9 @@ combine_outdata <- function(out_data_lst){
       'C5c', 'com_C5c', 'C6', 'com_C6', 'D1', 'com_D1', 'D2', 'com_D2',
       'D3', 'com_D3', 'D4', 'com_D4', 'GCM_or_Ensemble_name',
       'Historical_normal_period', 'Future_period', 'Emissions_scenario',
-      'Link_to_source'
-    )))
+      'Link_to_source', 'range_poly_pth', 'nonbreed_poly_pth', 'assess_poly_pth',
+      'ptn_poly_pth', 'clim_dir_pth'
+    )), contains("rng_chg_pth"))
 
 }
 
@@ -282,6 +283,10 @@ render_spat_vuln_box <- function(id, spat_df, input, valueNms, valueOpts){
 
 # recreate index_res object on loading from csv
 recreate_index_res <- function(df){
+  if(is.null(df$CCVI_index)){
+    return(NULL)
+  }
+
   spat_res <- apply_spat_tholds(df, df$cave)
   spat_res <- split(spat_res, spat_res$scenario_name)
 

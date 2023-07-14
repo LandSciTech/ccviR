@@ -29,8 +29,7 @@ get_file_ui <- function(id, title, mandatory = FALSE, type = "file",
     return(div(label, button, text_out))
 }
 
-updateGet_file_ui <- function(id){
-  #Not currently updating
+updateGet_file_ui <- function(inputId, value, ...){
   NULL
 }
 

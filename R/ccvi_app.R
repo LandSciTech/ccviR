@@ -552,7 +552,10 @@ ccvi_app <- function(testmode_in, ...){
                     filetypes = "csv")
 
     index_res <- reactiveVal()
+    file_pths <- reactiveVal()
+    clim_dir_pth <- reactiveVal()
 
+    # Restore from saved file #=================================================
     restored_df <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
         df_loaded <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
@@ -560,6 +563,13 @@ ccvi_app <- function(testmode_in, ...){
         update_restored(df_loaded, session)
 
         index_res(recreate_index_res(df_loaded))
+
+        file_pths(df_loaded %>% slice(1) %>% select(contains("pth"), -clim_dir_pth) %>%
+                    as.list())
+
+        clim_dir_pth(df_loaded %>% slice(1) %>% pull(clim_dir_pth))
+        print(file_pths)
+        print(clim_dir_pth)
 
         return(TRUE)
       }
@@ -618,18 +628,19 @@ ccvi_app <- function(testmode_in, ...){
 
     # Spatial Analysis #===============
 
-    file_pths <- reactive({
-      purrr::map(filePathIds(), ~{
-        if(is.integer(input[[.x]])){
-          # if(!is.null(restored$yes)){
-          #   return(file_pths_restore()[[.x]])
-          # }
-          return(NULL)
-        } else {
-          return(parseFilePaths(volumes, input[[.x]])$datapath)
-        }
+    toListen <- reactive({
+      purrr::map(filePathIds(), \(x){input[[x]]})
+    })
 
-      })
+    observeEvent(toListen(),{
+      pths_in <- file_pths()
+
+      purrr::walk(filePathIds(),
+                 \(x) if(!is.integer(input[[x]])){
+                   pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
+                 })
+
+      file_pths(pths_in)
     })
 
     # Enable the Submit button when all mandatory fields are filled out
@@ -675,16 +686,18 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # parse file paths
-    clim_dir_pth <- reactive({
+    observeEvent(input$clim_var_dir,{
       if(is.integer(input$clim_var_dir)){
         if (isTRUE(getOption("shiny.testmode"))) {
-          return(system.file("extdata/clim_files/processed", package = "ccviR"))
+          pth <- system.file("extdata/clim_files/processed", package = "ccviR")
         } else {
           return(NULL)
         }
       }  else {
-        return(parseDirPath(volumes, input$clim_var_dir))
+        pth <- parseDirPath(volumes, input$clim_var_dir)
       }
+
+      clim_dir_pth(pth)
     })
 
     # output file paths
@@ -693,7 +706,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     observe({
-      purrr::walk2(file_pths(), filePathIds(), ~{
+      purrr::walk2(file_pths(), filePathIds()[names(file_pths())], ~{
         out_name <- paste0(.y, "_out")
         output[[out_name]] <- renderText({.x})
       })
@@ -721,6 +734,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     range_poly_in <- reactive({
+
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/rng_poly.shp",
                                 package = "ccviR"),
@@ -749,6 +763,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     assess_poly <- reactive({
+
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/assess_poly.shp",
                                 package = "ccviR"),
@@ -799,6 +814,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     ptn_poly <- reactive({
+
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/PTN_poly.shp", package = "ccviR")
       } else {
@@ -917,6 +933,7 @@ ccvi_app <- function(testmode_in, ...){
       updateTabsetPanel(session, "tabset",
                         selected = "Exposure Results"
       )
+      browser()
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
 
@@ -927,15 +944,20 @@ ccvi_app <- function(testmode_in, ...){
 
     })
 
-    # Make maps
+    observe({
+      print(range_poly())
+      print(spat_res())
+      print(doSpatial())
+      print(clim_vars()$mat)
+    })
+
+    # Exposure maps #=========================================================
     output$texp_map <- tmap::renderTmap({
       req(!is.character(spat_res()))
       req(doSpatial())
 
-      isolate(
-        make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
-                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
-      )
+      make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
+               rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
     output$cmd_map <- tmap::renderTmap({
@@ -1354,8 +1376,10 @@ ccvi_app <- function(testmode_in, ...){
       spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
                                        gain_mod_comm = input$gain_mod_comm)
       clim_rdme <- clim_readme() %>% select(-"Scenario_Name")
-      spat_fnms <-
-      out_data_lst$spat <- bind_cols(spat_df, clim_rdme)
+      spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
+        as.data.frame() %>%
+        mutate(clim_dir_pth = clim_dir_pth())
+      out_data_lst$spat <- bind_cols(spat_df, clim_rdme, spat_fnms)
     })
 
     observeEvent(index_res(), {
@@ -1408,6 +1432,7 @@ ccvi_app <- function(testmode_in, ...){
                 modalButton("Cancel")
               ),
               title = "Error Permission Denied"))
+            print(conditionMessage(e))
           })
       }
     })
