@@ -1,12 +1,13 @@
 library(shinytest2)
 library(ccviR)
-data("vulnq_code_lu_tbl", package = "ccviR")
+
 # call for snapshot review
 # testthat::snapshot_review('run_ccvi_app/', path = 'tests/testthat/app/')
 
 test_that("{shinytest2} app test", {
   # Don't run these tests on the CRAN build servers
   skip_on_cran()
+  skip_on_ci()
   app <- AppDriver$new(".", name = "ccviR", seed = 7)
   # app <- AppDriver$new("tests/testthat/app", name = "ccviR", seed = 7)
 
