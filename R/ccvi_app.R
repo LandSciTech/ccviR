@@ -568,8 +568,6 @@ ccvi_app <- function(testmode_in, ...){
     # Flag for a restored session NULL if not
     observe(print(restored_df()))
 
-    load_bookmark_server("load", volumes)
-
     # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
     observe({
@@ -1356,6 +1354,7 @@ ccvi_app <- function(testmode_in, ...){
       spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
                                        gain_mod_comm = input$gain_mod_comm)
       clim_rdme <- clim_readme() %>% select(-"Scenario_Name")
+      spat_fnms <-
       out_data_lst$spat <- bind_cols(spat_df, clim_rdme)
     })
 
