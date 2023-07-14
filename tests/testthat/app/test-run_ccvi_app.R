@@ -1,6 +1,6 @@
 library(shinytest2)
 library(ccviR)
-
+data("vulnq_code_lu_tbl", package = "ccviR")
 # call for snapshot review
 # testthat::snapshot_review('run_ccvi_app/', path = 'tests/testthat/app/')
 
@@ -25,7 +25,7 @@ test_that("{shinytest2} app test", {
   app$click("next2")
 
   # set all check boxes other than spatial vuln to 1
-  non_spat_qs <- ccviR::vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 0) %>%
+  non_spat_qs <- vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 0) %>%
     dplyr::pull(Code)
 
   inps_to_set <- lapply(seq_along(non_spat_qs), function(x) rep("1")) %>%
@@ -39,7 +39,7 @@ test_that("{shinytest2} app test", {
   do.call(app$set_inputs, inps_to_set)
 
   # add long comments for all
-  com_labels <- paste0("com", ccviR::vulnq_code_lu_tbl$Code)
+  com_labels <- paste0("com", vulnq_code_lu_tbl$Code)
   com_to_set <- lapply(seq_along(com_labels), function(x) stringi::stri_rand_lipsum(1)) %>%
     setNames(com_labels)
 
@@ -47,7 +47,7 @@ test_that("{shinytest2} app test", {
 
   app$click("next4")
 
-  spat_qs <- ccviR::vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 1) %>%
+  spat_qs <- vulnq_code_lu_tbl %>% dplyr::filter(is_spatial == 1) %>%
     dplyr::pull(Code)
 
   spat_vals <- app$get_values(input = spat_qs)
