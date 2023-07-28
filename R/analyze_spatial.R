@@ -116,9 +116,19 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
   range_poly <- check_polys(range_poly, crs_use, "range polygon")
   scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
-  non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]), "non-breeding range polygon")
   ptn_poly <- check_polys(ptn_poly, crs_use, "PTN polygon")
   clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
+
+  if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])){
+    non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
+                                  "non-breeding range polygon")
+  } else if (!is.null(non_breed_poly)){
+    non_breed_poly <- NULL
+    message("non_breed_poly was supplied but ccei was not included in clim_vars_lst, ",
+            "ignoring non_breed_poly")
+  } else {
+    non_breed_poly <- NULL
+  }
 
   # Clip range to climate data polygon and to scale poly
 
