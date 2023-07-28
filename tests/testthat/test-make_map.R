@@ -1,6 +1,5 @@
 
 library("sf", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
-library("raster", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
 
@@ -44,3 +43,14 @@ if(interactive()){
 
   tmap::tmap_mode(cur_mode)
 }
+
+ui <- fluidPage(
+  tmap::tmapOutput("map")
+)
+
+server <- function(input, output) {
+  str(map2)
+  output$map <- tmap::renderTmap({map2})
+}
+
+shinyApp(ui, server)

@@ -933,7 +933,6 @@ ccvi_app <- function(testmode_in, ...){
       updateTabsetPanel(session, "tabset",
                         selected = "Exposure Results"
       )
-      browser()
       shinyjs::runjs("window.scrollTo(0, 0)")
     })
 

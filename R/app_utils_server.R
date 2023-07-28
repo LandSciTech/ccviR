@@ -72,6 +72,9 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
         rast_grp <- NA
       }
     }
+    # setting rast_grp to NULL in all cases since it causes errors now see
+    # https://github.com/r-tmap/tmap/issues/630
+    rast_grp <- NA
   }
 
 
