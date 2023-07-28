@@ -33,9 +33,6 @@ ccvi_app <- function(testmode_in, ...){
 
   ggplot2::theme_set(my_theme)
 
-  # Let tmap try to fix polygons that are invalid
-  tmap::tmap_options(check.and.fix = TRUE)
-
   # Header #=================================
   ui <-  function(request){
     fluidPage(
@@ -226,13 +223,13 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
-                shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
+                shinycssloaders::withSpinner(leaflet::leafletOutput("texp_map")),
                 tableOutput("texp_tbl")
               ),
               div(
                 id = "cmd_map_div",
                 h3("Moisture exposure"),
-                tmap::tmapOutput("cmd_map"),
+                leaflet::leafletOutput("cmd_map"),
                 tableOutput("cmd_tbl")
               ),
               div(
@@ -243,7 +240,7 @@ ccvi_app <- function(testmode_in, ...){
                     br()),
                 div(
                   id = "ccei_exp",
-                  tmap::tmapOutput("ccei_map"),
+                  leaflet::leafletOutput("ccei_map"),
                   tableOutput("tbl_ccei"))
 
               )
@@ -919,7 +916,8 @@ ccvi_app <- function(testmode_in, ...){
 
     output$spat_error <- renderText({
       if(inherits(hs_rast(), "try-error")){
-        stop(conditionMessage(attr(hs_rast(), "condition")))
+        stop("Error in range change raster",
+             conditionMessage(attr(hs_rast(), "condition")))
       }
       if(is.character(spat_res1())){
         stop(spat_res1(), call. = FALSE)
@@ -951,7 +949,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # Exposure maps #=========================================================
-    output$texp_map <- tmap::renderTmap({
+    output$texp_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
 
@@ -959,7 +957,7 @@ ccvi_app <- function(testmode_in, ...){
                rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
-    output$cmd_map <- tmap::renderTmap({
+    output$cmd_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
       isolate(
@@ -1002,7 +1000,7 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
-    output$ccei_map <- tmap::renderTmap({
+    output$ccei_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
       req(clim_vars()$ccei)
@@ -1066,7 +1064,7 @@ ccvi_app <- function(testmode_in, ...){
     # C2ai
     observe({spat_vuln_hide("C2ai", clim_vars()$htn, doSpatial(), restored_df())})
 
-    output$map_C2ai <- tmap::renderTmap({
+    output$map_C2ai <- leaflet::renderLeaflet({
       req(doSpatial())
       req(clim_vars()$htn)
 
@@ -1108,7 +1106,7 @@ ccvi_app <- function(testmode_in, ...){
     # C2aii
     observe({spat_vuln_hide("C2aii", ptn_poly(), doSpatial(), restored_df())})
 
-    output$map_C2aii <- tmap::renderTmap({
+    output$map_C2aii <- leaflet::renderLeaflet({
       req(doSpatial())
       req(ptn_poly())
 
@@ -1133,12 +1131,12 @@ ccvi_app <- function(testmode_in, ...){
     # C2bi
     observe({spat_vuln_hide("C2bi", clim_vars()$map, doSpatial(), restored_df())})
 
-    output$map_C2bi <- tmap::renderTmap({
+    output$map_C2bi <- leaflet::renderLeaflet({
       req(doSpatial())
       req(clim_vars()$map)
 
-      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map, rast_nm = "map",
-               rast_style = "pretty")
+      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map,
+               rast_nm = "map")
     })
 
     output$tbl_C2bi <- renderTable({
@@ -1167,7 +1165,7 @@ ccvi_app <- function(testmode_in, ...){
                                  rcl = hs_rcl_mat(), right = NA)
     })
 
-    output$map_D2_3 <- tmap::renderTmap({
+    output$map_D2_3 <- leaflet::renderLeaflet({
       req(doSpatial())
       req(hs_rast2())
 

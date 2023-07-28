@@ -38,21 +38,38 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
         unique()
       rast_lbl <- bind_cols(rast_lbl, pal = pal) %>%
         filter(.data$value %in% rast_vals)
-      pal <- pull(rast_lbl, .data$pal)
+      pal <- rast_lbl$pal
+      col_tbl <- data.frame(value = rast_lbl$value, col = pal)
+      for(l in 1:terra::nlyr(rast)){
+        terra::coltab(rast, layer = l) <- col_tbl
+      }
       rast_lbl <- pull(rast_lbl, .data$label)
     } else if(rast_nm %in% c("cmd", "mat")) {
       pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
-      brks = 1:7
-      rast_style = "fixed"
       rast_lbl = as.character(1:6)
+      col_tbl <- data.frame(value = 1:6, col = pal)
+      for(l in 1:terra::nlyr(rast)){
+        terra::coltab(rast, layer = l) <- col_tbl
+      }
+      # add descriptor to class label
+      rast_lbl[1] <- paste0(rast_lbl[1], " - Low")
+      rast_lbl[length(rast_lbl)] <- paste0(rast_lbl[length(rast_lbl)], " - High")
     } else if(rast_nm %in% c("ccei", "htn")) {
       pal = c("#FFF7BD", "#FECF66", "#F88B22", "#CC4C02")
-      brks = 1:5
       rast_style = "fixed"
       rast_lbl = as.character(1:4)
+      # add descriptor to class label
+      rast_lbl[1] <- paste0(rast_lbl[1], " - Low")
+      rast_lbl[length(rast_lbl)] <- paste0(rast_lbl[length(rast_lbl)], " - High")
+      col_tbl <- data.frame(value = 1:4, col = pal)
+      for(l in 1:terra::nlyr(rast)){
+        terra::coltab(rast, layer = l) <- col_tbl
+      }
+    } else if(rast_nm == "map"){
+      rng_val <- terra::minmax(rast)[,1]
+      pal <- colorNumeric("Blues", domain = rng_val, na.color = "#00000000")
     } else {
-      pal = NULL
-      brks = NULL
+      stop("no match for rast_nm")
     }
   } else{
     if(!is.null(rast)){
@@ -64,48 +81,72 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
   rast_nm <- names(rast_nms)[which(rast_nms == rast_nm)]
 
+
   if(!is.null(rast)){
     if(terra::nlyr(rast) == 1){
       rast_grp <- rast_nm
     } else {
       if(is.null(rast_grp)){
-        rast_grp <- NA
+        rast_grp <- names(rast)
+      } else {
+        stopifnot(length(rast_grp) == terra::nlyr(rast))
       }
     }
-    # setting rast_grp to NULL in all cases since it causes errors now see
-    # https://github.com/r-tmap/tmap/issues/630
-    rast_grp <- NA
   }
 
+  out <- leaflet::leaflet() %>%
+    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap, group = "OpenStreetMap") %>%
+    leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron, group = "CartoDB")
 
   if(is.null(poly2)){
-    out <-  tmap::tm_shape(rast, name = rast_nm)+
-      tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
-                      palette = pal, group = rast_grp, breaks = brks)+
-      tmap::tm_shape(poly1, name = poly1_nm)+
-      tmap::tm_borders(col = "black", lwd = 2)+
-      tmap::tm_add_legend("fill", labels = c(poly1_nm),
-                          col = c("black"))+
-      tmap::tm_facets(as.layers = TRUE)
+    for(l in 1:terra::nlyr(rast)){
+      out <- leaflet::addRasterImage(out, x = rast[[l]], method = "ngb",
+                                     colors = pal,
+                                     group = rast_grp[l], opacity = 1)
+    }
+    out <- out %>%
+      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black")
+    if(is.character(pal)){
+      out <- leaflet::addLegend(out, colors = pal, labels = rast_lbl,
+                                title = rast_nm, opacity = 1)
+    } else {
+      out <- leaflet::addLegend(out, pal = pal, values = rng_val[1]:rng_val[2],
+                                title = rast_nm, opacity = 1)
+    }
+    out <- out %>%
+      leaflet::addLegend(colors = c("black"), labels = c(poly1_nm),
+                         opacity = 1) %>%
+      addLayersControl(
+        baseGroups = c("CartoDB", "OpenStreetMap"),
+        overlayGroups = rast_grp,
+        options = layersControlOptions(collapsed = FALSE)
+      )
   } else if(is.null(rast)){
-    out <- tmap::tm_shape(poly1, name = poly1_nm)+
-      tmap::tm_borders(col = "black", lwd = 2)+
-      tmap::tm_shape(poly2, name = poly2_nm)+
-      tmap::tm_borders(col = "red")+
-      tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                          col = c("black", "red"))+
-      tmap::tm_facets(as.layers = TRUE)
+    out <- out %>%
+      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red") %>%
+      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
+      leaflet::addLegend(colors = c("red", "black"), labels = c(poly2_nm, poly1_nm),
+                         opacity = 1) %>%
+      addLayersControl(
+        baseGroups = c("CartoDB", "OpenStreetMap"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
   } else {
-    out <-  tmap::tm_shape(rast, name = rast_nm)+
-      tmap::tm_raster(title = rast_nm, style = rast_style, labels = rast_lbl,
-                      palette = pal, group = rast_grp, breaks = brks)+
-      tmap::tm_shape(poly1, name = poly1_nm)+
-      tmap::tm_borders(col = "black", lwd = 2)+
-      tmap::tm_shape(poly2, name = poly2_nm)+
-      tmap::tm_borders(col = "red")+
-      tmap::tm_add_legend("fill", labels = c(poly1_nm, poly2_nm),
-                          col = c("black", "red"))+
-      tmap::tm_facets(as.layers = TRUE)
+    for(l in 1:terra::nlyr(rast)){
+      out <- leaflet::addRasterImage(out, x = rast[[l]], method = "ngb",
+                                   group = rast_grp[l], opacity = 1)
+    }
+    out <- out %>%
+      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red") %>%
+      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
+      leaflet::addLegend(colors = pal, labels = rast_lbl, title = rast_nm, opacity = 1) %>%
+      leaflet::addLegend(colors = c("red", "black"), labels = c(poly2_nm, poly1_nm),
+                         opacity = 1) %>%
+      addLayersControl(
+        baseGroups = c("CartoDB", "OpenStreetMap"),
+        overlayGroups = rast_grp,
+        options = layersControlOptions(collapsed = FALSE)
+      )
   }
   return(out)
 }

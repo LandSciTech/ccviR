@@ -61,7 +61,7 @@ spat_vuln_ui <- function(id, header = NULL, vuln_q_nm = NULL, chk_box = TRUE){
         HTML("<b>Spatial data not provided.</b> <br>Answer the questions below based on expert knowledge or leave blank for unknown."),
         br(),
         br()),
-    tmap::tmapOutput(paste0("map_", id)),
+    leaflet::leafletOutput(paste0("map_", id)),
     tableOutput(paste0("tbl_", id)),
     div(id = paste0("not_missing_", id),
         HTML("<font color=\"#FF0000\"><b> Editing the response below will override the results of the spatial analysis.</b></font>")),
