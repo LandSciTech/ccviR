@@ -548,7 +548,8 @@ ccvi_app <- function(testmode_in, ...){
     shinyFileChoose("loadcsv", root = volumes, input = input,
                     filetypes = "csv")
 
-    index_res <- reactiveVal()
+    index_res <- reactiveVal(FALSE)
+    spat_res <- reactiveVal(FALSE)
     file_pths <- reactiveVal()
     clim_dir_pth <- reactiveVal()
 
@@ -559,21 +560,28 @@ ccvi_app <- function(testmode_in, ...){
 
         update_restored(df_loaded, session)
 
+        df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+        spat_res(df_spat)
+
         index_res(recreate_index_res(df_loaded))
 
         file_pths(df_loaded %>% slice(1) %>% select(contains("pth"), -clim_dir_pth) %>%
                     as.list())
 
         clim_dir_pth(df_loaded %>% slice(1) %>% pull(clim_dir_pth))
-        print(file_pths)
-        print(clim_dir_pth)
+
+        updateTabsetPanel(session, "tabset",
+                          selected = "Species Information"
+        )
+        shinyjs::runjs("window.scrollTo(0, 0)")
 
         return(TRUE)
       }
     })
 
-    # Flag for a restored session NULL if not
-    observe(print(restored_df()))
+    observeEvent(restored_df(), {
+      showNotification("Successfully restored from file.", duration = 10)
+    })
 
     # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
@@ -872,10 +880,9 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # run spatial calculations
-    spat_res1 <- reactive({
+    spat_res1 <- eventReactive(input$shinyalert, {
       req(doSpatial())
       req(clim_vars())
-      isolate({
         tryCatch({
           analyze_spatial(range_poly = range_poly_in(),
                       non_breed_poly = nonbreed_poly(),
@@ -888,7 +895,6 @@ ccvi_app <- function(testmode_in, ...){
                       scenario_names = clim_readme()$Scenario_Name)
         },
         error = function(cnd) conditionMessage(cnd))
-      })
 
     })
 
@@ -902,10 +908,10 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_clim
     })
-    spat_res <- reactive({
+    observe({
       req(doSpatial())
       req(!is.character(spat_res1()))
-      spat_res1()$spat_table
+      spat_res(spat_res1()$spat_table)
     })
 
     output$clim_var_error <- renderText({
@@ -935,17 +941,12 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # calculate exp multipliers and vuln Q values for spat
-    spat_res2 <- reactive({
-      req(spat_res())
-      apply_spat_tholds(spat_res(), input$cave)
-
-    })
-
+    spat_res2 <- reactiveVal(FALSE)
     observe({
-      print(range_poly())
-      print(spat_res())
-      print(doSpatial())
-      print(clim_vars()$mat)
+      req(!is.character(spat_res()))
+      req(spat_res())
+      spat_res2(apply_spat_tholds(spat_res(), input$cave))
+
     })
 
     # Exposure maps #=========================================================
@@ -967,8 +968,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$texp_tbl <- renderTable({
-      req(!is.character(spat_res()))
-      req(doSpatial())
+      req(spat_res2())
       exp_df <-  spat_res2() %>% rowwise() %>%
         select("scenario_name", contains("MAT"), "temp_exp_cave") %>%
         rename_at(vars(contains("MAT")),
@@ -978,8 +978,7 @@ ccvi_app <- function(testmode_in, ...){
     }, align = "r")
 
     output$cmd_tbl <- renderTable({
-      req(!is.character(spat_res()))
-      req(doSpatial())
+      req(spat_res2())
       exp_df <-  spat_res2() %>% rowwise() %>%
         select("scenario_name", contains("CMD"), "moist_exp_cave") %>%
         rename_at(vars(contains("CMD")),
@@ -1012,8 +1011,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_ccei <- renderTable({
-      req(!is.character(spat_res()))
-      req(doSpatial())
+      req(spat_res2())
       exp_df <-  spat_res2() %>%
         select("scenario_name",
                contains("CCEI", ignore.case = FALSE)) %>%
@@ -1073,7 +1071,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2ai <- renderTable({
-      req(doSpatial)
+      req(spat_res2())
       exp_df <-  spat_res2() %>%
         select(contains("HTN")) %>%
         rename_at(vars(contains("HTN")),
@@ -1114,9 +1112,10 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2aii <- renderTable({
+      req(spat_res())
       exp_df <-  spat_res() %>%
-        select(contains("PTN")) %>%
-        tidyr::pivot_longer(cols = contains("PTN"),
+        select(contains("PTN", ignore.case = FALSE)) %>%
+        tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
                      names_to = "Variable", values_to = "Proportion of Range") %>%
         distinct()
     })
@@ -1184,26 +1183,19 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$box_D2 <- renderUI({
+      req(spat_res2())
       # get previous comment
       prevCom <- isolate(input$comD2)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res2() %>%
         pull(.data$D2)
 
-      if(!is.null(hs_rast())){
-        if(terra::nlyr(hs_rast2()) > 1){
-          valueNm <- valueNms[ 4- box_val]
-          div(strong("Calculated effect on vulnerability."),
-              HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-              HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+      if(nrow(spat_res2()) > 1){
+        valueNm <- valueNms[ 4- box_val]
+        div(strong("Calculated effect on vulnerability."),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
-        } else {
-          check_comment_ui("D2", HTML("Calculated effect on vulnerability."),
-                           choiceNames = valueNms,
-                           choiceValues = valueOpts,
-                           selected = box_val,
-                           com = prevCom)
-        }
       } else {
         check_comment_ui("D2", HTML("Calculated effect on vulnerability."),
                          choiceNames = valueNms,
@@ -1211,32 +1203,26 @@ ccvi_app <- function(testmode_in, ...){
                          selected = box_val,
                          com = prevCom)
       }
+
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_D2", suspendWhenHidden = FALSE)
 
     output$box_D3 <- renderUI({
+      req(spat_res2())
       # get previous comment
       prevCom <- isolate(input$comD3)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
       box_val <- spat_res2() %>%
         pull(.data$D3)
 
-      if(!is.null(hs_rast())){
-        if(terra::nlyr(hs_rast2()) > 1){
-          valueNm <- valueNms[4 - box_val]
-          div(strong("Calculated effect on vulnerability."),
-              HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-              HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+      if(nrow(spat_res2()) > 1){
+        valueNm <- valueNms[4 - box_val]
+        div(strong("Calculated effect on vulnerability."),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
-        } else {
-          check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
-                           choiceNames = valueNms,
-                           choiceValues = valueOpts,
-                           selected = box_val,
-                           com = prevCom)
-        }
       } else {
         check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
                          choiceNames = valueNms,
@@ -1244,6 +1230,7 @@ ccvi_app <- function(testmode_in, ...){
                          selected = box_val,
                          com = prevCom)
       }
+
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1369,6 +1356,10 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     observeEvent(spat_res(), {
+      req(spat_res())
+      req(clim_readme())
+      req(!is.null(file_pths()))
+
       message("spat out_data")
       spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
                                        gain_mod_comm = input$gain_mod_comm)
@@ -1376,7 +1367,10 @@ ccvi_app <- function(testmode_in, ...){
       spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())
-      out_data_lst$spat <- bind_cols(spat_df, clim_rdme, spat_fnms)
+      out_data_lst$spat <- bind_cols(
+        spat_df %>% select(-tidyselect::any_of(c(colnames(clim_rdme),
+                                                 colnames(spat_fnms)))),
+        clim_rdme, spat_fnms)
     })
 
     observeEvent(index_res(), {
