@@ -16,6 +16,7 @@
 #' @import sf
 #' @import shinyFiles
 #' @importFrom tmap tmap_leaflet
+#' @importFrom terra has.RGB
 #'
 #' @export
 #'

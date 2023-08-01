@@ -67,7 +67,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       }
     } else if(rast_nm == "map"){
       rng_val <- terra::minmax(rast)[,1]
-      pal <- colorNumeric("Blues", domain = rng_val, na.color = "#00000000")
+      pal <- leaflet::colorNumeric("Blues", domain = rng_val, na.color = "#00000000")
     } else {
       stop("no match for rast_nm")
     }
@@ -116,10 +116,10 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
     out <- out %>%
       leaflet::addLegend(colors = c("black"), labels = c(poly1_nm),
                          opacity = 1) %>%
-      addLayersControl(
+      leaflet::addLayersControl(
         baseGroups = c("CartoDB", "OpenStreetMap"),
         overlayGroups = rast_grp,
-        options = layersControlOptions(collapsed = FALSE)
+        options = leaflet::layersControlOptions(collapsed = FALSE)
       )
   } else if(is.null(rast)){
     out <- out %>%
@@ -127,9 +127,9 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
       leaflet::addLegend(colors = c("red", "black"), labels = c(poly2_nm, poly1_nm),
                          opacity = 1) %>%
-      addLayersControl(
+      leaflet::addLayersControl(
         baseGroups = c("CartoDB", "OpenStreetMap"),
-        options = layersControlOptions(collapsed = FALSE)
+        options = leaflet::layersControlOptions(collapsed = FALSE)
       )
   } else {
     for(l in 1:terra::nlyr(rast)){
@@ -142,10 +142,10 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       leaflet::addLegend(colors = pal, labels = rast_lbl, title = rast_nm, opacity = 1) %>%
       leaflet::addLegend(colors = c("red", "black"), labels = c(poly2_nm, poly1_nm),
                          opacity = 1) %>%
-      addLayersControl(
+      leaflet::addLayersControl(
         baseGroups = c("CartoDB", "OpenStreetMap"),
         overlayGroups = rast_grp,
-        options = layersControlOptions(collapsed = FALSE)
+        options = leaflet::layersControlOptions(collapsed = FALSE)
       )
   }
   return(out)
