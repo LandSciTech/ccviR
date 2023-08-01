@@ -19,7 +19,7 @@ using prep_clim_data."><meta property="og:image" content="https://landscitech.gi
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ccviR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.1.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
       </span>
     </div>
 
@@ -97,7 +97,7 @@ scenario name is provided to <code><a href="prep_clim_data.html">prep_clim_data<
 
 <p>A list of climate variables with names "mat", "cmd", "map", "ccei",
 "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
-be RasterStacks with one layer per scenario.</p>
+be SpatRasters with one layer per scenario.</p>
     </div>
 
     <div id="ref-examples">
@@ -109,51 +109,53 @@ be RasterStacks with one layer per scenario.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">get_clim_vars</span><span class="op">(</span><span class="va">pth</span>, <span class="va">scn_nms</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $mat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> class      : RasterStack </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions : 44, 43, 1892, 2  (nrow, ncol, ncell, nlayers)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resolution : 10000, 10000  (x, y)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> extent     : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> crs        : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> names      : RCP_4.5, RCP_8.5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min values :       1,       6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max values :       5,       6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 44, 43, 2  (nrow, ncol, nlyr)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 10000, 10000  (x, y)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sources     : MAT_reclassRCP_4.5.tif  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               MAT_reclassRCP_8.5.tif  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> names       : RCP_4.5, RCP_8.5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min values  :       1,       6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max values  :       5,       6 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $cmd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> class      : RasterStack </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions : 44, 43, 1892, 2  (nrow, ncol, ncell, nlayers)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resolution : 10000, 10000  (x, y)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> extent     : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> crs        : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> names      : RCP_4.5, RCP_8.5 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> min values :       1,       1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> max values :       6,       6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 44, 43, 2  (nrow, ncol, nlyr)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 10000, 10000  (x, y)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sources     : CMD_reclassRCP_4.5.tif  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               CMD_reclassRCP_8.5.tif  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> names       : RCP_4.5, RCP_8.5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min values  :       1,       1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max values  :       6,       6 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $map</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> class      : RasterLayer </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions : 44, 43, 1892  (nrow, ncol, ncell)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resolution : 10000, 10000  (x, y)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> extent     : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> crs        : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> source     : MAP.tif </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> names      : layer </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> values     : 902, 1357  (min, max)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 44, 43, 1  (nrow, ncol, nlyr)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 10000, 10000  (x, y)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> source      : MAP.tif </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> name        : NB_norm_MAP </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min value   :         902 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :        1357 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ccei</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $htn</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> class      : RasterLayer </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions : 44, 43, 1892  (nrow, ncol, ncell)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> resolution : 10000, 10000  (x, y)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> extent     : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> crs        : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> source     : MWMT_MCMT_reclass.tif </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> names      : layer </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> values     : 1, 4  (min, max)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> class       : SpatRaster </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> dimensions  : 44, 43, 1  (nrow, ncol, nlyr)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> resolution  : 10000, 10000  (x, y)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> source      : MWMT_MCMT_reclass.tif </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> name        : NB_norm_MWMT </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> min value   :            1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> max value   :            4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $clim_poly</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 1 feature and 10 fields</span>

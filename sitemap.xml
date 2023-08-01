@@ -46,6 +46,9 @@
     <loc>https://landscitech.github.io/ccviR/reference/make_vuln_df.html</loc>
   </url>
   <url>
+    <loc>https://landscitech.github.io/ccviR/reference/plot_bivar_exp.html</loc>
+  </url>
+  <url>
     <loc>https://landscitech.github.io/ccviR/reference/plot_q_score.html</loc>
   </url>
   <url>
@@ -61,7 +64,7 @@
     <loc>https://landscitech.github.io/ccviR/reference/run_data_prep.html</loc>
   </url>
   <url>
-    <loc>https://landscitech.github.io/ccviR/reference/trim_ras.html</loc>
+    <loc>https://landscitech.github.io/ccviR/reference/ui_build_table.html</loc>
   </url>
   <url>
     <loc>https://landscitech.github.io/ccviR/reference/vulnq_code_lu_tbl.html</loc>
