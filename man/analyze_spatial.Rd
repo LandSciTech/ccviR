@@ -31,13 +31,13 @@ in the non-breeding season.}
 considered part of the physiological thermal niche (See NatureServe
 Guidelines for definition).}
 
-\item{hs_rast}{Optional. A Raster* object with results from a model of the
+\item{hs_rast}{Optional. A SpatRaster object with results from a model of the
 change in the species' range caused by climate change. To supply different
-results for each scenario use a RasterStack and ensure that the order of
+results for each scenario use a raster with multiple layers and ensure that the order of
 the layers matches the order of \code{scenario_names}.}
 
 \item{hs_rcl}{a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
-lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
+lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
 details on the matrix format.}
 
 \item{gain_mod}{a number between 0 and 1 that can be used to down-weight gains
@@ -93,9 +93,9 @@ spat_res <- analyze_spatial(
   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
   clim_vars_lst = clim_vars,
-  hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
-                          raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
-  hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+  hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+                          file.path(base_pth, "rng_chg_85.tif"))),
+  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
   scenario_names = scn_nms
 )
 }

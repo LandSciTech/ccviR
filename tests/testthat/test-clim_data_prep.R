@@ -1,4 +1,4 @@
-context("Test the prep_clim_data function")
+# Test the prep_clim_data function
 pth_base <- system.file("extdata/clim_files", package = "ccviR")
 
 test_that("works with demo data",{
@@ -42,13 +42,14 @@ test_that("works with demo data",{
   expect_length(list.files(file.path(pth_base, "processed")), 11)
 
   # check that the scn2 data is higher
-  mat_45 <- raster::raster(file.path(pth_base,
+  mat_45 <- terra::rast(file.path(pth_base,
                                      "processed/MAT_reclassRCP_4.5.tif"))
 
-  mat_85 <- raster::raster(file.path(pth_base,
+  mat_85 <- terra::rast(file.path(pth_base,
                                      "processed/MAT_reclassRCP_8.5.tif"))
 
-  expect_gt(raster::cellStats(mat_85, mean), raster::cellStats(mat_45, mean))
+  expect_gt(terra::global(mat_85, "mean", na.rm = TRUE)[1,1],
+            terra::global(mat_45, "mean", na.rm = TRUE)[1,1])
   # # to start delete contents of processed data
   # file.remove(list.files(file.path(pth_base, "processed"), full.names = TRUE))
   #
@@ -59,5 +60,9 @@ test_that("works with demo data",{
   #
   # expect_length(list.files(file.path(pth_base, "processed")), 9)
 
+  expect_type(prep_exp(rast_norm = terra::rast(file.path(in_folder, "NB_norm_MAT.tif")),
+                 rast_fut = terra::rast(file.path(in_folder, "NB_RCP.8.5_MAT.tif")),
+                 file_nm = tempfile(fileext = ".tif"), type = "sd"),
+              "double")
 })
 

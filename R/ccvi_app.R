@@ -33,9 +33,6 @@ ccvi_app <- function(testmode_in, ...){
 
   ggplot2::theme_set(my_theme)
 
-  # Let tmap try to fix polygons that are invalid
-  tmap::tmap_options(check.and.fix = TRUE)
-
   # Header #=================================
   ui <-  function(request){
     fluidPage(
@@ -80,7 +77,7 @@ ccvi_app <- function(testmode_in, ...){
             h3("Preparing to use the app"),
 
             p(strong("Step 0: "),"The first time you use the app you can either",
-              a("download", href = "https://drive.google.com/file/d/1U6iVI60NvpFY_0cfnpe3gNw2Xpg66sJ4/view?usp=sharing", target="_blank"),
+              a("download", href = "https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link", target="_blank"),
               "a pre-prepared climate data set used in the app or",
               " prepare your own using raw climate data and the ",
               a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html", target="_blank")),
@@ -111,8 +108,12 @@ ccvi_app <- function(testmode_in, ...){
             br(),
             strong("Or load data from a previous assessment"),
             br(),
-            load_bookmark_ui("load"),
+            #load_bookmark_ui("load"),
+            shinyFilesButton("loadcsv", "Select file", "Select file", multiple = FALSE),
             br(),
+            strong("Download column definitions for saved data"),
+            br(),
+            downloadButton("downloadDefs", "Download csv"),
             br(),
             h3("References"),
             p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
@@ -161,11 +162,9 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "spatial",
                 h3("Spatial data analysis"),
-                labelMandatory(strong("Folder location of prepared climate data:")),
-                shinyDirButton("clim_var_dir", "Choose a folder",
-                               "Folder location of prepared climate data"),
-                shinycssloaders::withSpinner(verbatimTextOutput("clim_var_dir_out", placeholder = TRUE), proxy.height = "100px"),
-                verbatimTextOutput("clim_var_error"),
+                get_file_ui("clim_var_dir", "Folder location of prepared climate data",
+                            type = "dir", mandatory = TRUE, spinner = TRUE),
+                verbatimTextOutput("clim_var_error", ),
                 br(),
                 get_file_ui("range_poly_pth", "Range polygon shapefile", mandatory = TRUE),
                 get_file_ui("assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
@@ -180,22 +179,11 @@ ccvi_app <- function(testmode_in, ...){
                                  strong("Classification of projected range change raster"),
                                  p("Enter the range of values in the raster corresponding to ",
                                    "lost, maintained, gained and not suitable."),
-                                 strong("Lost: "),
-                                 tags$div(numericInput("lost_from", "From", 1), style="display:inline-block"),
-                                 tags$div(numericInput("lost_to", "To", 1), style="display:inline-block"),
+                                 from_to_ui("lost", "Lost:",  c(-1, -1)),
+                                 from_to_ui("maint", "Maintained:", c(0, 0)),
+                                 from_to_ui("gain", "Gained:", c(1,1)),
+                                 from_to_ui("ns", "Not Suitable:", c(99, 99)),
                                  br(),
-                                 strong("Maintained: "),
-                                 tags$div(numericInput("maint_from", "From", 2), style="display:inline-block"),
-                                 tags$div(numericInput("maint_to", "To", 6), style="display:inline-block"),
-                                 br(),
-                                 strong("Gained: "),
-                                 tags$div(numericInput("gain_from", "From", 7), style="display:inline-block"),
-                                 tags$div(numericInput("gain_to", "To", 7), style="display:inline-block"),
-                                 br(),
-                                 strong("Not Suitable: "),
-                                 tags$div(numericInput("ns_from", "From", 0), style="display:inline-block"),
-                                 tags$div(numericInput("ns_to", "To", 0), style="display:inline-block"),
-                                 br(), br(),
                                  strong("Gain modifier"),
                                  p("Range gains predicted based on future climate projections should be ",
                                    "interpreted cautiously. It is important to consider whether ",
@@ -235,13 +223,13 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
-                shinycssloaders::withSpinner(tmap::tmapOutput("texp_map")),
+                shinycssloaders::withSpinner(leaflet::leafletOutput("texp_map")),
                 tableOutput("texp_tbl")
               ),
               div(
-                id = "cmd_map",
+                id = "cmd_map_div",
                 h3("Moisture exposure"),
-                tmap::tmapOutput("cmd_map"),
+                leaflet::leafletOutput("cmd_map"),
                 tableOutput("cmd_tbl")
               ),
               div(
@@ -252,7 +240,7 @@ ccvi_app <- function(testmode_in, ...){
                     br()),
                 div(
                   id = "ccei_exp",
-                  tmap::tmapOutput("ccei_map"),
+                  leaflet::leafletOutput("ccei_map"),
                   tableOutput("tbl_ccei"))
 
               )
@@ -502,25 +490,27 @@ ccvi_app <- function(testmode_in, ...){
                   "had the highest scores and how exposure impacted the score."),
                 plotly::plotlyOutput("q_score_plt")
               ),
-
-              # helpful for testing
-              # shinyjs::runcodeUI(),
-
-              br(), br(),
-              downloadButton("downloadData", "Download results as csv"),
-              downloadButton("downloadDefs", "Download column definitions"),
-              br(), br(),
+              br(),
+              br(),
               actionButton("restart", "Assess another species",
                            class = "btn-primary"),
               br(),
               br(),
-              save_bookmark_ui("save")
+              downloadButton("report", "Generate report", class = "btn-primary"),
+
+              # # helpful for testing
+              # shinyjs::runcodeUI()
             )
           )
         )
       ),
       div(
         id = "footer",
+        style = "float:right",
+        br(), br(), br(), br(),
+        shinySaveButton("downloadData", "Save progress", "Save app data as a csv file",
+                       class = "btn-primary", icon = shiny::icon("save")),
+        br(),
         br(),
         br())
     )
@@ -528,6 +518,8 @@ ccvi_app <- function(testmode_in, ...){
 
   # Server #========================
   server <- function(input, output, session) {
+    file_pths <- NULL
+
     # start up Note this time out is because when I disconnected from VPN it
     # made the getVolumes function hang forever because it was looking for
     # drives that were no longer connected. Now it will give an error
@@ -545,9 +537,6 @@ ccvi_app <- function(testmode_in, ...){
            "information", call. = FALSE)
     }
 
-    # Flag for if this is a restored session
-    restored <- reactiveValues()
-
     observeEvent(input$start, {
       updateTabsetPanel(session, "tabset",
                         selected = "Species Information"
@@ -556,7 +545,43 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # restore a previous session
-    load_bookmark_server("load", volumes)
+    shinyFileChoose("loadcsv", root = volumes, input = input,
+                    filetypes = "csv")
+
+    index_res <- reactiveVal(FALSE)
+    spat_res <- reactiveVal(FALSE)
+    file_pths <- reactiveVal()
+    clim_dir_pth <- reactiveVal()
+
+    # Restore from saved file #=================================================
+    restored_df <- eventReactive(input$loadcsv, {
+      if(!is.integer(input$loadcsv)){
+        df_loaded <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
+
+        update_restored(df_loaded, session)
+
+        df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+        spat_res(df_spat)
+
+        index_res(recreate_index_res(df_loaded))
+
+        file_pths(df_loaded %>% slice(1) %>% select(contains("pth"), -clim_dir_pth) %>%
+                    as.list())
+
+        clim_dir_pth(df_loaded %>% slice(1) %>% pull(clim_dir_pth))
+
+        updateTabsetPanel(session, "tabset",
+                          selected = "Species Information"
+        )
+        shinyjs::runjs("window.scrollTo(0, 0)")
+
+        return(TRUE)
+      }
+    })
+
+    observeEvent(restored_df(), {
+      showNotification("Successfully restored from file.", duration = 10)
+    })
 
     # Species Info #=================
     # Enable the Submit button when all mandatory fields are filled out
@@ -607,6 +632,22 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # Spatial Analysis #===============
+
+    toListen <- reactive({
+      purrr::map(filePathIds(), \(x){input[[x]]})
+    })
+
+    observeEvent(toListen(),{
+      pths_in <- file_pths()
+
+      purrr::walk(filePathIds(),
+                 \(x) if(!is.integer(input[[x]])){
+                   pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
+                 })
+
+      file_pths(pths_in)
+    })
+
     # Enable the Submit button when all mandatory fields are filled out
     observe({
       mandatoryFilled2 <-
@@ -650,33 +691,18 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # parse file paths
-    clim_dir_pth <- reactive({
+    observeEvent(input$clim_var_dir,{
       if(is.integer(input$clim_var_dir)){
-        if(!is.null(restored$yes)){
-          return(clim_dir_pth_restore())
-        } else if (isTRUE(getOption("shiny.testmode"))) {
-          return(system.file("extdata/clim_files/processed", package = "ccviR"))
+        if (isTRUE(getOption("shiny.testmode"))) {
+          pth <- system.file("extdata/clim_files/processed", package = "ccviR")
         } else {
           return(NULL)
         }
       }  else {
-        return(parseDirPath(volumes, input$clim_var_dir))
+        pth <- parseDirPath(volumes, input$clim_var_dir)
       }
-    })
 
-
-    file_pths <- reactive({
-      purrr::map(filePathIds(), ~{
-        if(is.integer(input[[.x]])){
-          if(!is.null(restored$yes)){
-            return(file_pths_restore()[[.x]])
-          }
-            return(NULL)
-          } else {
-          return(parseFilePaths(volumes, input[[.x]])$datapath)
-        }
-
-      })
+      clim_dir_pth(pth)
     })
 
     # output file paths
@@ -685,7 +711,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     observe({
-      purrr::walk2(file_pths(), filePathIds(), ~{
+      purrr::walk2(file_pths(), filePathIds()[names(file_pths())], ~{
         out_name <- paste0(.y, "_out")
         output[[out_name]] <- renderText({.x})
       })
@@ -707,15 +733,15 @@ ccvi_app <- function(testmode_in, ...){
 
       req(root_pth)
       req(clim_readme)
-      print(clim_readme()$Scenario_Name)
 
       clim_vars <- try(get_clim_vars(root_pth, scenario_names = clim_readme()$Scenario_Name))
 
     })
 
     range_poly_in <- reactive({
+
       if (isTRUE(getOption("shiny.testmode"))) {
-        sf::st_read(system.file("extdata/rng_poly_high.shp",
+        sf::st_read(system.file("extdata/rng_poly.shp",
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
@@ -727,8 +753,10 @@ ccvi_app <- function(testmode_in, ...){
 
     nonbreed_poly <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/nonbreed_poly.shp",
-                           package = "ccviR")
+        # not currently included in package
+        # pth <- system.file("extdata/nonbreed_poly.shp",
+        #                    package = "ccviR")
+        pth <- file_pths()$nonbreed_poly_pth
       } else {
         pth <- file_pths()$nonbreed_poly_pth
       }
@@ -740,6 +768,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     assess_poly <- reactive({
+
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/assess_poly.shp",
                                 package = "ccviR"),
@@ -770,7 +799,7 @@ ccvi_app <- function(testmode_in, ...){
 
     hs_rast <- reactive({
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/HS_rast_high.tif",
+        pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
       } else {
         pth <- file_pths()[stringr::str_subset(names(input), "rng_chg_pth")] %>%
@@ -783,15 +812,16 @@ ccvi_app <- function(testmode_in, ...){
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
-        check_trim(raster::stack(pth))
+        check_trim(terra::rast(pth))
       }
 
 
     })
 
     ptn_poly <- reactive({
+
       if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/ptn_poly.shp", package = "ccviR")
+        pth <- system.file("extdata/PTN_poly.shp", package = "ccviR")
       } else {
         pth <- file_pths()$ptn_poly_pth
       }
@@ -815,10 +845,11 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     doSpatial <- reactiveVal(FALSE)
+    repeatSpatial <- reactiveVal(FALSE)
 
     observe({
-      if(!is.null(restored$yes)){
-        doSpatial(1)
+      if(!is.null(restored_df())){
+        repeatSpatial(TRUE)
         message("doSpatial restore")
       }
     })
@@ -834,7 +865,7 @@ ccvi_app <- function(testmode_in, ...){
           modalButton("Cancel")
         ),
         title = "Do you want to run the spatial analysis?"))
-      if(input$startSpatial == 1){
+      if(!repeatSpatial()){
         shinyjs::click("shinyalert")
       }
     })
@@ -842,16 +873,16 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(input$shinyalert, {
       removeModal()
       if(input$shinyalert > 0){
-        doSpatial(doSpatial() +1)
+        doSpatial(TRUE)
+        repeatSpatial(TRUE)
       }
       shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
 
     # run spatial calculations
-    spat_res1 <- reactive({
+    spat_res1 <- eventReactive(input$shinyalert, {
       req(doSpatial())
       req(clim_vars())
-      isolate({
         tryCatch({
           analyze_spatial(range_poly = range_poly_in(),
                       non_breed_poly = nonbreed_poly(),
@@ -864,7 +895,6 @@ ccvi_app <- function(testmode_in, ...){
                       scenario_names = clim_readme()$Scenario_Name)
         },
         error = function(cnd) conditionMessage(cnd))
-      })
 
     })
 
@@ -878,10 +908,10 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_clim
     })
-    spat_res <- reactive({
+    observe({
       req(doSpatial())
       req(!is.character(spat_res1()))
-      spat_res1()$spat_table
+      spat_res(spat_res1()$spat_table)
     })
 
     output$clim_var_error <- renderText({
@@ -892,7 +922,8 @@ ccvi_app <- function(testmode_in, ...){
 
     output$spat_error <- renderText({
       if(inherits(hs_rast(), "try-error")){
-        stop(conditionMessage(attr(hs_rast(), "condition")))
+        stop("Error in range change raster",
+             conditionMessage(attr(hs_rast(), "condition")))
       }
       if(is.character(spat_res1())){
         stop(spat_res1(), call. = FALSE)
@@ -901,15 +932,61 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
-    # Make maps
-    output$texp_map <- tmap::renderTmap({
-      req(!is.character(spat_res()))
+    # When next button is clicked move to next panel
+    observeEvent(input$next2, {
+      updateTabsetPanel(session, "tabset",
+                        selected = "Exposure Results"
+      )
+      shinyjs::runjs("window.scrollTo(0, 0)")
+    })
 
+    # calculate exp multipliers and vuln Q values for spat
+    spat_res2 <- reactiveVal(FALSE)
+    observe({
+      req(!is.character(spat_res()))
+      req(spat_res())
+      spat_res2(apply_spat_tholds(spat_res(), input$cave))
+
+    })
+
+    # Exposure maps #=========================================================
+    output$texp_map <- leaflet::renderLeaflet({
+      req(!is.character(spat_res()))
+      req(doSpatial())
+
+      make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
+               rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+    })
+
+    output$cmd_map <- leaflet::renderLeaflet({
+      req(!is.character(spat_res()))
+      req(doSpatial())
       isolate(
-        make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
+        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
                  rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
       )
     })
+
+    output$texp_tbl <- renderTable({
+      req(spat_res2())
+      exp_df <-  spat_res2() %>% rowwise() %>%
+        select("scenario_name", contains("MAT"), "temp_exp_cave") %>%
+        rename_at(vars(contains("MAT")),
+                  ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
+        rename(`Scenario Name` = .data$scenario_name,
+               `Exposure Multiplier` = .data$temp_exp_cave)
+    }, align = "r")
+
+    output$cmd_tbl <- renderTable({
+      req(spat_res2())
+      exp_df <-  spat_res2() %>% rowwise() %>%
+        select("scenario_name", contains("CMD"), "moist_exp_cave") %>%
+        rename_at(vars(contains("CMD")),
+                  ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
+        rename(`Scenario Name` = .data$scenario_name,
+               `Exposure Multiplier` = .data$moist_exp_cave)
+    }, align = "r")
+
 
     observe({
       req(doSpatial())
@@ -922,8 +999,9 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
-    output$ccei_map <- tmap::renderTmap({
+    output$ccei_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
+      req(doSpatial())
       req(clim_vars()$ccei)
       req(isolate(nonbreed_poly()))
       isolate(
@@ -932,56 +1010,10 @@ ccvi_app <- function(testmode_in, ...){
       )
     })
 
-    output$cmd_map <- tmap::renderTmap({
-      req(!is.character(spat_res()))
-      isolate(
-        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
-                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
-      )
-    })
-
-    output$texp_tbl <- renderTable({
-      req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>% rowwise() %>%
-        mutate(temp_exp = case_when(
-          MAT_6 > 50 ~ 2.4,
-          sum(MAT_6, MAT_5, na.rm = TRUE) >= 75 ~ 2,
-          sum(MAT_6, MAT_5, MAT_4, na.rm = TRUE) >= 60 ~ 1.6,
-          sum(MAT_6, MAT_5, MAT_4, MAT_3, na.rm = TRUE) >= 40 ~ 1.2,
-          sum(MAT_6, MAT_5, MAT_4, MAT_3, MAT_2, na.rm = TRUE) >= 20 ~ 0.8,
-          TRUE ~ 0.4
-        ),
-        temp_exp_cave = round(.data$temp_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
-        select(.data$scenario_name, contains("MAT"), .data$temp_exp_cave) %>%
-        rename_at(vars(contains("MAT")),
-                  ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$temp_exp_cave)
-    }, align = "r")
-
-    output$cmd_tbl <- renderTable({
-      req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>% rowwise() %>%
-        mutate(moist_exp = case_when(
-          CMD_6 >= 80 ~ 2,
-          sum(CMD_6, CMD_5, na.rm = TRUE) >= 64 ~ 1.67,
-          sum(CMD_6, CMD_5, CMD_4, na.rm = TRUE) >= 48 ~ 1.33,
-          sum(CMD_6, CMD_5, CMD_4, CMD_3, na.rm = TRUE) >= 32 ~ 1,
-          sum(CMD_6, CMD_5, CMD_4, CMD_3, CMD_2, na.rm = TRUE) >= 16 ~ 0.67,
-          TRUE ~ 0.33
-        ),
-        moist_exp_cave = round(.data$moist_exp / ifelse(input$cave == 1, 3, 1), 3)) %>%
-        select(.data$scenario_name, contains("CMD"), .data$moist_exp_cave) %>%
-        rename_at(vars(contains("CMD")),
-                  ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$moist_exp_cave)
-    }, align = "r")
-
     output$tbl_ccei <- renderTable({
-      req(!is.character(spat_res()))
-      exp_df <-  spat_res() %>%
-        select(.data$scenario_name,
+      req(spat_res2())
+      exp_df <-  spat_res2() %>%
+        select("scenario_name",
                contains("CCEI", ignore.case = FALSE)) %>%
         rename_at(vars(contains("CCEI")),
                   ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
@@ -989,13 +1021,6 @@ ccvi_app <- function(testmode_in, ...){
 
     }, align = "r")
 
-    # When next button is clicked move to next panel
-    observeEvent(input$next2, {
-      updateTabsetPanel(session, "tabset",
-                        selected = "Exposure Results"
-      )
-      shinyjs::runjs("window.scrollTo(0, 0)")
-    })
     # When next button is clicked move to next panel
     observeEvent(input$next3, {
       updateTabsetPanel(session, "tabset",
@@ -1034,22 +1059,10 @@ ccvi_app <- function(testmode_in, ...){
       guideDSpatial()
     })
 
-
     # C2ai
-    observe({
-      req(doSpatial())
-      if(isTruthy(clim_vars()$htn)){
-        shinyjs::hide("missing_C2ai")
-        shinyjs::show("map_C2ai")
-        shinyjs::show("not_missing_C2ai")
-      } else {
-        shinyjs::hide("map_C2ai")
-        shinyjs::hide("not_missing_C2ai")
-        shinyjs::show("missing_C2ai")
-      }
-    })
+    observe({spat_vuln_hide("C2ai", clim_vars()$htn, doSpatial(), restored_df())})
 
-    output$map_C2ai <- tmap::renderTmap({
+    output$map_C2ai <- leaflet::renderLeaflet({
       req(doSpatial())
       req(clim_vars()$htn)
 
@@ -1058,7 +1071,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2ai <- renderTable({
-      exp_df <-  spat_res() %>%
+      req(spat_res2())
+      exp_df <-  spat_res2() %>%
         select(contains("HTN")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
@@ -1070,43 +1084,27 @@ ccvi_app <- function(testmode_in, ...){
         distinct()
     }, align = "r")
 
-    output$box_C2ai <- renderUI({
-      # get previous comment
-      prevCom <- isolate(input$comC2ai)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(C2ai = case_when(HTN_1 > 10 ~ 0,
-                                HTN_2 > 10 ~ 1,
-                                HTN_3 > 10 ~ 2,
-                                HTN_4 > 10 ~ 3,
-                                is.na(HTN_1) ~ NA_real_)) %>%
-        pull(.data$C2ai) %>% unique()
+    # create reactive for value used to choose checkbox b/c can't depend on
+    # spat_res2 directly or it never renders when restoring
+    box_val <- reactiveVal()
 
-      check_comment_ui("C2ai", HTML("Calculated effect on vulnerability."),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+    observe({
+      if(isTruthy(spat_res2())){
+        box_val(spat_res2())
+      }
+    })
+
+    output$box_C2ai <- renderUI({
+      render_spat_vuln_box("C2ai", box_val(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_C2ai", suspendWhenHidden = FALSE)
 
     # C2aii
-    observe({
-      req(doSpatial())
-      if(isTruthy(ptn_poly())){
-        shinyjs::hide("missing_C2aii")
-        shinyjs::show("not_missing_C2aii")
-        shinyjs::show("map_C2aii")
-      } else {
-        shinyjs::hide("map_C2aii")
-        shinyjs::hide("not_missing_C2aii")
-        shinyjs::show("missing_C2aii")
-      }
-    })
+    observe({spat_vuln_hide("C2aii", ptn_poly(), doSpatial(), restored_df())})
 
-    output$map_C2aii <- tmap::renderTmap({
+    output$map_C2aii <- leaflet::renderLeaflet({
       req(doSpatial())
       req(ptn_poly())
 
@@ -1114,82 +1112,41 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2aii <- renderTable({
+      req(spat_res())
       exp_df <-  spat_res() %>%
-        select(contains("PTN")) %>%
-        tidyr::pivot_longer(cols = contains("PTN"),
+        select(contains("PTN", ignore.case = FALSE)) %>%
+        tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
                      names_to = "Variable", values_to = "Proportion of Range") %>%
         distinct()
     })
 
     output$box_C2aii <- renderUI({
-      # get previous comment
-      prevCom <- isolate(input$comC2aii)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(C2aii = case_when(PTN > 90 ~ 3,
-                                 PTN > 50 ~ 2,
-                                 PTN > 10 ~ 1,
-                                 is.na(PTN) ~ NA_real_,
-                                 TRUE ~ 0)) %>%
-        pull(.data$C2aii) %>% unique()
-
-      check_comment_ui("C2aii", HTML("Calculated effect on vulnerability."),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+      render_spat_vuln_box("C2aii", box_val(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
 
     # C2bi
-    observe({
-      req(doSpatial())
-      if(isTruthy(clim_vars()$map)){
-        shinyjs::hide("missing_C2bi")
-        shinyjs::show("not_missing_C2bi")
-        shinyjs::show("map_C2bi")
-      } else {
-        shinyjs::hide("map_C2bi")
-        shinyjs::hide("not_missing_C2bi")
-        shinyjs::show("missing_C2bi")
-      }
-    })
+    observe({spat_vuln_hide("C2bi", clim_vars()$map, doSpatial(), restored_df())})
 
-    output$map_C2bi <- tmap::renderTmap({
+    output$map_C2bi <- leaflet::renderLeaflet({
       req(doSpatial())
       req(clim_vars()$map)
 
-      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map, rast_nm = "map",
-               rast_style = "pretty")
+      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map,
+               rast_nm = "map")
     })
 
     output$tbl_C2bi <- renderTable({
       exp_df <-  spat_res() %>%
-        select(.data$MAP_max, .data$MAP_min) %>%
+        select("MAP_max", "MAP_min") %>%
         rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
         distinct()
     })
 
     output$box_C2bi <- renderUI({
-      # get previous comment
-      prevCom <- isolate(input$comC2bi)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(range_MAP = .data$MAP_max - .data$MAP_min,
-               C2bi = case_when(range_MAP < 100 ~ 3,
-                                range_MAP < 254 ~ 2,
-                                range_MAP < 508 ~ 1,
-                                is.na(range_MAP) ~ NA_real_,
-                                TRUE ~ 0)) %>%
-        pull(.data$C2bi) %>% unique()
-
-      check_comment_ui("C2bi", HTML("Calculated effect on vulnerability."),
-                       choiceNames = valueNms,
-                       choiceValues = valueOpts,
-                       selected = box_val,
-                       com = prevCom)
+      render_spat_vuln_box("C2bi", box_val(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1197,26 +1154,17 @@ ccvi_app <- function(testmode_in, ...){
 
     # D2 and D3
     observe({
-      req(doSpatial())
-      if(isTruthy(hs_rast())){
-        shinyjs::hide("missing_D2_3")
-        shinyjs::show("not_missing_D2_3")
-        shinyjs::show("map_D2_3")
-      } else {
-        shinyjs::hide("map_D2_3")
-        shinyjs::hide("not_missing_D2_3")
-        shinyjs::show("missing_D2_3")
-      }
+      spat_vuln_hide("D2_3", hs_rast(), doSpatial(), restored_df())
     })
 
     # reclassify raster
     hs_rast2 <- reactive({
       req(hs_rast())
-      rast <- raster::reclassify(hs_rast(),
+      rast <- terra::classify(hs_rast(),
                                  rcl = hs_rcl_mat(), right = NA)
     })
 
-    output$map_D2_3 <- tmap::renderTmap({
+    output$map_D2_3 <- leaflet::renderLeaflet({
       req(doSpatial())
       req(hs_rast2())
 
@@ -1235,31 +1183,19 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$box_D2 <- renderUI({
+      req(spat_res2())
       # get previous comment
       prevCom <- isolate(input$comD2)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(D2 = case_when(range_change > 99 ~ 3,
-                              range_change > 50 ~ 2,
-                              range_change > 20 ~ 1,
-                              is.na(range_change) ~ NA_real_,
-                              TRUE ~ 0)) %>%
+      box_val <- spat_res2() %>%
         pull(.data$D2)
 
-      if(!is.null(hs_rast())){
-        if(raster::nlayers(hs_rast2()) > 1){
-          valueNm <- valueNms[ 4- box_val]
-          div(strong("Calculated effect on vulnerability."),
-              HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-              HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+      if(nrow(spat_res2()) > 1){
+        valueNm <- valueNms[ 4- box_val]
+        div(strong("Calculated effect on vulnerability."),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
-        } else {
-          check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
-                           choiceNames = valueNms,
-                           choiceValues = valueOpts,
-                           selected = box_val,
-                           com = prevCom)
-        }
       } else {
         check_comment_ui("D2", HTML("Calculated effect on vulnerability."),
                          choiceNames = valueNms,
@@ -1267,43 +1203,26 @@ ccvi_app <- function(testmode_in, ...){
                          selected = box_val,
                          com = prevCom)
       }
+
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_D2", suspendWhenHidden = FALSE)
 
     output$box_D3 <- renderUI({
+      req(spat_res2())
       # get previous comment
       prevCom <- isolate(input$comD3)
       prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- spat_res() %>%
-        mutate(D2 = case_when(range_change > 99 ~ 3,
-                              range_change > 50 ~ 2,
-                              range_change > 20 ~ 1,
-                              is.na(range_change) ~ NA_real_,
-                              TRUE ~ 0),
-               D3 = case_when(D2 == 3 ~ 0,
-                              range_overlap == 0 ~ 3,
-                              range_overlap < 30 ~ 2,
-                              range_overlap < 60 ~ 1,
-                              is.na(range_overlap) ~ NA_real_,
-                              TRUE ~ 0)) %>%
+      box_val <- spat_res2() %>%
         pull(.data$D3)
 
-      if(!is.null(hs_rast())){
-        if(raster::nlayers(hs_rast2()) > 1){
-          valueNm <- valueNms[4 - box_val]
-          div(strong("Calculated effect on vulnerability."),
-              HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-              HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+      if(nrow(spat_res2()) > 1){
+        valueNm <- valueNms[4 - box_val]
+        div(strong("Calculated effect on vulnerability."),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
-        } else {
-          check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
-                           choiceNames = valueNms,
-                           choiceValues = valueOpts,
-                           selected = box_val,
-                           com = prevCom)
-        }
       } else {
         check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
                          choiceNames = valueNms,
@@ -1311,6 +1230,7 @@ ccvi_app <- function(testmode_in, ...){
                          selected = box_val,
                          com = prevCom)
       }
+
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1327,25 +1247,22 @@ ccvi_app <- function(testmode_in, ...){
     # Calculate Index value #================================
 
     # Gather all the form inputs
-    vuln_df <- eventReactive(input$calcIndex, {
-      doSpatial()
-        vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
-        data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
-        as_tibble(data)
+    vuln_df <- reactive({
+      vuln_qs <- stringr::str_subset(names(input), "^[B,C,D]\\d.*")
+      data <- purrr::map_df(vuln_qs, ~getMultValues(input[[.x]], .x))
+      as_tibble(data)
     })
 
     # gather comments
     coms_df <- reactive({
-      req(input$calcIndex)
       com_ins <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*")
 
       data <- purrr::map_df(com_ins,
                             ~data.frame(Code = stringr::str_remove(.x, "com"),
-                                        Comment = input[[.x]]))
+                                        com = input[[.x]]))
     })
 
-    index_res <- reactive({
-      req(input$calcIndex)
+    observeEvent(input$calcIndex,{
       z_df <- data.frame(Code = c("Z2", "Z3"),
                          Value1 = as.numeric(c(input$cave, input$mig)))
 
@@ -1353,13 +1270,14 @@ ccvi_app <- function(testmode_in, ...){
         mutate(Species = input$species_name)
 
       index <- calc_vulnerability(spat_res(), vuln_df, input$tax_grp)
-      index
+      index_res(index)
     })
 
     output$species_name <- renderText(input$species_name)
 
     # insert index dials for each scenario
-    observeEvent(input$calcIndex, {
+    observe({
+      req(index_res())
       removeUI(
         selector = "#*index_result*"
       )
@@ -1380,7 +1298,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # a flag to hide results until calculated
-    output$calcFlag <- reactive(isTruthy(out_data()))
+    output$calcFlag <- reactive(isTruthy(index_res()))
     outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
 
     output$n_factors <- renderTable({
@@ -1416,20 +1334,53 @@ ccvi_app <- function(testmode_in, ...){
 
     output$q_score_plt <- plotly::renderPlotly({
       index_res() %>%
-        select(.data$scenario_name, .data$vuln_df) %>%
+        select("scenario_name", "vuln_df") %>%
         tidyr::unnest(.data$vuln_df) %>%
         plot_q_score()
     })
 
-    # Make csv
-    out_data <- reactive({
+    # Make out_data #========================================================
+    out_data_lst <- reactiveValues()
+
+    observe({
+      sp_dat <- data.frame(species_name = input$species_name,
+                           common_name = input$common_name,
+                           geo_location = input$geo_location,
+                           assessor_name = input$assessor_name,
+                           tax_grp = input$tax_grp,
+                           mig = input$mig,
+                           cave = input$cave)
+      res_df <- widen_vuln_coms(vuln_df(), coms_df = coms_df())
+
+      out_data_lst$start <- bind_cols(sp_dat, res_df)
+    })
+
+    observeEvent(spat_res(), {
+      req(spat_res())
+      req(clim_readme())
+      req(!is.null(file_pths()))
+
+      message("spat out_data")
+      spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
+                                       gain_mod_comm = input$gain_mod_comm)
+      clim_rdme <- clim_readme() %>% select(-"Scenario_Name")
+      spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
+        as.data.frame() %>%
+        mutate(clim_dir_pth = clim_dir_pth())
+      out_data_lst$spat <- bind_cols(
+        spat_df %>% select(-any_of(c(colnames(clim_rdme),
+                                                 colnames(spat_fnms)))),
+        clim_rdme, spat_fnms)
+    })
+
+    observeEvent(index_res(), {
+      req(index_res())
+      message("index out_data")
       vuln_df <- purrr::map_dfr(index_res()$vuln_df, widen_vuln_coms,
                                 coms_df = coms_df())
 
-      spat_df <- spat_res()
-
       conf_df <- index_res() %>%
-        select(.data$scenario_name, .data$mc_results) %>%
+        select("scenario_name", "mc_results") %>%
         mutate(mc_results = purrr::map(.data$mc_results, ~.x$index %>%
                                          factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
                                          table() %>%
@@ -1438,41 +1389,51 @@ ccvi_app <- function(testmode_in, ...){
                                          `names<-`(c("index", "frequency")))) %>%
         pull(.data$mc_results) %>%
         purrr::map_dfr(~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
-                                  tidyr::pivot_wider(names_from = "index",
-                                                     values_from = "frequency"))
+                         tidyr::pivot_wider(names_from = "index",
+                                            values_from = "frequency"))
 
-      data.frame(species_name = input$species_name,
-                 common_name = input$common_name,
-                 geo_location = input$geo_location,
-                 assessor = input$assessor_name,
-                 taxonomic_group = input$tax_grp,
-                 migratory = input$mig,
-                 cave_grnd_water = input$cave,
-                 gain_mod = input$gain_mod,
-                 gain_mod_comm = input$gain_mod_comm,
-                 CCVI_index = index_res()$index,
-                 CCVI_conf_index = index_res()$conf_index,
-                 mig_exposure = index_res()$mig_exp,
-                 b_c_score = index_res()$b_c_score,
-                 d_score = index_res()$d_score) %>%
-        bind_cols(conf_df, spat_df, vuln_df,
-                  clim_readme() %>% select(-.data$Scenario_Name)) %>%
-        select(.data$scenario_name, everything())
+      ind_df <- data.frame(CCVI_index = index_res()$index,
+                           CCVI_conf_index = index_res()$conf_index,
+                           mig_exposure = index_res()$mig_exp,
+                           b_c_score = index_res()$b_c_score,
+                           d_score = index_res()$d_score)
+
+      out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
     })
 
-    exportTestValues(out_data = out_data() %>% select(-contains("MC_freq")))
+    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
-    # helpful for testing
-    #shinyjs::runcodeServer()
+    # # helpful for testing
+    # shinyjs::runcodeServer()
 
-    output$downloadData <- downloadHandler(
-      filename = function() {
-        paste("CCVI_data-", Sys.Date(), ".csv", sep="")
-      },
-      content = function(file) {
-        write.csv(out_data(), file, row.names = FALSE)
+    # save the data to a file
+    shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
+
+    observeEvent(input$downloadData, {
+      if(!is.integer(input$downloadData)){
+        filename <- parseSavePath(roots = volumes, input$downloadData)$datapath
+        saveAttempt <- tryCatch({
+          write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
+                  row.names = FALSE)},
+          error = function(e){
+            showModal(modalDialog(
+              p("File could not be saved. Is it open?"),
+              footer = tagList(
+                actionButton("retry", "Retry"),
+                modalButton("Cancel")
+              ),
+              title = "Error Permission Denied"))
+            print(conditionMessage(e))
+          })
       }
-    )
+    })
+
+    # Retry save if there was an error due to open file
+    observeEvent(input$retry, {
+      # doesn't quite work but better than nothing
+      removeModal()
+      shinyjs::click("downloadData")
+    })
 
     output$downloadDefs <- downloadHandler(
       filename = "CCVI_column_definitions_results.csv",
@@ -1480,6 +1441,35 @@ ccvi_app <- function(testmode_in, ...){
         out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                     package = "ccviR"))
         write.csv(out, file, row.names = FALSE)
+      }
+    )
+
+    output$report <- downloadHandler(
+      # For PDF output, change this to "report.pdf"
+      filename = "report.pdf",
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        tempReport <- file.path(tempdir(), "report.Rmd")
+        file.copy(system.file("rmd/results_report.Rmd", package = "ccviR"),
+                  tempReport, overwrite = TRUE)
+
+        # Set up parameters to pass to Rmd document
+        params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
+                                       combine_outdata(),
+                                     clim_vars = clim_vars(),
+                                     scale_poly = assess_poly(),
+                                     range_poly = range_poly())
+
+        # Knit the document, passing in the `params` list, and eval it in a
+        # child of the global environment (this isolates the code in the document
+        # from the code in this app).
+        rmarkdown::render(tempReport, output_file = "report.pdf",
+                          params = params,
+                          envir = new.env(parent = globalenv()))
+        file.copy(file.path(tempdir(), 'report.pdf'), file)
+
       }
     )
 
@@ -1491,61 +1481,6 @@ ccvi_app <- function(testmode_in, ...){
       # redirect user to restoreURL
       shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
     })
-
-    # Bookmarking #=============================================================
-
-    # this part is not allowed to be inside the module
-    latestBookmarkURL <- reactiveVal()
-
-    onBookmarked(
-      fun = function(url) {
-        latestBookmarkURL(parseQueryString(url))
-        showNotification("Session saved",
-                         duration = 10, type = "message")
-      }
-    )
-
-    save_bookmark_server("save", latestBookmarkURL(), volumes)
-
-    # Need to explicitly save and restore reactive values.
-    onBookmark(fun = function(state){
-      state$values$file_pths <- file_pths()
-      state$values$clim_dir <- clim_dir_pth()
-    })
-
-    file_pths_restore <- reactiveVal()
-    clim_dir_pth_restore <- reactiveVal()
-
-    onRestore(fun = function(state){
-      message("Restoring session")
-      file_pths_restore(state$values$file_pths)
-      clim_dir_pth_restore (state$values$clim_dir)
-      restored$yes <- TRUE
-    })
-
-    # exclude shiny file choose and map and plotly input vals that might be
-    # causing trouble
-    # ExcludedIDs <- reactiveVal(value = NULL)
-    # IncludedIDs <- reactiveVal(value = NULL)
-
-    observe({
-      patsToExclude <- paste0(c("plotly", "map", "pth", "data_prep", "dir",
-                                "guide", "tabset", "next", "restart", "shinyalert"),
-                              collapse = "|")
-
-      toExclude <- grep(patsToExclude, names(input), value = TRUE)
-
-      setBookmarkExclude(toExclude)
-      # ExcludedIDs(toExclude)
-      # IncludedIDs(setdiff(names(input), toExclude))
-    })
-#
-#     output$ExcludedIDsOut <- renderText({
-#       paste("ExcludedIDs:", paste(ExcludedIDs(), collapse = ", "))
-#     })
-#     output$IncludedIDsOut <- renderText({
-#       paste("IncludedIDs:", paste(IncludedIDs(), collapse = ", "))
-#     })
 
   }
 

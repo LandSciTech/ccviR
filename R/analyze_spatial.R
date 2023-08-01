@@ -20,12 +20,12 @@
 #' @param ptn_poly Optional. An sf polygon object giving the locations that are
 #'   considered part of the physiological thermal niche (See NatureServe
 #'   Guidelines for definition).
-#' @param hs_rast Optional. A Raster* object with results from a model of the
+#' @param hs_rast Optional. A SpatRaster object with results from a model of the
 #'   change in the species' range caused by climate change. To supply different
-#'   results for each scenario use a RasterStack and ensure that the order of
+#'   results for each scenario use a raster with multiple layers and ensure that the order of
 #'   the layers matches the order of \code{scenario_names}.
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
-#'   lost, 2: maintained, 3: gained. See \code{\link[raster]{reclassify}} for
+#'   lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
 #'   details on the matrix format.
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
 #'   in the modeled range change under climate change
@@ -68,9 +68,9 @@
 #'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
-#'                           raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
-#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+#'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+#'                           file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
 #'   scenario_names = scn_nms
 #' )
 
@@ -94,11 +94,15 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
          call. = FALSE)
   }
 
-  # Check scenario names match raster stacks
-  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "Raster")) %>%
-    purrr::splice(hs_rast = hs_rast) %>%
+  # check all rasts are SpatRaster and convert if not
+  clim_vars_lst <- purrr::map2(clim_vars_lst, names(clim_vars_lst), check_rast)
+  hs_rast <- check_rast(hs_rast, var_name = "hs_rast")
+
+  # Check scenario names match raster layers
+  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "SpatRaster")) %>%
+    c(hs_rast = hs_rast) %>%
     purrr::compact() %>%
-    purrr::map_dbl(raster::nlayers)
+    purrr::map_dbl(terra::nlyr)
 
   if(!all(rast_lyrs %in% c(1, length(scenario_names)))){
     stop("rasters must have one layer or length(scenario_names) layers. ",
@@ -112,9 +116,19 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
   range_poly <- check_polys(range_poly, crs_use, "range polygon")
   scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
-  non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]), "non-breeding range polygon")
   ptn_poly <- check_polys(ptn_poly, crs_use, "PTN polygon")
   clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
+
+  if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])){
+    non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
+                                  "non-breeding range polygon")
+  } else if (!is.null(non_breed_poly)){
+    non_breed_poly <- NULL
+    message("non_breed_poly was supplied but ccei was not included in clim_vars_lst, ",
+            "ignoring non_breed_poly")
+  } else {
+    non_breed_poly <- NULL
+  }
 
   # Clip range to climate data polygon and to scale poly
 
@@ -189,7 +203,15 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     if(st_crs(range_poly) != st_crs(ptn_poly)){
       ptn_poly <- st_transform(ptn_poly, st_crs(range_poly))
     }
+
     ptn_perc <- calc_overlap_poly(range_poly, ptn_poly, "PTN")
+
+    if(ptn_perc$PTN == 0){
+      if(!st_intersects(scale_poly, ptn_poly, sparse = FALSE)[1,1]){
+        stop("The phsiological thermal niche polygon does not overlap the assessment area",
+             call. = FALSE)
+      }
+    }
   }
 
   # Historical Hydrological niche
@@ -211,9 +233,9 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
       stop("hs_rcl is required when hs_rast is not NULL", call. = FALSE)
     }
 
-    hs_rast <- raster::reclassify(hs_rast, rcl = hs_rcl, right = NA)
+    hs_rast <- terra::classify(hs_rast, rcl = hs_rcl, right = NA)
 
-    if(any(raster::maxValue(hs_rast) > 3)){
+    if(any(terra::minmax(hs_rast)[2,] > 3)){
       stop("Reclassified range change raster values outside the expected range of 0-3 were found. ",
            "Check that all range change raster values are included in the reclassification matrix")
     }
@@ -256,6 +278,12 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
+  if(is.na(st_crs(poly))){
+    stop(var_name, " does not have a CRS.",
+         " \nPlease load a file with a valid Coordinate Reference System",
+         call. = FALSE)
+  }
+
   poly <- sf::st_transform(poly, rast_crs)
 
   poly <- valid_or_error(poly, var_name)
@@ -263,4 +291,21 @@ check_polys <- function(poly, rast_crs, var_name){
   return(poly)
 }
 
+check_rast <- function(ras, var_name){
+  if(!is(ras, "SpatRaster")){
+    if(is(ras, "Raster")){
+      ras <- as(ras, "SpatRaster")
+    }else {
+      return(ras)
+    }
+  }
+
+  if(is.na(terra::crs(ras))||terra::crs(ras) == ""){
+    stop("The raster ", var_name, " does not have a CRS.",
+         " \nPlease load a file with a valid Coordinate Reference System",
+         call. = FALSE)
+  }
+
+  return(ras)
+}
 

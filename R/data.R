@@ -10,3 +10,10 @@
 #' A table for combining index scores from the sensitivity (B/C) and modelled response
 #' to climate change (D) sections
 "comb_index_tbl"
+
+
+#' Table to build the UI
+#'
+#' A table for identifying the update function to apply to each input. May get
+#' more uses in the future
+"ui_build_table"

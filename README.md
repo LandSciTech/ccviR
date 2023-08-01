@@ -7,7 +7,7 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/LandSciTech/ccviR/workflows/R-CMD-check/badge.svg)](https://github.com/LandSciTech/ccviR/actions)
+[![R-CMD-check](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 *This application/package is under active development. Backwards
@@ -60,23 +60,22 @@ Monte Carlo uncertainty analysis produced are the same.
 
 ### New Features
 
--   Spatial analyses are included in the package so no GIS skills are
-    needed.
--   Uses climate data from the whole species range rather than the range
-    in the assessment area to score thermal and hydrological niche
-    factors.
--   Simultaneously calculates the index for multiple scenarios such as,
-    emissions scenarios, time horizons or GCMs
--   A function to classify new climate data sets into exposure
-    categories
--   Plots that explain the drivers of the index value
--   Allows the full assessment to be carried out in a reproducible
-    environment
--   Simplifies synthetic analyses across many species, groups or regions
--   The Shiny app provides a Graphical User Interface to calculate the
-    NatureServe CCVI
--   The App allows users to calculate the index without knowing R
--   Makes the NatureServe CCVI accessible to a wider audience
+- Spatial analyses are included in the package so no GIS skills are
+  needed.
+- Uses climate data from the whole species range rather than the range
+  in the assessment area to score thermal and hydrological niche
+  factors.
+- Simultaneously calculates the index for multiple scenarios such as,
+  emissions scenarios, time horizons or GCMs
+- A function to classify new climate data sets into exposure categories
+- Plots that explain the drivers of the index value
+- Allows the full assessment to be carried out in a reproducible
+  environment
+- Simplifies synthetic analyses across many species, groups or regions
+- The Shiny app provides a Graphical User Interface to calculate the
+  NatureServe CCVI
+- The App allows users to calculate the index without knowing R
+- Makes the NatureServe CCVI accessible to a wider audience
 
 ## Additional Help
 

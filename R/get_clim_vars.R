@@ -17,7 +17,7 @@
 #'
 #' @return A list of climate variables with names "mat", "cmd", "map", "ccei",
 #'   "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
-#'   be RasterStacks with one layer per scenario.
+#'   be SpatRasters with one layer per scenario.
 #'
 #' @export
 #'
@@ -88,7 +88,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
 
     out <- purrr::map(pth2, load_clim) %>% purrr::set_names(scenario_names)
 
-    out <- raster::stack(out)
+    out <- terra::rast(out)
 
     out <- check_trim(out)
 
@@ -99,59 +99,74 @@ load_clim <- function(pth, scenario_names = "scn1"){
     return(NULL)
   }
   out <- tryCatch({
-    if(raster::extension(pth) == ".shp"){
+    if(fs::path_ext(pth) == "shp"){
       out <- st_read(pth, agr = "constant", quiet = TRUE)
 
       if(nrow(out) > 1){
         out <- st_union(out) %>% st_as_sf()
       }
+
+      if(is.na(st_crs(out))){
+        stop("The file at ", pth, " does not have a CRS.",
+             " \nPlease load a file with a valid Coordinate Reference System",
+             call. = FALSE)
+      }
       return(out)
     } else {
-      out <- raster::raster(pth)
+      out <- terra::rast(pth)
+      if(is.na(terra::crs(out))||terra::crs(out) == ""){
+        stop("The file at ", pth, " does not have a CRS.",
+             " \nPlease load a file with a valid Coordinate Reference System",
+             call. = FALSE)
+      }
+      return(out)
     }
   },
   error = function(cond){
-    message(pth)
+    message("Erorr loading:", pth)
     stop(cond)
   })
 
   out <- check_trim(out)
+
+
 
   out
 
 }
 #' Trim NAs from raster
 #'
-#' Extracted from raster package internal .memtrimlayer in raster::trim. This is
-#' not memory safe but raster::trim takes over an hour while this takes ~30s
+#' Trim NAs from raster if the first 10 rows are all NA
 #'
 #' @param r raster to be trimmed
 #' @param padding integer. Number of outer rows/columns to keep
-#' @param values numeric. Value(s) based on which a Raster* should be trimmed
+#' @param values numeric. Value(s) based on which raster should be trimmed
 #' @param filename character. Optional output filename
-#' @param ... If x is a Raster* object: additional arguments as for writeRaster
+#' @param ... additional arguments as for writeRaster
 #'
-#' @return the trimmed Raster* object
+#' @return the trimmed SpatRaster object
 #'
 #' @examples
-#' library(raster)
+#' library(terra)
 #'
-#' rast <- raster(matrix(NA, nrow = 100, ncol = 100))
+#' ras <- rast(matrix(NA, nrow = 100, ncol = 100))
 #'
-#' rast[30:60, 30:60] <- 1
+#' ras[30:60, 30:60] <- 1
 #'
-#' trim_ras(rast)
+#' trim_ras(ras)
+#' @noRd
 #'
-#' @export
-#'
-trim_ras <- utils::getFromNamespace(".memtrimlayer", ns = "raster")
 
-check_trim <- function(rast){
-  do_trim <- sum(!is.na(rast[1:10,]))
+# previously had used this from a raster internal for small rasters which was
+# fast but not memory safe
+# trim_ras <- utils::getFromNamespace(".memtrimlayer", ns = "raster")
+
+check_trim <- function(ras){
+  do_trim <- sum(!is.na(ras[1:10,]))
   if(do_trim == 0){
     message("doing trim")
-    rast <- trim_ras(rast)
+    ras <- terra::trim(ras)
   }
-  return(rast)
+  return(ras)
 }
 

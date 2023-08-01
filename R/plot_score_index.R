@@ -28,9 +28,9 @@
 #'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
-#'   hs_rast = raster::stack(raster::raster(file.path(base_pth, "rng_chg_45.tif")),
-#'                           raster::raster(file.path(base_pth, "rng_chg_85.tif"))),
-#'   hs_rcl = matrix(c(0:7, 0, 1, 2, 2 ,2, 2, 2, 3), ncol = 2),
+#'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+#'                           file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
 #'   scenario_names = scn_nms
 #' )
 #'
@@ -56,16 +56,20 @@ plot_score_index <- function(score_df){
     mutate(mc_results = purrr::map(.data$mc_results,
                                    ~summarise(.x, across(contains("score"),
                                                          lst(max, min))))) %>%
-    tidyr::unnest(.data$mc_results)
+    tidyr::unnest("mc_results")
 
   # max possible score
   max_score_bc <- 22*6.6 + 3
 
   max_score_d <- 11
 
-  score_lim <- mutate(score_pt,
-                     d_score_lim = ifelse(.data$d_score_max > 7, .data$d_score_max + 1, 8),
-                     b_c_score_lim = ifelse(.data$b_c_score_max > 18, .data$b_c_score_max + 5, 20)) %>%
+  score_lim <- mutate(
+    score_pt,
+    d_score_max = ifelse(is.na(.data$d_score_max), max(.data$d_score), .data$d_score_max),
+    b_c_score_max = ifelse(is.na(.data$b_c_score_max), max(.data$b_c_score), .data$b_c_score_max),
+    d_score_lim = ifelse(.data$d_score_max > 7, .data$d_score_max + 1, 8),
+    b_c_score_lim = ifelse(.data$b_c_score_max > 18, .data$b_c_score_max + 5, 20)
+  ) %>%
     summarise(across(contains("lim"), .fns = max))
 
   score_tbl <- expand.grid(b_c_score = seq(0, max_score_bc),
@@ -95,13 +99,13 @@ plot_score_index <- function(score_df){
                             ggplot2::aes(.data$b_c_score, .data$d_score, ymin = .data$d_score_min,
                                          ymax = .data$d_score_max),
                             col = "black",
-                            size = 1.25, alpha = 0.4,
+                            linewidth = 1.25, alpha = 0.4,
                             inherit.aes = FALSE)+
     ggplot2::geom_linerange(data = score_pt,
                            ggplot2::aes(y = .data$d_score, xmin = .data$b_c_score_min,
                                         xmax = .data$b_c_score_max),
                            col = "black",
-                           size = 1.25, alpha = 0.4,
+                           linewidth = 1.25, alpha = 0.4,
                            inherit.aes = FALSE)+
     ggplot2::geom_point(data = score_pt,
                         ggplot2::aes(.data$b_c_score, .data$d_score, shape = .data$scenario_name),

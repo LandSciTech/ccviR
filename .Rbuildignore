@@ -11,3 +11,4 @@ documents\*
 rsconnect
 ^app\.R$
 ^LICENSE\.md$
+_\.new\.png$

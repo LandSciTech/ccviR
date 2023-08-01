@@ -24,10 +24,10 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
     ext_out <- exactextractr::exact_extract(rast, poly, progress = FALSE, include_area = TRUE)
   )
   poly_area <- st_area(poly)
-  out <- ext_out[[1]] %>% select(-.data$area) %>%
+  out <- ext_out[[1]] %>% select(-"area") %>%
     stats::setNames(nm = c(names(rast), "coverage_fraction")) %>%
-    filter(if_any(everything(), .fns = ~!is.na(.x))) %>%
-    tidyr::pivot_longer(cols = c(-.data$coverage_fraction), names_to = "layer",
+    filter(if_any(.cols = everything(), .fns = ~!is.na(.x))) %>%
+    tidyr::pivot_longer(cols = c(-"coverage_fraction"), names_to = "layer",
                         values_to = "value") %>%
     mutate(value = factor(.data$value, levels = val_range)) %>%
     group_by(.data$layer, .data$value, .drop = FALSE) %>%
@@ -38,7 +38,7 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
   out <- tidyr::pivot_wider(out, names_from = "value", values_from = "prop",
                             names_prefix = paste0(var_name, "_")) %>%
     arrange(factor(.data$layer, levels = names(rast))) %>%
-    select(-.data$layer)
+    select(-"layer")
 
   if(check_overlap > 0 || !is.null(return_overlap_as)){
     cov_area <- ext_out[[1]] %>% mutate(area_frac = .data$area*.data$coverage_fraction) %>%

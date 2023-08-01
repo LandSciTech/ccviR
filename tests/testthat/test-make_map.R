@@ -1,6 +1,5 @@
 
 library("sf", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
-library("raster", quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 # load the demo data
 file_dir <- system.file("extdata", package = "ccviR")
 
@@ -15,32 +14,62 @@ assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
 rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
                     quiet = TRUE)
 
-hs <- raster(file.path(file_dir, "rng_chg_45.tif"))
+hs <- terra::rast(file.path(file_dir, "rng_chg_45.tif"))
 
 # hs2 less CC in same area
-hs_stack <- stack(file.path(file_dir, "rng_chg_45.tif"),
-                  file.path(file_dir, "rng_chg_45.tif"))
+hs_stack <- terra::rast(c(file.path(file_dir, "rng_chg_45.tif"),
+                  file.path(file_dir, "rng_chg_85.tif"))) %>%
+  terra::classify(rcl = mat <- matrix(c(-1, -1, 1,
+                                        0, 0, 2,
+                                        1, 1, 3,
+                                        4, 4, 0),
+                                      byrow = TRUE, ncol = 3), right = NA)
 
 
 map2 <- make_map(rng_high, clim_vars$mat[[1]], rast_nm = "mat", poly2 = assess,
-                 poly2_nm = "assess_poly", rast_grp = "group1")
+                 poly2_nm = "assess_poly")
+
+map4 <- make_map(rng_high, hs_stack, rast_nm = "hs_rast", poly2 = assess,
+                 poly2_nm = "assess_poly",
+                 rast_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
+                                       value = c(0, 1, 2, 3)))
 
 map1 <- make_map(rng_high, clim_vars$mat, rast_nm = "mat", poly2 = assess,
-                 poly2_nm = "assess_poly",
-                 rast_grp = c("Temperature RCP4.5", "Temperature RCP8.5"))
+                 poly2_nm = "assess_poly")
 
+map3 <- make_map(rng_high, poly2 = assess,
+                 poly2_nm = "assess_poly")
+
+map5 <- make_map(rng_high, clim_vars$map, rast_nm = "map")
 
 # Issue sent to tmap about these warnings https://github.com/r-tmap/tmap/issues/630
 # group does not work at the moment
 test_that("map gets made",
-          expect_s3_class(map1, "tmap"))
+          {purrr::map(list(map1, map2, map3, map4, map5),
+                      \(x)expect_s3_class(x, "leaflet"))})
 
 # Visually inspect the maps
 if(interactive()){
-  cur_mode <- tmap::tmap_mode("view")
 
   map2
   map1
+  map3
+  map4
+  map5
 
-  tmap::tmap_mode(cur_mode)
+  ui <- fluidPage(
+    leaflet::leafletOutput("map")
+  )
+
+  server <- function(input, output) {
+    str(map2)
+    output$map <- leaflet::renderLeaflet({
+      map2
+    })
+  }
+
+  shinyApp(ui, server)
+
 }
+
+

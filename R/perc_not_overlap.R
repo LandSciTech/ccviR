@@ -30,32 +30,21 @@ perc_not_overlap <- function(rast, poly, var_name){
              call. = FALSE)
       }
     },
-    r_crop <- raster::crop(rast, poly)
+    r_crop <- terra::crop(rast, poly)
   )
 
-  r_mask <- raster::mask(r_crop, poly, updatevalue = NA, updateNA= TRUE)
-  cells_overlap <- raster::freq(r_mask, useNA = "no")[,2] %>% sum()
-  if(cells_overlap[1] == 0){
+  r_mask <- terra::mask(r_crop, poly, updatevalue = NA)
+
+
+  area_overlap <- terra::expanse(r_mask)
+
+  if(min(area_overlap) == 0){
     stop("The nonbreeding range polygon does not overlap the supplied CCEI raster",
          call. = FALSE)
   }
 
-  if (!raster::couldBeLonLat(r_mask)) {
-    # area in m2
-    area_cell <- prod(raster::res(r_mask))
-  } else {
-    # area in km2
-    area_cell <- raster::area(r_mask, na.rm = TRUE) %>%
-      raster::cellStats("mean")
-
-    # convert to m2
-    area_cell <- area_cell *1000000
-  }
-
-  area_overlap <- cells_overlap * area_cell
-
   # area in m2
-  poly_area <- st_area(poly) %>% units::set_units(NULL)
+  poly_area <- sf::st_area(poly) %>% units::set_units(NULL)
 
   # percent area not overlaping
   perc_area <- (poly_area - area_overlap)/poly_area * 100

@@ -24,7 +24,7 @@ calc_ind_monte <- function(vuln_df, n_rnds, d_ie){
            which_val = ifelse(.data$rnd_num < .data$thold, 1,
                               ifelse(.data$rnd_num < .data$thold *2, 2,
                                      ifelse(.data$rnd_num < .data$thold*3, 3, 4)))) %>%
-    select(.data$round_id, .data$Code, matches("Value\\d"), .data$exp, .data$which_val) %>%
+    select("round_id", "Code", matches("Value\\d"), "exp", "which_val") %>%
     tidyr::pivot_longer(matches("Value\\d"), names_to = "box", values_to = "value") %>%
     mutate(box = stringr::str_extract(.data$box, "\\d") %>% as.numeric()) %>%
     filter(.data$box == .data$which_val) %>%

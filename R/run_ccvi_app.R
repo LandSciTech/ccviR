@@ -15,8 +15,8 @@
 #' @import dplyr
 #' @import sf
 #' @import shinyFiles
-#' @importFrom raster raster crs
 #' @importFrom tmap tmap_leaflet
+#' @importFrom terra has.RGB
 #'
 #' @export
 #'

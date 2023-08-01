@@ -151,7 +151,7 @@ rng_poly <- read_sf("inst/extdata/rng_poly.shp", agr = "constant")
 assess_poly <- read_sf("inst/extdata/assess_poly.shp", agr = "constant")
 HS_rast_high <- raster::stack(raster("inst/extdata/rng_chg_45.tif"),
                               raster("inst/extdata/rng_chg_85.tif"))
-PTN_poly <- read_sf("inst/extdata/ptn_poly.shp", agr = "constant")
+PTN_poly <- read_sf("inst/extdata/PTN_poly.shp", agr = "constant")
 
 spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
                         ptn_poly = PTN_poly,
