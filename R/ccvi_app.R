@@ -1368,7 +1368,7 @@ ccvi_app <- function(testmode_in, ...){
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())
       out_data_lst$spat <- bind_cols(
-        spat_df %>% select(-tidyselect::any_of(c(colnames(clim_rdme),
+        spat_df %>% select(-any_of(c(colnames(clim_rdme),
                                                  colnames(spat_fnms)))),
         clim_rdme, spat_fnms)
     })
