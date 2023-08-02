@@ -16,7 +16,8 @@ getMultValues <- function(x, nm){
 make_map <- function(poly1, rast = NULL, poly2 = NULL,
                      poly1_nm = "Range", poly2_nm = NULL,
                      rast_nm = NULL, rast_style = "cat",
-                     rast_lbl = NULL, rast_grp = NULL){
+                     rast_lbl = NULL, rast_grp = NULL,
+                     max_cell = 5000000){
 
   # Name of input data layers for mapping
   rast_nms <- list(`Temperature class` = "mat",
@@ -83,6 +84,19 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
 
 
   if(!is.null(rast)){
+    rast_ncell <- terra::ncell(rast)
+
+    if(rast_ncell > max_cell){
+      fct <- sqrt(rast_ncell/max_cell) %>% ceiling()
+      rast <- terra::aggregate(rast, fact = fct, fun = "modal", na.rm = TRUE)
+      message("aggregating raster for faster plotting")
+    }
+
+    if(!terra::same.crs(rast, "EPSG:3857")){
+      rast <- terra::project(rast, "EPSG:3857", method = "near")
+      message("projecting raster for plotting")
+    }
+
     if(terra::nlyr(rast) == 1){
       rast_grp <- rast_nm
     } else {
