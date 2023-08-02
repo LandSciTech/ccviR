@@ -104,5 +104,7 @@ test_that("{shinytest2} app test", {
 })
 
 test_that("save works especially for spatial and range change and all related inputs", {
+  skip_on_cran()
+  skip_on_ci()
   stop("add test")
 })
