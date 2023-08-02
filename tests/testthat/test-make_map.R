@@ -72,4 +72,18 @@ if(interactive()){
 
 }
 
+if(FALSE){
+  # test with real climate data
+  # scenario names
+  scn_nms <- c("RCP 4.5", "RCP 8.5")
 
+  clim_vars2 <- get_clim_vars("../CCVI_analysis/data/CMIP5_ENSEMBLE_rcp45_rcp85_2050_NORM_6190/",
+                             scn_nms)
+
+  map2b <- make_map(rng_high, clim_vars2$mat[[1]], rast_nm = "mat", poly2 = assess,
+                   poly2_nm = "assess_poly")
+
+  map3b <- make_map(rng_high, clim_vars2$mat, rast_nm = "mat", poly2 = assess,
+                    poly2_nm = "assess_poly")
+
+}

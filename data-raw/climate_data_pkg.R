@@ -28,6 +28,10 @@ if(!dir.exists(out_folder)){
 #
 # write_sf(NAm2, "../Climate_data/data/North_Am_w_sable.shp")
 
+# Create a polygon for just Canada
+# sf::read_sf(clim_poly) %>% filter(GID_0 == "CAN") %>%
+#   sf::write_sf(file.path(dat_pth, "Canada_w_sable.shp"))
+
 # location of file with area that climate data is from in this case NA
 clim_poly <- file.path(dat_pth, "North_Am_w_sable.shp")
 
