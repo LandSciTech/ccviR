@@ -1,6 +1,5 @@
 ^ccviR\.Rproj$
 ^\.Rproj\.user$
-data\*
 documents\*
 ^data-raw$
 ^_pkgdown\.yml$
