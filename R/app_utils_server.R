@@ -225,6 +225,8 @@ combine_outdata <- function(out_data_lst){
   if(!is.null(out_data_lst$index)){
     out_data_lst$start <- out_data_lst$start %>%
       select(-any_of(colnames(out_data_lst$index)))
+    out_data_lst$spat <- out_data_lst$spat %>%
+      select(-any_of(colnames(out_data_lst$index)), -any_of(colnames(out_data_lst$start)))
   }
 
   bind_cols(out_data_lst) %>%
