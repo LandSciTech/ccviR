@@ -655,12 +655,30 @@ ccvi_app <- function(testmode_in, ...){
       pths_in <- file_pths()
 
       purrr::walk(filePathIds(),
-                 \(x) if(!is.integer(input[[x]])){
-                   pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
-                 })
+                  \(x) if(!is.integer(input[[x]])){
+                    pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
+                  })
 
       file_pths(pths_in)
     })
+
+    # clear output filepaths when x clicked
+    toClear <- reactive({
+      purrr::map(paste0(filePathIds(), "_clear"), \(x){input[[x]]})
+    })
+
+    observeEvent(toClear(),{
+      buttonIds <- paste0(filePathIds(), "_clear")
+      pths_in <- file_pths()
+      purrr::walk(buttonIds,
+                  \(x){ if(input[[x]] > 0){
+                    fl_x <- stringr::str_extract(x, "(.*)(_clear)", group = 1)
+                    pths_in[[fl_x]] <<- ""
+                  }})
+
+      file_pths(pths_in)
+    }, ignoreInit = TRUE)
+
 
     # Enable the Submit button when all mandatory fields are filled out
     observe({
@@ -716,6 +734,10 @@ ccvi_app <- function(testmode_in, ...){
       }
 
       clim_dir_pth(pth)
+    })
+
+    observeEvent(input$clim_var_dir_clear, {
+      clim_dir_pth(NULL)
     })
 
     # output file paths

@@ -16,8 +16,9 @@ get_file_ui <- function(id, title, mandatory = FALSE, type = "file",
   label <- span(title2, subtitle)
 
   text_out <- verbatimTextOutput(paste0(id, "_out"), placeholder = TRUE)
+
   if(spinner){
-    text_out <- shinycssloaders::withSpinner(text_out, proxy.height = "100px")
+     text_out <- shinycssloaders::withSpinner(text_out, proxy.height = "100px")
   }
 
   button <- switch(type,
@@ -25,8 +26,9 @@ get_file_ui <- function(id, title, mandatory = FALSE, type = "file",
                                                        title, multiple = multiple),
                    dir = shinyFiles::shinyDirButton(id, "Choose a folder",
                                                     title, multiple = multiple))
+  clear <- actionButton(paste0(id, "_clear"), label = character(0), icon = icon("close"))
 
-    return(div(label, button, text_out))
+  return(div(label, button, splitLayout(text_out, clear, cellWidths = c("80%", "20%"))))
 }
 
 updateGet_file_ui <- function(inputId, value, ...){
