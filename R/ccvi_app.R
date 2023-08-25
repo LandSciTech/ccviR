@@ -567,15 +567,22 @@ ccvi_app <- function(testmode_in, ...){
 
         update_restored(df_loaded, session)
 
-        df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-        spat_res(df_spat)
+        if(!is.null(df_loaded$MAT_6)){
+          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          spat_res(df_spat)
+        }
 
         index_res(recreate_index_res(df_loaded))
 
-        file_pths(df_loaded %>% slice(1) %>% select(contains("pth"), -clim_dir_pth) %>%
-                    as.list())
+        loaded_pths <- df_loaded %>% slice(1) %>%
+          select(contains("pth"), -any_of("clim_dir_pth")) %>%
+          as.list()
 
-        clim_dir_pth(df_loaded %>% slice(1) %>% pull(clim_dir_pth))
+        if(length(loaded_pths)>0){
+          file_pths(loaded_pths)
+        }
+
+        clim_dir_pth(df_loaded %>% slice(1) %>% .$clim_dir_pth)
 
         updateTabsetPanel(session, "tabset",
                           selected = "Species Information"
@@ -1146,6 +1153,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2bi <- renderTable({
+      req(spat_res())
       exp_df <-  spat_res() %>%
         select("MAP_max", "MAP_min") %>%
         rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
@@ -1183,6 +1191,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_D2_3 <- renderTable({
+      req(spat_res())
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Range Lost` = .data$range_change,
@@ -1419,6 +1428,9 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(input$downloadData, {
       if(!is.integer(input$downloadData)){
         filename <- parseSavePath(roots = volumes, input$downloadData)$datapath
+        if(!stringr::str_detect(filename, "\\.csv$")){
+          filename <- paste0(filename, ".csv")
+        }
         saveAttempt <- tryCatch({
           write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
                   row.names = FALSE)},
