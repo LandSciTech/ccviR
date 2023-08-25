@@ -220,6 +220,13 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
+              p("Exposure is determined by the change in temperature or moisture",
+                " that is expected to occur in the future. The maps below are",
+                " created by taking current climate - future climate and then",
+                " classifying the results into six categories using the median",
+                " and 1/2 the interquartile range. Thus, negative values for",
+                " temperature indicate warmer conditions (\u00B0C) and negative values for",
+                " moisture (mm) indicate drier conditions."),
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
@@ -969,22 +976,20 @@ ccvi_app <- function(testmode_in, ...){
 
     output$texp_tbl <- renderTable({
       req(spat_res2())
+      class_brks <- clim_readme()$brks_mat %>% unique() %>%
+        stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>% rowwise() %>%
         select("scenario_name", contains("MAT"), "temp_exp_cave") %>%
-        rename_at(vars(contains("MAT")),
-                  ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$temp_exp_cave)
+        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
     }, align = "r")
 
     output$cmd_tbl <- renderTable({
       req(spat_res2())
+      class_brks <- clim_readme()$brks_cmd %>% unique() %>%
+        stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>% rowwise() %>%
         select("scenario_name", contains("CMD"), "moist_exp_cave") %>%
-        rename_at(vars(contains("CMD")),
-                  ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$moist_exp_cave)
+        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
     }, align = "r")
 
 
@@ -1012,12 +1017,15 @@ ccvi_app <- function(testmode_in, ...){
 
     output$tbl_ccei <- renderTable({
       req(spat_res2())
+      if(is.null(clim_readme()$brks_ccei)){
+        stop("climate readme file does not contain breaks for ccei")
+      }
+      class_brks <- clim_readme()$brks_ccei %>% unique() %>%
+        stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>%
         select("scenario_name",
                contains("CCEI", ignore.case = FALSE)) %>%
-        rename_at(vars(contains("CCEI")),
-                  ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name)
+        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
 
     }, align = "r")
 
@@ -1363,7 +1371,7 @@ ccvi_app <- function(testmode_in, ...){
       message("spat out_data")
       spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
                                        gain_mod_comm = input$gain_mod_comm)
-      clim_rdme <- clim_readme() %>% select(-"Scenario_Name")
+      clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
       spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())

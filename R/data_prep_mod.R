@@ -144,12 +144,7 @@ data_prep_ui <- function(id){
 
     prep_done <- eventReactive(input$submit, {
 
-      clim_readme <- tibble(Scenario_Name = input$clim_scn_nm,
-                            GCM_or_Ensemble_name = input$clim_gcm,
-                            Historical_normal_period = input$clim_norm_period,
-                            Future_period = input$clim_fut_period,
-                            Emissions_scenario = input$clim_em_scenario,
-                            Link_to_source = input$clim_dat_url)
+
 
       if (isTRUE(getOption("shiny.testmode"))) {
         out_dir <- system.file("extdata/clim_files/processed", package = "ccviR")
@@ -158,17 +153,6 @@ data_prep_ui <- function(id){
                                             input$out_folder)
 
       }
-
-      if(file.exists(fs::path(out_dir, "climate_data_readme.csv"))){
-        clim_readme_cur <- utils::read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
-          mutate(across(everything(), as.character))
-
-        clim_readme <- bind_rows(clim_readme_cur, clim_readme) %>%
-          distinct(.data$Scenario_Name, .keep_all = TRUE)
-      }
-
-      write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
-                row.names = FALSE)
 
 
       if(isTRUE(getOption("shiny.testmode"))){
@@ -180,7 +164,7 @@ data_prep_ui <- function(id){
 
         message("doing folder")
 
-        prep_clim_data(in_folder = in_dir,
+        brks_out <- prep_clim_data(in_folder = in_dir,
                       out_folder = out_dir,
                       reproject = FALSE,
                       overwrite = input$allow_over,
@@ -190,7 +174,7 @@ data_prep_ui <- function(id){
                       brks_ccei = brks()$brks_ccei)
       } else {
         message("Processing data")
-        prep_clim_data(
+        brks_out <- prep_clim_data(
           file_pths()$mat_norm_pth,
           file_pths()$mat_fut_pth,
           file_pths()$cmd_norm_pth,
@@ -208,6 +192,36 @@ data_prep_ui <- function(id){
           brks_ccei = brks()$brks_ccei
         )
       }
+
+      # save brks from first calculation
+      if(is.null(brks()$brks_mat)){
+        brks_save <- brks_out
+      } else {
+        brks_save <- brks()
+      }
+
+      clim_readme <- tibble(Scenario_Name = input$clim_scn_nm,
+                            GCM_or_Ensemble_name = input$clim_gcm,
+                            Historical_normal_period = input$clim_norm_period,
+                            Future_period = input$clim_fut_period,
+                            Emissions_scenario = input$clim_em_scenario,
+                            Link_to_source = input$clim_dat_url,
+                            brks_mat = brks_out$brks_mat %>% brks_to_txt(),
+                            brks_cmd = brks_out$brks_cmd %>% brks_to_txt(),
+                            brks_ccei = brks_out$brks_ccei %>% brks_to_txt())
+
+      if(file.exists(fs::path(out_dir, "climate_data_readme.csv"))){
+        clim_readme_cur <- utils::read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
+          mutate(across(everything(), as.character))
+
+        clim_readme <- bind_rows(clim_readme_cur, clim_readme) %>%
+          distinct(.data$Scenario_Name, .keep_all = TRUE)
+      }
+
+      write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
+                row.names = FALSE)
+
+      return(brks_out)
     })
 
     reactive({

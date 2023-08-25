@@ -5,22 +5,25 @@ library(dplyr)
 library(sf)
 library(purrr)
 
+# location of climate data that all other paths will be relative to
+base_pth <-  "D:/Ilona/Climate_data/data/"
+
 # plan is to use a subset of the NA climate data ie a province and potentially
 # aggregate the raster to save space
 
 # Climate Data #================================================================
 # raw climate data
 # location of folders with future climate data names will become scenario names
-fut_clim <- list(`RCP 4.5` = "../Climate_data/data/NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII",
-                 `RCP 8.5` = "../Climate_data/data/NA_ENSEMBLE_rcp85_2050s_Bioclim_ASCII")
+fut_clim <- list(`RCP 4.5` = file.path(base_pth, "NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII"),
+                 `RCP 8.5` = file.path(base_pth, "NA_ENSEMBLE_rcp85_2050s_Bioclim_ASCII"))
 
 # location of folder with climate normals data
-cur_clim <- "../Climate_data/data/NA_NORM_6190_Bioclim_ASCII"
+cur_clim <- file.path(base_pth, "NA_NORM_6190_Bioclim_ASCII")
 
 file_nms <- c("MAT", "CMD", "MAP", "MWMT", "MCMT")
 
 # Need to copy the prj file in so that all the crs is used
-prj_file <- "../Climate_data/data/NA_Reference_files_ASCII/ClimateNA_ID.prj"
+prj_file <- file.path(base_pth, "NA_Reference_files_ASCII/ClimateNA_ID.prj")
 
 cross2(c(fut_clim, cur_clim), file_nms) %>%
   map(~file.copy(prj_file, file.path(.x[[1]], paste0(.x[[2]], ".prj"))))
@@ -44,8 +47,8 @@ assess_poly <- filter(can_poly, NAME_1 == "New Brunswick") %>%
   st_transform(st_crs(clim_na[[1]]))
 
 # crop to NB and aggregate to make files small
-clim_nb <- raster::stack(clim_na) %>% raster::crop(assess_poly) %>%
-  raster::aggregate(fact = 10, fun = mean)
+clim_nb <- terra::rast(purrr::map(clim_fls, terra::rast)) %>% terra::crop(assess_poly) %>%
+  terra::aggregate(fact = 10, fun = mean)
 
 raster::writeRaster(clim_nb, "inst/extdata/clim_files/raw/NB",
                     format = "GTiff", bylayer = TRUE,
@@ -141,7 +144,10 @@ write.csv(
              Historical_normal_period = "1961-1990",
              Future_period = "2050s",
              Emissions_scenario = names(fut_clim),
-             Link_to_source = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
+             Link_to_source = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
+             brks_mat = brks_out$brks_mat %>% brks_to_txt(),
+             brks_cmd = brks_out$brks_cmd %>% brks_to_txt(),
+             brks_ccei = brks_out$brks_ccei %>% brks_to_txt()),
   file.path("inst/extdata/clim_files/processed/", "climate_data_readme.csv"),
   row.names = FALSE
 )
