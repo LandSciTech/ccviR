@@ -669,7 +669,6 @@ ccvi_app <- function(testmode_in, ...){
       }
 
       shinyjs::toggleState(id = "startSpatial", condition = mandatoryFilled2)
-      shinyjs::toggleState(id = "next2", condition = mandatoryFilled2 & isTruthy(spat_res()))
     })
 
     # update filePathIds based on selection for rng_chg
