@@ -810,7 +810,8 @@ ccvi_app <- function(testmode_in, ...){
                     agr = "constant", quiet = TRUE)
       } else {
         sf::st_read(file_pths()$assess_poly_pth,
-                    agr = "constant", quiet = TRUE)
+                    agr = "constant", quiet = TRUE) %>%
+          valid_or_error("assessment area polygon")
       }
     })
 
