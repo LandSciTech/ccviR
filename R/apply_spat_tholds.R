@@ -40,13 +40,13 @@ apply_spat_tholds <-function(spat_df, cave){
       D2 = case_when(.data$range_change > 99 ~ 3,
                      .data$range_change > 50 ~ 2,
                      .data$range_change > 20 ~ 1,
-                     is.na(.data$range_change) ~ NA_real_,
+                     is.na(.data$range_change) ~ -1,
                      TRUE ~ 0),
       D3 = case_when(.data$D2 == 3 ~ 0,
                      .data$range_overlap == 0 ~ 3,
                      .data$range_overlap < 30 ~ 2,
                      .data$range_overlap < 60 ~ 1,
-                     is.na(.data$range_overlap) ~ NA_real_,
+                     is.na(.data$range_overlap) ~ -1,
                      TRUE ~ 0))
   # Code the vulnerability section as 3 = Greatly increase, 2 = Increase, 1 =
   # Somewhat increase, 0 = Neutral and -1 = Unknown

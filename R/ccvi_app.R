@@ -220,6 +220,13 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
+              p("Exposure is determined by the change in temperature or moisture",
+                " that is expected to occur in the future. The maps below are",
+                " created by taking current climate - future climate and then",
+                " classifying the results into six categories using the median",
+                " and 1/2 the interquartile range. Thus, negative values for",
+                " temperature indicate warmer conditions (\u00B0C) and negative values for",
+                " moisture (mm) indicate drier conditions."),
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
@@ -560,15 +567,22 @@ ccvi_app <- function(testmode_in, ...){
 
         update_restored(df_loaded, session)
 
-        df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-        spat_res(df_spat)
+        if(!is.null(df_loaded$MAT_6)){
+          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          spat_res(df_spat)
+        }
 
         index_res(recreate_index_res(df_loaded))
 
-        file_pths(df_loaded %>% slice(1) %>% select(contains("pth"), -clim_dir_pth) %>%
-                    as.list())
+        loaded_pths <- df_loaded %>% slice(1) %>%
+          select(contains("pth"), -any_of("clim_dir_pth")) %>%
+          as.list()
 
-        clim_dir_pth(df_loaded %>% slice(1) %>% pull(clim_dir_pth))
+        if(length(loaded_pths)>0){
+          file_pths(loaded_pths)
+        }
+
+        clim_dir_pth(df_loaded %>% slice(1) %>% .$clim_dir_pth)
 
         updateTabsetPanel(session, "tabset",
                           selected = "Species Information"
@@ -641,12 +655,30 @@ ccvi_app <- function(testmode_in, ...){
       pths_in <- file_pths()
 
       purrr::walk(filePathIds(),
-                 \(x) if(!is.integer(input[[x]])){
-                   pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
-                 })
+                  \(x) if(!is.integer(input[[x]])){
+                    pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
+                  })
 
       file_pths(pths_in)
     })
+
+    # clear output filepaths when x clicked
+    toClear <- reactive({
+      purrr::map(paste0(filePathIds(), "_clear"), \(x){input[[x]]})
+    })
+
+    observeEvent(toClear(),{
+      buttonIds <- paste0(filePathIds(), "_clear")
+      pths_in <- file_pths()
+      purrr::walk(buttonIds,
+                  \(x){ if(input[[x]] > 0){
+                    fl_x <- stringr::str_extract(x, "(.*)(_clear)", group = 1)
+                    pths_in[[fl_x]] <<- ""
+                  }})
+
+      file_pths(pths_in)
+    }, ignoreInit = TRUE)
+
 
     # Enable the Submit button when all mandatory fields are filled out
     observe({
@@ -662,7 +694,6 @@ ccvi_app <- function(testmode_in, ...){
       }
 
       shinyjs::toggleState(id = "startSpatial", condition = mandatoryFilled2)
-      shinyjs::toggleState(id = "next2", condition = mandatoryFilled2 & isTruthy(spat_res()))
     })
 
     # update filePathIds based on selection for rng_chg
@@ -671,7 +702,7 @@ ccvi_app <- function(testmode_in, ...){
       fileIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth")
       names(fileIds) <- fileIds
 
-      rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth")
+      rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth_\\d$|rng_chg_pth$")
 
       if(length(rng_chg_pths) > 0){
         names(rng_chg_pths) <- rng_chg_pths
@@ -703,6 +734,10 @@ ccvi_app <- function(testmode_in, ...){
       }
 
       clim_dir_pth(pth)
+    })
+
+    observeEvent(input$clim_var_dir_clear, {
+      clim_dir_pth(NULL)
     })
 
     # output file paths
@@ -775,7 +810,8 @@ ccvi_app <- function(testmode_in, ...){
                     agr = "constant", quiet = TRUE)
       } else {
         sf::st_read(file_pths()$assess_poly_pth,
-                    agr = "constant", quiet = TRUE)
+                    agr = "constant", quiet = TRUE) %>%
+          valid_or_error("assessment area polygon")
       }
     })
 
@@ -969,22 +1005,20 @@ ccvi_app <- function(testmode_in, ...){
 
     output$texp_tbl <- renderTable({
       req(spat_res2())
+      class_brks <- clim_readme()$brks_mat %>% unique() %>%
+        stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", contains("MAT"), "temp_exp_cave") %>%
-        rename_at(vars(contains("MAT")),
-                  ~stringr::str_replace(.x, "MAT_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$temp_exp_cave)
+        select("scenario_name", matches("MAT_\\d"), "temp_exp_cave") %>%
+        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
     }, align = "r")
 
     output$cmd_tbl <- renderTable({
       req(spat_res2())
+      class_brks <- clim_readme()$brks_cmd %>% unique() %>%
+        stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", contains("CMD"), "moist_exp_cave") %>%
-        rename_at(vars(contains("CMD")),
-                  ~stringr::str_replace(.x, "CMD_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name,
-               `Exposure Multiplier` = .data$moist_exp_cave)
+        select("scenario_name", matches("CMD_\\d"), "moist_exp_cave") %>%
+        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
     }, align = "r")
 
 
@@ -1012,12 +1046,15 @@ ccvi_app <- function(testmode_in, ...){
 
     output$tbl_ccei <- renderTable({
       req(spat_res2())
+      if(is.null(clim_readme()$brks_ccei)){
+        stop("climate readme file does not contain breaks for ccei")
+      }
+      class_brks <- clim_readme()$brks_ccei %>% unique() %>%
+        stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>%
         select("scenario_name",
                contains("CCEI", ignore.case = FALSE)) %>%
-        rename_at(vars(contains("CCEI")),
-                  ~stringr::str_replace(.x, "CCEI_", "Class ")) %>%
-        rename(`Scenario Name` = .data$scenario_name)
+        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
 
     }, align = "r")
 
@@ -1139,6 +1176,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2bi <- renderTable({
+      req(spat_res())
       exp_df <-  spat_res() %>%
         select("MAP_max", "MAP_min") %>%
         rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
@@ -1176,6 +1214,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_D2_3 <- renderTable({
+      req(spat_res())
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Range Lost` = .data$range_change,
@@ -1363,7 +1402,7 @@ ccvi_app <- function(testmode_in, ...){
       message("spat out_data")
       spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
                                        gain_mod_comm = input$gain_mod_comm)
-      clim_rdme <- clim_readme() %>% select(-"Scenario_Name")
+      clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
       spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())
@@ -1412,6 +1451,9 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(input$downloadData, {
       if(!is.integer(input$downloadData)){
         filename <- parseSavePath(roots = volumes, input$downloadData)$datapath
+        if(!stringr::str_detect(filename, "\\.csv$")){
+          filename <- paste0(filename, ".csv")
+        }
         saveAttempt <- tryCatch({
           write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
                   row.names = FALSE)},
@@ -1455,12 +1497,18 @@ ccvi_app <- function(testmode_in, ...){
         file.copy(system.file("rmd/results_report.Rmd", package = "ccviR"),
                   tempReport, overwrite = TRUE)
 
+
+        rng_report <- try(range_poly(), silent = TRUE)
+        if(!isTruthy(rng_report)){
+          rng_report <- range_poly_in()
+        }
+
         # Set up parameters to pass to Rmd document
         params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
                                        combine_outdata(),
                                      clim_vars = clim_vars(),
                                      scale_poly = assess_poly(),
-                                     range_poly = range_poly())
+                                     range_poly = rng_report)
 
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
