@@ -1497,12 +1497,18 @@ ccvi_app <- function(testmode_in, ...){
         file.copy(system.file("rmd/results_report.Rmd", package = "ccviR"),
                   tempReport, overwrite = TRUE)
 
+        if(!isTruthy(range_poly())){
+          rng_report <- range_poly_in()
+        } else {
+          rng_report <- range_poly()
+        }
+
         # Set up parameters to pass to Rmd document
         params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
                                        combine_outdata(),
                                      clim_vars = clim_vars(),
                                      scale_poly = assess_poly(),
-                                     range_poly = range_poly())
+                                     range_poly = rng_report)
 
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
