@@ -39,9 +39,6 @@ clim_vars <- params$clim_vars
 range_poly <- params$range_poly
 scale_poly <- params$scale_poly
 
-library(tinytex)
-
-options(tinytex.verbose = TRUE)
 
 library(purrr)
 library(dplyr)
@@ -148,9 +145,11 @@ cols2 <- cols %>% setNames(rev(names(valueNms)))
 
 vuln_qs <- out_data %>% 
   select(scenario_name, matches("^[B,C,D]\\d.*")) %>% 
+  mutate(across(everything(), as.character)) %>% 
   tidyr::pivot_longer(-scenario_name, names_to = "Code", values_to = "Score") %>% 
   tidyr::separate(Score, into = paste0("Value", 1:4), fill = "right", sep = ", ",
                   convert = TRUE) %>%
+  mutate(Value1 = tidyr::replace_na(Value1, -1)) %>% 
   mutate(score = 1) %>% 
   ccviR:::filter_applicable_qs(out_data$tax_grp, c("Vascular Plant", "Nonvascular Plant")) %>% 
   filter(!is.na(score)) %>% 

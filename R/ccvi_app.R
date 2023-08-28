@@ -1497,10 +1497,10 @@ ccvi_app <- function(testmode_in, ...){
         file.copy(system.file("rmd/results_report.Rmd", package = "ccviR"),
                   tempReport, overwrite = TRUE)
 
-        if(!isTruthy(range_poly())){
+
+        rng_report <- try(range_poly(), silent = TRUE)
+        if(!isTruthy(rng_report)){
           rng_report <- range_poly_in()
-        } else {
-          rng_report <- range_poly()
         }
 
         # Set up parameters to pass to Rmd document
