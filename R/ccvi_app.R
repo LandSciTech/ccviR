@@ -702,7 +702,7 @@ ccvi_app <- function(testmode_in, ...){
       fileIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth")
       names(fileIds) <- fileIds
 
-      rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth")
+      rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth_\\d$|rng_chg_pth$")
 
       if(length(rng_chg_pths) > 0){
         names(rng_chg_pths) <- rng_chg_pths
