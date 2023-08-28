@@ -1008,7 +1008,7 @@ ccvi_app <- function(testmode_in, ...){
       class_brks <- clim_readme()$brks_mat %>% unique() %>%
         stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", contains("MAT"), "temp_exp_cave") %>%
+        select("scenario_name", matches("MAT_\\d"), "temp_exp_cave") %>%
         purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
     }, align = "r")
 
@@ -1017,7 +1017,7 @@ ccvi_app <- function(testmode_in, ...){
       class_brks <- clim_readme()$brks_cmd %>% unique() %>%
         stringr::str_split_1(";") %>% sort()
       exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", contains("CMD"), "moist_exp_cave") %>%
+        select("scenario_name", matches("CMD_\\d"), "moist_exp_cave") %>%
         purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
     }, align = "r")
 
