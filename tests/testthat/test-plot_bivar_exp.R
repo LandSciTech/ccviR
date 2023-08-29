@@ -51,3 +51,25 @@ test_that("works for multi", {
                                  assess, rng_high)$plot,
                   "ggplot")
 })
+
+
+# test with full size data
+# # load the data
+# file_dir <- "../CCVI_analysis/data"
+#
+# # scenario names
+# scn_nms <- c("RCP 4.5", "RCP 8.5")
+#
+# clim_vars <- get_clim_vars(file.path(file_dir, "CMIP5_ENSEMBLE_rcp45_rcp85_2050_NORM_6190"),
+#                            scn_nms)
+#
+# mat <- clim_vars$mat$RCP_4.5
+# cmd <- clim_vars$cmd$RCP_4.5
+#
+# assess <- sf::st_read(file.path(file_dir, "scale_files/CAN.shp"), agr = "constant",
+#                   quiet = TRUE)
+# rng_high <- sf::st_read(file.path(file_dir, "species_files/AWPE/CAN/AWPE_CAN.shp"),
+#                     agr = "constant",
+#                     quiet = TRUE)
+#
+# spat_res_map <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess, rng_high)
