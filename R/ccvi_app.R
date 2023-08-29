@@ -1391,7 +1391,8 @@ ccvi_app <- function(testmode_in, ...){
                            cave = input$cave)
       res_df <- widen_vuln_coms(vuln_df(), coms_df = coms_df())
 
-      out_data_lst$start <- bind_cols(sp_dat, res_df)
+      out_data_lst$start <- bind_cols(sp_dat, res_df) %>%
+        mutate(ccviR_version = utils::packageVersion("ccviR"))
     })
 
     observeEvent(spat_res(), {
