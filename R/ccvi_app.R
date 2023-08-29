@@ -1490,6 +1490,7 @@ ccvi_app <- function(testmode_in, ...){
       # For PDF output, change this to "report.pdf"
       filename = "report.pdf",
       content = function(file) {
+        withProgress(message = 'Report rendering in progress...', {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
@@ -1517,7 +1518,7 @@ ccvi_app <- function(testmode_in, ...){
                           params = params,
                           envir = new.env(parent = globalenv()))
         file.copy(file.path(tempdir(), 'report.pdf'), file)
-
+        })
       }
     )
 

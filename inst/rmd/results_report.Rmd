@@ -70,6 +70,9 @@ if(unique(out_data$common_name) == ""){
                      " (_", unique(out_data$species_name), "_)")
 }
 
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0)
+}
 
 ```
 
@@ -98,12 +101,18 @@ text <- paste0("### ", out_data$scenario_name, ": ", "\\Large",
                index_col(out_data$mig_exposure),
                collapse = "\n")
 cat(text)
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.1)
+}
 ```
 
 
 ## Species range
 ```{r range_map, fig.cap= "Map of the species range (shaded) and the assessment area (grey outline)."}
 tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(range_poly)
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.3)
+}
 ```
 
 
@@ -127,6 +136,9 @@ gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot),
                         layout_matrix = rbind(c(1,1,1,1,1,2),
                                               c(1,1,1,1,1,2),
                                               c(1,1,1,1,1,2)))
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.7)
+}
 ```
 
 
@@ -185,7 +197,9 @@ vuln_tbl %>% nest_by(scenario_name) %>% pull(data) %>%
                             "**Comments: **", df$Comments, collapse = "\n\n"), sep = "")
                })
 
-
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.9)
+}
 
 ```
 
