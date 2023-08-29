@@ -44,6 +44,12 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                     upperleft = palette["upperleft"],
                     upperright = palette["upperright"], do_plot = F)
 
+  # check crs of polys is the same as rast
+  scale_poly <- check_polys(scale_poly, sf::st_crs(cmd), "assessment area polygon")
+
+  cmd <- terra::crop(cmd, terra::vect(scale_poly), mask = TRUE)
+  mat <- terra::crop(mat, terra::vect(scale_poly), mask = TRUE)
+
   bivar_ras <- bivar_map(cmd, mat)
 
   # using ggplot better than tmap for keeping the legend aligned well
@@ -79,9 +85,6 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
   # leg_end_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
   # leg_top_y <- ras_ext$ymax - (ras_ext$ymax - ras_ext$ymin)/20
   # leg_bottom_y <-  ras_ext$ymax - (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
-
-  # check crs of polys is the same as rast
-  scale_poly <- check_polys(scale_poly, sf::st_crs(bivar_ras), "assessment area polygon")
 
   bivar_plt <- ggplot2::ggplot()+
     ggplot2::geom_raster(ggplot2::aes(x = .data[["x"]], y = .data[["y"]],
