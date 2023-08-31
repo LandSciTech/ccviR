@@ -430,6 +430,7 @@ ccvi_app <- function(testmode_in, ...){
               spat_vuln_ui(
                 id = "D2_3",
                 header = "Modeled future range change",
+                chk_box = FALSE
               ),
               strong("2) Modeled future (2050) change in population or range size."),
               uiOutput("box_D2"),

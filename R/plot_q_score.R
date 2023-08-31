@@ -58,7 +58,7 @@ plot_q_score <- function(vuln_df){
   vuln_df <- mutate(vuln_df,
                     score = ifelse(.data$score <= 0, 0.001, .data$score),
                     custom_tooltip = paste0(.data$Question, ":\n",
-                                            "Exposure Multiplier: ", .data$exp, "\n",
+                                            "Exposure Multiplier: ", round(.data$exp, 2), "\n",
                                             "Score: ", round(.data$score, 2))) %>%
     filter(!is.na(.data$score))
 
