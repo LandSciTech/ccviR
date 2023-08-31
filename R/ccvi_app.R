@@ -222,7 +222,7 @@ ccvi_app <- function(testmode_in, ...){
               12,
               p("Exposure is determined by the change in temperature or moisture",
                 " that is expected to occur in the future. The maps below are",
-                " created by taking current climate - future climate and then",
+                " created by taking historical climate - future climate and then",
                 " classifying the results into six categories using the median",
                 " and 1/2 the interquartile range. Thus, negative values for",
                 " temperature indicate warmer conditions (\u00B0C) and negative values for",
