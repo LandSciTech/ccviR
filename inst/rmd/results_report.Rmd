@@ -29,6 +29,7 @@ params:
     out_data: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
     clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP_4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP_4.5.tif", package = "ccviR"))
     range_poly: !r system.file("extdata/rng_poly.shp", package = "ccviR")
+    range_poly_clim: !r system.file("extdata/rng_poly.shp", package = "ccviR")
     scale_poly: !r system.file("extdata/assess_poly.shp", package = "ccviR")
 ---
 
@@ -37,6 +38,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 out_data <- params$out_data
 clim_vars <- params$clim_vars
 range_poly <- params$range_poly
+range_poly_clim <- params$range_poly_clim
 scale_poly <- params$scale_poly
 
 
@@ -108,10 +110,23 @@ if (identical(rmarkdown::metadata$runtime, "shiny")){
 
 
 ## Species range
-```{r range_map, fig.cap= "Map of the species range (shaded) and the assessment area (grey outline)."}
-tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(range_poly)
+```{r range_map,fig.height= 3, fig.width=7, fig.cap= "Map of the species range (black) and the assessment area (grey outline)."}
+# should add a context polygon that is North America to state/prov level as
+# background then choose the map extent as whichever is bigger between range and assessment area
+comb_ext <- st_union(sf::st_bbox(range_poly_clim) %>% sf::st_as_sfc(),
+                            sf::st_bbox(scale_poly) %>% sf::st_as_sfc() %>%
+                              st_transform(st_crs(range_poly_clim)))
+
+tmap::tm_shape(context_North_Am)+
+  tmap::tm_polygons(col = "grey90", border.col = "grey80")+
+  tmap::qtm(scale_poly, borders = "black", fill = NULL)+
+  tmap::tm_shape(range_poly_clim, bbox = comb_ext, is.master = TRUE)+
+  tmap::tm_borders(col = "red")+
+  tmap::tm_add_legend(type = "line", labels = c("Range", "Assessment Area"), 
+                      col = c("red","black"))+
+  tmap::tm_layout(legend.outside = TRUE)
 if (identical(rmarkdown::metadata$runtime, "shiny")){
-    shiny::setProgress(0.3)
+  shiny::setProgress(0.3)
 }
 ```
 

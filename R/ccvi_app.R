@@ -1502,16 +1502,20 @@ ccvi_app <- function(testmode_in, ...){
 
 
         rng_report <- try(range_poly(), silent = TRUE)
+        rng_report_clim <- try(range_poly_clim(), silent = TRUE)
         if(!isTruthy(rng_report)){
+          message("using range_poly_in")
           rng_report <- range_poly_in()
+          rng_report_clim <- range_poly_in()
         }
 
         # Set up parameters to pass to Rmd document
         params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
-                                       combine_outdata(),
-                                     clim_vars = clim_vars(),
-                                     scale_poly = assess_poly(),
-                                     range_poly = rng_report)
+                         combine_outdata(),
+                       clim_vars = clim_vars(),
+                       scale_poly = assess_poly(),
+                       range_poly = rng_report,
+                       range_poly_clim = rng_report_clim)
 
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
