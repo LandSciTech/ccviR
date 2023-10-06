@@ -227,6 +227,8 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
+              # # helpful for testing
+              # shinyjs::runcodeUI(type = "textarea"),
               p("Exposure is determined by the change in temperature or moisture",
                 " that is expected to occur in the future. The maps below are",
                 " created by taking historical climate - future climate and then",
@@ -513,8 +515,7 @@ ccvi_app <- function(testmode_in, ...){
               br(),
               downloadButton("report", "Generate report", class = "btn-primary"),
 
-              # # helpful for testing
-              # shinyjs::runcodeUI()
+
             )
           )
         )
@@ -943,6 +944,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     range_poly <- reactive({
+      req(range_poly_in())
       req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_assess
@@ -1005,10 +1007,10 @@ ccvi_app <- function(testmode_in, ...){
     output$cmd_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
-      isolate(
-        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
-                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
-      )
+
+      make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
+               rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+
     })
 
     output$texp_tbl <- renderTable({
@@ -1046,10 +1048,10 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(clim_vars()$ccei)
       req(isolate(nonbreed_poly()))
-      isolate(
-        make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei",
-                 rast_lbl = c("1 Low", "2", "3", "4 High"))
-      )
+
+      make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei",
+               rast_lbl = c("1 Low", "2", "3", "4 High"))
+
     })
 
     output$tbl_ccei <- renderTable({
@@ -1111,7 +1113,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(clim_vars()$htn)
 
-      make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn",
+      make_map(range_poly_clim(), rast = clim_vars()$htn, rast_nm = "htn",
                rast_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
@@ -1153,7 +1155,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(ptn_poly())
 
-      make_map(poly1 = isolate(range_poly()), poly2 = ptn_poly(), poly2_nm = "ptn")
+      make_map(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
     })
 
     output$tbl_C2aii <- renderTable({
@@ -1179,7 +1181,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(clim_vars()$map)
 
-      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map,
+      make_map(poly1 = range_poly_clim(), rast = clim_vars()$map,
                rast_nm = "map")
     })
 
@@ -1214,7 +1216,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(hs_rast2())
 
-      make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
+      make_map(poly1 = range_poly(), rast = hs_rast2(),
                poly2 = assess_poly(), poly2_nm = "assess_poly",
                rast_nm = "hs_rast",
                rast_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
@@ -1452,7 +1454,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # # helpful for testing
-    # shinyjs::runcodeServer()
+     # shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
