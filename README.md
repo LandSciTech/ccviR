@@ -85,3 +85,10 @@ description of how to use the app,
 app to prepare custom climate data sets, and
 `vignette("package_vignette", package = "ccviR")` for a tutorial on how
 to use the package to calculate the index directly in R.
+
+## Citation
+
+Endicott S, Naujokaitis-Lewis I (2023). *ccviR: Calculate the
+NatureServe Climate Change Vulnerability Index in R*. Environment and
+Climate Change Canada, Science and Technology Branch.
+<https://landscitech.github.io/ccviR/>.
