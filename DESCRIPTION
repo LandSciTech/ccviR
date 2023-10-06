@@ -1,7 +1,7 @@
 Package: ccviR
 Title: Calculate the NatureServe Climate Change Vulnerability Index in R
 Date: 2023-10-10
-Version: 0.0.2.9001
+Version: 0.0.2.9002
 Authors@R: c(person(given = "Sarah",
   family = "Endicott",
   role = c("aut", "cre"),
