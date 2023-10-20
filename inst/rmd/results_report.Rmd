@@ -41,6 +41,10 @@ range_poly <- params$range_poly
 range_poly_clim <- params$range_poly_clim
 scale_poly <- params$scale_poly
 
+# should install TinyTex if not already installed
+if(!tinytex::is_tinytex()){
+  tinytex::install_tinytex()
+}
 
 library(purrr)
 library(dplyr)
