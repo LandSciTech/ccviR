@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ccviR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3</span>
       </span>
     </div>
 
@@ -243,17 +243,17 @@ being processed. When the processing is complete click “Next”.</p>
 change exposure. Exposure is determined by the change in temperature or
 moisture that is expected to occur in the future within the species
 range in the assessment area. The exposure maps are created by taking
-current climate - future climate and then classifying the results into
-six categories using the median and 1/2 the interquartile range. Thus,
-negative values for temperature indicate warmer conditions (0B0C) and
-negative values for moisture (mm) indicate drier conditions. The real
-climate data will cover all of North America but for the demonstration
-we are using a subset from New Brunswick. The tables display the
-proportion of the species range in each class. The exposure multiplier
-is determined by the level of exposure and is used to modify the
-sensitivity and adaptive capacity components of the index based on
+historical climate - future climate and then classifying the results
+into six categories using the median and 1/2 the interquartile range.
+Thus, negative values for temperature indicate warmer conditions (°C)
+and negative values for moisture (mm) indicate drier conditions. The
+real climate data will cover all of North America but for the
+demonstration we are using a subset from New Brunswick. The tables
+display the proportion of the species range in each class. The exposure
+multiplier is determined by the level of exposure and is used to modify
+the sensitivity and adaptive capacity components of the index based on
 exposure to climate change. To view the map for different scenarios
-click the layer symbol and toggle each layer on or off.</p>
+uncheck the box next to the last layer to reveal the one underneath.</p>
 <p><img src="temp_exp1.PNG" style="width:75.0%"></p>
 <p><img src="temp_exp2.PNG" style="width:75.0%"></p>
 <p>The non-breeding range of the species is used to determine the
@@ -279,8 +279,12 @@ guidelines” button.</p>
 spatial data and these questions are dealt with on the next tab. For the
 demonstration, you can select any check box that you want for each
 question. You can check more than one box to reflect uncertainty. Try a
-few different versions and see how it affects the result! Questions that
-are unknown can be left blank. There are three sections. ‘Section B:
+few different versions and see how it affects the result! There is a
+comments section for each question and this should be filled in with
+detailed information on how the answer was reached and any evidence that
+was used to support the assessment. The size of the comment box can be
+increased by dragging from the bottom right corner. Questions that are
+unknown can be left blank. There are three sections. ‘Section B:
 Indirect Exposure to Climate Change’ and ‘Section C: Sensitivity and
 Adaptive Capacity’ are required and if less than 10 of the 20 questions
 are answered the index result will be Insufficient Evidence. ‘Section D:
@@ -346,24 +350,35 @@ show the range of scores produced by the Monte Carlo simulations.</p>
 <p><img src="comb_ind_plot.PNG" style="width:75.0%"></p>
 <p>The last graph shows the scores for each vulnerability factor in each
 scenario. The scores reflect the the answer to the question and the
-exposure multiplier that was applied.</p>
+exposure multiplier that was applied. Use the mose to show the pop-up
+for each bar to get more details on how the score was reached.</p>
 <p><img src="vulnq_plot.PNG" style="width:100.0%"></p>
-<p>Once you are finished with reviewing the results you should save the
-data as a csv file to keep in your records.</p>
 <p>If you go back and change the answer to a vulnerability question you
 will need to click the “Calculate” button again to see the updated
 results.</p>
 </div>
 <div class="section level3">
-<h3 id="saving-the-app">Saving the app<a class="anchor" aria-label="anchor" href="#saving-the-app"></a>
+<h3 id="render-a-report">Render a report<a class="anchor" aria-label="anchor" href="#render-a-report"></a>
 </h3>
-<p>The state of the app can be saved by clicking the “Save” button at
-the bottom of the Results page. A pop up will appear that asks you name
-the csv file that will store the app data. Be sure to save this
-somewhere that is easy to remember because you will need to find it
-again to load the saved app. To load the app with the saved state click
-“Load” at the bottom of the Welcome page and select the saved csv
-file.</p>
+<p>You can generate a pdf report summarizing the results of the
+assessment by clicking the “Generate report” button at the bottom of the
+results page. The report produced will include the index value, a map of
+the range, a map of the combined moisture and temperature exposure, and
+the response to each vulnerability question as well as the text from the
+comment section. Note this may take a long time the first time that you
+run it since some LaTex packages will need to be installed.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="saving-the-app">Saving the app<a class="anchor" aria-label="anchor" href="#saving-the-app"></a>
+</h2>
+<p>The state of the app can be saved by clicking the “Save progress”
+button at the bottom app at any point in the assessment. Choose a name
+and location to save a csv file with all the app content that is easy to
+remember, you will need to find it again to load the saved app. To load
+the app from a saved csv file click “Select file” under “Load data from
+a previous assessment” at the bottom of the Welcome page and select the
+saved csv file.</p>
 <p>Note, only the path to the spatial data is stored, not the data
 itself, so the app will not be able to load if data is moved or its name
 is changed. If the data has moved, you will get an error message but you
@@ -371,7 +386,19 @@ can go back to the Spatial Analysis tab and select the new file location
 and then press “Run” which will re-run the spatial analysis but keep the
 answers to the non-spatial vulnerability questions from the saved
 file.</p>
+<p>To interpret the names of the columns in the saved csv file you can
+download the column definitions from the bottom of the Welcome page.</p>
 </div>
+<div class="section level2">
+<h2 id="multiple-related-assessments">Multiple related assessments<a class="anchor" aria-label="anchor" href="#multiple-related-assessments"></a>
+</h2>
+<p>You can use a saved partially completed assessment as a template for
+running multiple related assessments. For example, to assess multiple
+populations of a species that are in different locations and may have
+different stressors fill in the app with all the information that will
+not change between populations and save the state of the app in a csv.
+Use this csv to load the template assessment and then modify it for each
+population and save the completed assessments in new csv files.</p>
 </div>
 <div class="section level2">
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
@@ -386,7 +413,8 @@ error message can be found in the R console.</p>
 analysis using the ccviR package. You will often be able to figure out
 what is causing the problem and return to the app. See
 <code><a href="../articles/package_vignette.html">vignette("package_vignette", package = "ccviR")</a></code> for a
-tutorial on how to use the package.</p>
+tutorial on how to use the package. Or if you are not an R user, contact
+sarah.endicott at ec.gc.ca and I will try to help.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -415,7 +443,7 @@ lessons, innovations, and next steps. Wildlife Society Bulletin
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Sarah Endicott.</p>
+<p>Developed by Sarah Endicott, Ilona Naujokaitis-Lewis.</p>
 </div>
 
 <div class="pkgdown">
