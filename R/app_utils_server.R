@@ -250,7 +250,7 @@ combine_outdata <- function(out_data_lst){
       'D3', 'com_D3', 'D4', 'com_D4', 'GCM_or_Ensemble_name',
       'Historical_normal_period', 'Future_period', 'Emissions_scenario',
       'Link_to_source', 'range_poly_pth', 'nonbreed_poly_pth', 'assess_poly_pth',
-      'ptn_poly_pth', 'clim_dir_pth'
+      'ptn_poly_pth', 'clim_dir_pth', 'ccviR_version'
     )), contains("rng_chg_pth"))
 
 }
@@ -266,15 +266,19 @@ update_restored <- function(df, session){
                         names_prefix = "com_",
                         values_to = "comment",
                         values_transform = as.character) %>%
-    mutate(comment = ifelse(is.na(comment), "", comment))
+    mutate(comment = ifelse(is.na(comment), "", comment)) %>%
+    distinct()
 
   df2 <- df %>% select(-matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
                              values_to = "value",
                              values_transform = as.character) %>%
+    distinct() %>%
     left_join(df_coms, by = "input") %>%
     left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
     filter(!is.na(.data$update_fun)) %>%
+    mutate(comment = ifelse(is.na(comment) & stringr::str_detect(input, "^[B,C,D]\\d.*"),
+                            "", comment)) %>%
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
@@ -293,6 +297,7 @@ update_call <- function(input, update_fun, value, arg_name, comment, session){
     }
   } else {
     if(arg_name == "value"){
+      value <- ifelse(value == "FALSE", FALSE, value)
       update_fun(session = session, inputId = input, value = value)
     } else if(arg_name == "selected"){
       update_fun(session = session, inputId = input, selected = value)

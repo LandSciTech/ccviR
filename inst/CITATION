@@ -1,0 +1,8 @@
+bibentry(
+  bibtype  = "Manual",
+  title    = "ccviR: Calculate the NatureServe Climate Change Vulnerability Index in R",
+  author   = "Sarah Endicott and Ilona Naujokaitis-Lewis",
+  organization  = "Environment and Climate Change Canada, Science and Technology Branch",
+  year     = "2023",
+  url = "https://landscitech.github.io/ccviR/"
+)

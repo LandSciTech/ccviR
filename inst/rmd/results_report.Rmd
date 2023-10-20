@@ -29,16 +29,22 @@ params:
     out_data: !r list(scenario_name = c("RCP 4.5", "RCP 8.5"), index = c("EV", "HV"))
     clim_vars: !r list(mat = system.file("extdata/clim_files/processed/MAT_reclassRCP_4.5.tif", package = "ccviR"), cmd = system.file("extdata/clim_files/processed/CMD_reclassRCP_4.5.tif", package = "ccviR"))
     range_poly: !r system.file("extdata/rng_poly.shp", package = "ccviR")
+    range_poly_clim: !r system.file("extdata/rng_poly.shp", package = "ccviR")
     scale_poly: !r system.file("extdata/assess_poly.shp", package = "ccviR")
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE) 
 out_data <- params$out_data
 clim_vars <- params$clim_vars
 range_poly <- params$range_poly
+range_poly_clim <- params$range_poly_clim
 scale_poly <- params$scale_poly
 
+# should install TinyTex if not already installed
+if(!tinytex::is_tinytex()){
+  tinytex::install_tinytex()
+}
 
 library(purrr)
 library(dplyr)
@@ -70,6 +76,9 @@ if(unique(out_data$common_name) == ""){
                      " (_", unique(out_data$species_name), "_)")
 }
 
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0)
+}
 
 ```
 
@@ -98,17 +107,36 @@ text <- paste0("### ", out_data$scenario_name, ": ", "\\Large",
                index_col(out_data$mig_exposure),
                collapse = "\n")
 cat(text)
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.1)
+}
 ```
 
 
 ## Species range
-```{r range_map, fig.cap= "Map of the species range (shaded) and the assessment area (grey outline)."}
-tmap::qtm(scale_poly, borders = "grey", fill = NULL)+tmap::qtm(range_poly)
+```{r range_map,fig.height= 3, fig.width=7, fig.cap= "Map of the species range (red) and the assessment area (black)."}
+# should add a context polygon that is North America to state/prov level as
+# background then choose the map extent as whichever is bigger between range and assessment area
+comb_ext <- st_union(sf::st_bbox(range_poly_clim) %>% sf::st_as_sfc(),
+                            sf::st_bbox(scale_poly) %>% sf::st_as_sfc() %>%
+                              st_transform(st_crs(range_poly_clim)))
+
+tmap::tm_shape(context_North_Am)+
+  tmap::tm_polygons(col = "grey90", border.col = "grey80")+
+  tmap::qtm(scale_poly, borders = "black", fill = NULL)+
+  tmap::tm_shape(range_poly_clim, bbox = comb_ext, is.master = TRUE)+
+  tmap::tm_borders(col = "red")+
+  tmap::tm_add_legend(type = "line", labels = c("Range", "Assessment Area"), 
+                      col = c("red","black"))+
+  tmap::tm_layout(legend.outside = TRUE)
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+  shiny::setProgress(0.3)
+}
 ```
 
 
 ## Exposure 
-```{r, bivar_exp,fig.height= 2.5, fig.cap="Map of exposure based on both change in temperature and change in moisture regime."}
+```{r bivar_exp,fig.height= 3, fig.width=7, results='hide', fig.cap="Map of exposure based on both change in temperature and change in moisture regime."}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
 # walk2(index_res$index, index_res$scenario_name, 
 #       ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
@@ -124,9 +152,15 @@ bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, scale_poly, range
 
 gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot), 
                                      ggplot2::ggplotGrob(bivar_exp_plot$legend)), 
-                        layout_matrix = rbind(c(1,1,1,1,2),
-                                              c(1,1,1,1,2),
-                                              c(1,1,1,1,2)))
+                        layout_matrix = rbind(c(1,1,1,1,1,2),
+                                              c(1,1,1,1,1,2),
+                                              c(1,1,1,1,1,2)))
+```
+
+```{r}
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.7)
+}
 ```
 
 
@@ -185,8 +219,13 @@ vuln_tbl %>% nest_by(scenario_name) %>% pull(data) %>%
                             "**Comments: **", df$Comments, collapse = "\n\n"), sep = "")
                })
 
-
-
 ```
 
+```{r}
+if (identical(rmarkdown::metadata$runtime, "shiny")){
+    shiny::setProgress(0.9)
+}
+```
 
+### Version Note
+This report was generated with version `r utils::packageVersion("ccviR")` of the ccviR package.

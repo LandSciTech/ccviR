@@ -1,18 +1,17 @@
 Column Name,Definition
+scenario_name,Name of the scenario assessed
 species_name,Scientific name of the species
 common_name,Common name of the species
 geo_location,Geographic area assessed
-assessor,Name of the assessor
-taxonomic_group,Taxonomic group of the species
-migratory,Whether the species is migratory and exposure data for the migratory range that lies outside of the assessment area was provided
-cave_grnd_water,Whether the species is an obligate of caves or groundwater systems
+assessor_name,Name of the assessor
+tax_grp,Taxonomic group of the species
+mig,Whether the species is migratory and exposure data for the migratory range that lies outside of the assessment area was provided
+cave,Whether the species is an obligate of caves or groundwater systems
 CCVI_index,Calculated CCVI index
 CCVI_conf_index,Level of confidence in the CCVI index result. This is based on the proportion of Monte Carlo results that had different index values
 mig_exposure,Index of migratory exposure
 b_c_score,"Total score from sections B and C the indirect exposure, sensitivity and adaptive capacity questions"
 d_score,Total score from section D the modelled response to climate change section
-gain_mod, Gain modifier. Used to down-weight modelled range gains
-gain_mod_comm, Explaination for gain modifier choice
 MC_freq_*,The proportion of Monte Carlo runs with each CCVI index result
 MAT_#,The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
 CMD_#,The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
@@ -24,6 +23,8 @@ MAP_max/min,The maximum and minimum historical mean annual precipitation in the 
 range_change,The projected decrease in range size as a percentage of current range size. Negative numbers indicate an increase in range size
 range_overlap,The percentage of the current range that is projected to remain in the future range.
 range_size,The area of the species' range in m2
+gain_mod, Gain modifier. Used to down-weight modelled range gains
+gain_mod_comm, Explaination for gain modifier choice
 ,
 ,"Answers to each question plus any comments. -1) No selection, 0) Neutral, 1) Somewhat increase, 2) Increase, 3) Greatly increase. If there are 2 numbers then two boxes were checked and the average of the scores was used in the total score"
 B1,  1) Exposure to sea level rise
@@ -53,8 +54,12 @@ D1,  1) Documented response to recent climate change
 D2,  2) Modeled future (2050) change in population or range size
 D3,  3) Overlap of modeled future (2050) range with current range
 D4,  4) Occurrence of protected areas in modeled future (2050) distribution
-"GCM or Ensemble name", Name of the climate model
-"Historical normal period", Time period for the historical data
-"Future period", Time period for the future climate projections
-"Emissions scenario", Emissions scenario used for climate projections
-"Link to source", Url for where the climate data was downloaded from
+GCM or Ensemble name, Name of the climate model
+Historical normal period, Time period for the historical data
+Future period, Time period for the future climate projections
+Emissions scenario, Emissions scenario used for climate projections
+Link to source, Url for where the climate data was downloaded from
+range_poly_pth,Path to range polygon shapefile
+assess_poly_pth,Path to assessment area polygon shapefile
+clim_dir_pth,Path to folder of climate data
+ccviR_version,The version number of the ccviR package used to complete the assessment

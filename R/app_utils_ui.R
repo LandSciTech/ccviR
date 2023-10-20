@@ -48,7 +48,7 @@ check_comment_ui <- function(id, label, com = "", ...){
 
 updateCheck_comment_ui <- function(inputId, value, com, session){
   updateCheckboxGroupInput(session = session, inputId = inputId,
-                           selected = value)
+                           selected = as.integer(unlist(strsplit(value,","))))
   updateTextAreaInput(session = session, inputId = paste0("com", inputId),
                       value = ifelse(is.na(com), "", com))
 }

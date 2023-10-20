@@ -44,6 +44,12 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                     upperleft = palette["upperleft"],
                     upperright = palette["upperright"], do_plot = F)
 
+  # check crs of polys is the same as rast
+  scale_poly <- check_polys(scale_poly, sf::st_crs(cmd), "assessment area polygon")
+
+  cmd <- terra::crop(cmd, terra::vect(scale_poly), mask = TRUE)
+  mat <- terra::crop(mat, terra::vect(scale_poly), mask = TRUE)
+
   bivar_ras <- bivar_map(cmd, mat)
 
   # using ggplot better than tmap for keeping the legend aligned well
@@ -75,10 +81,10 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                                              values_to = "value")
 
 
-  leg_start_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/20
-  leg_end_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
-  leg_top_y <- ras_ext$ymax - (ras_ext$ymax - ras_ext$ymin)/20
-  leg_bottom_y <-  ras_ext$ymax - (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
+  # leg_start_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/20
+  # leg_end_x <- ras_ext$xmax + (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
+  # leg_top_y <- ras_ext$ymax - (ras_ext$ymax - ras_ext$ymin)/20
+  # leg_bottom_y <-  ras_ext$ymax - (ras_ext$xmax - ras_ext$xmin)/leg_rel_size
 
   bivar_plt <- ggplot2::ggplot()+
     ggplot2::geom_raster(ggplot2::aes(x = .data[["x"]], y = .data[["y"]],
@@ -95,6 +101,8 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
     #                            ymin = leg_bottom_y, ymax = leg_top_y)
 
   if(!is.null(rng_poly)){
+    rng_poly <- check_polys(rng_poly, sf::st_crs(bivar_ras), "assessment area polygon")
+
     bivar_plt <- bivar_plt+
       ggplot2::geom_sf(data = rng_poly, fill = NA, col = "black", linewidth = 1)
   }
@@ -130,7 +138,7 @@ colmat <- function(nclass = 6,
 }
 
 
-bivar_map <- function(rasterx, rastery, nclass = 6) {
+bivar_map <- function(rasterx, rastery, nclass = 6, max_cell = 5000000) {
 
   col_grid <- expand.grid(1:nclass, 1:nclass) %>%
     mutate(Var1 = .data$Var1 *10,
@@ -141,6 +149,16 @@ bivar_map <- function(rasterx, rastery, nclass = 6) {
   classify_col <- Vectorize(function(x, y) {
     col_grid$value[which(col_grid$Var1 == x & col_grid$Var2 == y)]
   })
+
+  # aggregate raster for plotting since out resolution is much smaller than raster res
+  rast_ncell <- terra::ncell(rasterx)
+
+  if(rast_ncell > max_cell){
+    fct <- sqrt(rast_ncell/max_cell) %>% ceiling()
+    rasterx <- terra::aggregate(rasterx, fact = fct, fun = "modal", na.rm = TRUE)
+    rastery <- terra::aggregate(rastery, fact = fct, fun = "modal", na.rm = TRUE)
+    message("aggregating raster for faster plotting")
+  }
 
   r <- terra::classify(rasterx + rastery*10, rcl = col_grid)
   names(r) <- names(rasterx)

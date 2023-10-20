@@ -42,14 +42,14 @@ ccvi_app <- function(testmode_in, ...){
       tags$head(tags$style(type = "text/css",
                            ".container-fluid {  max-width: 1050px; /* or 1050px */}")),
       div(id = "header",
-          h1("An app to run the NatureServe CCVI process"),
+          h1("ccviR: An app to caluclate the NatureServe Climate Change Vulnerability Index"),
           strong(
-            span("App developer: Sarah Endicott"), HTML("&bull;"),
-            span("Project lead: Ilona Naujokaitis-Lewis"), HTML("&bull;"),
-            span("With support from: ECCC"),
+            span("ccviR is a product developed and maintained by ECCC STB. This project is lead by Ilona Naujokaitis-Lewis and Sarah Endicott"),
             br(),
             span("Code"),
             a("on GitHub", href = "https://github.com/see24/ccviR", target="_blank"),
+            HTML("&bull;"),
+            a("ccviR website", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),
             HTML("&bull;"),
             a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"))
       ),
@@ -115,6 +115,13 @@ ccvi_app <- function(testmode_in, ...){
             br(),
             downloadButton("downloadDefs", "Download csv"),
             br(),
+            h3("Citation"),
+            p("Endicott S, Naujokaitis-Lewis I (2023). ",
+              em("ccviR: Calculate the NatureServe Climate Change Vulnerability ",
+                 "Index in R. "),
+              "Environment and Climate Change Canada, Science and Technology ",
+              "Branch. ",
+              a("https://landscitech.github.io/ccviR/.", href = "https://landscitech.github.io/ccviR/")),
             h3("References"),
             p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
               " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
@@ -220,9 +227,11 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
+              # # helpful for testing
+              # shinyjs::runcodeUI(type = "textarea"),
               p("Exposure is determined by the change in temperature or moisture",
                 " that is expected to occur in the future. The maps below are",
-                " created by taking current climate - future climate and then",
+                " created by taking historical climate - future climate and then",
                 " classifying the results into six categories using the median",
                 " and 1/2 the interquartile range. Thus, negative values for",
                 " temperature indicate warmer conditions (\u00B0C) and negative values for",
@@ -430,6 +439,7 @@ ccvi_app <- function(testmode_in, ...){
               spat_vuln_ui(
                 id = "D2_3",
                 header = "Modeled future range change",
+                chk_box = FALSE
               ),
               strong("2) Modeled future (2050) change in population or range size."),
               uiOutput("box_D2"),
@@ -505,8 +515,7 @@ ccvi_app <- function(testmode_in, ...){
               br(),
               downloadButton("report", "Generate report", class = "btn-primary"),
 
-              # # helpful for testing
-              # shinyjs::runcodeUI()
+
             )
           )
         )
@@ -935,6 +944,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     range_poly <- reactive({
+      req(range_poly_in())
       req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_assess
@@ -997,10 +1007,10 @@ ccvi_app <- function(testmode_in, ...){
     output$cmd_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
-      isolate(
-        make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
-                 rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
-      )
+
+      make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
+               rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+
     })
 
     output$texp_tbl <- renderTable({
@@ -1038,10 +1048,10 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(clim_vars()$ccei)
       req(isolate(nonbreed_poly()))
-      isolate(
-        make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei",
-                 rast_lbl = c("1 Low", "2", "3", "4 High"))
-      )
+
+      make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei",
+               rast_lbl = c("1 Low", "2", "3", "4 High"))
+
     })
 
     output$tbl_ccei <- renderTable({
@@ -1103,7 +1113,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(clim_vars()$htn)
 
-      make_map(isolate(range_poly_clim()), rast = clim_vars()$htn, rast_nm = "htn",
+      make_map(range_poly_clim(), rast = clim_vars()$htn, rast_nm = "htn",
                rast_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
@@ -1145,7 +1155,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(ptn_poly())
 
-      make_map(poly1 = isolate(range_poly()), poly2 = ptn_poly(), poly2_nm = "ptn")
+      make_map(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
     })
 
     output$tbl_C2aii <- renderTable({
@@ -1171,7 +1181,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(clim_vars()$map)
 
-      make_map(poly1 = isolate(range_poly_clim()), rast = clim_vars()$map,
+      make_map(poly1 = range_poly_clim(), rast = clim_vars()$map,
                rast_nm = "map")
     })
 
@@ -1206,7 +1216,7 @@ ccvi_app <- function(testmode_in, ...){
       req(doSpatial())
       req(hs_rast2())
 
-      make_map(poly1 = isolate(range_poly()), rast = hs_rast2(),
+      make_map(poly1 = range_poly(), rast = hs_rast2(),
                poly2 = assess_poly(), poly2_nm = "assess_poly",
                rast_nm = "hs_rast",
                rast_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
@@ -1391,7 +1401,8 @@ ccvi_app <- function(testmode_in, ...){
                            cave = input$cave)
       res_df <- widen_vuln_coms(vuln_df(), coms_df = coms_df())
 
-      out_data_lst$start <- bind_cols(sp_dat, res_df)
+      out_data_lst$start <- bind_cols(sp_dat, res_df) %>%
+        mutate(ccviR_version = utils::packageVersion("ccviR"))
     })
 
     observeEvent(spat_res(), {
@@ -1443,7 +1454,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # # helpful for testing
-    # shinyjs::runcodeServer()
+     # shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
@@ -1490,6 +1501,7 @@ ccvi_app <- function(testmode_in, ...){
       # For PDF output, change this to "report.pdf"
       filename = "report.pdf",
       content = function(file) {
+        withProgress(message = 'Report rendering in progress...', {
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
@@ -1499,16 +1511,20 @@ ccvi_app <- function(testmode_in, ...){
 
 
         rng_report <- try(range_poly(), silent = TRUE)
+        rng_report_clim <- try(range_poly_clim(), silent = TRUE)
         if(!isTruthy(rng_report)){
+          message("using range_poly_in")
           rng_report <- range_poly_in()
+          rng_report_clim <- range_poly_in()
         }
 
         # Set up parameters to pass to Rmd document
         params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
-                                       combine_outdata(),
-                                     clim_vars = clim_vars(),
-                                     scale_poly = assess_poly(),
-                                     range_poly = rng_report)
+                         combine_outdata(),
+                       clim_vars = clim_vars(),
+                       scale_poly = assess_poly(),
+                       range_poly = rng_report,
+                       range_poly_clim = rng_report_clim)
 
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
@@ -1517,7 +1533,7 @@ ccvi_app <- function(testmode_in, ...){
                           params = params,
                           envir = new.env(parent = globalenv()))
         file.copy(file.path(tempdir(), 'report.pdf'), file)
-
+        })
       }
     )
 
