@@ -114,7 +114,7 @@ if (identical(rmarkdown::metadata$runtime, "shiny")){
 
 
 ## Species range
-```{r range_map,fig.height= 3, fig.width=7, fig.cap= "Map of the species range (black) and the assessment area (grey outline)."}
+```{r range_map,fig.height= 3, fig.width=7, fig.cap= "Map of the species range (red) and the assessment area (black)."}
 # should add a context polygon that is North America to state/prov level as
 # background then choose the map extent as whichever is bigger between range and assessment area
 comb_ext <- st_union(sf::st_bbox(range_poly_clim) %>% sf::st_as_sfc(),
