@@ -22,9 +22,14 @@ Useful links:
 \author{
 \strong{Maintainer}: Sarah Endicott \email{sarah.endicott@canada.ca} (\href{https://orcid.org/0000-0001-9644-5343}{ORCID})
 
+Authors:
+\itemize{
+  \item Ilona Naujokaitis-Lewis
+}
+
 Other contributors:
 \itemize{
-  \item Her Majesty the Queen in Right of Canada, as represented by the Minister of Environment and Climate Change [copyright holder]
+  \item Hid Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change [copyright holder]
 }
 
 }

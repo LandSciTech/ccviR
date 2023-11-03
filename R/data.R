@@ -17,3 +17,8 @@
 #' A table for identifying the update function to apply to each input. May get
 #' more uses in the future
 "ui_build_table"
+
+#' Contextual map data for North America
+#'
+#' Data used to build context map in pdf report.
+"context_North_Am"
