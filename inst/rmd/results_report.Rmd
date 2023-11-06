@@ -117,9 +117,9 @@ if (identical(rmarkdown::metadata$runtime, "shiny")){
 ```{r range_map,fig.height= 3, fig.width=7, fig.cap= "Map of the species range (red) and the assessment area (black)."}
 # should add a context polygon that is North America to state/prov level as
 # background then choose the map extent as whichever is bigger between range and assessment area
-comb_ext <- st_union(sf::st_bbox(range_poly_clim) %>% sf::st_as_sfc(),
+comb_ext <- sf::st_union(sf::st_bbox(range_poly_clim) %>% sf::st_as_sfc(),
                             sf::st_bbox(scale_poly) %>% sf::st_as_sfc() %>%
-                              st_transform(st_crs(range_poly_clim)))
+                              sf::st_transform(sf::st_crs(range_poly_clim)))
 
 tmap::tm_shape(context_North_Am)+
   tmap::tm_polygons(col = "grey90", border.col = "grey80")+

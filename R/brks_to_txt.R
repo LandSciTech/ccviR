@@ -1,5 +1,6 @@
 
 #' Convert breaks matrix to text that can be stored in readme
+#' @noRd
 
 brks_to_txt <- function(brks){
   if(is.null(brks)){
