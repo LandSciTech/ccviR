@@ -5,6 +5,11 @@
 data_prep_ui <- function(id){
     fluidPage(
       h2("Prepare data for the CCVI App"),
+      p(em("NOTE: Running this app is only necessary if you want to run the ",
+           "CCVI app with custom climate data. To use the pre-prepared climate ",
+           "data download a zip file from ",
+           a("here", href = "https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link", target="_blank"),
+           ", unzip it and save the folder in a convenient location.")),
       p(strong("Step 1: "), "Acquire climate data including: ",
         "Mean annual temperature (MAT), climate moisture deficeit (CMD), ",
         "mean annual precipitation (MAP), and minimum coldest and ",
