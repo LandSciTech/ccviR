@@ -307,15 +307,18 @@ update_call <- function(input, update_fun, value, arg_name, comment, session){
 spat_vuln_hide <- function(id, check_exists, do_spat, restored){
   mis <- paste0("missing_", id)
   mapid <- paste0("map_", id)
-  nmis <- paste0("not_missing", id)
+  nmis <- paste0("not_missing_", id)
+  tblid <- paste0("tbl_", id)
 
   if(isTruthy(do_spat)){
     if(isTruthy(check_exists)){
       shinyjs::hide(mis)
       shinyjs::show(mapid)
+      shinyjs::show(tblid)
       shinyjs::show(nmis)
     } else {
       shinyjs::hide(mapid)
+      shinyjs::hide(tblid)
       shinyjs::hide(nmis)
       shinyjs::show(mis)
     }
@@ -323,6 +326,7 @@ spat_vuln_hide <- function(id, check_exists, do_spat, restored){
     shinyjs::hide(mis)
     shinyjs::hide(mapid)
     shinyjs::show(nmis)
+    shinyjs::show(tblid)
   }
 }
 

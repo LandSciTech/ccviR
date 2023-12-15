@@ -1239,7 +1239,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D2)
 
-      if(nrow(spat_res2()) > 1){
+      if(nrow(spat_res2()) > 1 & isTruthy(hs_rast())){
         valueNm <- valueNms[ 4- box_val]
         div(strong("Calculated effect on vulnerability."),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
@@ -1266,7 +1266,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D3)
 
-      if(nrow(spat_res2()) > 1){
+      if(nrow(spat_res2()) > 1 & isTruthy(hs_rast())){
         valueNm <- valueNms[4 - box_val]
         div(strong("Calculated effect on vulnerability."),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
