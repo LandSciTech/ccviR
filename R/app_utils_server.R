@@ -30,7 +30,6 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   poly_nms <- list(`Assessment area`= "assess_poly",
                    `Non-breeding range` = "nonbreed_poly",
                    `Physiological thermal niche` = "ptn")
-
   if(!is.null(rast_nm)){
     if(rast_nm == "hs_rast"){
       pal = c("grey", "#FF0000", "#FFC125", "#008000")
@@ -94,7 +93,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
 
     if(!terra::same.crs(rast, "EPSG:3857")){
       rast <- terra::project(rast, "EPSG:3857", method = "near")
-      message("projecting raster for plotting")
+      message("projecting raster, ", rast_nm ," for plotting")
     }
 
     if(terra::nlyr(rast) == 1){

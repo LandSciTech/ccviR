@@ -842,7 +842,7 @@ ccvi_app <- function(testmode_in, ...){
       }
     })
 
-    hs_rast <- reactive({
+    hs_rast <- eventReactive(input$shinyalert, {
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
