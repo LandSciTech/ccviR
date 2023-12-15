@@ -77,7 +77,7 @@ Monte Carlo uncertainty analysis produced are the same.
 - The App allows users to calculate the index without knowing R
 - Makes the NatureServe CCVI accessible to a wider audience
 
-## Additional Help
+## Vignettes/tutorials available
 
 See `vignette("app_vignette", package = "ccviR")` for a more detailed
 description of how to use the app,
