@@ -304,7 +304,7 @@ update_call <- function(input, update_fun, value, arg_name, comment, session){
   }
 }
 
-spat_vuln_hide <- function(id, check_exists, do_spat, restored){
+spat_vuln_hide <- function(id, check_exists, do_spat, restored, spat_inc){
   mis <- paste0("missing_", id)
   mapid <- paste0("map_", id)
   nmis <- paste0("not_missing_", id)
@@ -323,10 +323,18 @@ spat_vuln_hide <- function(id, check_exists, do_spat, restored){
       shinyjs::show(mis)
     }
   } else if(isTruthy(restored)){
-    shinyjs::hide(mis)
-    shinyjs::hide(mapid)
-    shinyjs::show(nmis)
-    shinyjs::show(tblid)
+    if(isTruthy(spat_inc)){
+      shinyjs::hide(mis)
+      shinyjs::hide(mapid)
+      shinyjs::show(nmis)
+      shinyjs::show(tblid)
+    } else {
+      shinyjs::show(mis)
+      shinyjs::hide(mapid)
+      shinyjs::hide(nmis)
+      shinyjs::hide(tblid)
+    }
+
   }
 }
 

@@ -841,8 +841,11 @@ ccvi_app <- function(testmode_in, ...){
 
       }
     })
+    # doing this rather than eventReactive so that it still has a value (NULL)
+    # if shinyalert is not called
+    hs_rast <- reactiveVal()
 
-    hs_rast <- eventReactive(input$shinyalert, {
+    observeEvent(input$shinyalert, {
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
@@ -857,10 +860,9 @@ ccvi_app <- function(testmode_in, ...){
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
-        check_trim(terra::rast(pth))
+        out <- check_trim(terra::rast(pth))
+        hs_rast(out)
       }
-
-
     })
 
     ptn_poly <- reactive({
@@ -1107,7 +1109,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # C2ai
-    observe({spat_vuln_hide("C2ai", clim_vars()$htn, doSpatial(), restored_df())})
+    observe({spat_vuln_hide("C2ai", clim_vars()$htn, doSpatial(), restored_df(), spat_res()$HTN_1)})
 
     output$map_C2ai <- leaflet::renderLeaflet({
       req(doSpatial())
@@ -1149,7 +1151,9 @@ ccvi_app <- function(testmode_in, ...){
     outputOptions(output, "box_C2ai", suspendWhenHidden = FALSE)
 
     # C2aii
-    observe({spat_vuln_hide("C2aii", ptn_poly(), doSpatial(), restored_df())})
+    observe({
+      spat_vuln_hide("C2aii", ptn_poly(), doSpatial(), restored_df(), spat_res()$PTN)
+    })
 
     output$map_C2aii <- leaflet::renderLeaflet({
       req(doSpatial())
@@ -1175,7 +1179,9 @@ ccvi_app <- function(testmode_in, ...){
     outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
 
     # C2bi
-    observe({spat_vuln_hide("C2bi", clim_vars()$map, doSpatial(), restored_df())})
+    observe({
+      spat_vuln_hide("C2bi", clim_vars()$map, doSpatial(), restored_df(), spat_res()$MAP_max)
+    })
 
     output$map_C2bi <- leaflet::renderLeaflet({
       req(doSpatial())
@@ -1202,14 +1208,14 @@ ccvi_app <- function(testmode_in, ...){
 
     # D2 and D3
     observe({
-      spat_vuln_hide("D2_3", hs_rast(), doSpatial(), restored_df())
+      spat_vuln_hide("D2_3", hs_rast(), doSpatial(), restored_df(), spat_res()$range_change)
     })
 
     # reclassify raster
     hs_rast2 <- reactive({
       req(hs_rast())
       rast <- terra::classify(hs_rast(),
-                                 rcl = hs_rcl_mat(), right = NA)
+                                rcl = hs_rcl_mat(), right = NA)
     })
 
     output$map_D2_3 <- leaflet::renderLeaflet({
@@ -1239,7 +1245,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D2)
 
-      if(nrow(spat_res2()) > 1 & isTruthy(hs_rast())){
+      if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_change)){
         valueNm <- valueNms[ 4- box_val]
         div(strong("Calculated effect on vulnerability."),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
@@ -1266,7 +1272,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D3)
 
-      if(nrow(spat_res2()) > 1 & isTruthy(hs_rast())){
+      if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_overlap)){
         valueNm <- valueNms[4 - box_val]
         div(strong("Calculated effect on vulnerability."),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
