@@ -60,17 +60,35 @@ plot_q_score <- function(vuln_df){
                     custom_tooltip = paste0(.data$Question, ":\n",
                                             "Exposure Multiplier: ", round(.data$exp, 2), "\n",
                                             "Score: ", round(.data$score, 2))) %>%
-    filter(!is.na(.data$score))
+    filter(!is.na(.data$score)) %>%
+    mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"))
 
-  plt <- ggplot2::ggplot(vuln_df,
-                         ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip))+
+  # get maximum scores for each question
+  max_df <- make_vuln_df("test") %>%
+    mutate(Value1 = as.numeric(.data$Max_Value)) %>%
+    calc_vuln_score(spat_df = data.frame(temp_exp_cave = 2.4,
+                                         moist_exp_cave = 2,
+                                         comb_exp_cave = mean(c(2.4, 2)))) %>%
+    filter(!is.na(.data$score)) %>%
+    mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"))
+
+  plt <- ggplot2::ggplot(
+    vuln_df,
+    ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip)
+  )+
     # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
     ggplot2::geom_point(size = 0.1, color = "grey35")+
     ggplot2::geom_col(color = "grey35")+
-    ggplot2::facet_wrap(~scenario_name, ncol = 3)+
+    ggplot2::geom_col(ggplot2::aes(x = .data$Code, y = .data$score),
+                      data = max_df, fill = "grey35", alpha = 0.2,
+                      inherit.aes = FALSE)+
+    ggplot2::facet_grid(sub_index ~ scenario_name, scales = "free",
+                        space = "free", switch = "y")+
     ggplot2::labs(x = "Question", y = "Score")+
     ggplot2::scale_x_discrete(limits = rev)+
-    ggplot2::coord_flip(expand = FALSE)
+    ggplot2::coord_flip(expand = FALSE)+
+    ggplot2::theme(strip.placement = "outside",
+                   strip.background.y = ggplot2::element_rect())
 
   plotly::ggplotly(plt, tooltip = "text")
 
