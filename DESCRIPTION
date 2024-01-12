@@ -8,7 +8,7 @@ Authors@R: c(person(given = "Sarah",
   email = "sarah.endicott@canada.ca",
   comment = c(ORCID = "0000-0001-9644-5343")),
   person(given = "Ilona", family = "Naujokaitis-Lewis", role = "aut"),
-  person(given="Hid Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change",
+  person(given="His Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change",
          role = "cph"))
 Description: The ccviR package implements the 
   NatureServe Climate Change Vulnerability Index (CCVI) version 3.02 <https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index>
