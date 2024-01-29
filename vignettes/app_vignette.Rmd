@@ -25,7 +25,17 @@ The scores from the sensitivity and adaptive capacity section are then multiplie
 For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) and the references below.
 
 ## Run a demonstration
-Before using the app to assess a real species we recommend walking through the app with the demo data set provided. Run the code below to get started.
+Before using the app to assess a real species we recommend walking through the app with the demo data set provided. 
+
+If you have not already installed ccviR, begin by installing the development version of ccviR from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("LandSciTech/ccviR")
+```
+
+
+Then, run the code below to get started:
 
 ```{r setup, eval=FALSE}
 library(ccviR)
@@ -33,11 +43,9 @@ run_ccvi_app("demo")
 ```
 
 ### Getting started
-The Welcome Tab provides information on the Index and the data needed to calculate it.
+Upon launching the app, you are greeted with the Welcome Tab which provides information on the Index and the data needed to calculate it. Data needed to calculate the Index includes a climate data set, species-specific spatial data sets, and species-specific sensitivity and life history data. 
 
-For the demonstration species all the required data is included in the package, including a small climate change data set covering New Brunswick for the RCP 4.5 and RCP 8.5 emissions scenarios.
-
-In addition to the climate data the following spatial data sets for each species can be provided: 
+The species-specific spatial datasets that can be provided are as follows: 
 
 * Species North American or global range polygon (required): The complete area occupied by the species in North America.
 * Assessment area polygon (required): The area within which the species vulnerability is being assessed. For example, a country, province, state, or protected area.
@@ -47,12 +55,14 @@ In addition to the climate data the following spatial data sets for each species
 
 The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information.
 
-For this example all of the data is provided with the package. 
+For this demonstration, all of the data is provided in the package. This includes a small climate change data set covering New Brunswick for the RCP 4.5 and RCP 8.5 emissions scenarios, a species range polygon, an assessment area polygon, a PTN polygon, and range change rasters for both RCP 4.5 and RCP 8.5 scenarios.
 
 Press "Start" to begin calculating the index.
 
 ### Species information
-On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. For the demonstration select "Vascular Plant". See the NatureServe Guidelines to better understand the meaning of the cave dwelling and migratory check boxes. For the demonstration do not check either. Click "Next".
+On this page, you will provide some basic details about the species. Make sure to select the appropriate taxonomic group since some aspects of the index are conditional on this. To better understand the meaning of the cave dwelling and migratory check boxes see the NatureServe Guidelines. 
+
+For this demonstration select "Vascular Plant" from the Major Taxonomic Group drop down. Do not check the cave dwelling or migratory boxes. Input any text for the remaining boxes. Click "Next".
 
 ### Spatial data analysis
 On this tab, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. For the "Folder location of prepared climate data" you need to tell the app where you stored the climate data that it should use. This will either be the folder that you unzipped the downloaded climate data into or the output folder you selected in the data preparation app. For this example the prepared climate data can be found under "clim_files > processed".
