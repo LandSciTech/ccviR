@@ -69,19 +69,19 @@ For this demonstration select "Vascular Plant" from the Major Taxonomic Group dr
 ### Spatial Data Analysis
 On this page, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. For the "Folder location of prepared climate data" you need to tell the app where you stored the climate data that it should use. This will either be the folder that you unzipped the downloaded climate data into or the output folder you selected in the data preparation app. For this demonstration the prepared climate data can be found under "clim_files > processed". Select this folder.
 
-![](./clim_dir.PNG){width=100%}
+![](./clim_dir.PNG){width=80% fig-align="center"}
 
 Then, select the range polygon for the species ("rng_poly.shp"), the assessment area polygon ("assess_poly.shp"), and the physiological thermal niche polygon ("ptn_poly.shp"). Leave the non-breeeding range blank since we are assuming this species is not migratory. 
 
 For the projected range change raster, select "Yes, multiple range change rasters will be provided, one for each scenario." This will open a new section where you can select a raster file for each scenario. Select "rng_chg_45.tif" for the RCP 4.5 scenario and "rng_chg_85.tif" for the RCP 8.5 scenario. If range change rasters are not available for each scenario, a single raster can be used but this assumes the projected range change is the same in all scenarios.
 
-![](./rng_chng_multi.PNG){width=75%}
+![](./rng_chng_multi.PNG){width=70% fig-align="center"}
 
 Next, specify how the input raster should be classified into lost, gained, maintained or not suitable. The classification will depend on the values of the raster you are working with. For this demonstration, use the default values which are for a raster where lost is -1, maintained in 0, and gained is 1. Not suitable is not used so it is flagged with 99. 
 
 The the gain multiplier allows you to ignore gains by setting it to 0 but we will leave it at 1 which assumes that the model has already accounted for whether habitat gains are likely to be realized. 
 
-![](./gain_mod_run.PNG){width=75%}
+![](./gain_mod_run.PNG){width=70% fig-align="center"}
 
 Then click "Run". A loading symbol will appear while the data is being processed. When the "Spatial analysis complete" message appears, click "Next". 
 
@@ -93,9 +93,9 @@ The exposure maps are created by subtracting the future climate from the histori
 
 To view the map for different scenarios uncheck the box next to the last layer to reveal the one underneath. The real climate data will cover all of North America but for the demonstration we are using a subset from New Brunswick. 
 
-![](./temp_exp1.PNG){width=75%}
+![](./temp_exp1.PNG){width=70% fig-align="center"}
 
-![](./temp_exp2.PNG){width=75%}
+![](./temp_exp2.PNG){width=70% fig-align="center"}
 
 The non-breeding range of the species is used to determine the migratory exposure index based on the climate change exposure index (CCEI). The CCEI is a metric of climate change exposure that indicates the level of exposure to both temperature and moisture change using the Euclidean distance. See the NatureServe guidelines for a full description. Since our demonstration species is non-migratory this section is blank.  
 
@@ -105,7 +105,7 @@ Once you have finished exploring the maps click "Next".
 ### Vulnerability Questions
 Vulnerability questions are detailed questions that the index uses to score the species' indirect exposure, sensitivity, adaptive capacity and modeled or documented responses to climate change. Descriptions of how to interpret and score the questions are available in the NatureServe guidelines which are included as a pop-up if you click the "Show guidelines" button. 
 
-![](./vulnqs.PNG){width=75%}
+![](./vulnqs.PNG){width=70% fig-align="center"}
 
 For the demonstration, you can select any check box that you want for each question. You can check more than one box to reflect uncertainty. Questions that are unknown can be left blank. Try a few different versions and see how it affects the result! For each question there is a comment section that should be filled in with detailed information on how the answer was reached and any evidence that was used to support the assessment. The size of the comment box can be increased by dragging from the bottom right corner.
 
@@ -117,11 +117,11 @@ Additional vulnerability questions are answered based on an analysis of spatial 
 ### Spatial Vulnerability Questions
 This tab includes the vulnerability questions that have a spatial component. Each question includes a map and table showing how the data has been summarized. The check box is pre-selected based on the spatial data analysis but can be changed if needed.
 
-![](./spat_vulnqs.PNG){width=75%}
+![](./spat_vulnqs.PNG){width=70% fig-align="center"}
 
 The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple change rasters are used.  
 
-![](./spat_vulnqs2.PNG){width=75%}
+![](./spat_vulnqs2.PNG){width=70% fig-align="center"}
 
 Note that if the check box is changed and then the "Run" button on the Spatial Analysis page is clicked again, you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The 'Spatial Vulnerability Questions' comments will not be affected though, so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. If the spatial data for a vulnerability question was not provided on the 'Spatial Data Analysis' tab then the map will not be included and the question can be answered using non-spatial information or left blank for unknown. 
 
@@ -132,21 +132,21 @@ For the demonstration, leave the check boxes as they are and then click "Next".
 
 On the Results page, click "Calculate" to calculate the index value. Once loaded, the first section presents the Climate Change Vulnerability Index and Migratory Exposure Index for each climate scenario. 
 
-![](./results_dials.PNG){width=75%}
+![](./results_dials.PNG){width=70% fig-align="center"}
 
 The Data Completeness table highlights how many questions were answered in each section. The index is more reliable when more questions are answered. 
 
 To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. In the simulation one of the selected values is picked for each vulnerability question and the index is re-calculated. 1000 simulations are run. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
 
-![](./results_variation.PNG){width=75%}
+![](./results_variation.PNG){width=70% fig-align="center"}
 
 The next graph shows how the scores based on the exposure and the sensitivity and adaptive capacity are combined with the scores based on the documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations.
 
-![](./comb_ind_plot.PNG){width=75%}
+![](./comb_ind_plot.PNG){width=70% fig-align="center"}
 
 The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mouse to show the pop-up for each bar to get more details on how the score was reached.
 
-![](./vulnq_plot.PNG){width=100%}
+![](./vulnq_plot.PNG){width=70% fig-align="center"}
 
 If you go back and change the answer to a vulnerability question you will need to click the "Calculate" button again to see the updated results. 
 
