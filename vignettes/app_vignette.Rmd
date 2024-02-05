@@ -119,13 +119,14 @@ This tab includes the vulnerability questions that have a spatial component. Eac
 
 ![](./spat_vulnqs.PNG){width=75%}
 
-Note that if the check box is changed and then the "Run" button on the Spatial Analysis page is clicked again, you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The comments will not be affected though, so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. If the spatial data for a vulnerability question was not provided on the 'Spatial Data Analysis' tab then the map will not be included and the question can be answered using non-spatial information or left blank for unknown. 
-
 The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple change rasters are used.  
 
 ![](./spat_vulnqs2.PNG){width=75%}
 
+Note that if the check box is changed and then the "Run" button on the Spatial Analysis page is clicked again, you will see a warning that the value of the check boxes on this page will be updated to the value based on the re-run spatial analysis. The 'Spatial Vulnerability Questions' comments will not be affected though, so you can explain the reason for any adjustments in the comments and then remake those adjustments if they are still applicable. If the spatial data for a vulnerability question was not provided on the 'Spatial Data Analysis' tab then the map will not be included and the question can be answered using non-spatial information or left blank for unknown. 
+
 For the demonstration, leave the check boxes as they are and then click "Next". 
+
 
 ### Results
 
