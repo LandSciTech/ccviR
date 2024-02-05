@@ -152,7 +152,7 @@ If you go back and change the answer to a vulnerability question you will need t
 
 
 ### Render a report
-You can generate a pdf report summarizing the results of the assessment by clicking the "Generate report" button at the bottom of the results page. The report produced will include the index value, a map of the range, a map of the combined moisture and temperature exposure, and the response to each vulnerability question as well as the text from the comment section. Note this may take a long time the first time that you run it since some LaTex packages will need to be installed. 
+You can generate a pdf report summarizing the results of the assessment by clicking the "Generate report" button at the bottom of the results page. The report produced will include the index value, a map of the range, a map of the combined moisture and temperature exposure, and the response to each vulnerability question as well as the text from the comment section. Once rendered, the report will appear in your downloads. Note this may take a long time the first time that you run it since some LaTex packages will need to be installed. 
 
 
 ## Use the app with real data
