@@ -128,30 +128,32 @@ Note that if the check box is changed and then the "Run" button on the Spatial A
 For the demonstration, leave the check boxes as they are and then click "Next". 
 
 
-### Results
+### Index Results
 
-On the Results page, click "Calculate" to calculate the index value. Once loaded the first section presents the climate change vulnerability index and migratory exposure index for each climate scenario. 
+On the Results page, click "Calculate" to calculate the index value. Once loaded, the first section presents the Climate Change Vulnerability Index and Migratory Exposure Index for each climate scenario. 
 
 ![](./results_dials.PNG){width=75%}
 
 The Data Completeness table highlights how many questions were answered in each section. The index is more reliable when more questions are answered. 
 
-To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. 1000 simulations are run and in each simulation one of the selected values is picked for each vulnerability question. Then the index is re-calculated. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
+To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. In the simulation one of the selected values is picked for each vulnerability question and the index is re-calculated. 1000 simulations are run. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
 
 ![](./results_variation.PNG){width=75%}
 
-The next graph shows how the scores based on exposure, sensitivity and adaptive capacity are combined with the scores based on documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations.
+The next graph shows how the scores based on the exposure and the sensitivity and adaptive capacity are combined with the scores based on the documented or modeled response to climate change, to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations.
 
 ![](./comb_ind_plot.PNG){width=75%}
 
-The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mose to show the pop-up for each bar to get more details on how the score was reached.
+The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mouse to show the pop-up for each bar to get more details on how the score was reached.
 
 ![](./vulnq_plot.PNG){width=100%}
 
 If you go back and change the answer to a vulnerability question you will need to click the "Calculate" button again to see the updated results. 
 
+
 ### Render a report
 You can generate a pdf report summarizing the results of the assessment by clicking the "Generate report" button at the bottom of the results page. The report produced will include the index value, a map of the range, a map of the combined moisture and temperature exposure, and the response to each vulnerability question as well as the text from the comment section. Note this may take a long time the first time that you run it since some LaTex packages will need to be installed. 
+
 
 ## Use the app with real data
 Once you have completed the demonstration you are ready to use the app with real world data
