@@ -156,12 +156,14 @@ You can generate a pdf report summarizing the results of the assessment by click
 
 
 ## Use the app with real data
-Once you have completed the demonstration you are ready to use the app with real world data
+Once you have completed the demonstration you are ready to use the app with real world data.
 
 ### Assemble the data
-The first time you use the app you will need to acquire a classified climate data set that includes the predicted future change in mean annual temperature (MAT), and climate moisture deficit (CMD) as well as historical mean annual precipitation and the difference between historical maximum warmest month temperature (MWMT) and minimum coldest month temperature (MCMT). The data is classified based on the median and interquartile range for the future change in MAT and CMD and based on thresholds defined by the NatureServe Guidelines for MAP and MWMT-MCMT. There are several versions of the data set available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link). To use the data you need to download one of the files, unzip it and store it in a convenient location. If you wish to create a climate data set for use with the index based on different climate data you can follow the instructions in the "Preparing Custom Climate Data" [vignette](https://landscitech.github.io/ccviR/articles/data_prep_vignette.html). If using the app to assess a different species the same climate data set should be used so this step only needs to be done once.  
+The first time you use the app you will need to acquire a classified climate data set that includes the predicted future change in mean annual temperature (MAT), and climate moisture deficit (CMD) as well as historical mean annual precipitation and the difference between historical maximum warmest month temperature (MWMT) and minimum coldest month temperature (MCMT). The data is classified based on the median and interquartile range for the future change in MAT and CMD and based on thresholds defined by the NatureServe Guidelines for MAP and MWMT-MCMT. 
 
-In addition to the climate data the following spatial data sets for each species can be provided: 
+There are several versions of the data set available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link). To use the data you need to download one of the files, unzip it and store it in a convenient location. If you wish to create a climate data set for use with the index based on different climate data you can follow the instructions in the "Preparing Custom Climate Data" [vignette](https://landscitech.github.io/ccviR/articles/data_prep_vignette.html). If using the app to assess a different species the same climate data set should be used so this step only needs to be done once.  
+
+In addition to the climate data the following spatial data sets for each species can be input: 
 
 * Species range polygon (required): Ideally this is the complete area occupied by the species in North America since it is used to determine the range of climate conditions that the species can tolerate.
 * Assessment area polygon (required): The area within which the species vulnerability is being assessed. For example, a country, province, state, or protected area. This can also be a subset of the species range if you are assessing sub-populations. This polygon is overlapped with the range to determine the exposure to climate change in the area of interest. 
