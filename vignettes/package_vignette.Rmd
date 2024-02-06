@@ -210,26 +210,24 @@ plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
 
 
 ## Answer the vulnerability questions
-`make_vuln_df()` creates a blank table that can be filled in with scores for each vulnerability factor used to calculate the index. The vulnerability factors and how to score them is explained in the NatureServe Guidelines. The table includes an abbreviated version of the question, the maximum value for each factor and whether the factor is calculated by the spatial data analysis and should be scored as -1 so as not to override the results of the spatial analysis. `Value1` should be filled with a number between -1 and the maximum value for that question (2 or 3) which correspond to the following impacts on vulnerability -1: Unknown, 0: Neutral, 1: Somewhat Increase, 2: Increase, 3: Greatly Increase. If you wish to choose two or more answers to reflect uncertainty you can fill in `Value2` - `Value4` as well.
+`make_vuln_df()` creates a blank table that can be filled in with scores for each vulnerability factor used to calculate the index. The vulnerability factors and how to score them is explained in the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf). The table includes an abbreviated version of the question (`$Question`), the maximum value for each factor (`$Max_Value`), and whether the factor is calculated by the spatial data analysis (`$is_spatial`). When the factor is calculated by the spatial analysis, indicated by `$is_spatial != NA`, it should be scored as -1 so as not to override the results of the spatial analysis. 
 
 ```{r}
+# create a blank vulnerability question table
 vuln <- make_vuln_df("sp_name")
+```
 
+`$Value1` should be filled the number corrosponding to the following impacts on vulnerability -1: Unknown, 0: Neutral, 1: Somewhat Increase, 2: Increase, 3: Greatly Increase. Note that the maximum `Value1` value depends on the question, it can be 2 or 3 (reflected by `$Max_Value`). If you wish to input two or more answers to reflect uncertainty you do so by filling in `$Value2`, `$Value3`, and `$Value4`. The table can be filled out interactively, using code (reccomended for reproducability), or by saving the table as a csv, editing it, and loading it back into R. These three options are outlined in the codeblocks below:
+
+Interactive editing:
+```{r}
 if(FALSE){
   # you can interactively edit the table
   vuln <- edit(vuln)
-  
-  # # Another option:
-  # 
-  # # save the table as a csv 
-  # 
-  # write.csv(vuln, "path/to/write", row.names = FALSE)
-  # 
-  # # Edit the csv, save it and load it back in to R
-  # vuln <- read.csv("path/to/write", stringsAsFactors = FALSE)
+
 } else {
   # or use code (recommended for reproducibility)
-  vuln$Value1[3:19] <- c( 0,0,1,0, -1, -1, -1, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0)
+  vuln$Value1[3:19] <- c(0, 0, 1, 0, -1, -1, -1, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0)
   vuln$Value1[26:29] <- c(0, -1, -1, 0)
   
   # include a second value to reflect uncertainty and trigger a monte carlo to
@@ -238,22 +236,52 @@ if(FALSE){
 }
 ```
 
+Editing using code:
+```{r}
+if(FALSE){
+  # you can interactively edit the table
+  vuln <- edit(vuln)
+  
+} else {
+  # or use code (recommended for reproducibility)
+  vuln$Value1[3:19] <- c(0, 0, 1, 0, -1, -1, -1, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0)
+  vuln$Value1[26:29] <- c(0, -1, -1, 0)
+  
+  # include a second value to reflect uncertainty and trigger a monte carlo to
+  # determine confidence
+  vuln$Value2[3:5] <- c(2, 0, 0)
+}
+```
+
+Editing using a csv:
+```{r}
+# save the table as a csv 
+write.csv(vuln, "path/to/write", row.names = FALSE)
+
+# edit the csv and save it 
+# load it back in to R
+vuln <- read.csv("path/to/write", stringsAsFactors = FALSE)
+```
+
 
 ## Calculate the index
-Finally, use the results of the spatial analysis and the answers to the vulnerability questions to calculate the index. For the example I have reduced the number of rounds in the Monte Carlo but it should generally be kept to the default.
+Finally, use the results of the spatial analysis and the answers to the vulnerability questions to calculate the index. For this example number of rounds in the Monte Carlo has been reduced but it should generally be kept to the default (`n_rnds = 1000`).
 ```{r}
 index_res <- calc_vulnerability(spat_res$spat_table, vuln, tax_grp = "Bird",
                                 n_rnds = 10)
 ```
 
-The result is a dataframe with 12 columns see `?calc_vulnerability` for an explanation of all of them. `index_res$index` gives the index where EV: Extremely Vulnerable, HV: Highly Vulnerable, MV: Moderately Vulnerable, LV: Less Vulnerable, and IE: Insufficient Evidence. Below we see that our example species is Highly Vulnerable to climate change
+The result is a dataframe with 12 columns (see `?calc_vulnerability` for an explanation of all of them). `$index` gives the index where EV: Extremely Vulnerable, HV: Highly Vulnerable, MV: Moderately Vulnerable, LV: Less Vulnerable, and IE: Insufficient Evidence. Below we see that our example species is Highly Vulnerable to climate change:
 
 ```{r}
 glimpse(index_res)
 
 index_res$index
 ```
-These results can be used to investigate how the index value was reached including using two graphs that are included in the package. The first shows how the index values, that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections, are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In our example we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
+
+We can investigate how the index value was reached using the results of `calc_vulnerability` and two graphs included in the package. 
+
+The first graph is `plot_score_index()`. It shows how the index values (that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections) are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In this example, we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
 
 ```{r fig.height=4, fig.width=8}
 # set theme
@@ -266,7 +294,7 @@ ggplot2::theme_set(my_theme)
 plot_score_index(index_res)
 ```
 
-The second graph is a plotly graph of the scores for each factor . The bars show the total score for the factor and the popup shows the exposure multiplier that was used to modify the score for the vulnerability factor as well as the name of the question.  
+The second graph `q_score()`. It is a plotly graph of the scores for each factor. The bars show the total score for the factor. The popup shows name of the question and the exposure multiplier that was used to modify the score for the vulnerability factor.  
 
 ```{r fig.height=4, fig.width=8}
 q_score <- bind_rows(index_res$vuln_df %>% `names<-`(index_res$scenario_name), 
