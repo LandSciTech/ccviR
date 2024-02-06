@@ -19,14 +19,29 @@ The ccviR package implements the [NatureServe Climate Change Vulnerability Index
 
 The NatureServe CCVI is a trait based climate change vulnerability assessment framework that can also include observed and modeled responses to climate change. The NatureServe CCVI includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity and optionally incorporates the results of documented or modeled responses to climate change. Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change, which is used to determine an exposure multiplier. Sensitivity and adaptive capacity and responses to climate change are assessed by scoring vulnerability factors (23 and 4 respectively), on a scale from ‘neutral’ (0)  to ‘greatly increases vulnerability’ (3). Factors that cannot be answered can be left blank and contribute 0 to the total score, but if fewer than 13 are scored the index value can not be calculated. The sensitivity and adaptive capacity section scores are then multiplied by an exposure multiplier and summed, while the scores for the response to climate change section are simply summed. An index value is then determined for each section by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section. The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence if not enough factors of the CCVI are scored. For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) and the references below.
 
+
+## Getting started
+To begin using the ccviR package within R, you will need to load the required packages. An example data set has been provided within the package that we will use in the examples below. The prepared data will be saved in the output folder and can be used whenever the index is being calculated, so this step only needs to be completed once. The following code block loads the required packages and the example data set:
+
+```{r}
+#load packages
+library(ccviR)
+library(sf)
+library(dplyr)
+
+#load example data set
+data_pth <- system.file("extdata", package = "ccviR")
+```
+
+
 ## Preparing the climate data
-You can skip this step by using pre-prepared climate data available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link)
+This step is only necessary of you want to use custom climate data. You can skip this section if you are using pre-prepared climate data which is available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link).
 
-Step 1: Acquire climate data. We recommend the climate data for North America from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/) but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 and SSP5-8.5 for the 2050s for the future. Save the downloaded data in a folder you can easily find.
+Step 1: Acquire climate data. We recommend the climate data for North America from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/) but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 and SSP5-8.5 for the 2050s for the future. Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img". Save the downloaded data in a folder you can easily find. 
 
-Step 2: Prepare the climate data for use in the app. Climate data can be processed by providing file paths for each file or for a folder that contains all the files with standard names. For the output folder make sure to choose a location that is easy to find again because you will use the prepared climate data to calculate the index. When preparing data for multiple scenarios, you will need to process each scenario separately but save the thresholds used to classify the first scenario and supply them when processing subsequent scenarios. 
+Step 2: Prepare the climate data for use in ccviR. Climate data can be processed by providing file paths for each file or for a folder that contains all the files with standard names. For the output folder, make sure to choose a location that is easy to find again because you will use the prepared climate data to calculate the index. When preparing data for multiple scenarios, you will need to process each scenario separately but save the thresholds used to classify the first scenario and supply them when processing subsequent scenarios (this is demonstrated in the example below). 
 
-Standard names for input folder
+Standard names for input folder:
 
 * MAT: mean annual temperature for the historical normal period (required)
 * MAT_2050: mean annual temperature for the future under climate change. It can be any number eg 2050, 2100 (required)
@@ -38,26 +53,17 @@ Standard names for input folder
 * MCMT: mean coldest month temperature for the historical normal period
 * clim_poly: An optional shapefile with a polygon of the extent of the climate data. It will be created from the climate data if it is missing but it is faster to provide it.
 
-Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
 
-An example data set has been provided with the app that we will use in the examples below. 
-The prepared data will be saved in the output folder and can be used whenever the index is being calculated so this step only needs to be completed once.
+The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe for the continental US. 
 
-The thresholds for classifying data are based on those provided in the NatureServe Guidelines except for the thresholds used for the exposure data. Since we are using different climate data the thresholds for the classes need to be calculated. We use the the median and 1/2 the interquartile range since it is more appropriate for skewed data than the mean and standard deviation which are used by NatureServe for the continental US. To demonstrate how the data is prepared the maps below use the demo data set to show the change in mean annual temperature which is then classified into 6 categories. 
+The following code prepares the climate data from the example data set using `prep_clim_data`:
 
 ```{r data_prep}
-
-library(ccviR)
-library(sf)
-library(dplyr)
-
-data_pth <- system.file("extdata", package = "ccviR")
-
-# check file names
+# climate data file names
 list.files(file.path(data_pth, "clim_files/raw"))
 
 # prepare the data and save it in out_folder
-# RCP4.5
+# RCP4.5 prep - saves breaks as brks for use in 8.5 prep
 brks <- prep_clim_data(
   mat_norm = file.path(data_pth, "clim_files/raw", "NB_norm_MAT.tif"),
   mat_fut = file.path(data_pth, "clim_files/raw", "NB_RCP.4.5_MAT.tif"),
@@ -72,7 +78,8 @@ brks <- prep_clim_data(
   scenario_name = "RCP 4.5",
 )
 
-#RCP8.4 using breaks from 4.5 map, mwmt and mcmt only need to be processed once
+# RCP8.5 - using breaks from 4.5
+# map, mwmt and mcmt only need to be processed once
 prep_clim_data(
   mat_norm = file.path(data_pth, "clim_files/raw", "NB_norm_MAT.tif"),
   mat_fut = file.path(data_pth, "clim_files/raw", "NB_RCP.8.5_MAT.tif"),
@@ -89,7 +96,37 @@ prep_clim_data(
 )
 ```
 
-It is recommended to store readme file with the climate data to record where the data came from and any relevant metadata. This file is required if the data is used with the ccviR Shiny app.
+Using the mean annual temperature (MAT) as an example, we will explore how the data is prepared. `prep_clim_data` determines the change in MAT and classifies it into six classes (1-6) where 6 has the largest increase in temperature. The thresholds, or breaks, for classifying data are based on those provided in the NatureServe Guidelines (except for the thresholds used for the exposure data). Since custom climate data is being used, the thresholds for the classes need to be calculated. To calculate the thresholds we use the the median and 1/2 the interquartile range. These values are more appropriate for skewed data than the mean and standard deviation which are used by NatureServe for the continental US. 
+
+The change in MAT and the classified MAT (output from `prep_clim_data`) can be plotted to demonstrate the classification of the change in MAT.
+
+```{r fig.height=4, fig.width=4}
+# select color ramp for plots
+pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
+
+# create rasters for the historical normal MAT and the future MAT
+mat_norm <- terra::rast(file.path(data_pth, "clim_files/raw/NB_norm_MAT.tif"))
+mat_fut <- terra::rast(file.path(data_pth, "clim_files/raw/NB_RCP.4.5_MAT.tif"))
+
+# plot the change in MAT
+terra::plot(mat_norm - mat_fut, 
+     col = colorRampPalette(rev(pal))(50))
+```
+
+```{r fig.height=4, fig.width=4}
+# breaks used to classify data (determined when preparing RCP4.5 data above)
+brks$brks_mat
+
+# create raster for the classified MAT
+mat_classified <- terra::rast(file.path(data_pth, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
+
+# plot the classified MAT
+terra::plot(mat_classified, col = pal)
+```
+
+Note that the plot only shows five classes as none of the data falls within the sixth class.
+
+When preparing custom climate data, it is recommended that readme file is created and stored to record where the data came from and any relevant metadata. This file is required if the data is used with the ccviR Shiny app.
 
 ```{r readme}
 # make readme csv
@@ -103,27 +140,6 @@ write.csv(
   file.path(data_pth, "clim_files/processed/", "climate_data_readme.csv"),
   row.names = FALSE
 )
-```
-
-
-Below is an example of how the MAT is classified by `prep_clim_data`. The change in MAT (normal - future) is classified into classes 1-6 where class 6 has the largest increase in temperature. The thresholds or breaks between classes are determined by the median and 1/2 the interquaritle range. 
-
-
-```{r fig.height=4, fig.width=4}
-mat_norm <- terra::rast(file.path(data_pth, "clim_files/raw/NB_norm_MAT.tif"))
-mat_fut <- terra::rast(file.path(data_pth, "clim_files/raw/NB_RCP.4.5_MAT.tif"))
-
-mat_classified <- terra::rast(file.path(data_pth, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
-
-brks$brks_mat
-
-pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
-
-terra::plot(mat_norm - mat_fut, 
-     col = colorRampPalette(rev(pal))(50))
-
-terra::plot(mat_classified, col = pal)
-
 ```
 
 
