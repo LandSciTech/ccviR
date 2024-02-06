@@ -144,7 +144,7 @@ write.csv(
 
 
 ## Load species specific spatial data
-The following spatial data sets can be used for each species: 
+The following spatial data sets can be input for each species: 
 
 * Species North American or global range polygon (required)
 * Assessment area polygon (required)
@@ -152,7 +152,7 @@ The following spatial data sets can be used for each species:
 * Projected range change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
 * Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.
 
-For this example all of the data is provided with the package. 
+For this example all of the data is provided with the package.  
 
 ```{r load_sp_data}
 rng_poly <- read_sf(file.path(data_pth, "rng_poly.shp"), agr = "constant")
@@ -166,8 +166,8 @@ PTN_poly <- read_sf(file.path(data_pth, "PTN_poly.shp"), agr = "constant")
 hs_rcl_mat <- matrix(c(-1:1, c(1, 2, 3)), ncol = 2)
 ```
 
-## Load climate data and run spatial analysis
 
+## Load climate data
 Next we will load in the climate data that we prepared in the first step using the `get_clim_vars()` function which loads the data and stores it in a list with the required names. The scenario names must match the suffix on the file name which is done automatically by `prep_clim_data`. The result is a list where each element is a RasterLayer for static variables and a RasterStack for variables that change with one layer per scenario. The clim_poly is also included as an sf object.  
 
 ```{r}
@@ -177,7 +177,9 @@ clim_dat <- get_clim_vars(file.path(data_pth, "clim_files/processed"),
 str(clim_dat, max.level = 1)
 ```
 
-Then we can run the spatial data analysis using the species specific data and climate data. The resulting object is a list containing a table with the results of the spatial analysis, `spat_res$spat_table`, and two range polygons which are provided for mapping. `spat_res$range_poly_assess` the range polygon clipped to the assessment area, and `spat_res$range_poly_clim` the range polygon clipped to the extent of the climate data. The first is used for all factors except the historical thermal and hydrological niche which use the range clipped to the extent of the climate data because historical thermal and hydrological niche are used a proxies for the  range of temperature and moisture conditions that the species can tolerate and therefore should reflect as much of the range as possible. If the range_poly provided is completely within the assessment area then these two polygons will be the same
+
+## Run spatial data analysis
+Once the species specific and climate data is loaded, we can run the spatial data analysis:
 
 ```{r}
 spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
@@ -187,19 +189,23 @@ spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
 
 ```
 
-We can look at how the spatial analysis was done for the RCP 4.5 scenario by plotting the appropriate range polygon and climate data to see how they overlap.
+
+The resulting object is a list containing a table with the results of the spatial analysis (`spat_res$spat_table`) and two range polygons which are provided for mapping (`spat_res$range_poly_assess` and `spat_res$range_poly_clim`). In this case, `spat_res$spat_table` shows that the range is spread over the 2nd, 3rd and 4th highest exposure classes for change in MAT: 
+
+```{r}
+spat_res$spat_table[, 1:7]
+```
+
+
+`spat_res$range_poly_assess` is the range polygon clipped to the assessment area while `spat_res$range_poly_clim` is the range polygon clipped to the extent of the climate data. `spat_res$range_poly_assess` is used for all factors except the historical thermal and hydrological niche which use `spat_res$range_poly_clim`. This is because the historical thermal and hydrological niche are used as proxies for the range of temperature and moisture conditions that the species can tolerate and, therefore, should reflect as much of the range as possible. If the range polygon provided is completely within the assessment area then `spat_res$range_poly_assess` will be the same as the provided range polygon.
+
+We can look at how the spatial analysis was done for the RCP 4.5 scenario by observing the overlap between the appropriate range polygon and the climate data:
 
 ```{r fig.height=4, fig.width=4}
 terra::plot(clim_dat$mat$RCP_4.5, col = pal)
 
 plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
 
-```
-
-And then inspecting the spatial results table. In this case it shows that the range is spread over the 2nd, 3rd and 4th highest exposure classes for change in MAT. 
-
-```{r}
-spat_res$spat_table[, 1:7]
 ```
 
 
