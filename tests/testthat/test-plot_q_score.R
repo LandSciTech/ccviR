@@ -19,7 +19,7 @@ make_exp_df <- function(exp_lev){
 }
 
 test_that("single plot works", {
-  expect_s3_class(plot_q_score(calc_vulnerability(make_exp_df(1), make_vuln_df("nm", 0.5),
+  expect_s3_class(plot_q_score(calc_vulnerability(make_exp_df(1), make_vuln_df("nm", 0.5, use_spatial = FALSE),
                                                       tax_grp = "Bird") %>%
                                  select(scenario_name, vuln_df) %>%
                                  tidyr::unnest(vuln_df)),

@@ -72,25 +72,47 @@ plot_q_score <- function(vuln_df){
     filter(!is.na(.data$score)) %>%
     mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"))
 
-  plt <- ggplot2::ggplot(
-    vuln_df,
-    ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip)
-  )+
-    # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
-    ggplot2::geom_point(size = 0.1, color = "grey35")+
-    ggplot2::geom_col(color = "grey35")+
-    ggplot2::geom_col(ggplot2::aes(x = .data$Code, y = .data$score),
-                      data = max_df, fill = "grey35", alpha = 0.2,
-                      inherit.aes = FALSE)+
-    ggplot2::facet_grid(sub_index ~ scenario_name, scales = "free",
-                        space = "free", switch = "y")+
-    ggplot2::labs(x = "Question", y = "Score")+
-    ggplot2::scale_x_discrete(limits = rev)+
-    ggplot2::coord_flip(expand = FALSE)+
-    ggplot2::theme(strip.placement = "outside",
-                   strip.background.y = ggplot2::element_rect())
+  #plotly doesn't respect space = free so need to make subplots individually see
+  #https://github.com/plotly/plotly.R/issues/908
 
-  plotly::ggplotly(plt, tooltip = "text")
+  # define plot yaxis limits
+  limits <- max_df %>%
+    summarise(max = ceiling(max(.data$score)),
+              min = floor(min(.data$score)))
+
+  #define width of subplots by finding the absolut range of each "facet"
+  plot_width<- vuln_df %>%
+    group_by(.data$sub_index) %>%
+    summarise(range = n()) %>%
+    ungroup() %>%
+    mutate(width_pct = range/sum(range))
+
+
+  #define a list of ggplot and feed it in the subplot function with the calculated limits
+  vuln_df %>%
+    split(.$sub_index) %>%
+    purrr::map2(
+      split(max_df, max_df$sub_index),
+      function(x, y) {
+        plt <- ggplot2::ggplot(
+          x,
+          ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip)
+        )+
+          # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
+          ggplot2::geom_point(size = 0.1, color = "grey35")+
+          ggplot2::geom_col(color = "grey35")+
+          ggplot2::geom_col(ggplot2::aes(x = .data$Code, y = .data$score),
+                            data = y, fill = "grey35", alpha = 0.2,
+                            inherit.aes = FALSE)+
+          ggplot2::facet_grid(sub_index ~ scenario_name, scales = "free")+
+          ggplot2::labs(x = "Question", y = "Score")+
+          ggplot2::scale_x_discrete(limits = rev)+
+          ggplot2::coord_flip(expand = FALSE, ylim = c(0, limits$max))
+        plotly::ggplotly(plt, tooltip = "text")
+      }) %>%
+    plotly::subplot(margin = 0.02, nrows = 2, shareY = TRUE, shareX = TRUE,
+                    heights = plot_width$width_pct)
+
 
   # Version with error bars for aggregated results
 
