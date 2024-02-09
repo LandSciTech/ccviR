@@ -1,7 +1,12 @@
-
 #' Convert breaks matrix to text that can be stored in readme
-#' @noRd
-
+#'
+#' @param brks a matrix of breaks with columns start, end and class
+#'
+#' @return A string with breaks in the format "class: (start - end);"
+#' @export
+#'
+#' @examples
+#' brks_to_txt(matrix(data = 1:6, nrow = 2, byrow = TRUE))
 brks_to_txt <- function(brks){
   if(is.null(brks)){
     return("")
