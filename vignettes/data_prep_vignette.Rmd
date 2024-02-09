@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ### Custom Climate Data
-If you wish to use a custom set of climate data to calculate the NatureServe Climate Change Vulnerability Index you will need to prepare the climate data into the form used to calculate the index. The raw climate data set should include: 
+If you wish to use a custom set of climate data to calculate the NatureServe Climate Change Vulnerability Index you will need to prepare the climate data into the form used to calculate the index. The raw climate data set should include rasters of: 
 * Mean annual temperature (MAT) for both historical and future time periods
 * Climate moisture deficit (CMD) for both historical and future time periods
 * Mean annual precipitation (MAP) for the historical time period
@@ -46,6 +46,6 @@ Once all the files are selected you can click "Process" to prepare the data. Do 
 ### Multiple scenarios
 If you wish to calculate the CCVI for multiple climate change scenarios simultaneously you can create a climate change data set with multiple scenarios in the "Data Preparation for the ccviR app". To do this click on "Add Another Scenario" after the first scenario has completed processing. All scenarios must be processed in one session in order for the same thresholds to be applied for classifying all scenarios. 
 
-The first scenario processed will determine the thresholds used to classify the temperature and moisture exposure based on the median and 1/2 the interquartile range. Therefore, we recommend processing the climate scenario with the lowest impact first so that index values are higher for more extreme scenarios. Steps 2 and 3 must be repeated for each scenario but the values will only be erased for inputs that are expected to change between scenarios or are not required for additional scenarios. MAT and CMD must be provided for the additional scenario. The historical values will not change but must still be supplied since the amount of change is used to inform the exposure. The rest of the climate data are not needed for additional scenarios because they are used to inform the species' sensitivity based on its current range and historical climate so they will not change between scenarios. 
+The first scenario processed will determine the thresholds used to classify the temperature and moisture exposure based on the median and 1/2 the interquartile range. Therefore, we recommend processing the climate scenario with the lowest impact first so that index values are higher for more extreme scenarios. Steps 2 and 3 must be repeated for each scenario but the values will only be erased for inputs that are expected to change between scenarios or are not required for additional scenarios. MAT and CMD must be provided for the additional scenario. The historical values will not change but must still be supplied since the amount of change is used to inform the exposure. The rest MCMT, MWMT and MAP are not needed for additional scenarios because they are used to inform the species' sensitivity based on its current range and historical climate so they will not change between scenarios. 
 
 
