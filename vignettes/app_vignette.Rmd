@@ -18,16 +18,16 @@ The ccviR app implements the [NatureServe Climate Change Vulnerability Index (CC
 
 The NatureServe CCVI is a trait based climate change vulnerability assessment framework. It includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity. In addition, it optionally incorporates the results of documented or modeled responses to climate change. 
 
-Exposure is assessed using an exposure multiplier which is determined by the proportion of the species range that falls into 6 classes of temperature and moisture change. Sensitivity and adaptive capacity and responses to climate change are assessed by scoring vulnerability factors (23 and 4 respectively), on a scale from 0 (‘neutral’)  to 3 (‘greatly increases vulnerability’). Factors that cannot be answered can be left blank and contribute 0 to the total score. If fewer than 13 factors are scored the index value cannot be calculated. 
+Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change which is used to assign an exposure multiplier. Sensitivity and adaptive capacity are assessed by scoring 23 vulnerability factors, on a scale from 0 (‘neutral’)  to 3 (‘greatly increases vulnerability’). These scores are then multiplied by the exposure multiplier and are summed to give a total score for this section. Factors that cannot be answered can be left blank and contribute 0 to the total score. If fewer than 13 factors are scored the index value cannot be calculated. 
 
-The scores from the sensitivity and adaptive capacity section are then multiplied by the exposure multiplier and summed. The scores for the response to climate change section are simply summed. An index value is then determined for each section by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section. The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence (if not enough factors of the CCVI are scored). 
+In addition, there are 4 vulnerability factors for documented or modeled responses to climate change that can optionally be scored on a similar scale. These scores are simply summed to get the total score for this section. An index value is then determined for the two sections (exposure *x* sensitivity and adaptive capacity, and documented or modeled responses) by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section. The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence (if not enough factors of the CCVI are scored). 
 
 For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) and the references below.
 
 ## Run a demonstration
 Before using the app to assess a real species we recommend walking through the app with the demo data set provided. 
 
-If you have not already installed ccviR, begin by installing the development version of ccviR from [GitHub](https://github.com/) with:
+If you have not already installed ccviR, begin by installing the ccviR package from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -35,7 +35,7 @@ devtools::install_github("LandSciTech/ccviR")
 ```
 
 
-Then, run the code below to get started:
+Then, run the code below to launch the app in your browser:
 
 ```{r setup, eval=FALSE}
 library(ccviR)
@@ -53,7 +53,7 @@ The species-specific spatial datasets that can be provided are as follows:
 * Non-breeding range polygon: If applicable, the area outside North America occupied in the non-breeding season.
 * Projected range change raster: The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the cell was lost, maintained, gained or was never included in the range.  
 
-The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information.
+The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information. All polygon data should be provided as a shapefile while raster data can be in any file format accepted by the `terra::rast` function but ".tif" files are recommended. 
 
 For this demonstration, all of the data is provided in the package. This includes a small climate change data set covering New Brunswick for the RCP 4.5 and RCP 8.5 emissions scenarios, a species range polygon, an assessment area polygon, a PTN polygon, and range change rasters for both RCP 4.5 and RCP 8.5 scenarios.
 
@@ -67,11 +67,11 @@ For this demonstration select "Vascular Plant" from the Major Taxonomic Group dr
 
 
 ### Spatial Data Analysis
-On this page, you will load the spatial data used by the index and see the results of the spatial analysis for exposure to climate change. For the "Folder location of prepared climate data" you need to tell the app where you stored the climate data that it should use. This will either be the folder that you unzipped the downloaded climate data into or the output folder you selected in the data preparation app. For this demonstration the prepared climate data can be found under "clim_files > processed". Select this folder.
+On this page, you will load the spatial data used by the index and run the spatial analysis for exposure to climate change. For the "Folder location of prepared climate data" you need to tell the app where you stored the climate data that it should use. For a real assessment this will either be the folder that you unzipped the downloaded climate data into or the output folder you selected in the data preparation app. For this demonstration the prepared climate data can be found under "clim_files > processed". Click on the processed folder then click Select in the bottom right of the pop-up.
 
 ![](./clim_dir.PNG){width=80% fig-align="center"}
 
-Then, select the range polygon for the species ("rng_poly.shp"), the assessment area polygon ("assess_poly.shp"), and the physiological thermal niche polygon ("ptn_poly.shp"). Leave the non-breeeding range blank since we are assuming this species is not migratory. 
+Next, select the range polygon for the species ("rng_poly.shp"), the assessment area polygon ("assess_poly.shp"), and the physiological thermal niche polygon ("ptn_poly.shp"). Leave the non-breeeding range blank since we are assuming this species is not migratory. 
 
 For the projected range change raster, select "Yes, multiple range change rasters will be provided, one for each scenario." This will open a new section where you can select a raster file for each scenario. Select "rng_chg_45.tif" for the RCP 4.5 scenario and "rng_chg_85.tif" for the RCP 8.5 scenario. If range change rasters are not available for each scenario, a single raster can be used but this assumes the projected range change is the same in all scenarios.
 
@@ -83,7 +83,7 @@ The the gain multiplier allows you to ignore gains by setting it to 0 but we wil
 
 ![](./gain_mod_run.PNG){width=70% fig-align="center"}
 
-Then click "Run". A loading symbol will appear while the data is being processed. When the "Spatial analysis complete" message appears, click "Next". 
+Then, click "Run". A loading symbol will appear while the data is being processed. When the "Spatial analysis complete" message appears, click "Next". To see messages explaining what the spatial analysis is doing look at the console in R studio.
 
 
 ### Exposure Results
@@ -136,7 +136,7 @@ On the Results page, click "Calculate" to calculate the index value. Once loaded
 
 The Data Completeness table highlights how many questions were answered in each section. The index is more reliable when more questions are answered. 
 
-To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. In the simulation one of the selected values is picked for each vulnerability question and the index is re-calculated. 1000 simulations are run. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
+To account for uncertainty in the vulnerability questions you can provide more than one answer to each question. The overall index value is calculated based on the average score for each question but the uncertainty in the index value is also explored using Monte Carlo simulations. In each simulation one of the selected values is picked for each vulnerability question and the index is re-calculated. This is repeated 1000 times. The Variation in Index bar chart shows the proportion of simulations that had each index value for each scenario. If all the simulations had the same index value then the uncertainty in the answers to vulnerability questions does not influence the index. If the index values are different then the index value is less certain.
 
 ![](./results_variation.PNG){width=70% fig-align="center"}
 
@@ -159,9 +159,9 @@ You can generate a pdf report summarizing the results of the assessment by click
 Once you have completed the demonstration you are ready to use the app with real world data.
 
 ### Assemble the data
-The first time you use the app you will need to acquire a classified climate data set that includes the predicted future change in mean annual temperature (MAT), and climate moisture deficit (CMD) as well as historical mean annual precipitation and the difference between historical maximum warmest month temperature (MWMT) and minimum coldest month temperature (MCMT). The data is classified based on the median and interquartile range for the future change in MAT and CMD and based on thresholds defined by the NatureServe Guidelines for MAP and MWMT-MCMT. 
+The first time you use the app you will need to acquire a climate data set that includes the predicted future change in mean annual temperature (MAT), and climate moisture deficit (CMD) as well as historical mean annual precipitation and the difference between historical maximum warmest month temperature (MWMT) and minimum coldest month temperature (MCMT). The data is classified based on the median and interquartile range for the future change in MAT and CMD and based on thresholds defined by the NatureServe Guidelines for MAP and MWMT-MCMT. 
 
-There are several versions of the data set available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link). To use the data you need to download one of the files, unzip it and store it in a convenient location. If you wish to create a climate data set for use with the index based on different climate data you can follow the instructions in the "Preparing Custom Climate Data" [vignette](https://landscitech.github.io/ccviR/articles/data_prep_vignette.html). If using the app to assess a different species the same climate data set should be used so this step only needs to be done once.  
+There are several versions of the data set available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link). To use the data you need to download one of the files, unzip it and store it in a convenient location. If you wish to create your own climate data set for use with the index based on different climate data you can follow the instructions in the "Preparing Custom Climate Data" [vignette](https://landscitech.github.io/ccviR/articles/data_prep_vignette.html). When using the app to assess multiple different species the same climate data set should be used for all species so this step only needs to be done once.  
 
 In addition to the climate data the following spatial data sets for each species can be input: 
 
@@ -171,7 +171,7 @@ In addition to the climate data the following spatial data sets for each species
 * Non-breeding range polygon: If applicable, the area outside North America occupied in the non-breeding season.
 * Projected range change raster: The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the cell was lost, maintained, gained or was never included in the range.  
 
-The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information.
+The species range and assessment area are required but other spatial data sets are optional. If the non-breeding range is not included the migratory exposure index will not be calculated. If spatial data for the projected range change or PTN are not provided these factors can be filled in manually based on non-spatial information. All polygon data should be provided as a shapefile while raster data can be in any file format accepted by the `terra::rast` function but ".tif" files are recommended. 
 
 ### Launching the app
 The app is launched by calling the `run_ccvi_app()` function, which will launch the app in the user's default internet browser. All file selection windows will start in the current working directory. To run the app with data stored in a different folder you can call `run_ccvi_app()` with the folder path as the first argument. For example, if all of the data is stored in a subdirectory named "data" of the RStudio project where I am calling the function I would call `run_ccvi_app("data")` to avoid having to open the data folder every time I select a file. Alternatively, the complete path to the data folder can be supplied e.g. "C:/Users/username/Documents/path/to/folder" (Note that paths in R must be supplied using forward slashes). 
