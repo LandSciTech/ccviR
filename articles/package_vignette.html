@@ -85,7 +85,7 @@
 
       
 
-      </header><script src="package_vignette_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="package_vignette_files/plotly-binding-4.10.3/plotly.js"></script><script src="package_vignette_files/typedarray-0.1/typedarray.min.js"></script><link href="package_vignette_files/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+      </header><script src="package_vignette_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="package_vignette_files/plotly-binding-4.10.4/plotly.js"></script><script src="package_vignette_files/typedarray-0.1/typedarray.min.js"></script><link href="package_vignette_files/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
 <script src="package_vignette_files/crosstalk-1.2.1/js/crosstalk.min.js"></script><link href="package_vignette_files/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
 <script src="package_vignette_files/plotly-main-2.11.1/plotly-latest.min.js"></script><div class="row">
   <div class="col-md-9 contents">
@@ -109,36 +109,67 @@ App. The package allows all of the geospatial aspects of calculating the
 CCVI to be done in R, removing the need for separate GIS calculations.
 It also enables easier sensitivity analysis of the Index.</p>
 <p>The NatureServe CCVI is a trait based climate change vulnerability
-assessment framework that can also include observed and modeled
-responses to climate change. The NatureServe CCVI includes three
-commonly used components of vulnerability: exposure, sensitivity and
-adaptive capacity and optionally incorporates the results of documented
-or modeled responses to climate change. Exposure is assessed by
-determining the proportion of the species range that falls into 6
-classes of temperature and moisture change, which is used to determine
-an exposure multiplier. Sensitivity and adaptive capacity and responses
-to climate change are assessed by scoring vulnerability factors (23 and
-4 respectively), on a scale from ‘neutral’ (0) to ‘greatly increases
-vulnerability’ (3). Factors that cannot be answered can be left blank
-and contribute 0 to the total score, but if fewer than 13 are scored the
-index value can not be calculated. The sensitivity and adaptive capacity
-section scores are then multiplied by an exposure multiplier and summed,
-while the scores for the response to climate change section are simply
-summed. An index value is then determined for each section by applying a
-set of thresholds to the scores. The two index values are then combined
-using a table that gives more weight to the sensitivity and adaptive
-capacity section. The possible index values are Less Vulnerable,
-Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or
-Insufficient Evidence if not enough factors of the CCVI are scored. For
-more detailed information on how the index works and how each factor is
-scored see the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe
+assessment framework. It includes three commonly used components of
+vulnerability: exposure, sensitivity and adaptive capacity. In addition,
+it optionally incorporates the results of documented or modeled
+responses to climate change.</p>
+<p>Exposure is assessed by determining the proportion of the species
+range that falls into 6 classes of temperature and moisture change which
+is used to assign an exposure multiplier. Sensitivity and adaptive
+capacity are assessed by scoring 23 vulnerability factors, on a scale
+from 0 (‘neutral’) to 3 (‘greatly increases vulnerability’). These
+scores are then multiplied by the exposure multiplier and are summed to
+give a total score for this section. Factors that cannot be answered can
+be left blank and contribute 0 to the total score. If fewer than 13
+factors are scored the index value cannot be calculated.</p>
+<p>In addition, there are 4 vulnerability factors for documented or
+modeled responses to climate change that can optionally be scored on a
+similar scale. These scores are simply summed to get the total score for
+this section. An index value is then determined for the two sections
+(exposure <em>x</em> sensitivity and adaptive capacity, and documented
+or modeled responses) by applying a set of thresholds to the scores. The
+two index values are then combined using a table that gives more weight
+to the sensitivity and adaptive capacity section. The possible index
+values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable,
+Extremely Vulnerable or Insufficient Evidence (if not enough factors of
+the CCVI are scored). For more detailed information on how the index
+works and how each factor is scored see the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe
 CCVI Guidelines</a> and the references below.</p>
+</div>
+<div class="section level2">
+<h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<p>To begin using the ccviR package within R, you will need to load the
+required packages. An example data set has been provided within the
+package that we will use in the examples below. The prepared data will
+be saved in the output folder and can be used whenever the index is
+being calculated, so this step only needs to be completed once. The
+following code block loads the required packages and the example data
+set:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#load packages</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/see24/ccviR" class="external-link">ccviR</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
+<span></span>
+<span><span class="co">#load example data set</span></span>
+<span><span class="va">data_pth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"ccviR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="preparing-the-climate-data">Preparing the climate data<a class="anchor" aria-label="anchor" href="#preparing-the-climate-data"></a>
 </h2>
-<p>You can skip this step by using pre-prepared climate data available
-for download <a href="https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link" class="external-link">here</a></p>
+<p>This step is only necessary if you want to use custom climate data.
+You can skip this section if you are using pre-prepared climate data
+which is available for download <a href="https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link" class="external-link">here</a>.</p>
 <p>Step 1: Acquire climate data. We recommend the climate data for North
 America from <a href="https://adaptwest.databasin.org/pages/adaptwest-climatena/" class="external-link">AdaptWest</a>
 but any data set that includes at least the mean annual temperature and
@@ -146,17 +177,19 @@ climate moisture deficit (or a similar moisture metric) can be used. For
 AdaptWest select the bioclimatic variables for the normal period and the
 desired future climate scenario. We recommend using the 1961-1990 normal
 period and the ensemble data for SSP2-4.5 and SSP5-8.5 for the 2050s for
-the future. Save the downloaded data in a folder you can easily
+the future. Accepted raster file types are “.asc”, “.tif”, “.nc”, “.grd”
+and “.img”. Save the downloaded data in a folder you can easily
 find.</p>
-<p>Step 2: Prepare the climate data for use in the app. Climate data can
+<p>Step 2: Prepare the climate data for use in ccviR. Climate data can
 be processed by providing file paths for each file or for a folder that
-contains all the files with standard names. For the output folder make
+contains all the files with standard names. For the output folder, make
 sure to choose a location that is easy to find again because you will
 use the prepared climate data to calculate the index. When preparing
 data for multiple scenarios, you will need to process each scenario
 separately but save the thresholds used to classify the first scenario
-and supply them when processing subsequent scenarios.</p>
-<p>Standard names for input folder</p>
+and supply them when processing subsequent scenarios (this is
+demonstrated in the example below).</p>
+<p>Standard names for input folder:</p>
 <ul>
 <li>MAT: mean annual temperature for the historical normal period
 (required)</li>
@@ -176,46 +209,24 @@ period</li>
 climate data. It will be created from the climate data if it is missing
 but it is faster to provide it.</li>
 </ul>
-<p>Accepted raster file types are “.asc”, “.tif”, “.nc”, “.grd” and
-“.img”</p>
-<p>An example data set has been provided with the app that we will use
-in the examples below. The prepared data will be saved in the output
-folder and can be used whenever the index is being calculated so this
-step only needs to be completed once.</p>
 <p>The thresholds for classifying data are based on those provided in
 the NatureServe Guidelines except for the thresholds used for the
 exposure data. Since we are using different climate data the thresholds
 for the classes need to be calculated. We use the the median and 1/2 the
 interquartile range since it is more appropriate for skewed data than
 the mean and standard deviation which are used by NatureServe for the
-continental US. To demonstrate how the data is prepared the maps below
-use the demo data set to show the change in mean annual temperature
-which is then classified into 6 categories.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/see24/ccviR" class="external-link">ccviR</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
-<span></span>
-<span><span class="va">data_pth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, package <span class="op">=</span> <span class="st">"ccviR"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># check file names</span></span>
+continental US.</p>
+<p>The following code prepares the climate data from the example data
+set using <code>prep_clim_data</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># climate data file names</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "NB_norm_CMD.tif"    "NB_norm_MAP.tif"    "NB_norm_MAT.tif"   </span></span>
 <span><span class="co">#&gt; [4] "NB_norm_MCMT.tif"   "NB_norm_MWMT.tif"   "NB_RCP.4.5_CMD.tif"</span></span>
 <span><span class="co">#&gt; [7] "NB_RCP.4.5_MAT.tif" "NB_RCP.8.5_CMD.tif" "NB_RCP.8.5_MAT.tif"</span></span>
 <span></span>
 <span><span class="co"># prepare the data and save it in out_folder</span></span>
-<span><span class="co"># RCP4.5</span></span>
+<span><span class="co"># RCP4.5 prep - saves breaks as brks for use in 8.5 prep</span></span>
 <span><span class="va">brks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prep_clim_data.html">prep_clim_data</a></span><span class="op">(</span></span>
 <span>  mat_norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw"</span>, <span class="st">"NB_norm_MAT.tif"</span><span class="op">)</span>,</span>
 <span>  mat_fut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw"</span>, <span class="st">"NB_RCP.4.5_MAT.tif"</span><span class="op">)</span>,</span>
@@ -235,7 +246,8 @@ which is then classified into 6 categories.</p>
 <span><span class="co">#&gt; processing MWMT and MCMT</span></span>
 <span><span class="co">#&gt; finished processing</span></span>
 <span></span>
-<span><span class="co">#RCP8.4 using breaks from 4.5 map, mwmt and mcmt only need to be processed once</span></span>
+<span><span class="co"># RCP8.5 - using breaks from 4.5</span></span>
+<span><span class="co"># map, mwmt and mcmt only need to be processed once</span></span>
 <span><span class="fu"><a href="../reference/prep_clim_data.html">prep_clim_data</a></span><span class="op">(</span></span>
 <span>  mat_norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw"</span>, <span class="st">"NB_norm_MAT.tif"</span><span class="op">)</span>,</span>
 <span>  mat_fut <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw"</span>, <span class="st">"NB_RCP.8.5_MAT.tif"</span><span class="op">)</span>,</span>
@@ -253,32 +265,34 @@ which is then classified into 6 categories.</p>
 <span><span class="co">#&gt; processing MAT</span></span>
 <span><span class="co">#&gt; processing CMD</span></span>
 <span><span class="co">#&gt; finished processing</span></span></code></pre></div>
-<p>It is recommended to store readme file with the climate data to
-record where the data came from and any relevant metadata. This file is
-required if the data is used with the ccviR Shiny app.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># make readme csv</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Scenario_Name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP 8.5"</span><span class="op">)</span>,</span>
-<span>             GCM_or_Ensemble_name <span class="op">=</span> <span class="st">"AdaptWest 15 CMIP5 AOGCM Ensemble"</span>,</span>
-<span>             Historical_normal_period <span class="op">=</span> <span class="st">"1961-1990"</span>,</span>
-<span>             Future_period <span class="op">=</span> <span class="st">"2050s"</span>,</span>
-<span>             Emissions_scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP8.5"</span><span class="op">)</span>,</span>
-<span>             Link_to_source <span class="op">=</span> <span class="st">"https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"</span><span class="op">)</span>,</span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/processed/"</span>, <span class="st">"climate_data_readme.csv"</span><span class="op">)</span>,</span>
-<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Below is an example of how the MAT is classified by
-<code>prep_clim_data</code>. The change in MAT (normal - future) is
-classified into classes 1-6 where class 6 has the largest increase in
-temperature. The thresholds or breaks between classes are determined by
-the median and 1/2 the interquaritle range.</p>
+<p>Using the mean annual temperature (MAT) as an example, we will
+explore how the data is prepared. <code>prep_clim_data</code> determines
+the change in MAT and classifies it into six classes (1-6) where 6 has
+the largest increase in temperature. The thresholds, or breaks, for
+classifying data are based on those provided in the NatureServe
+Guidelines (except for the thresholds used for the exposure data). Since
+custom climate data is being used, the thresholds for the classes need
+to be calculated. To calculate the thresholds we use the the median and
+1/2 the interquartile range. These values are more appropriate for
+skewed data than the mean and standard deviation which are used by
+NatureServe for the continental US.</p>
+<p>The change in MAT and the classified MAT (output from
+<code>prep_clim_data</code>) can be plotted to demonstrate the
+classification of the change in MAT.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mat_norm</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw/NB_norm_MAT.tif"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">mat_fut</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw/NB_RCP.4.5_MAT.tif"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># select color ramp for plots</span></span>
+<span><span class="va">pal</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#FFF9CA"</span>, <span class="st">"#FEE697"</span>, <span class="st">"#FEC24D"</span>, <span class="st">"#F88B22"</span>, <span class="st">"#D85A09"</span>, <span class="st">"#A33803"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">mat_classified</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/processed/MAT_reclassRCP_4.5.tif"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># create rasters for the historical normal MAT and the future MAT</span></span>
+<span><span class="va">mat_norm</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw/NB_norm_MAT.tif"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mat_fut</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/raw/NB_RCP.4.5_MAT.tif"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># plot the change in MAT</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mat_norm</span> <span class="op">-</span> <span class="va">mat_fut</span>, </span>
+<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">pal</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="package_vignette_files/figure-html/unnamed-chunk-3-1.png" width="384"></p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># breaks used to classify data (determined when preparing RCP4.5 data above)</span></span>
 <span><span class="va">brks</span><span class="op">$</span><span class="va">brks_mat</span></span>
 <span><span class="co">#&gt;        [,1]   [,2] [,3]</span></span>
 <span><span class="co">#&gt; [1,] -4.105 -3.130    6</span></span>
@@ -288,20 +302,38 @@ the median and 1/2 the interquaritle range.</p>
 <span><span class="co">#&gt; [5,] -2.890 -2.810    2</span></span>
 <span><span class="co">#&gt; [6,] -2.810 -1.556    1</span></span>
 <span></span>
-<span><span class="va">pal</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#FFF9CA"</span>, <span class="st">"#FEE697"</span>, <span class="st">"#FEC24D"</span>, <span class="st">"#F88B22"</span>, <span class="st">"#D85A09"</span>, <span class="st">"#A33803"</span><span class="op">)</span></span>
+<span><span class="co"># create raster for the classified MAT</span></span>
+<span><span class="va">mat_classified</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/processed/MAT_reclassRCP_4.5.tif"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mat_norm</span> <span class="op">-</span> <span class="va">mat_fut</span>, </span>
-<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rev.html" class="external-link">rev</a></span><span class="op">(</span><span class="va">pal</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="package_vignette_files/figure-html/unnamed-chunk-2-1.png" width="384"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mat_classified</span>, col <span class="op">=</span> <span class="va">pal</span><span class="op">)</span></span></code></pre></div>
-<p><img src="package_vignette_files/figure-html/unnamed-chunk-2-2.png" width="384"></p>
+<span><span class="co"># plot the classified MAT</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mat_classified</span>, col <span class="op">=</span> <span class="va">pal</span><span class="op">)</span></span></code></pre></div>
+<p><img src="package_vignette_files/figure-html/unnamed-chunk-4-1.png" width="384"></p>
+<p>Note that the plot only shows five classes as none of the data falls
+within the sixth class.</p>
+<p>When preparing custom climate data, it is recommended that a csv
+readme file is created and stored to record where the data came from and
+any relevant metadata. This file is required if the data is used with
+the ccviR Shiny app.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># make readme csv</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>Scenario_Name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP 8.5"</span><span class="op">)</span>,</span>
+<span>             GCM_or_Ensemble_name <span class="op">=</span> <span class="st">"AdaptWest 15 CMIP5 AOGCM Ensemble"</span>,</span>
+<span>             Historical_normal_period <span class="op">=</span> <span class="st">"1961-1990"</span>,</span>
+<span>             Future_period <span class="op">=</span> <span class="st">"2050s"</span>,</span>
+<span>             Emissions_scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP8.5"</span><span class="op">)</span>,</span>
+<span>             Link_to_source <span class="op">=</span> <span class="st">"https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"</span>,</span>
+<span>             brks_mat <span class="op">=</span> <span class="va">brks</span><span class="op">$</span><span class="va">brks_mat</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/brks_to_txt.html">brks_to_txt</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>             brks_cmd <span class="op">=</span> <span class="va">brks</span><span class="op">$</span><span class="va">brks_cmd</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/brks_to_txt.html">brks_to_txt</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>             brks_ccei <span class="op">=</span> <span class="va">brks</span><span class="op">$</span><span class="va">brks_ccei</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="../reference/brks_to_txt.html">brks_to_txt</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/processed/"</span>, <span class="st">"climate_data_readme.csv"</span><span class="op">)</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="load-species-specific-spatial-data">Load species specific spatial data<a class="anchor" aria-label="anchor" href="#load-species-specific-spatial-data"></a>
 </h2>
-<p>The following spatial data sets can be used for each species:</p>
+<p>The following spatial data sets can be input for each species:</p>
 <ul>
 <li>Species North American or global range polygon (required)</li>
 <li>Assessment area polygon (required)</li>
@@ -314,10 +346,10 @@ lost or reduced in the assessment area as a result of climate
 change.</li>
 </ul>
 <p>For this example all of the data is provided with the package.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rng_poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"rng_poly.shp"</span><span class="op">)</span>, agr <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span></span>
 <span><span class="va">assess_poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"assess_poly.shp"</span><span class="op">)</span>, agr <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span></span>
-<span><span class="va">rng_chg</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"rng_chg_45.tif"</span><span class="op">)</span>, </span>
+<span><span class="va">rng_chg</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"rng_chg_45.tif"</span><span class="op">)</span>, </span>
 <span>                 <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"rng_chg_85.tif"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">PTN_poly</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">read_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"PTN_poly.shp"</span><span class="op">)</span>, agr <span class="op">=</span> <span class="st">"constant"</span><span class="op">)</span></span>
 <span></span>
@@ -326,17 +358,17 @@ change.</li>
 <span><span class="va">hs_rcl_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="load-climate-data-and-run-spatial-analysis">Load climate data and run spatial analysis<a class="anchor" aria-label="anchor" href="#load-climate-data-and-run-spatial-analysis"></a>
+<h2 id="load-climate-data">Load climate data<a class="anchor" aria-label="anchor" href="#load-climate-data"></a>
 </h2>
 <p>Next we will load in the climate data that we prepared in the first
 step using the <code><a href="../reference/get_clim_vars.html">get_clim_vars()</a></code> function which loads the
 data and stores it in a list with the required names. The scenario names
 must match the suffix on the file name which is done automatically by
 <code>prep_clim_data</code>. The result is a list where each element is
-a RasterLayer for static variables and a RasterStack for variables that
-change with one layer per scenario. The clim_poly is also included as an
-sf object.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+a single layer SpatRaster for static variables and a multi-layer
+SpatRaster for variables that change, with one layer per scenario. The
+clim_poly is also included as an sf object.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clim_dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_clim_vars.html">get_clim_vars</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">data_pth</span>, <span class="st">"clim_files/processed"</span><span class="op">)</span>, </span>
 <span>                          scenario_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP 8.5"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -351,43 +383,50 @@ sf object.</p>
 <span><span class="co">#&gt;   ..- attr(*, "sf_column")= chr "geometry"</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: 1 1 1 1 1 1 1 1 1 1</span></span>
 <span><span class="co">#&gt;   .. ..- attr(*, "names")= chr [1:10] "GID_0" "NAME_0" "GID_1" "NAME_1" ...</span></span></code></pre></div>
-<p>Then we can run the spatial data analysis using the species specific
-data and climate data. The resulting object is a list containing a table
-with the results of the spatial analysis,
-<code>spat_res$spat_table</code>, and two range polygons which are
-provided for mapping. <code>spat_res$range_poly_assess</code> the range
-polygon clipped to the assessment area, and
-<code>spat_res$range_poly_clim</code> the range polygon clipped to the
-extent of the climate data. The first is used for all factors except the
-historical thermal and hydrological niche which use the range clipped to
-the extent of the climate data because historical thermal and
-hydrological niche are used a proxies for the range of temperature and
-moisture conditions that the species can tolerate and therefore should
-reflect as much of the range as possible. If the range_poly provided is
-completely within the assessment area then these two polygons will be
-the same</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+</div>
+<div class="section level2">
+<h2 id="run-spatial-data-analysis">Run spatial data analysis<a class="anchor" aria-label="anchor" href="#run-spatial-data-analysis"></a>
+</h2>
+<p>Once the species specific and climate data is loaded, we can run the
+spatial data analysis:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spat_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/analyze_spatial.html">analyze_spatial</a></span><span class="op">(</span>range_poly <span class="op">=</span> <span class="va">rng_poly</span>, scale_poly <span class="op">=</span> <span class="va">assess_poly</span>,</span>
 <span>                            clim_vars_lst <span class="op">=</span> <span class="va">clim_dat</span>, ptn_poly <span class="op">=</span> <span class="va">PTN_poly</span>,</span>
 <span>                            hs_rast <span class="op">=</span> <span class="va">rng_chg</span>, hs_rcl <span class="op">=</span> <span class="va">hs_rcl_mat</span>, </span>
 <span>                            scenario_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RCP 4.5"</span>, <span class="st">"RCP 8.5"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; performing spatial analysis</span></span></code></pre></div>
-<p>We can look at how the spatial analysis was done for the RCP 4.5
-scenario by plotting the appropriate range polygon and climate data to
-see how they overlap.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">clim_dat</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">RCP_4.5</span>, col <span class="op">=</span> <span class="va">pal</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">spat_res</span><span class="op">$</span><span class="va">range_poly_assess</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="package_vignette_files/figure-html/unnamed-chunk-5-1.png" width="384"></p>
-<p>And then inspecting the spatial results table. In this case it shows
-that the range is spread over the 2nd, 3rd and 4th highest exposure
-classes for change in MAT.</p>
+<p>The resulting object is a list containing a table with the results of
+the spatial analysis (<code>spat_res$spat_table</code>) and two range
+polygons which are provided for mapping
+(<code>spat_res$range_poly_assess</code> and
+<code>spat_res$range_poly_clim</code>). In this case,
+<code>spat_res$spat_table</code> shows that the range is spread over the
+2nd, 3rd and 4th highest exposure classes for change in MAT:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">spat_res</span><span class="op">$</span><span class="va">spat_table</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   scenario_name MAT_1 MAT_2 MAT_3  MAT_4 MAT_5 MAT_6</span></span>
 <span><span class="co">#&gt; 1       RCP 4.5     0     0 8.067 64.113 27.82     0</span></span>
 <span><span class="co">#&gt; 2       RCP 8.5     0     0 0.000  0.000  0.00   100</span></span></code></pre></div>
+<p><code>spat_res$range_poly_assess</code> is the range polygon clipped
+to the assessment area while <code>spat_res$range_poly_clim</code> is
+the range polygon clipped to the extent of the climate data.
+<code>spat_res$range_poly_assess</code> is used for all factors except
+the historical thermal and hydrological niche which use
+<code>spat_res$range_poly_clim</code>. This is because the historical
+thermal and hydrological niche are used as proxies for the range of
+temperature and moisture conditions that the species can tolerate and,
+therefore, should reflect as much of the range as possible. If the range
+polygon provided is completely within the assessment area then
+<code>spat_res$range_poly_assess</code> will be the same as the provided
+range polygon.</p>
+<p>We can create a map to visualize the exposure to changes in MAT for
+the RCP 4.5 scenario by overlaying the range clipped to the assessment
+area on top of the change in MAT raster:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">clim_dat</span><span class="op">$</span><span class="va">mat</span><span class="op">$</span><span class="va">RCP_4.5</span>, col <span class="op">=</span> <span class="va">pal</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_geometry</a></span><span class="op">(</span><span class="va">spat_res</span><span class="op">$</span><span class="va">range_poly_assess</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="package_vignette_files/figure-html/unnamed-chunk-8-1.png" width="384"></p>
 </div>
 <div class="section level2">
 <h2 id="answer-the-vulnerability-questions">Answer the vulnerability questions<a class="anchor" aria-label="anchor" href="#answer-the-vulnerability-questions"></a>
@@ -395,71 +434,80 @@ classes for change in MAT.</p>
 <p><code><a href="../reference/make_vuln_df.html">make_vuln_df()</a></code> creates a blank table that can be filled
 in with scores for each vulnerability factor used to calculate the
 index. The vulnerability factors and how to score them is explained in
-the NatureServe Guidelines. The table includes an abbreviated version of
-the question, the maximum value for each factor and whether the factor
-is calculated by the spatial data analysis and should be scored as -1 so
-as not to override the results of the spatial analysis.
-<code>Value1</code> should be filled with a number between -1 and the
-maximum value for that question (2 or 3) which correspond to the
-following impacts on vulnerability -1: Unknown, 0: Neutral, 1: Somewhat
-Increase, 2: Increase, 3: Greatly Increase. If you wish to choose two or
-more answers to reflect uncertainty you can fill in <code>Value2</code>
-- <code>Value4</code> as well.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">vuln</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_vuln_df.html">make_vuln_df</a></span><span class="op">(</span><span class="st">"sp_name"</span><span class="op">)</span></span>
+the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe
+CCVI Guidelines</a>. The table includes an abbreviated version of the
+question (<code>$Question</code>), the maximum value for each factor
+(<code>$Max_Value</code>), and whether the factor is calculated by the
+spatial data analysis (<code>$is_spatial</code>). When the factor is
+calculated by the spatial analysis, indicated by
+<code>$is_spatial != NA</code>, it should be scored as -1 so as not to
+override the results of the spatial analysis.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># create a blank vulnerability question table</span></span>
+<span><span class="va">vuln</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_vuln_df.html">make_vuln_df</a></span><span class="op">(</span><span class="st">"sp_name"</span><span class="op">)</span></span></code></pre></div>
+<p><code>$Value1</code> should be filled with the number corresponding
+to the following impacts on vulnerability -1: Unknown, 0: Neutral, 1:
+Somewhat Increase, 2: Increase, 3: Greatly Increase. Note that the
+maximum <code>Value1</code> value depends on the question, it can be 2
+or 3 (reflected by <code>$Max_Value</code>). If you wish to input two or
+more answers to reflect uncertainty you do so by filling in
+<code>$Value2</code>, <code>$Value3</code>, and/or <code>$Value4</code>.
+The table can be filled out interactively, using code (recommended for
+reproduceability), or by saving the table as a csv, editing it, and
+loading it back into R. These three options are outlined in the
+codeblocks below:</p>
+<p>Interactive editing:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># you can interactively edit the table</span></span>
+<span><span class="va">vuln</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/edit.html" class="external-link">edit</a></span><span class="op">(</span><span class="va">vuln</span><span class="op">)</span></span></code></pre></div>
+<p>Editing using code:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># or use code (recommended for reproducibility)</span></span>
+<span><span class="va">vuln</span><span class="op">$</span><span class="va">Value1</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">19</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">vuln</span><span class="op">$</span><span class="va">Value1</span><span class="op">[</span><span class="fl">26</span><span class="op">:</span><span class="fl">29</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
-<span><span class="kw">if</span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="co"># you can interactively edit the table</span></span>
-<span>  <span class="va">vuln</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/edit.html" class="external-link">edit</a></span><span class="op">(</span><span class="va">vuln</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="co"># # Another option:</span></span>
-<span>  <span class="co"># </span></span>
-<span>  <span class="co"># # save the table as a csv </span></span>
-<span>  <span class="co"># </span></span>
-<span>  <span class="co"># write.csv(vuln, "path/to/write", row.names = FALSE)</span></span>
-<span>  <span class="co"># </span></span>
-<span>  <span class="co"># # Edit the csv, save it and load it back in to R</span></span>
-<span>  <span class="co"># vuln &lt;- read.csv("path/to/write", stringsAsFactors = FALSE)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="co"># or use code (recommended for reproducibility)</span></span>
-<span>  <span class="va">vuln</span><span class="op">$</span><span class="va">Value1</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">19</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">0</span>,<span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span>  <span class="va">vuln</span><span class="op">$</span><span class="va">Value1</span><span class="op">[</span><span class="fl">26</span><span class="op">:</span><span class="fl">29</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="co"># include a second value to reflect uncertainty and trigger a monte carlo to</span></span>
-<span>  <span class="co"># determine confidence</span></span>
-<span>  <span class="va">vuln</span><span class="op">$</span><span class="va">Value2</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span><span class="co"># include a second value to reflect uncertainty and trigger a monte carlo to</span></span>
+<span><span class="co"># determine confidence</span></span>
+<span><span class="va">vuln</span><span class="op">$</span><span class="va">Value2</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
+<p>Editing using a csv:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># save the table as a csv </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">vuln</span>, <span class="st">"path/to/write"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># edit the csv and save it </span></span>
+<span><span class="co"># load it back in to R</span></span>
+<span><span class="va">vuln</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"path/to/write"</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="calculate-the-index">Calculate the index<a class="anchor" aria-label="anchor" href="#calculate-the-index"></a>
 </h2>
 <p>Finally, use the results of the spatial analysis and the answers to
-the vulnerability questions to calculate the index. For the example I
-have reduced the number of rounds in the Monte Carlo but it should
-generally be kept to the default.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+the vulnerability questions to calculate the index. For this example the
+number of rounds in the Monte Carlo has been reduced but it should
+generally be kept to the default (<code>n_rnds = 1000</code>).</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">index_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/calc_vulnerability.html">calc_vulnerability</a></span><span class="op">(</span><span class="va">spat_res</span><span class="op">$</span><span class="va">spat_table</span>, <span class="va">vuln</span>, tax_grp <span class="op">=</span> <span class="st">"Bird"</span>,</span>
-<span>                                n_rnds <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>                                n_rnds <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt; calculating vulnerability index RCP 4.5</span></span>
 <span><span class="co">#&gt; performing monte carlo</span></span>
 <span><span class="co">#&gt; finished vulnerability</span></span>
 <span><span class="co">#&gt; calculating vulnerability index RCP 8.5</span></span>
 <span><span class="co">#&gt; performing monte carlo</span></span>
 <span><span class="co">#&gt; finished vulnerability</span></span></code></pre></div>
-<p>The result is a dataframe with 12 columns see
-<code><a href="../reference/calc_vulnerability.html">?calc_vulnerability</a></code> for an explanation of all of them.
-<code>index_res$index</code> gives the index where EV: Extremely
-Vulnerable, HV: Highly Vulnerable, MV: Moderately Vulnerable, LV: Less
-Vulnerable, and IE: Insufficient Evidence. Below we see that our example
-species is Highly Vulnerable to climate change</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>The result is a dataframe with 12 columns (see
+<code><a href="../reference/calc_vulnerability.html">?calc_vulnerability</a></code> for an explanation of all of them).
+<code>$index</code> gives the index where EV: Extremely Vulnerable, HV:
+Highly Vulnerable, MV: Moderately Vulnerable, LV: Less Vulnerable, and
+IE: Insufficient Evidence. Below we see that our example species is
+Highly Vulnerable to climate change:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">index_res</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 2</span></span>
 <span><span class="co">#&gt; Columns: 12</span></span>
 <span><span class="co">#&gt; $ scenario_name <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "RCP 4.5", "RCP 8.5"</span></span>
 <span><span class="co">#&gt; $ index         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "HV", "EV"</span></span>
 <span><span class="co">#&gt; $ conf_index    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Moderate", "Very High"</span></span>
-<span><span class="co">#&gt; $ mc_results    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> [&lt;tbl_df[10 x 5]&gt;], [&lt;tbl_df[10 x 5]&gt;]</span></span>
+<span><span class="co">#&gt; $ mc_results    <span style="color: #949494; font-style: italic;">&lt;list&gt;</span> [&lt;tbl_df[20 x 5]&gt;], [&lt;tbl_df[20 x 5]&gt;]</span></span>
 <span><span class="co">#&gt; $ mig_exp       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "N/A", "N/A"</span></span>
 <span><span class="co">#&gt; $ d_score       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 4</span></span>
 <span><span class="co">#&gt; $ b_c_score     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 9.45, 12.05</span></span>
@@ -471,18 +519,20 @@ species is Highly Vulnerable to climate change</p>
 <span></span>
 <span><span class="va">index_res</span><span class="op">$</span><span class="va">index</span></span>
 <span><span class="co">#&gt; [1] "HV" "EV"</span></span></code></pre></div>
-<p>These results can be used to investigate how the index value was
-reached including using two graphs that are included in the package. The
-first shows how the index values, that are calculated separately for the
-modeled response to climate change and sensitivity and adaptive capacity
-modified by exposure sections, are combined into the overall index
-value. It also shows where the thresholds are for converting the
-numerical scores from each factor into the categorical index value. In
-our example we can see that the index value is driven primarily by the
-sensitivity section since the score in that section would have produced
-an index value of Extremely Vulnerable if the D score were higher or not
-included (-1 in the graph).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<p>We can investigate how the index value was reached using the results
+of <code>calc_vulnerability</code> and two graphs included in the
+package.</p>
+<p>The first graph is <code><a href="../reference/plot_score_index.html">plot_score_index()</a></code>. It shows how the
+index values (that are calculated separately for the modeled response to
+climate change and sensitivity and adaptive capacity modified by
+exposure sections) are combined into the overall index value. It also
+shows where the thresholds are for converting the numerical scores from
+each factor into the categorical index value. In this example, we can
+see that the index value is driven primarily by the sensitivity section
+since the score in that section would have produced an index value of
+Extremely Vulnerable if the D score were higher or not included (-1 in
+the graph).</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># set theme</span></span>
 <span><span class="va">my_theme</span> <span class="op">&lt;-</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>text <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
@@ -491,19 +541,22 @@ included (-1 in the graph).</p>
 <span><span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme_get.html" class="external-link">theme_set</a></span><span class="op">(</span><span class="va">my_theme</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/plot_score_index.html">plot_score_index</a></span><span class="op">(</span><span class="va">index_res</span><span class="op">)</span></span></code></pre></div>
-<p><img src="package_vignette_files/figure-html/unnamed-chunk-10-1.png" width="768"></p>
-<p>The second graph is a plotly graph of the scores for each factor .
-The bars show the total score for the factor and the popup shows the
+<p><img src="package_vignette_files/figure-html/unnamed-chunk-15-1.png" width="768"></p>
+<p>The second graph is produced by <code><a href="../reference/plot_q_score.html">plot_q_score()</a></code>. It is a
+plotly graph of the scores for each factor. The bars show the total
+score for the factor. The popup shows the name of the question and the
 exposure multiplier that was used to modify the score for the
-vulnerability factor as well as the name of the question.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+vulnerability factor.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">index_res</span><span class="op">$</span><span class="va">vuln_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">`names&lt;-`</span><span class="op">(</span><span class="va">index_res</span><span class="op">$</span><span class="va">scenario_name</span><span class="op">)</span>, </span>
 <span>            .id <span class="op">=</span> <span class="st">"scenario_name"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/plot_q_score.html">plot_q_score</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">q_score</span></span></code></pre></div>
-<div class="plotly html-widget html-fill-item" id="htmlwidget-0dc30ee8732dd585c8d7" style="width:768px;height:384px;"></div>
-<script type="application/json" data-for="htmlwidget-0dc30ee8732dd585c8d7">{"x":{"data":[{"x":[1,0.001,0.65000000000000002,0.001,0.001,0.001,0.001,1.3,0.001,0.001,1.3,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,1.6000000000000001,1.6000000000000001,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.3<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.3<br />Score: 0.65","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.3<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.3<br />Score: 1.3","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.3<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.3<br />Score: 1.3","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.3<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.3<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.3<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.3<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.3<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Physiological thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","opacity":1,"size":0.37795275590551186,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,0.001,0.84999999999999998,0.001,0.001,0.001,0.001,1.7,0.001,0.001,1.7,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,2.3999999999999999,2.3999999999999999,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.7<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.7<br />Score: 0.85","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.7<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.7<br />Score: 1.7","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.7<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.7<br />Score: 1.7","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.7<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.7<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.7<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.7<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.7<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Physiological thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","opacity":1,"size":0.37795275590551186,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x2","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999947,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.89999999999999991,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.90000000000000036,0.90000000000000013],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1,0.001,0.65000000000000002,0.001,0.001,0.001,0.001,1.3,0.001,0.001,1.3,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,1.6000000000000001,1.6000000000000001,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.3<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.3<br />Score: 0.65","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.3<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.3<br />Score: 1.3","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.3<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.3<br />Score: 1.3","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.3<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.3<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.3<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.3<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.3<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Physiological thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999947,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.89999999999999991,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.90000000000000036,0.90000000000000013],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1,0.001,0.84999999999999998,0.001,0.001,0.001,0.001,1.7,0.001,0.001,1.7,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,2.3999999999999999,2.3999999999999999,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.7<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.7<br />Score: 0.85","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.7<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.7<br />Score: 1.7","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.7<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.7<br />Score: 1.7","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.7<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.7<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.7<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.7<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.7<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Physiological thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"showlegend":false,"xaxis":"x2","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.364051473640522,"r":7.3059360730593621,"b":46.957243669572449,"l":58.779576587795781},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xaxis":{"domain":[0,0.49643264840182649],"automargin":true,"type":"linear","autorange":false,"range":[0,2.3999999999999999],"tickmode":"array","ticktext":["0.0","0.5","1.0","1.5","2.0"],"tickvals":[0,0.5,1,1.5,2],"categoryorder":"array","categoryarray":["0.0","0.5","1.0","1.5","2.0"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176002,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"annotations":[{"text":"Score","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-22.980489829804913},{"text":"Question","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-42.108758821087598},{"text":"RCP 4.5","x":0.24821632420091325,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":12.7521793275218},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"RCP 8.5","x":0.75178367579908678,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":12.7521793275218},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.55000000000000004,25.449999999999999],"tickmode":"array","ticktext":["D4","D3","D2","D1","C6","C5b","C5a","C4g","C4f","C4e","C4d","C4b","C4a","C3","C2d","C2c","C2bii","C2bi","C2aii","C2ai","C1","B3","B2b","B2a","B1"],"tickvals":[1,2,3,4,5,6,6.9999999999999991,7.9999999999999991,9,10,11,12,13,14.000000000000002,15,16,17,18,19,20,21,22,23,24,25],"categoryorder":"array","categoryarray":["D4","D3","D2","D1","C6","C5b","C5a","C4g","C4f","C4e","C4d","C4b","C4a","C3","C2d","C2c","C2bii","C2bi","C2aii","C2ai","C1","B3","B2b","B2a","B1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176002,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.49643264840182649,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.49643264840182649,"y0":0,"y1":24.441677044416778,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.50356735159817356,"x1":1,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.50356735159817356,"x1":1,"y0":0,"y1":24.441677044416778,"yanchor":1,"ysizemode":"pixel"}],"xaxis2":{"type":"linear","autorange":false,"range":[0,2.3999999999999999],"tickmode":"array","ticktext":["0.0","0.5","1.0","1.5","2.0"],"tickvals":[0,0.5,1,1.5,2],"categoryorder":"array","categoryarray":["0.0","0.5","1.0","1.5","2.0"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176002,"showgrid":false,"domain":[0.50356735159817356,1],"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"1db5111fb025":{"x":{},"y":{},"text":{},"type":"scatter"},"1db55cb1f4a6":{"x":{},"y":{},"text":{}}},"cur_data":"1db5111fb025","visdat":{"1db5111fb025":["function (y) ","x"],"1db55cb1f4a6":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-80db88013b31edd796ce" style="width:768px;height:384px;"></div>
+<script type="application/json" data-for="htmlwidget-80db88013b31edd796ce">{"x":{"data":[{"x":[1,0.001,0.65000000000000002,0.001,0.001,0.001,0.001,1.3,0.001,0.001,1.3,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,1.6000000000000001,1.6000000000000001,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.3<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.3<br />Score: 0.65","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.3<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.3<br />Score: 1.3","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.3<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.3<br />Score: 1.3","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.3<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.3<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.3<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.3<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.3<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Physiological thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","opacity":1,"size":0.37795275590551186,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,0.001,0.84999999999999998,0.001,0.001,0.001,0.001,1.7,0.001,0.001,1.7,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,2.3999999999999999,2.3999999999999999,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.7<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.7<br />Score: 0.85","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.7<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.7<br />Score: 1.7","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.7<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.7<br />Score: 1.7","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.7<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.7<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.7<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.7<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.7<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Physiological thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","opacity":1,"size":0.37795275590551186,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x2","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999947,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.89999999999999991,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.90000000000000036,0.90000000000000013],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1,0.001,0.65000000000000002,0.001,0.001,0.001,0.001,1.3,0.001,0.001,1.3,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,1.6000000000000001,1.6000000000000001,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.3<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.3<br />Score: 0.65","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.3<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.3<br />Score: 1.3","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.3<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.3<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.3<br />Score: 1.3","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.3<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.3<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.3<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.3<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.3<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.3<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Physiological thermal niche:<br />Exposure Multiplier: 1.6<br />Score: 1.6","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"orientation":"h","width":[0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.89999999999999947,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.90000000000000036,0.89999999999999991,0.89999999999999858,0.89999999999999858,0.89999999999999858,0.90000000000000036,0.90000000000000013],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1,0.001,0.84999999999999998,0.001,0.001,0.001,0.001,1.7,0.001,0.001,1.7,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,2.3999999999999999,2.3999999999999999,2,2,2],"y":[25,24,23,22,21,17,16,15,14,13,12,11,10,9,8,7,6,5,4,1,20,19,18,3,2],"text":["Exposure to sea level rise:<br />Exposure Multiplier: 1<br />Score: 1","Natural barriers:<br />Exposure Multiplier: 1.7<br />Score: 0","Anthropogenic barriers:<br />Exposure Multiplier: 1.7<br />Score: 0.85","Predicted impact of land use changes resulting from human responses to climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dispersal and movements:<br />Exposure Multiplier: 1.7<br />Score: 0","Physiological hydrological niche:<br />Exposure Multiplier: 1<br />Score: 0","Dependence on a specific disturbance regime likely to be impacted by climate change:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on ice, ice-edge, or snow-cover habitats:<br />Exposure Multiplier: 1.7<br />Score: 1.7","Restriction to uncommon landscape/geological features or derivatives:<br />Exposure Multiplier: 1.7<br />Score: 0","Dependence on other species to generate required habitat:<br />Exposure Multiplier: 1.7<br />Score: 0","Dietary versatility (animals only):<br />Exposure Multiplier: 1.7<br />Score: 1.7","Dependence on other species for propagule dispersal:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to pathogens or natural enemies:<br />Exposure Multiplier: 1.7<br />Score: 0","Sensitivity to competition from native or non-native species:<br />Exposure Multiplier: 1.7<br />Score: 0","Forms part of an interspecific interaction not covered by 5a-f:<br />Exposure Multiplier: 1.7<br />Score: 0","Measured genetic variation:<br />Exposure Multiplier: 1.7<br />Score: 0","Occurrence of bottlenecks in recent evolutionary history (use only if 5a is \"unknown\"):<br />Exposure Multiplier: 1.7<br />Score: 0","Phenological response to changing seasonal temperature and precipitation dynamics:<br />Exposure Multiplier: 1.7<br />Score: 0","Documented response to recent climate change:<br />Exposure Multiplier: 1<br />Score: 0","Occurrence of protected areas in modeled future (2050) distribution:<br />Exposure Multiplier: 1<br />Score: 0","Historical thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Physiological thermal niche:<br />Exposure Multiplier: 2.4<br />Score: 2.4","Historical hydrological niche:<br />Exposure Multiplier: 1<br />Score: 2","Modeled future (2050) change in population or range size:<br />Exposure Multiplier: 1<br />Score: 2","Overlap of modeled future (2050) range with current range:<br />Exposure Multiplier: 1<br />Score: 2"],"type":"bar","textposition":"none","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.8897637795275593,"color":"rgba(89,89,89,1)"}},"showlegend":false,"xaxis":"x2","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.364051473640522,"r":7.3059360730593621,"b":46.957243669572449,"l":58.779576587795781},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xaxis":{"domain":[0,0.49643264840182649],"automargin":true,"type":"linear","autorange":false,"range":[0,2.3999999999999999],"tickmode":"array","ticktext":["0.0","0.5","1.0","1.5","2.0"],"tickvals":[0,0.5,1,1.5,2],"categoryorder":"array","categoryarray":["0.0","0.5","1.0","1.5","2.0"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176002,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"annotations":[{"text":"Score","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-22.980489829804913},{"text":"Question","x":0,"y":0.5,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":15.940224159402243},"xref":"paper","yref":"paper","textangle":-90,"xanchor":"right","yanchor":"center","annotationType":"axis","xshift":-42.108758821087598},{"text":"RCP 4.5","x":0.24821632420091325,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":12.7521793275218},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"},{"text":"RCP 8.5","x":0.75178367579908678,"y":1,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":12.7521793275218},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"bottom"}],"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.55000000000000004,25.449999999999999],"tickmode":"array","ticktext":["D4","D3","D2","D1","C6","C5b","C5a","C4g","C4f","C4e","C4d","C4b","C4a","C3","C2d","C2c","C2bii","C2bi","C2aii","C2ai","C1","B3","B2b","B2a","B1"],"tickvals":[1,2,3,4,5,6,6.9999999999999991,7.9999999999999991,9,10,11,12,13,14.000000000000002,15,16,17,18,19,20,21,22,23,24,25],"categoryorder":"array","categoryarray":["D4","D3","D2","D1","C6","C5b","C5a","C4g","C4f","C4e","C4d","C4b","C4a","C3","C2d","C2c","C2bii","C2bi","C2aii","C2ai","C1","B3","B2b","B2a","B1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176002,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.49643264840182649,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.49643264840182649,"y0":0,"y1":24.441677044416778,"yanchor":1,"ysizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.50356735159817356,"x1":1,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.50356735159817356,"x1":1,"y0":0,"y1":24.441677044416778,"yanchor":1,"ysizemode":"pixel"}],"xaxis2":{"type":"linear","autorange":false,"range":[0,2.3999999999999999],"tickmode":"array","ticktext":["0.0","0.5","1.0","1.5","2.0"],"tickvals":[0,0.5,1,1.5,2],"categoryorder":"array","categoryarray":["0.0","0.5","1.0","1.5","2.0"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":12.7521793275218},"tickangle":-0,"showline":true,"linecolor":"rgba(0,0,0,1)","linewidth":0.66417600664176002,"showgrid":false,"domain":[0.50356735159817356,1],"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":12.7521793275218}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"1f5fd013f0b":{"x":{},"y":{},"text":{},"type":"scatter"},"1f5f31524d6d":{"x":{},"y":{},"text":{}}},"cur_data":"1f5fd013f0b","visdat":{"1f5fd013f0b":["function (y) ","x"],"1f5f31524d6d":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script><p>Since the output of the analysis is a data frame it can be saved and
+used to compare the results for multiple species or to test the
+sensitivity of the index to different inputs.</p>
 </div>
   </div>
 

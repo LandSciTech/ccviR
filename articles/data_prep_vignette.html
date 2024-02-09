@@ -104,18 +104,25 @@
 <p>If you wish to use a custom set of climate data to calculate the
 NatureServe Climate Change Vulnerability Index you will need to prepare
 the climate data into the form used to calculate the index. The raw
-climate data set should include the mean annual temperature (MAT) and
-climate moisture deficit (CMD) for both historical and future time
-periods and mean annual precipitation (MAP) and minimum coldest and
-warmest month temperatures (MCMT and MWMT) for the historical time
-period. In addition, the climate change exposure index (CCEI) for
-South/Central America which is available from <a href="https://www.natureserve.org/ccvi-species" class="external-link">NatureServe</a> can be
-included. Climate data for multiple scenarios can be used to calculate
-the CCVI index for each scenario simultaneously, in which case the MAT
-and CMD for each future scenario is needed in the raw climate data set.
-The app will use the raw climate data to create the classified versions
-of the climate data that are used to calculate the index and save them
-in the selected folder.</p>
+climate data set should include rasters of:</p>
+<ul>
+<li>Mean annual temperature (MAT) for both historical and future time
+periods</li>
+<li>Climate moisture deficit (CMD) for both historical and future time
+periods</li>
+<li>Mean annual precipitation (MAP) for the historical time period</li>
+<li>Minimum coldest and warmest month temperatures (MCMT and MWMT) for
+the historical time period</li>
+<li>Optionally, the climate change exposure index (CCEI) for
+South/Central America which is available from <a href="https://www.natureserve.org/ccvi-species" class="external-link">NatureServe</a>
+</li>
+</ul>
+<p>Climate data for multiple scenarios can be used to calculate the CCVI
+index for each scenario simultaneously, in which case the MAT and CMD
+for each future scenario is needed in the raw climate data set. The app
+will use the raw climate data to create the classified versions of the
+climate data that are used to calculate the index and save them in the
+selected folder.</p>
 </div>
 <div class="section level3">
 <h3 id="launch-the-app">Launch the app<a class="anchor" aria-label="anchor" href="#launch-the-app"></a>
@@ -134,32 +141,38 @@ e.g. “C:/Users/username/Documents/path/to/folder” (Note that paths in R
 must be supplied using forward slashes).</p>
 </div>
 <div class="section level3">
+<h3 id="acquire-climate-data">Acquire climate data<a class="anchor" aria-label="anchor" href="#acquire-climate-data"></a>
+</h3>
+<p>Step 1 in the app explains the data required and some recommended
+sources of data. For this demonstration we will use the data contained
+in the app.</p>
+</div>
+<div class="section level3">
 <h3 id="describe-the-data">Describe the data<a class="anchor" aria-label="anchor" href="#describe-the-data"></a>
 </h3>
-<p>The first step in the app explains the data required and some
-recommended sources of data. For this demonstration we will use the data
-contained in the app. Step 2 is to describe the data. This information
-will be stored in the output folder with the processed climate data and
-will be used to identify the data set and to list the scenarios
-included.</p>
+<p>Step 2 is to describe the data. This information will be stored as a
+csv in the output folder with the processed climate data. It will be
+used to identify the data set and to list the scenarios included.</p>
 </div>
 <div class="section level3">
 <h3 id="select-files">Select files<a class="anchor" aria-label="anchor" href="#select-files"></a>
 </h3>
-<p>For each climate data variable click the “Choose file” button,
-navigate to the required file and click “Select”.</p>
+<p>Step 3 is to upload the data. For each climate data variable click
+the “Choose file” button, navigate to the required file and click
+“Select”.</p>
 <p><img src="dat_prep_mat.PNG" style="width:100.0%"></p>
 <p>The climate data extent polygon is used to clip other polygons to the
 extent of the climate data. So for climate data covering North America a
-polygon of the boundaries of North America could be used. If one is not
-supplied it can be created but the process can be slow. Finally, choose
-a folder to save the processed data to. Make sure this folder is in a
-convenient place since you will need to supply it every time you use the
-CCVI app to calculate the index. The folder should be empty or contain
-climate files that you wish to overwrite. To create a new folder, select
-the parent folder and click “Create new folder” in the top left corner.
-Then type the new folder name and click the plus sign. The new folder
-will appear in the file explorer, click it and then click “Select”.</p>
+polygon of the boundaries of North America could be used. If a polygon
+is not supplied one can be created but the process can be slow.</p>
+<p>Finally, choose a folder to save the processed data to. Make sure
+this folder is in a convenient place since you will need to supply it
+every time you use the CCVI app to calculate the index. The folder
+should be empty or contain climate files that you wish to overwrite. To
+create a new folder, select the parent folder and click “Create new
+folder” in the top left corner. Then type the new folder name and click
+the plus sign. The new folder will appear in the file explorer, click it
+and then click “Select”.</p>
 <p><img src="out_folder.PNG" style="width:100.0%"></p>
 <p>Once all the files are selected you can click “Process” to prepare
 the data. Do not continue until the message says “Processing
@@ -169,23 +182,25 @@ Complete”.</p>
 <h3 id="multiple-scenarios">Multiple scenarios<a class="anchor" aria-label="anchor" href="#multiple-scenarios"></a>
 </h3>
 <p>If you wish to calculate the CCVI for multiple climate change
-scenarios simultaneously you can click on “Add Another Scenario” after
-the first has completed processing. All scenarios must be processed in
-one session in order for the same thresholds to be applied for
-classifying all scenarios. The first scenario processed will determine
-the thresholds used to classify the temperature and moisture exposure
-based on the median and 1/2 the interquartile range. Therefore, we
-recommend processing the climate scenario with the lowest impact first
-so that index values are higher for more extreme scenarios. Steps 2 and
-3 must be repeated for each scenario but the values will only be erased
-for inputs that are expected to change between scenarios or are not
-required for additional scenarios. MAT and CMD must be provided for the
-additional scenario. The historical values will not change but must
-still be supplied since the amount of change is used to inform the
-exposure. The rest of the climate data are not needed for additional
-scenarios because they are used to inform the species’ sensitivity based
-on its current range and historical climate so they will not change
-between scenarios.</p>
+scenarios simultaneously you can create a climate change data set with
+multiple scenarios in the “Data Preparation for the ccviR app”. To do
+this click on “Add Another Scenario” after the first scenario has
+completed processing. All scenarios must be processed in one session in
+order for the same thresholds to be applied for classifying all
+scenarios.</p>
+<p>The first scenario processed will determine the thresholds used to
+classify the temperature and moisture exposure based on the median and
+1/2 the interquartile range. Therefore, we recommend processing the
+climate scenario with the lowest impact first so that index values are
+higher for more extreme scenarios. Steps 2 and 3 must be repeated for
+each scenario but the values will only be erased for inputs that are
+expected to change between scenarios or are not required for additional
+scenarios. MAT and CMD must be provided for the additional scenario. The
+historical values will not change but must still be supplied since the
+amount of change is used to inform the exposure. The rest MCMT, MWMT and
+MAP are not needed for additional scenarios because they are used to
+inform the species’ sensitivity based on its current range and
+historical climate so they will not change between scenarios.</p>
 </div>
   </div>
 
