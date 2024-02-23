@@ -29,7 +29,7 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Hid Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change [copyright holder]
+  \item His Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change [copyright holder]
 }
 
 }
