@@ -86,7 +86,7 @@ plot_q_score <- function(vuln_df){
     summarise(range = n()) %>%
     ungroup() %>%
     mutate(width_pct = range/sum(range))
-
+  # TODO: add colors by section '#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3'
 
   #define a list of ggplot and feed it in the subplot function with the calculated limits
   vuln_df %>%
