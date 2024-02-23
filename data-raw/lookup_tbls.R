@@ -41,5 +41,10 @@ ui_build_table <- ui_build_table %>%
 
 usethis::use_data(ui_build_table, overwrite = TRUE)
 
+# table of guidelines (created in guideline_lu_tbl but edited in csv)
+# Only needed internally
+guideline_lu_tbl <- read.csv("data-raw/guideline_lu_tbl.csv")
+
 # need to include all object for internal because they are saved together.
-usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, overwrite = TRUE, internal = TRUE)
+usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, guideline_lu_tbl,
+                  overwrite = TRUE, internal = TRUE)

@@ -1,23 +1,11 @@
-# Copied the guidelines from excel to word and then copied to
-# https://word2cleanhtml.com/ to clean added start and end div and removed " or
-# replaced with '
+# create a lookup table for help text from guidelines
+devtools::load_all(".")
+library(stringr)
+# Get raw text from guidelines.R that was previously copied from the excel
+# sheets and made into html
 
-guideB <- function(){
-  showModal(modalDialog(
-    title = "Section B Guidelines",
-    HTML({"<div>
-
-<p>The NatureServe Climate Change Vulnerability Index release
-3.02   </p>
-
-<p>  </p>
-
-<p>Definitions and Guidelines for Scoring Risk Factors - Section
-B   </p>
-
-<p> Response required for at least 3 factors.  </p>
-
-<p>  </p>
+# Section B #===================================================================
+sectionB <- "
 
 <p>B. Indirect Exposure to Climate Change  </p>
 
@@ -166,6 +154,88 @@ http://glcfapp.glcf.umd.edu/data/) are also acceptable (and offer wider
 coverage) but may require more advanced GIS capabilities. Readily available
 online sources of satellite imagery also may be useful in assessing
 anthropogenic or certain other barriers.  </p>
+
+<p> a) NATURAL BARRIERS
+</p>
+
+<p> Greatly Increase Vulnerability: Barriers
+completely OR almost completely surround the current distribution such that the
+species' range in the assessment area is unlikely to be able to shift
+significantly with climate change, or the direction of climate change-caused
+shift in the species' favorable climate envelope is fairly well understood and
+barriers prevent a range shift in that direction. See Neutral for species in
+habitats not vulnerable to climate change.  </p>
+
+<p> Examples
+for natural barriers: lowland terrestrial species completely surrounded by high
+mountains (or bordered closely and completely on the north side by high
+mountains); cool-water stream fishes for which barriers would completely
+prevent access to other cool-water areas if the present occupied habitat became
+too warm as a result of climate change; most nonvolant species that exist only
+on the south side of a very large lake in an area where habitats are expected
+to shift northward with foreseeable climate change.  </p>
+
+<p> Examples
+for anthropogenic barriers: species limited to small habitats within
+intensively developed urban or agricultural landscapes through which the
+species cannot pass, A specific example of this category is provided by the
+quino checkerspot butterfly (Euphydryas editha quino), a resident of northern
+Baja California and southern California; warming climates are forcing this
+butterfly northward, but urbanization in San Diego blocks its movement
+(Parmesan 1996, Nature 382:765).  </p>
+
+<p> Increase Vulnerability: Barriers
+border the current distribution such that climate change-caused distributional
+shifts in the assessment area are likely to be greatly but not completely or
+almost completely impaired.  </p>
+
+<p> Examples
+for natural barriers: certain lowland plant or small mammal species whose
+ranges are mostly (50-90%) bordered by high mountains or a large lake.  </p>
+
+<p> Examples
+for anthropogenic barriers: most streams inhabited by a fish species have dams
+that would prevent access to suitable habitat if the present occupied habitat
+became too warm as a result of climate change; intensive urbanization surrounds
+75% of the range of a salamander species.  </p>
+
+<p> Somewhat Increase Vulnerability: Barriers
+border the current distribution such that climate change-caused distributional
+shifts in the assessment area are likely to be significantly but not greatly or
+completely impaired.  </p>
+
+<p> Examples
+for natural barriers: certain lowland plant or small mammal species whose
+ranges are partially but not mostly bordered by high mountains or a large lake.  </p>
+
+<p> Examples
+for anthropogenic barriers: 10-50% of the margin of a plant species' range is
+bordered by intensive urban development; 25% of the streams occupied by a fish
+species include dams that are likely to impede range shifts driven by climate
+change.  </p>
+
+<p> Neutral: Significant
+barriers do not exist for this species, OR small barriers exist in the
+assessment area but likely would not significantly impair distributional shifts
+with climate change, OR substantial barriers exist but are not likely to
+contribute significantly to a reduction or loss of the species' habitat or area
+of occupancy with projected climate change in the assessment area.  </p>
+
+<p> Examples
+of species in this category: most birds (for which barriers do not exist);
+terrestrial snakes in extensive plains or deserts that may have small barriers
+that would not impede distributional shifts with climate change; small
+alpine-subalpine mammal (e.g., ermine, snowshoe hare) in extensive mountainous
+wilderness area lacking major rivers or lakes; fishes in large deep lakes or
+large main-stem rivers that are basically invulnerable to projected climate
+change and lack dams, waterfalls, and significant pollution; a plant whose
+climate envelope is shifting northward and range is bordered on the west by a
+barrier but for which no barriers exist to the north.  </p>
+
+<p>  </p>
+
+<p> b) ANTHROPOGENIC BARRIERS
+</p>
 
 <p> Greatly Increase Vulnerability: Barriers
 completely OR almost completely surround the current distribution such that the
@@ -328,185 +398,26 @@ species is unlikely to be significantly affected by mitigation-related land use
 changes that may occur within its current and/or potential future range,
 including any of the above; OR it is unlikely that any mitigation-related land
 use changes will occur within the species' current and/or potential future
-range; OR it may benefit from mitigation-related land use changes.</div>"})
+range; OR it may benefit from mitigation-related land use changes. </p>"
 
-  ))
-}
-guideCSpatial <- function(){
-  showModal(modalDialog(
-    title = "Section C Guidelines Spatial",
-    HTML({"<div>
-    <p>
-        2) Predicted Sensitivity to Temperature and Moisture Changes
-</p>
-<p>
-    NOTES: This factor pertains to the breadth of temperature and precipitation
-    conditions, at both broad and local scales, within which a species is known
-    to be capable of reproducing, feeding, growing, or otherwise existing.
-    Species with narrow environmental tolerances/requirements may be more
-    vulnerable to habitat loss from climate change than are species that thrive
-    under diverse conditions.
-</p>
-<p>
-    a) Predicted sensitivity to changes in temperature, based on current/recent
-    past temperature tolerance
-</p>
-<p>
-    i) Historical thermal niche (exposure to past variations in temperature)
-</p>
-<p>
-    NOTES: This factor measures large-scale temperature variation that a
-    species has experienced in recent historical times (i.e., the past 50
-    years), as approximated by mean seasonal temperature variation (difference
-    between highest mean monthly maximum temperature and lowest mean monthly
-    minimum temperature) for occupied cells within the assessment area. It is a
-    proxy for species' temperature tolerance at a broad scale. This factor may
-    be evaluated by comparing the species range with the Annual Temperature
-    Variation map 1951-2006 (see first image at bottom of this page) or
-    calculated using GIS data downloaded from NatureServe
-    (http://www.natureserve.org/ccvi). For aquatic species, follow the same
-    procedure as for terrestrial species, since this factor measures broad
-    regional patterns.
-</p>
-<p>
-    Use the annual map for both resident and migratory species. Although
-    migratory species are not physically present to experience temperature
-    variations, they nonetheless are affected by these variations through
-    effects on food supply and habitat availability.
-</p>
-<p>
-    Greatly Increase Vulnerability: Considering the mean seasonal temperature
-    variation for occupied cells, the species has experienced very small (&lt;
-    37&deg; F/20.8&deg; C) temperature variation in the past 50 years. Includes cave
-    obligates and species occurring in thermally stable groundwater habitats.
-</p>
-<p>
-    Increase Vulnerability: Considering the mean seasonal temperature variation
-    for occupied cells, the species has experienced small (37 - 47&deg; F/20.8 -
-    26.3&deg; C) temperature variation in the past 50 years. Includes facultative
-    cave invertebrates.
-</p>
-<p>
-    Somewhat Increase Vulnerability: Considering the mean seasonal temperature
-    variation for occupied cells, the species has experienced slightly lower
-    than average (47.1 - 57&deg; F/26.3 - 31.8&deg; C) temperature variation in the
-    past 50 years.
-</p>
-<p>
-    Neutral: Considering the mean seasonal temperature variation for occupied
-    cells, the species has experienced average or greater than average
-    (&gt;57.1&deg; F/43.0&deg; C) temperature variation in the past 50 years.
-</p>
-<p>
-    ii) Physiological thermal niche
-</p>
-<p>
-    NOTES: Current projections indicate that climate warming will be nearly
-    pervasive in North America over the next several decades. Species
-    associated with cool or cold conditions likely will experience a reduction
-    in habitat extent or quality and may experience declines in distribution or
-    abundance within a given assessment area. This factor assesses the degree
-    to which a species is restricted to relatively cool or cold above-ground
-    terrestrial or aquatic environments that are thought to be vulnerable to
-    loss or significant reduction as a result of climate change. Species that
-    depend on these cool/cold environments include (but may not be limited to)
-    those that occur in the assessment area's highest elevational zones,
-    northernmost areas, or the coldest waters. The restriction to these
-    relatively cool environments may be permanent or seasonal.
-</p>
-<p>
-    Species that occur in frost pockets, on north-facing slopes, in shady
-    ravines, in alpine areas, or similar cool sites are scored here if those
-    areas represent or are among the coldest environments in the assessment
-    area; lacking this stipulation, species occurring in such sites may not be
-    vulnerable to climate change because favorable sites may simply shift in
-    location without reduction or loss. Species that are associated
-    specifically with snow or ice are assessed separately in factor C2d. Note
-    that temperature conditions and hydrological regimes often covary and often
-    are not neatly separable; these situations should be scored here if
-    temperature per se appears to be the overriding factor; otherwise they
-    should be scored under factor C2bii: Physiological Hydrological Niche.
-</p>
-<p>
-    Greatly Increase Vulnerability: Species is completely or almost completely
-    (&gt; 90% of occurrences or range) restricted to relatively cool or cold
-    environments that may be lost or reduced in the assessment area as a result
-    of climate change.
-</p>
-<p>
-    Increase Vulnerability: Species is moderately (50-90% of occurrences or
-    range) restricted to relatively cool or cold environments that may be lost
-    or reduced in the assessment area as a result of climate change.
-</p>
-<p>
-    Somewhat Increase Vulnerability: Species is somewhat (10-50% of occurrences
-    or range) restricted to relatively cool or cold environments that may be
-    lost or reduced in the assessment area as a result of climate change.
-</p>
-<p>
-    Neutral: Species distribution is not significantly affected by thermal
-    characteristics of the environment in the assessment area, species occupies
-    habitats that are thought to be not vulnerable to projected climate change,
-    or species shows a preference for environments at the warmer end of the
-    spectrum.
-</p>
-<p>
-    b) Predicted sensitivity to changes in precipitation, hydrology, or
-    moisture regime.
-</p>
-<p>
-    i) Historical hydrological niche (exposure to past variations in
-    precipitation)
-</p>
-<p>
-    NOTES: This factor measures large-scale precipitation variation that a
-    species has experienced in recent historical times (i.e., the past 50
-    years), as approximated by mean annual precipitation variation across
-    occupied cells within the assessment area. Overlay the species' range on
-    the Climate Wizard mean annual precipitation map 1951-2006. Subtract the
-    lowest pixel value from the highest value to assess this factor. Use the
-    extreme pixel values for this calculation. Use annual data for migratory
-    species, as this measure reflects the precipitation regime of the ecosystem
-    as a whole.
-</p>
-<p>
-    Greatly Increase Vulnerability: Considering the range of mean annual
-    precipitation across occupied cells, the species has experienced very small
-    (&lt; 4 inches/100 mm) precipitation variation in the past 50 years.
-</p>
-<p>
-    Increase Vulnerability: Considering the range of mean annual precipitation
-    across occupied cells, the species has experienced small (4 - 10 inches/100
-    - 254 mm) precipitation variation in the past 50 years.
-</p>
-<p>
-    Somewhat Increase Vulnerability: Considering the range of mean annual
-    precipitation across occupied cells, the species has experienced slightly
-    lower than average (11 - 20 inches/255 - 508 mm) precipitation variation in
-    the past 50 years.
-</p>
-<p>
-    Neutral: Considering the range of mean annual precipitation across occupied
-    cells, the species has experienced average or greater than average &gt;20
-    inches/508 mm) precipitation variation in the past 50 years.
-</p>
+# split by question numbers or letters
 
-      </div>"})
-  ))
-}
+datB <- data.frame(section = "B",
+                  guide_text = sectionB %>%
+                   str_split_1("(?=\n\n<p> \\d\\))|(?=\n\n<p> [a-c]\\))")) %>%
+  mutate(question = str_extract(guide_text, "(\n\n<p> )(\\d)(\\))", group = 2),
+         sub_question = str_extract(guide_text, "(\n\n<p> )([a-c])(\\))", group = 2),
+         .before = guide_text) %>%
+  tidyr::fill(question, .direction = "down") %>%
+  mutate(sub_question = str_to_lower(sub_question))
 
-guideCNonSpatial <- function(){
-  showModal(modalDialog(
-    title = "Section C Guidelines Non-Spatial",
-    HTML({"<div>
-    <p>
-    Definitions and Guidelines for Scoring Risk Factors - Section C
-</p>
+# Section C #===================================================================
+sectionC <- "
 <p>
     C. Sensitivity and Adaptive Capacity
 </p>
 <p>
-    Notes: Specific instructions for each factor are as follows. Note that these factors relate to
+    Notes:Note that these factors relate to
     characteristics of the species only. Anthropogenic effects, such as on the
     availability of dispersal corridors, should not be considered in this
     section.
@@ -682,7 +593,8 @@ guideCNonSpatial <- function(){
     site fidelity; bird species that readily colonize vacant suitable habitat.
 </p>
 <p>
-2) Predicted Sensitivity to Temperature and Moisture Changes
+<p>
+    2) Predicted Sensitivity to Temperature and Moisture Changes
 </p>
 <p>
     NOTES: This factor pertains to the breadth of temperature and precipitation
@@ -693,9 +605,149 @@ guideCNonSpatial <- function(){
     under diverse conditions.
 </p>
 <p>
+    a) Predicted sensitivity to changes in temperature, based on current/recent
+    past temperature tolerance
+</p>
+<p>
+    i) Historical thermal niche (exposure to past variations in temperature)
+</p>
+<p>
+    NOTES: This factor measures large-scale temperature variation that a
+    species has experienced in recent historical times (i.e., the past 50
+    years), as approximated by mean seasonal temperature variation (difference
+    between highest mean monthly maximum temperature and lowest mean monthly
+    minimum temperature) for occupied cells within the assessment area. It is a
+    proxy for species' temperature tolerance at a broad scale. This factor may
+    be evaluated by comparing the species range with the Annual Temperature
+    Variation map 1951-2006 (see first image at bottom of this page) or
+    calculated using GIS data downloaded from NatureServe
+    (http://www.natureserve.org/ccvi). For aquatic species, follow the same
+    procedure as for terrestrial species, since this factor measures broad
+    regional patterns.
+</p>
+<p>
+    Use the annual map for both resident and migratory species. Although
+    migratory species are not physically present to experience temperature
+    variations, they nonetheless are affected by these variations through
+    effects on food supply and habitat availability.
+</p>
+<p>
+    Greatly Increase Vulnerability: Considering the mean seasonal temperature
+    variation for occupied cells, the species has experienced very small (&lt;
+    37&deg; F/20.8&deg; C) temperature variation in the past 50 years. Includes cave
+    obligates and species occurring in thermally stable groundwater habitats.
+</p>
+<p>
+    Increase Vulnerability: Considering the mean seasonal temperature variation
+    for occupied cells, the species has experienced small (37 - 47&deg; F/20.8 -
+    26.3&deg; C) temperature variation in the past 50 years. Includes facultative
+    cave invertebrates.
+</p>
+<p>
+    Somewhat Increase Vulnerability: Considering the mean seasonal temperature
+    variation for occupied cells, the species has experienced slightly lower
+    than average (47.1 - 57&deg; F/26.3 - 31.8&deg; C) temperature variation in the
+    past 50 years.
+</p>
+<p>
+    Neutral: Considering the mean seasonal temperature variation for occupied
+    cells, the species has experienced average or greater than average
+    (&gt;57.1&deg; F/43.0&deg; C) temperature variation in the past 50 years.
+</p>
+<p>
+    ii) Physiological thermal niche
+</p>
+<p>
+    NOTES: Current projections indicate that climate warming will be nearly
+    pervasive in North America over the next several decades. Species
+    associated with cool or cold conditions likely will experience a reduction
+    in habitat extent or quality and may experience declines in distribution or
+    abundance within a given assessment area. This factor assesses the degree
+    to which a species is restricted to relatively cool or cold above-ground
+    terrestrial or aquatic environments that are thought to be vulnerable to
+    loss or significant reduction as a result of climate change. Species that
+    depend on these cool/cold environments include (but may not be limited to)
+    those that occur in the assessment area's highest elevational zones,
+    northernmost areas, or the coldest waters. The restriction to these
+    relatively cool environments may be permanent or seasonal.
+</p>
+<p>
+    Species that occur in frost pockets, on north-facing slopes, in shady
+    ravines, in alpine areas, or similar cool sites are scored here if those
+    areas represent or are among the coldest environments in the assessment
+    area; lacking this stipulation, species occurring in such sites may not be
+    vulnerable to climate change because favorable sites may simply shift in
+    location without reduction or loss. Species that are associated
+    specifically with snow or ice are assessed separately in factor C2d. Note
+    that temperature conditions and hydrological regimes often covary and often
+    are not neatly separable; these situations should be scored here if
+    temperature per se appears to be the overriding factor; otherwise they
+    should be scored under factor C2bii: Physiological Hydrological Niche.
+</p>
+<p>
+    Greatly Increase Vulnerability: Species is completely or almost completely
+    (&gt; 90% of occurrences or range) restricted to relatively cool or cold
+    environments that may be lost or reduced in the assessment area as a result
+    of climate change.
+</p>
+<p>
+    Increase Vulnerability: Species is moderately (50-90% of occurrences or
+    range) restricted to relatively cool or cold environments that may be lost
+    or reduced in the assessment area as a result of climate change.
+</p>
+<p>
+    Somewhat Increase Vulnerability: Species is somewhat (10-50% of occurrences
+    or range) restricted to relatively cool or cold environments that may be
+    lost or reduced in the assessment area as a result of climate change.
+</p>
+<p>
+    Neutral: Species distribution is not significantly affected by thermal
+    characteristics of the environment in the assessment area, species occupies
+    habitats that are thought to be not vulnerable to projected climate change,
+    or species shows a preference for environments at the warmer end of the
+    spectrum.
+</p>
+<p>
     b) Predicted sensitivity to changes in precipitation, hydrology, or
     moisture regime.
 </p>
+<p>
+    i) Historical hydrological niche (exposure to past variations in
+    precipitation)
+</p>
+<p>
+    NOTES: This factor measures large-scale precipitation variation that a
+    species has experienced in recent historical times (i.e., the past 50
+    years), as approximated by mean annual precipitation variation across
+    occupied cells within the assessment area. Overlay the species' range on
+    the Climate Wizard mean annual precipitation map 1951-2006. Subtract the
+    lowest pixel value from the highest value to assess this factor. Use the
+    extreme pixel values for this calculation. Use annual data for migratory
+    species, as this measure reflects the precipitation regime of the ecosystem
+    as a whole.
+</p>
+<p>
+    Greatly Increase Vulnerability: Considering the range of mean annual
+    precipitation across occupied cells, the species has experienced very small
+    (&lt; 4 inches/100 mm) precipitation variation in the past 50 years.
+</p>
+<p>
+    Increase Vulnerability: Considering the range of mean annual precipitation
+    across occupied cells, the species has experienced small (4 - 10 inches/100
+    - 254 mm) precipitation variation in the past 50 years.
+</p>
+<p>
+    Somewhat Increase Vulnerability: Considering the range of mean annual
+    precipitation across occupied cells, the species has experienced slightly
+    lower than average (11 - 20 inches/255 - 508 mm) precipitation variation in
+    the past 50 years.
+</p>
+<p>
+    Neutral: Considering the range of mean annual precipitation across occupied
+    cells, the species has experienced average or greater than average &gt;20
+    inches/508 mm) precipitation variation in the past 50 years.
+</p>
+
 <p>
     ii) Physiological hydrological niche
 </p>
@@ -1466,18 +1518,26 @@ guideCNonSpatial <- function(){
     in similar habitats or taxonomic groups; OR seasonal dynamics within the
     species' range show no detectable change.
 </p>
-</div>
-"})
-  ))
-}
+"
 
-guideDNonSpatial <- function(){
-  showModal(modalDialog(
-    title = "Section D Guidelines - Non-Spatial",
-    HTML("<div>
-    <p>
-    Definitions and Guidelines for Scoring Risk Factors - Section D
-</p>
+
+
+# split by question numbers or letters
+
+datC <- data.frame(section = "C",
+                   guide_text = sectionC %>%
+                     str_split_1("(?=<p>\n\\s*\\d\\))|(?=<p>\n\\s*[a-g]\\))|(?=<p>\n\\s*[i]+\\))")) %>%
+  mutate(question = str_extract(guide_text, "(<p>\n\\s*)(\\d)(\\))", group = 2),
+         sub_question = str_extract(guide_text, "(<p>\n\\s*)([a-g])(\\))", group = 2),
+         sub2_question = str_extract(guide_text, "(<p>\n\\s*)([i]+)(\\))", group = 2),
+         .before = guide_text) %>%
+  tidyr::fill(question, .direction = "down") %>%
+  group_by(question) %>%
+  tidyr::fill(sub_question, .direction = "down")
+
+# Section D #===================================================================
+
+sectionD <- "
 <p>
     D. Documented or Modeled Response to Climate Change (optional)
 </p>
@@ -1524,48 +1584,6 @@ guideDNonSpatial <- function(){
     distributional area or species undergoing changes in phenology but no net
     loss in range size or population size. Includes species in which climate
     change is documented to be causing an increase in range size or abundance.
-</p>
-
-<p>
-    4) Occurrence of Protected Areas in Modeled Future (2050) Distribution
-</p>
-<p>
-    NOTES: 'Protected area' refers to existing parks, refuges, wilderness
-    areas, and other designated conservation areas that are relatively
-    invulnerable to outright habitat destruction from human activities and that
-    are likely to provide suitable conditions for the existence of viable
-    populations of the species. Models of current and projected future ranges
-    should meet standards described in the notes for D2. Modeled future
-    distribution may refer to a single season (e.g., breeding season
-    distribution or winter distribution) for migratory species. This factor
-    considers ranges and protected areas within the assessment area only.
-</p>
-<p>
-    Increase Vulnerability: &lt; 5% of the modeled future distribution within
-    the assessment area is encompassed by one or more protected areas.
-</p>
-<p>
-    Somewhat Increase Vulnerability: 5-30% of the modeled future distribution
-    within the assessment area is encompassed by one or more protected areas.
-</p>
-<p>
-    Neutral: &gt;30% of the modeled future distribution within the assessment
-    area is encompassed by one or more protected areas.
-</p>
-
-         </div>")
-  ))
-}
-
-guideDSpatial <- function(){
-  showModal(modalDialog(
-    title = "Section D Guidelines - Spatial",
-    HTML("<div>
-    <p>
-    Definitions and Guidelines for Scoring Risk Factors - Section D
-</p>
-<p>
-    D. Documented or Modeled Response to Climate Change (optional)
 </p>
 <p>
     2) Modeled Future (2050) Change in Range or Population Size
@@ -1639,15 +1657,41 @@ guideDSpatial <- function(){
     Neutral: Predicted future range overlaps the current range by &gt; 60%
     within the assessment area.
 </p>
-         </div>")
-  ))
-}
+<p>
+    4) Occurrence of Protected Areas in Modeled Future (2050) Distribution
+</p>
+<p>
+    NOTES: 'Protected area' refers to existing parks, refuges, wilderness
+    areas, and other designated conservation areas that are relatively
+    invulnerable to outright habitat destruction from human activities and that
+    are likely to provide suitable conditions for the existence of viable
+    populations of the species. Models of current and projected future ranges
+    should meet standards described in the notes for D2. Modeled future
+    distribution may refer to a single season (e.g., breeding season
+    distribution or winter distribution) for migratory species. This factor
+    considers ranges and protected areas within the assessment area only.
+</p>
+<p>
+    Increase Vulnerability: &lt; 5% of the modeled future distribution within
+    the assessment area is encompassed by one or more protected areas.
+</p>
+<p>
+    Somewhat Increase Vulnerability: 5-30% of the modeled future distribution
+    within the assessment area is encompassed by one or more protected areas.
+</p>
+<p>
+    Neutral: &gt;30% of the modeled future distribution within the assessment
+    area is encompassed by one or more protected areas.
+</p>"
 
-guideExposure <- function(){
-  showModal(modalDialog(
-  title = "Exposure modifier",
-  HTML("<div>
-    <p>
+datD <- data.frame(section = "D",
+                   guide_text = sectionD %>%
+                     str_split_1("(?=<p>\n\\s*\\d\\))")) %>%
+  mutate(question = str_extract(guide_text, "(<p>\n\\s*)(\\d)(\\))", group = 2),
+         .before = guide_text)
+
+# Exposure #====================================================================
+exposure <- "<p>
     The Index treats exposure to climate change as a modifier of sensitivity and
     adaptive capacity. If the climate in a given assessment area will not change
     much, none of the sensitivity/adaptive capacity factors will weigh heavily,
@@ -1659,5 +1703,20 @@ guideExposure <- function(){
     sensitivity and adaptive capacity factors. However, for factors such as
     sensitivity to temperature change (factor 2a) or precipitation/moisture
     regime (2b), only the specified climate driver will have a modifying effect.
-</p>
-</div>")))}
+</p>"
+
+exposure <- data.frame(section = "exposure", guide_text = exposure)
+
+# Combine #=====================================================================
+# Combine and save as csv to be edited for improved html readability
+guide_dat <-  bind_rows(datB, datC, datD, exposure)
+
+if(file.exists("data-raw/guideline_lu_tbl.csv")){
+  message("The guideline look up table already exists and may contian edits")
+  prompt <- readline("Are you sure you want to replace it? (y/n) ")
+  if(prompt == "y"){
+    write.csv(guide_dat, "data-raw/guideline_lu_tbl.csv", row.names = FALSE)
+  }
+}
+
+# Need to run lookup_tbls.R to add it to internal package data
