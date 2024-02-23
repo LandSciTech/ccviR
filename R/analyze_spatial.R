@@ -278,6 +278,20 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
+  geo_type <- st_geometry_type(poly)
+  if(any(!geo_type %in% c("POLYGON", "MULTIPOLYGON"))){
+
+    if(any(geo_type %in% c("POLYGON", "MULTIPOLYGON"))){
+      poly <- st_collection_extract(poly, "POLYGON")
+      message("Point or line geometries in the ", var_name,
+              " were dropped.")
+    } else {
+      stop(var_name, " has geometry type ", unique(geo_type),
+           " but only polygons are accepted for this input.",
+           call. = FALSE)
+    }
+  }
+
   if(is.na(st_crs(poly))){
     stop(var_name, " does not have a CRS.",
          " \nPlease load a file with a valid Coordinate Reference System",

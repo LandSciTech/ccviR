@@ -27,6 +27,8 @@ hs_terra <- terra::rast(file.path(file_dir, "rng_chg_45.tif"))
 hs2 <- raster::raster(file.path(file_dir, "rng_chg_85.tif"))
 hs1 <- raster::raster(file.path(file_dir, "rng_chg_45.tif"))
 
+rng_high_pts <- rng_high %>% sf::st_make_grid(what = "centers")
+
 
 test_that("spatial runs with all data or optional data",{
   res <- analyze_spatial(rng_high, assess, clim_vars, NULL, ptn, hs_terra,
@@ -189,3 +191,19 @@ test_that("works with mulitple clim scenarios",{
   expect_true(nrow(res3$spat_table) == 2)
 })
 
+test_that("gives error for points early", {
+  rng_high_pts <- rng_high %>% sf::st_make_grid(what = "centers")
+
+  expect_error(analyze_spatial(rng_high_pts, assess, clim_vars[c(1:2, 6)],
+                               scenario_names = scn_nms),
+               "geometry type")
+
+  # make sure geometry collection that includes a polygon works
+  rng_high_geo <- bind_rows(rng_high, st_centroid(rng_high)) %>%
+    st_set_agr("constant")
+
+  expect_message(analyze_spatial(rng_high_geo, assess, clim_vars[c(1:2, 6)],
+                  scenario_names = scn_nms),
+                 "Point")
+
+})
