@@ -22,7 +22,7 @@ usethis::use_data(comb_index_tbl, overwrite = TRUE)
 
 # made a csv with the codes and questions but need to tidy it up
 
-lu_tbl <- read.csv("../CCVI_analysis/data/Code_Q_lookup.csv")
+lu_tbl <- read.csv("data-raw/Code_Q_lookup.csv")
 
 vulnq_code_lu_tbl <- mutate_all(lu_tbl, stringr::str_trim) %>%
   mutate(Question = stringr::str_remove(Question, "^..?\\)\\s") %>%
