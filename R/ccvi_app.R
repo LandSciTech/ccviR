@@ -1081,7 +1081,7 @@ ccvi_app <- function(testmode_in, ...){
     # Vulnerability Qs #===============
     # Show guidelines with additional info for each section
     observe({
-      help_ins <- str_subset(names(input), "help")
+      help_ins <- stringr::str_subset(names(input), "help")
       purrr::map(help_ins,
                  ~observeEvent(input[[.x]], {
                    guide_popup(.x)
