@@ -7,10 +7,10 @@ library(stringr)
 # Section B #===================================================================
 sectionB <- "
 <style>
-h1   {font-size:16px;margin-top:0px}
-h2   {font-size:16px;font-weight:bold;}
-h3   {font-size:16px;font-weight:bold;}
-h4   {font-size:16px;font-weight:bold;}
+h1   {font-size:15px;margin-top:0px}
+h2   {font-size:15px;font-weight:bold;}
+h3   {font-size:15px;font-weight:bold;}
+h4   {font-size:15px;font-weight:bold;}
 </style>
 
 <h1>B. Indirect Exposure to Climate Change</h1>
@@ -39,7 +39,10 @@ low-lying island(s) or in coastal zone). Includes inland areas not subject to
 sea level rise. Also, species that occur in an intertidal habitat that is
 expected to increase in extent with a rising sea level.</p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
+<p><i>Tools</i>: For information about the sensitivity of the Canadian coast to
+potential sea level rise, see <a
+href=\"https://geoscan.nrcan.gc.ca/text/geoscan/fulltext/of_8551.pdf\"
+target=\"_blank\">CanCoast 2.0</a>.</p>
 
 
 <h2>2) Distribution Relative to Barriers</h2>
@@ -56,8 +59,8 @@ identified for each species (but often are the same for a group of closely
 related species). Natural and anthropogenic barriers are defined for many
 species and taxonomic groups in NatureServe's Element Occurrence Specifications
 (viewable in the Population/Occurrence Delineation section of species accounts
-on <a href=\"http://www.natureserve.org/explorer\" target = \"_blank\">
-Natureserve Explorer</a>, but usually these readily can be determined by
+on <a href=\"https://explorer.natureserve.org/\" target = \"_blank\">
+Natureserve Explorer</a>), but usually these readily can be determined by
 considering a species' basic movement capacity and ecological tolerances.</p>
 
 <p>The distinction between a barrier and unsuitable habitat sometimes may be
@@ -190,8 +193,6 @@ not likely to contribute significantly to a reduction or loss of the species'
 habitat or area of occupancy with projected climate change in the assessment
 area.</p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
-
 
 <h2>3) Predicted Impact of Land Use Changes Resulting from Human Responses to
 Climate Change</h2>
@@ -269,7 +270,11 @@ including any of the above; OR it is unlikely that any mitigation-related land
 use changes will occur within the species' current and/or potential future
 range; OR it may benefit from mitigation-related land use changes. </p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
+<p><i>Tools</i>: For information and maps related to wind energy in Canada, see
+<a href=\"https://natural-resources.canada.ca/energy/renewable-electricity/wind/7323\"
+target=\"_blank\">Natural Resources Canada Wind Energy</a> and
+<a href=\"http://www.windatlas.ca/index-en.php\" target=\"_blank\">Environment
+and Climate Change Canada's Wind Atlas</a>.</p>
 "
 
 # split by question numbers or letters
@@ -286,10 +291,10 @@ datB <- data.frame(section = "B",
 # Section C #===================================================================
 sectionC <- "
 <style>
-h1   {font-size:16px;margin-top:0px}
-h2   {font-size:16px;font-weight:bold;}
-h3   {font-size:16px;font-weight:bold;}
-h4   {font-size:16px;font-weight:bold;}
+h1   {font-size:15px;margin-top:0px}
+h2   {font-size:15px;font-weight:bold;}
+h3   {font-size:15px;font-weight:bold;}
+h4   {font-size:15px;font-weight:bold;}
 </style>
 
 <h1>C. Sensitivity and Adaptive Capacity</h1>
@@ -382,7 +387,9 @@ examples. Note that species in the Neutral category are not necessarily
 certain 'late successional' or equilibrium ('K-selected') species that
 have excellent innate or vector-aided dispersal capability.</p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
+<p><i>Tools</i>: Seed biological trait data for some species can be found at
+<a href=\"https://data.kew.org/species/\" target=\"_blank\">Royal Botanic
+Gardens Kew Data Portal</a>.</p>
 
 
 <h2>2) Predicted Sensitivity to Temperature and Moisture Changes</h2>
@@ -409,11 +416,13 @@ between highest mean monthly maximum temperature and lowest mean monthly
 minimum temperature) for occupied cells within the assessment area. It is a
 proxy for species' temperature tolerance at a broad scale. This factor may
 be evaluated by comparing the species range with the Annual Temperature
-Variation map 1951-2006 (see first image at bottom of this page) or
-calculated using GIS data downloaded from NatureServe
-(http://www.natureserve.org/ccvi). For aquatic species, follow the same
-procedure as for terrestrial species, since this factor measures broad
-regional patterns.</p>
+Variation map (see Figure 5 in the <a
+href=\"https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3_0_canada_jan2016.pdf\"
+target=\"_blank\">Canadian NatureServe CCVI Guidelines</a>) or calculate using
+GIS data downloaded from <a
+href=\"http://www.natureserve.org/ccvi\" target=\"_blank\">NatureServe</a>. For
+aquatic species, follow the same procedure as for terrestrial species, since
+this factor measures broad regional patterns.</p>
 
 <p>Use the annual map for both resident and migratory species. Although
 migratory species are not physically present to experience temperature
@@ -499,7 +508,9 @@ precipitation)</h4>
 species has experienced in recent historical times (i.e., the past 50
 years), as approximated by mean annual precipitation variation across
 occupied cells within the assessment area. Overlay the species' range on
-the Climate Wizard mean annual precipitation map 1951-2006. Subtract the
+the mean annual precipitation map (see Figure 6 in the <a
+href=\"https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3_0_canada_jan2016.pdf\"
+target=\"_blank\">Canadian NatureServe CCVI Guidelines</a>). Subtract the
 lowest pixel value from the highest value to assess this factor. Use the
 extreme pixel values for this calculation. Use annual data for migratory
 species, as this measure reflects the precipitation regime of the ecosystem
@@ -632,7 +643,11 @@ disturbance regime in a way that affects the range or abundance of the
 species, OR climate change is likely to change the characteristics of the
 disturbance regime in a way that increases the species' distribution.</p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
+<p><i>Tools</i>: For information on fire effects, see the <a
+href=\"https://www.feis-crs.org/feis/\" target=\"_blank\">USDA Fire Effects
+Information System</a>. For a map of modeled future fire regime, see Figure 2 in
+<a href=\"https://doi.org/10.1371/journal.pone.0005102\" target=\"_blank\">
+Krawchuck et al. (2009)</a>.</p>
 
 
 <h3>d) Dependence on ice, ice-edge, or snow cover habitats</h3>
@@ -720,8 +735,6 @@ within its range); OR highly generalized relative to dependence upon
 geological features or derivatives; species is described as a generalist
 and/or occurrences have been documented on widely varied substrates or
 water chemistries.</p>
-
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
 
 
 <h2>4) Interspecific Interactions</h2>
@@ -826,16 +839,21 @@ limitation of potential pollinators (e.g., very long corolla tube).</p>
 <p><b>Somewhat Increase Vulnerability</b>: Completely or almost completely
 dependent on 2-4 species for pollination (&gt; 90% of effective pollination
 accomplished by 2-4 species) or, if no observations exist, morphology
-suggests conformation to a specific 'pollination syndrome' (e.g., van der
-Pijl 1961, Evolution 15: 44-59,
-http://www.fs.fed.us/wildflowers/pollinators/syndromes.shtml).</p>
+suggests conformation to a specific 'pollination syndrome' (e.g., <a
+href=\"https://doi.org/10.1111/j.1558-5646.1961.tb03128.x\" target=\"_blank\">
+van der Pijl, 1961</a>).</p>
 
 <p><b>Neutral</b>: Pollination apparently flexible; five or more species make
 significant contributions to pollination or, if no observations exist,
 morphology does not suggest pollinator limitation or pollination syndrome.
 Score wind-pollinated species as Neutral.</p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
+<p><i>Tools</i>: The <a href=\"https://doi.org/10.13016/M22G2V\"
+target=\"_blank\">Inouye Pollinator Reference Database</a> is a source for
+literature references to pollination. A table describing traits of pollinator
+syndromes can be found at <a
+href=\"https://www.fs.usda.gov/wildflowers/pollinators/What_is_Pollination/syndromes.shtml\"
+target=\"_blank\">USDA Pollinator Syndromes</a>.</p>
 
 <h3>d) Dependence on other species for propagule dispersal</h3>
 
@@ -1053,7 +1071,9 @@ the species show detectable change which is average compared to other species
 in similar habitats or taxonomic groups; OR seasonal dynamics within the
 species' range show no detectable change.</p>
 
-<p><i>Tools</i>: <a href=\"\" target=\"_blank\"></a></p>
+<p><i>Tools</i>: Some phenological information can be gleaned from papers listed
+in the <a href=\"https://doi.org/10.13016/M22G2V\" target=\"_blank\">Inouye
+Pollinator Reference Database</a></p>
 "
 
 # split by question numbers or letters
@@ -1073,10 +1093,10 @@ datC <- data.frame(section = "C",
 
 sectionD <- "
 <style>
-h1   {font-size:16px;margin-top:0px}
-h2   {font-size:16px;font-weight:bold;}
-h3   {font-size:16px;font-weight:bold;}
-h4   {font-size:16px;font-weight:bold;}
+h1   {font-size:15px;margin-top:0px}
+h2   {font-size:15px;font-weight:bold;}
+h3   {font-size:15px;font-weight:bold;}
+h4   {font-size:15px;font-weight:bold;}
 </style>
 
 <h1>D. Documented or Modeled Response to Climate Change (optional)</h1>
