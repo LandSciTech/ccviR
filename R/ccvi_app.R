@@ -956,7 +956,6 @@ ccvi_app <- function(testmode_in, ...){
 
     # run spatial calculations
     spat_res1 <- eventReactive(doSpatial(), {
-      browser()
       req(doSpatial())
       req(clim_vars())
         tryCatch({
