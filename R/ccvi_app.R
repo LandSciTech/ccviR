@@ -569,38 +569,58 @@ ccvi_app <- function(testmode_in, ...){
     # Restore from saved file #=================================================
     restored_df <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
-        df_loaded <- read.csv(parseFilePaths(volumes, input$loadcsv)$datapath)
+        df_loaded <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
 
-        update_restored(df_loaded, session)
+        # Check that csv is not empty
+        if(inherits(df_loaded, "try-error")){
+          message("CSV file is empty, cannot restore from file.")
+          return(FALSE)
 
-        if(!is.null(df_loaded$MAT_6)){
-          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          spat_res(df_spat)
+        } else {
+
+          # Check that csv contains the right data
+          if(nrow(df_loaded) < 1 || colnames(df_loaded)[1] != "scenario_name"){
+            message("CSV file is invalid, cannot restore from file.")
+            return(FALSE)
+
+          } else {
+
+            update_restored(df_loaded, session)
+
+            if(!is.null(df_loaded$MAT_6)){
+              df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+              spat_res(df_spat)
+            }
+
+            index_res(recreate_index_res(df_loaded))
+
+            loaded_pths <- df_loaded %>% slice(1) %>%
+              select(contains("pth"), -any_of("clim_dir_pth")) %>%
+              as.list()
+
+            if(length(loaded_pths)>0){
+              file_pths(loaded_pths)
+            }
+
+            clim_dir_pth(df_loaded %>% slice(1) %>% .$clim_dir_pth)
+
+            updateTabsetPanel(session, "tabset",
+                              selected = "Species Information"
+            )
+            shinyjs::runjs("window.scrollTo(0, 0)")
+
+            return(TRUE)
+          }
         }
-
-        index_res(recreate_index_res(df_loaded))
-
-        loaded_pths <- df_loaded %>% slice(1) %>%
-          select(contains("pth"), -any_of("clim_dir_pth")) %>%
-          as.list()
-
-        if(length(loaded_pths)>0){
-          file_pths(loaded_pths)
-        }
-
-        clim_dir_pth(df_loaded %>% slice(1) %>% .$clim_dir_pth)
-
-        updateTabsetPanel(session, "tabset",
-                          selected = "Species Information"
-        )
-        shinyjs::runjs("window.scrollTo(0, 0)")
-
-        return(TRUE)
       }
     })
 
     observeEvent(restored_df(), {
-      showNotification("Successfully restored from file.", duration = 10)
+      if (restored_df()){
+        showNotification("Successfully restored from file.", duration = 10)
+      } else {
+        showNotification("CSV file is invalid. Failed to restore from file.", duration = 10)
+        }
     })
 
     # Species Info #=================
@@ -893,8 +913,10 @@ ccvi_app <- function(testmode_in, ...){
 
     observe({
       if(!is.null(restored_df())){
-        repeatSpatial(TRUE)
-        message("doSpatial restore")
+        if(restored_df()){
+          repeatSpatial(TRUE)
+          message("doSpatial restore")
+        }
       }
     })
 
