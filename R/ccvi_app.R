@@ -572,17 +572,20 @@ ccvi_app <- function(testmode_in, ...){
     # Restore from saved file #=================================================
     restored_df <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
-        df_loaded <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath))
+        df_loaded <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
 
-        # Check that csv is valid
+        # Check that csv is not empty
         if(inherits(df_loaded, "try-error")){
-          message("CSV file input is empty, cannot restore from file.")
-          return(NULL)
+          message("CSV file is empty, cannot restore from file.")
+          return(FALSE)
+
         } else {
 
+          # Check that csv contains the right data
           if(nrow(df_loaded) < 1 || colnames(df_loaded)[1] != "scenario_name"){
             message("CSV is invalid, cannot restore from file.")
-            return(NULL)
+            return(FALSE)
+
           } else {
 
             update_restored(df_loaded, session)
@@ -616,7 +619,11 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     observeEvent(restored_df(), {
-      showNotification("Successfully restored from file.", duration = 10)
+      if (restored_df()){
+        showNotification("Successfully restored from file.", duration = 10)
+      } else {
+        showNotification("CSV is invalid. Failed to restore from file.", duration = 10)
+        }
     })
 
     # Species Info #=================
