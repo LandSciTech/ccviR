@@ -35,15 +35,42 @@ updateGet_file_ui <- function(inputId, value, ...){
   NULL
 }
 
-check_comment_ui <- function(id, label, com = "", ...){
+guide_popup <- function(id){
+  id <- stringr::str_remove(id, "help_")
+
+  sec <- stringr::str_extract(id, "^[B-D]")
+  q <- stringr::str_extract(id, "\\d")
+  q1 <- stringr::str_extract(id, "[a-h]")
+  q2 <- stringr::str_extract(id, "i+")
+
+  txt <- guideline_lu_tbl %>% filter(section == sec, question == q |is.na(question),
+                              sub_question == q1 | is.na(sub_question),
+                              sub2_question == q2 | is.na(sub2_question)) %>%
+    pull(guide_text) %>% paste(collapse = "\n")
+
+  ttl <- vulnq_code_lu_tbl %>% filter(Code == id) %>% pull(Question)
+
+  showModal(modalDialog(title = ttl, HTML({txt})))
+}
+
+
+check_comment_ui <- function(id, label, com = "", guide = TRUE, ...){
+  if(guide){
+    chkbxIn <- fluidRow(
+      column(9, checkboxGroupInput(id, label, inline = TRUE, ...)),
+      column(1, actionButton(paste0("help_", id), label = "", icon = icon("info")))
+    )
+  } else {
+    chkbxIn <- checkboxGroupInput(id, label, inline = TRUE, ...)
+  }
+
   div(id = paste0(id, "div"),
-      checkboxGroupInput(id, label, inline = TRUE, ...),
+      chkbxIn,
       #decrease whitespace b/w elements
       div(style = "margin-top: -1.5em"),
       textAreaInput(paste0("com", id), label = NULL, placeholder = "Comments",
                     value = com)
   )
-
 }
 
 updateCheck_comment_ui <- function(inputId, value, com, session){
