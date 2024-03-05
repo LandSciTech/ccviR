@@ -16,7 +16,7 @@ MC_freq_*,The proportion of Monte Carlo runs with each CCVI index result
 MAT_#,The percentage of the species' range that is exposed to each class of change in mean annual temperature between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
 CMD_#,The percentage of the species' range that is exposed to each class of change in climate moisture deficit between the historical normal and predicted climate. Class 1 has the highest exposure and Class 6 the lowest
 CCEI_#,The percentage of the species' non-breeding range that falls into each climate change exposure index class. Class 1 indicates high exposure while Class 4 indicates low exposure
-perc_non_breed_not_over_ccei,The precentage of the non-breeding range that does not overlap with the CCEI raster data
+prop_non_breed_over_ccei,The precentage of the non-breeding range that overlaps the CCEI raster data
 HTN_#,The percentage of the species' range that is exposed to each class of variation between the historical coldest and warmest months. Class 1 has the smallest variation and Class 4 is the largest
 PTN,The percentage of the species' range that falls into cool or cold environments that may be lost or reduced in the assessment area as a result of climate change
 MAP_max/min,The maximum and minimum historical mean annual precipitation in the species' range
@@ -54,12 +54,15 @@ D1,  1) Documented response to recent climate change
 D2,  2) Modeled future (2050) change in population or range size
 D3,  3) Overlap of modeled future (2050) range with current range
 D4,  4) Occurrence of protected areas in modeled future (2050) distribution
-GCM or Ensemble name, Name of the climate model
-Historical normal period, Time period for the historical data
-Future period, Time period for the future climate projections
-Emissions scenario, Emissions scenario used for climate projections
-Link to source, Url for where the climate data was downloaded from
+GCM_or_Ensemble_name, Name of the climate model
+Historical_normal_period, Time period for the historical data
+Future_period, Time period for the future climate projections
+Emissions_scenario, Emissions scenario used for climate projections
+Link_to_source, Url for where the climate data was downloaded from
 range_poly_pth,Path to range polygon shapefile
 assess_poly_pth,Path to assessment area polygon shapefile
+nonbreed_poly_pth,Path to nonbreeding range polygon shapefile
+ptn_poly_pth,Path to physiological thermal niche polygon shapefile
 clim_dir_pth,Path to folder of climate data
+rng_chg_pth,Path to range change raster (for each scenario if multiple provided)
 ccviR_version,The version number of the ccviR package used to complete the assessment
