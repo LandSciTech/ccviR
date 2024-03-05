@@ -66,14 +66,20 @@ ccvi_app <- function(testmode_in, ...){
             p("This app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
               a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"),
               "that automates the spatial analysis needed to inform the index. ",
-              "The app is based on version 3.02 of the NatureServe CCVI. ",
-              "See the app ",
-              a("tutorial", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),
-              "for a demonstration of how to use the app. ",
-              "For detailed instructions on how to use the index and definitions ",
-              "of the terms used below see the ",
+              "The app is based on version 3.02 of the NatureServe CCVI. "),
+            p("The NatureServe CCVI scores the vulnerability of a species to climate change based on:"),
+              tags$ul(
+                tags$li("The species’ predicted exposure to climate change (", strong("Section A"), ")"),
+                tags$li("Factors associated with the species’ climate change sensitivity, including:"),
+                tags$ul(
+                  tags$li("Indirect exposure to climate change (", strong("Section B"), ")"),
+                  tags$li("Species-specific sensitivity and adaptive capacity factors (", strong("Section C"), ")"),
+                  tags$li("Documented and modeled response to climate change (", strong("Section D"), ")"),)),
+            p("For more information about the index see the ",
               a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf", target="_blank"),
-              "Required datasets are indicated with ", labelMandatory("a"), "."),
+              "For a demonstration of how to use the app, see the app ",
+              a("tutorial.", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),),
+            p("Required datasets are indicated with ", labelMandatory("a"), "."),
             h3("Preparing to use the app"),
 
             p(strong("Step 0: "),"The first time you use the app you can either",
@@ -149,7 +155,9 @@ ccvi_app <- function(testmode_in, ...){
             div(
               id = "form_sp_info",
               h3("Species information"),
-
+              p("The basic details input in this section will be used in the generated
+                report. The selected taxonomic group will determine which taxa specific
+                vulnerability factors (Section C) are displayed."),
               textInput("assessor_name", labelMandatory("Assessor Name"), ""),
               textInput("geo_location", labelMandatory("Geographic Area Assessed")),
               selectInput("tax_grp", labelMandatory("Major Taxonomic Group"),
@@ -158,8 +166,14 @@ ccvi_app <- function(testmode_in, ...){
                             "Fish", "Amphibian", "Reptile", "Mammal", "Bird")),
               textInput("species_name", labelMandatory("Species Scientific Name")),
               textInput("common_name", "Common Name"),
-              checkboxInput("cave", "Check if the species is an obligate of caves or groundwater systems"),
-              checkboxInput("mig", "Check if species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
+              br(),
+              h4("Special kinds of species"),
+              p("If the assessed species is a special kind of species (as outlined
+                in the NatureServe Guidelines), check the appropriate box. Checking
+                these boxes will tailor the spatial analysis that calculates the exposure
+                score (Section A) to these special cases."),
+              checkboxInput("cave", "Species is an obligate of caves or groundwater systems"),
+              checkboxInput("mig", "Species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
               actionButton("next1", "Next", class = "btn-primary"),
               br(),br()
 
@@ -175,6 +189,12 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "spatial",
                 h3("Spatial data analysis"),
+                p("The spatial data input in this section will be used to calculate
+                  the exposure to climate change (Section A). It will also be used
+                  to evaluate select questions in Section C that have a spatial
+                  component. If provided, the range change raster(s) will be used to
+                  evalaute questions about the modeled response to climate change
+                  in Section D."),
                 get_file_ui("clim_var_dir", "Folder location of prepared climate data",
                             type = "dir", mandatory = TRUE, spinner = TRUE),
                 verbatimTextOutput("clim_var_error", ),
@@ -235,13 +255,20 @@ ccvi_app <- function(testmode_in, ...){
               12,
               # # helpful for testing
               # shinyjs::runcodeUI(type = "textarea"),
-              p("Exposure is determined by the change in temperature or moisture",
-                " that is expected to occur in the future. The maps below are",
-                " created by taking historical climate - future climate and then",
-                " classifying the results into six categories using the median",
-                " and 1/2 the interquartile range. Thus, negative values for",
-                " temperature indicate warmer conditions (\u00B0C) and negative values for",
-                " moisture (mm) indicate drier conditions."),
+              h2("Exposure Results"),
+              p("This section displays the results of the spatial analysis that
+                determines the species’ exposure to climate change (Section A)."),
+              p("The exposure maps are created by subtracting the future climate
+                from the historical climate and classifying the results into six
+                classes (low to high level of exposure) based on the median and
+                1/2 the interquartile range. Thus, negative values for temperature
+                indicate warmer conditions (\u00B0C) and negative values for moisture
+                (mm) indicate drier conditions."),
+              p("The tables below the maps outline the classes and the proportion
+                of the species range in each class. The exposure multiplier is
+                determined by the level of exposure. It is used to modify the
+                sensitivity and adaptive capacity components of the index based
+                on exposure to climate change."),
               div(
                 id = "texp_map_div",
                 h3("Temperature exposure"),
@@ -283,6 +310,14 @@ ccvi_app <- function(testmode_in, ...){
             column(
               12,
               h3("Vulnerability Questions"),
+              p("This section scores factors associated with the species’ indirect
+                exposure to climate change (Section B), sensitivity and adaptive
+                capacity (Section C), and modeled or documented responses to
+                climate change (Section D)."),
+              p("The NatureServe Guidelines for scoring each question can be accessed
+                by clicking the info button next to the question. Use published studies
+                to support your response. Provide detailed information about how the
+                answer was reached in the comment boxes."),
               div(
                 id = "secB",
                 h4("Section B: Indirect Exposure to Climate Change"),
@@ -420,6 +455,12 @@ ccvi_app <- function(testmode_in, ...){
             column(
               12,
               h3("Spatial Vulnerability Questions"),
+              p("This section scores factors associated with species’ climate change
+                sensitivity from Sections C and D that have a spatial component.
+                The spatial data analysis evaluates these factors and pre-selects
+                a response accordingly. The data used to pre-select a response is
+                shown in a map and table accompanying each question. The pre-selected
+                response can be changed if needed."),
               h4("Section C: Sensitivity and Adaptive Capacity"),
               br(),
               spat_vuln_ui(
@@ -459,7 +500,11 @@ ccvi_app <- function(testmode_in, ...){
             div(
               id = "formData",
               #style = 'width:800px;',
-              h3("Results"),
+              h3("Index results"),
+              p("This section calculates the CCVI using the results of Sections
+                A, B, C, and D. Once the index has been calculated, a report
+                summarizing the results of the assessment can be generated by
+                selecting the “Generate report” button at the bottom of the page."),
               h5("Click the button to calculate or re-calculate the index"),
               actionButton("calcIndex", "Calculate", class = "btn-primary")
               ),
