@@ -227,8 +227,6 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
-              # # helpful for testing
-              # shinyjs::runcodeUI(type = "textarea"),
               p("Exposure is determined by the change in temperature or moisture",
                 " that is expected to occur in the future. The maps below are",
                 " created by taking historical climate - future climate and then",
@@ -413,6 +411,8 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
+              # # helpful for testing
+              shinyjs::runcodeUI(type = "textarea"),
               h3("Spatial Vulnerability Questions"),
               h4("Section C: Sensitivity and Adaptive Capacity"),
               br(),
@@ -676,18 +676,32 @@ ccvi_app <- function(testmode_in, ...){
 
     # Spatial Analysis #===============
 
-    toListen <- reactive({
-      purrr::map(filePathIds(), \(x){input[[x]]})
-    })
+    # toListen <- reactive({
+    #   purrr::map(filePathIds(), \(x){input[[x]]})
+    # })
+    #
+    # observeEvent(toListen(),{
+    #   pths_in <- file_pths()
+    #
+    #   purrr::walk(filePathIds(),
+    #               \(x) if(!is.integer(input[[x]])){
+    #                 pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
+    #               })
+    #
+    #   file_pths(pths_in)
+    # })
 
-    observeEvent(toListen(),{
+    # TODO: Not working. Trying to make parsing files independent for each file
+    # so cleared file names are not retrieved by parse
+    observe({
       pths_in <- file_pths()
 
       purrr::walk(filePathIds(),
-                  \(x) if(!is.integer(input[[x]])){
-                    pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
-                  })
-
+                 ~observeEvent(input[[.x]], {
+                   if(!is.integer(input[[.x]])){
+                     pths_in[[.x]] <<- parseFilePaths(volumes, input[[.x]])$datapath
+                   }
+                 }, ignoreInit = TRUE))
       file_pths(pths_in)
     })
 
@@ -703,6 +717,7 @@ ccvi_app <- function(testmode_in, ...){
                   \(x){ if(input[[x]] > 0){
                     fl_x <- stringr::str_extract(x, "(.*)(_clear)", group = 1)
                     pths_in[[fl_x]] <<- ""
+                    shinyjs::reset(fl_x)
                   }})
 
       file_pths(pths_in)
@@ -887,7 +902,7 @@ ccvi_app <- function(testmode_in, ...){
       }
 
       if(!isTruthy(pth) || length(pth) == 0){
-        return(NULL)
+        hs_rast(NULL)
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
@@ -906,9 +921,10 @@ ccvi_app <- function(testmode_in, ...){
         pth <- file_pths()$ptn_poly_pth
       }
       if(!isTruthy(pth)){
-        return(NULL)
+        ptn_poly(NULL)
+      } else {
+        ptn_poly(sf::st_read(pth, agr = "constant", quiet = TRUE))
       }
-      ptn_poly(sf::st_read(pth, agr = "constant", quiet = TRUE))
     }, ignoreInit = TRUE)
 
     # assemble hs_rcl matrix
@@ -1481,7 +1497,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # # helpful for testing
-     # shinyjs::runcodeServer()
+     shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
