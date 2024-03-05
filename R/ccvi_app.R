@@ -102,6 +102,12 @@ ccvi_app <- function(testmode_in, ...){
               " unknown for many species, the Index is designed such that only",
               " 10 of the 19 sensitivity factors require input in order to ",
               "obtain an overall Index score."),
+            p(strong("Note: "), "The app will NOT save your progress automatically.
+              Be sure to save your progress throughout the assessment to prevent
+              loss of data. The state of the app can be saved by clicking the
+              \"Save progress\" button at the bottom of the app at any point during
+              the assessment. Refreshing the app or timing out will result in
+              progress being lost."),
             h3("Start assessment"),
             actionButton("start", "Start", class = "btn-primary"),
             br(),
