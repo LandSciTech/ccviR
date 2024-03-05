@@ -36,7 +36,7 @@ updateGet_file_ui <- function(inputId, value, ...){
 }
 
 guide_popup <- function(id){
-  id <- str_remove(id, "help_")
+  id <- stringr::str_remove(id, "help_")
 
   sec <- stringr::str_extract(id, "^[B-D]")
   q <- stringr::str_extract(id, "\\d")
@@ -54,12 +54,18 @@ guide_popup <- function(id){
 }
 
 
-check_comment_ui <- function(id, label, com = "", ...){
+check_comment_ui <- function(id, label, com = "", guide = TRUE, ...){
+  if(guide){
+    chkbxIn <- fluidRow(
+      column(9, checkboxGroupInput(id, label, inline = TRUE, ...)),
+      column(1, actionButton(paste0("help_", id), label = "", icon = icon("info")))
+    )
+  } else {
+    chkbxIn <- checkboxGroupInput(id, label, inline = TRUE, ...)
+  }
+
   div(id = paste0(id, "div"),
-      fluidRow(
-        column(9, checkboxGroupInput(id, label, inline = TRUE, ...)),
-        column(1, actionButton(paste0("help_", id), label = "", icon = icon("info")))
-      ),
+      chkbxIn,
       #decrease whitespace b/w elements
       div(style = "margin-top: -1.5em"),
       textAreaInput(paste0("com", id), label = NULL, placeholder = "Comments",
