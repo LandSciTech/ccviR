@@ -583,7 +583,7 @@ ccvi_app <- function(testmode_in, ...){
 
           # Check that csv contains the right data
           if(nrow(df_loaded) < 1 || colnames(df_loaded)[1] != "scenario_name"){
-            message("CSV is invalid, cannot restore from file.")
+            message("CSV file is invalid, cannot restore from file.")
             return(FALSE)
 
           } else {
@@ -622,7 +622,7 @@ ccvi_app <- function(testmode_in, ...){
       if (restored_df()){
         showNotification("Successfully restored from file.", duration = 10)
       } else {
-        showNotification("CSV is invalid. Failed to restore from file.", duration = 10)
+        showNotification("CSV file is invalid. Failed to restore from file.", duration = 10)
         }
     })
 
@@ -916,8 +916,10 @@ ccvi_app <- function(testmode_in, ...){
 
     observe({
       if(!is.null(restored_df())){
-        repeatSpatial(TRUE)
-        message("doSpatial restore")
+        if(restored_df()){
+          repeatSpatial(TRUE)
+          message("doSpatial restore")
+        }
       }
     })
 
