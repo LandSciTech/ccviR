@@ -579,7 +579,7 @@ ccvi_app <- function(testmode_in, ...){
         } else {
 
           # Check that csv contains the right data
-          if(nrow(df_loaded) < 1 || colnames(df_loaded)[1] != "scenario_name"){
+          if(nrow(df_loaded) < 1 || !"scenario_name" %in% colnames(df_loaded)){
             message("CSV file is invalid, cannot restore from file.")
             return(FALSE)
 
@@ -587,9 +587,12 @@ ccvi_app <- function(testmode_in, ...){
 
             update_restored(df_loaded, session)
 
-            if(!is.null(df_loaded$MAT_6)){
+            if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
               df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
               spat_res(df_spat)
+              repeatSpatial(TRUE)
+              doSpatial((doSpatial() +1))
+              message("doSpatial restore")
             }
 
             index_res(recreate_index_res(df_loaded))
@@ -908,17 +911,8 @@ ccvi_app <- function(testmode_in, ...){
       mat[which(!is.na(mat[, 1])), ]
     })
 
-    doSpatial <- reactiveVal(FALSE)
+    doSpatial <- reactiveVal(0)
     repeatSpatial <- reactiveVal(FALSE)
-
-    observe({
-      if(!is.null(restored_df())){
-        if(restored_df()){
-          repeatSpatial(TRUE)
-          message("doSpatial restore")
-        }
-      }
-    })
 
     observeEvent(input$startSpatial, {
       showModal(modalDialog(
@@ -939,14 +933,14 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(input$shinyalert, {
       removeModal()
       if(input$shinyalert > 0){
-        doSpatial(TRUE)
+        doSpatial(doSpatial() + 1)
         repeatSpatial(TRUE)
       }
       shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
 
     # run spatial calculations
-    spat_res1 <- eventReactive(input$shinyalert, {
+    spat_res1 <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars())
         tryCatch({
