@@ -1,0 +1,28 @@
+Code,Question,Max_Value,is_spatial
+B1,  1) Exposure to sea level rise ,3,0
+B2a,    a) Natural barriers,3,0
+B2b,    b) Anthropogenic barriers,3,0
+B3,  3) Predicted impact of land use changes resulting from human responses to climate change,2,0
+C1,  1) Dispersal and movements ,3,0
+C2ai,i) historical thermal niche,3,1
+C2aii,ii) physiological thermal niche,3,1
+C2bi,i) historical hydrological niche,3,1
+C2bii,ii) physiological hydrological niche,3,0
+C2c,    c) Dependence on a specific disturbance regime likely to be impacted by climate change,2,0
+C2d,"    d) Dependence on ice, ice-edge, or snow-cover habitats",3,0
+C3,  3) Restriction to uncommon landscape/geological features or derivatives,2,0
+C4a,    a) Dependence on other species to generate required habitat,2,0
+C4b,    b) Dietary versatility (animals only),2,0
+C4c,    c) Pollinator versatility (plants only),2,0
+C4d,    d) Dependence on other species for propagule dispersal,2,0
+C4e,    e) Sensitivity to pathogens or natural enemies,2,0
+C4f,    f) Sensitivity to competition from native or non-native species,2,0
+C4g,    g) Forms part of an interspecific interaction not covered by 5a-f,2,0
+C5a,    a) Measured genetic variation ,2,0
+C5b,"    b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is ""unknown"")",2,0
+C5c,    c) Reproductive system (plants only; use only if C5a and C5b are "unknown") ,2,0
+C6,  6) Phenological response to changing seasonal temperature and precipitation dynamics,2,0
+D1,  1) Documented response to recent climate change ,3,0
+D2,  2) Modeled future (2050) change in population or range size ,3,1
+D3,  3) Overlap of modeled future (2050) range with current range,3,1
+D4,  4) Occurrence of protected areas in modeled future (2050) distribution,2,0

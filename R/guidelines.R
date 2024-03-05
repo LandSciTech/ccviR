@@ -1651,7 +1651,7 @@ guideExposure <- function(){
     The Index treats exposure to climate change as a modifier of sensitivity and
     adaptive capacity. If the climate in a given assessment area will not change
     much, none of the sensitivity/adaptive capacity factors will weigh heavily,
-    and a species is likely to score at the Not Vulnerable end of the range.
+    and a species is likely to score at the Less Vulnerable end of the range.
     A large change in temperature or moisture availability will amplify the effect
     of any related sensitivity/adaptive capacity factor, and will contribute
     to a score reflecting higher vulnerability to climate change. In most cases,
