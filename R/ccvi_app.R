@@ -790,32 +790,42 @@ ccvi_app <- function(testmode_in, ...){
       }
       utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
                       check.names = FALSE)
+
     })
 
-    clim_vars <- reactive({
+    clim_vars1 <- reactive({
       root_pth <- clim_dir_pth()
 
       req(root_pth)
       req(clim_readme)
 
-      clim_vars <- try(get_clim_vars(root_pth, scenario_names = clim_readme()$Scenario_Name))
+      clim_vars_out <- try(
+        get_clim_vars(root_pth, scenario_names = clim_readme()$Scenario_Name)
+      )
+      clim_vars_out
 
     })
 
-    range_poly_in <- reactive({
+    clim_vars <- reactiveVal()
+    observeEvent(doSpatial(), {
+      clim_vars(clim_vars1())
+    })
+
+    range_poly_in <- reactiveVal()
+    observeEvent(doSpatial(), {
 
       if (isTRUE(getOption("shiny.testmode"))) {
-        sf::st_read(system.file("extdata/rng_poly.shp",
-                                package = "ccviR"),
-                    agr = "constant", quiet = TRUE)
+        pth <- system.file("extdata/rng_poly.shp",
+                                package = "ccviR")
       } else {
-        sf::st_read(file_pths()$range_poly_pth,
-                    agr = "constant", quiet = TRUE)
+        pth <- file_pths()$range_poly_pth
       }
+      range_poly_in(sf::st_read(pth, agr = "constant", quiet = TRUE))
 
-    })
+    }, ignoreInit = TRUE)
 
-    nonbreed_poly <- reactive({
+    nonbreed_poly <- reactiveVal()
+    observeEvent(doSpatial(), {
       if (isTRUE(getOption("shiny.testmode"))) {
         # not currently included in package
         # pth <- system.file("extdata/nonbreed_poly.shp",
@@ -828,21 +838,22 @@ ccvi_app <- function(testmode_in, ...){
       if(!isTruthy(pth)){
         return(NULL)
       }
-      sf::st_read(pth, agr = "constant", quiet = TRUE)
-    })
+      nonbreed_poly(sf::st_read(pth, agr = "constant", quiet = TRUE))
+    }, ignoreInit = TRUE)
 
-    assess_poly <- reactive({
-
+    assess_poly <- reactiveVal()
+    observeEvent(doSpatial(), {
       if (isTRUE(getOption("shiny.testmode"))) {
         sf::st_read(system.file("extdata/assess_poly.shp",
                                 package = "ccviR"),
                     agr = "constant", quiet = TRUE)
       } else {
-        sf::st_read(file_pths()$assess_poly_pth,
+        pol <- sf::st_read(file_pths()$assess_poly_pth,
                     agr = "constant", quiet = TRUE) %>%
           valid_or_error("assessment area polygon")
+        assess_poly(pol)
       }
-    })
+    }, ignoreInit = TRUE)
 
     # use readme to render scenario names for rng chg rasters
     output$rng_chg_sel_ui <- renderUI({
@@ -865,7 +876,7 @@ ccvi_app <- function(testmode_in, ...){
     # if shinyalert is not called
     hs_rast <- reactiveVal()
 
-    observeEvent(input$shinyalert, {
+    observeEvent(doSpatial(), {
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
@@ -883,9 +894,11 @@ ccvi_app <- function(testmode_in, ...){
         out <- check_trim(terra::rast(pth))
         hs_rast(out)
       }
-    })
+    }, ignoreInit = TRUE)
 
-    ptn_poly <- reactive({
+    ptn_poly <- reactiveVal()
+
+    observeEvent(doSpatial(), {
 
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/PTN_poly.shp", package = "ccviR")
@@ -895,11 +908,13 @@ ccvi_app <- function(testmode_in, ...){
       if(!isTruthy(pth)){
         return(NULL)
       }
-      sf::st_read(pth, agr = "constant", quiet = TRUE)
-    })
+      ptn_poly(sf::st_read(pth, agr = "constant", quiet = TRUE))
+    }, ignoreInit = TRUE)
 
     # assemble hs_rcl matrix
-    hs_rcl_mat <- reactive({
+    hs_rcl_mat <- reactiveVal()
+
+    observeEvent(doSpatial(), {
       mat <- matrix(c(input$lost_from, input$lost_to, 1,
                                      input$maint_from, input$maint_to, 2,
                                      input$gain_from, input$gain_to, 3,
@@ -908,8 +923,8 @@ ccvi_app <- function(testmode_in, ...){
 
       # if an input is blank then the value is NA but that converts raster values that
       # are NA to that value
-      mat[which(!is.na(mat[, 1])), ]
-    })
+      hs_rcl_mat(mat[which(!is.na(mat[, 1])), ])
+    }, ignoreInit = TRUE)
 
     doSpatial <- reactiveVal(0)
     repeatSpatial <- reactiveVal(FALSE)
@@ -941,6 +956,7 @@ ccvi_app <- function(testmode_in, ...){
 
     # run spatial calculations
     spat_res1 <- eventReactive(doSpatial(), {
+      browser()
       req(doSpatial())
       req(clim_vars())
         tryCatch({
@@ -956,7 +972,7 @@ ccvi_app <- function(testmode_in, ...){
         },
         error = function(cnd) conditionMessage(cnd))
 
-    })
+    }, ignoreInit = TRUE)
 
     range_poly <- reactive({
       req(range_poly_in())
@@ -976,8 +992,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$clim_var_error <- renderText({
-      if(inherits(clim_vars(), "try-error")){
-        stop(conditionMessage(attr(clim_vars(), "condition")))
+      if(inherits(clim_vars1(), "try-error")){
+        stop(conditionMessage(attr(clim_vars1(), "condition")))
       }
     })
 
@@ -1049,6 +1065,7 @@ ccvi_app <- function(testmode_in, ...){
 
     observe({
       req(doSpatial())
+      req(clim_vars)
       if(isTruthy(clim_vars()$ccei) && isTruthy(isolate(nonbreed_poly()))){
         shinyjs::hide("missing_ccei")
         shinyjs::show("ccei_exp")
