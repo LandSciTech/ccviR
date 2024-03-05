@@ -288,7 +288,6 @@ ccvi_app <- function(testmode_in, ...){
                 h4("Section B: Indirect Exposure to Climate Change"),
                 h4("Evaluate for specific geographical area under consideration"),
                 h5("Factors that influence vulnerability"),
-                actionButton("guideB", "Show guidelines"),
                 check_comment_ui("B1", "1) Exposure to sea level rise:",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
@@ -312,7 +311,6 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "secC",
                 h4("Section C: Sensitivity and Adaptive Capacity"),
-                actionButton("guideC", "Show guidelines"),
                 check_comment_ui("C1", "1) Dispersal and movements",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
@@ -401,7 +399,6 @@ ccvi_app <- function(testmode_in, ...){
                 id = "secD",
                 h4("Section D: Documented or Modeled Response to Climate Change"),
                 h5("(Optional; May apply across the range of a species)"),
-                actionButton("guideD", "Show guidelines"),
 
                 check_comment_ui("D1", "1) Documented response to recent climate change. ",
                                  choiceNames = valueNms,
@@ -424,7 +421,6 @@ ccvi_app <- function(testmode_in, ...){
               12,
               h3("Spatial Vulnerability Questions"),
               h4("Section C: Sensitivity and Adaptive Capacity"),
-              actionButton("guideC2", "Show guidelines"),
               br(),
               spat_vuln_ui(
                 id = "C2ai",
@@ -440,16 +436,17 @@ ccvi_app <- function(testmode_in, ...){
                 vuln_q_nm = "2b) i) Historical hydrological niche."
               ),
               h4("Section D: Documented or Modeled Response to Climate Change"),
-              actionButton("guideD2", "Show guidelines"),
               br(),
               spat_vuln_ui(
                 id = "D2_3",
                 header = "Modeled future range change",
                 chk_box = FALSE
               ),
-              strong("2) Modeled future (2050) change in population or range size."),
+              fluidRow(column(9, strong("2) Modeled future (2050) change in population or range size.")),
+                       column(1, actionButton(paste0("help_", "D2"), label = "", icon = icon("info")))),
               uiOutput("box_D2"),
-              strong("3) Overlap of modeled future (2050) range with current range"),
+              fluidRow(column(9, strong("3) Overlap of modeled future (2050) range with current range"),),
+                       column(1, actionButton(paste0("help_", "D3"), label = "", icon = icon("info")))),
               uiOutput("box_D3"),
               actionButton("next5", "Next", class = "btn-primary")
             )
@@ -1086,16 +1083,13 @@ ccvi_app <- function(testmode_in, ...){
 
     # Vulnerability Qs #===============
     # Show guidelines with additional info for each section
-    observeEvent(input$guideB, {
-      guideB()
-    })
+    observe({
+      help_ins <- stringr::str_subset(names(input), "help")
 
-    observeEvent(input$guideC, {
-      guideCNonSpatial()
-    })
-
-    observeEvent(input$guideD, {
-      guideDNonSpatial()
+      purrr::map(help_ins,
+                 ~observeEvent(input[[.x]], {
+                   guide_popup(.x)
+                 }, ignoreInit = TRUE))
     })
 
     # When next button is clicked move to next panel
@@ -1106,13 +1100,6 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # Spatial Vulnerability Questions #========================
-    observeEvent(input$guideC2, {
-      guideCSpatial()
-    })
-
-    observeEvent(input$guideD2, {
-      guideDSpatial()
-    })
 
     # C2ai
     observe({spat_vuln_hide("C2ai", clim_vars()$htn, doSpatial(), restored_df(), spat_res()$HTN_1)})
@@ -1262,7 +1249,8 @@ ccvi_app <- function(testmode_in, ...){
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
                          selected = box_val,
-                         com = prevCom)
+                         com = prevCom,
+                         guide = FALSE)
       }
 
     })
@@ -1289,7 +1277,8 @@ ccvi_app <- function(testmode_in, ...){
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
                          selected = box_val,
-                         com = prevCom)
+                         com = prevCom,
+                         guide = FALSE)
       }
 
     })
