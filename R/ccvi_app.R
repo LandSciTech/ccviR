@@ -501,8 +501,12 @@ ccvi_app <- function(testmode_in, ...){
                   "are selected for any of the vulnerability ",
                   "factors the average of the values is used. These scores are summed ",
                   "to determine the index. The plot below demonstrates which factors ",
-                  "had the highest scores and how exposure impacted the score."),
-                plotly::plotlyOutput("q_score_plt")
+                  "had the highest scores and how exposure impacted the score. ",
+                  "The lighter coloured bars indicate the maximum possible score ",
+                  "for that factor. The chart is broken up by section to highlight ",
+                  "that the B/C and C sections affect the final score differently. ",
+                  "See the plot above for more details on combining the scores."),
+                plotly::plotlyOutput("q_score_plt", height = "500px")
               ),
               br(),
               br(),

@@ -73,7 +73,7 @@ plot_score_index <- function(score_df){
     summarise(across(contains("lim"), .fns = max))
 
   score_tbl <- expand.grid(b_c_score = seq(0, max_score_bc),
-                           d_score = seq(-1, max_score_d)) %>%
+                           d_score = seq(-2, max_score_d)) %>%
     mutate(index = ind_from_vuln(.data$b_c_score, .data$d_score, slr_vuln = FALSE) %>%
              factor(levels = levels(comb_index_tbl$value)))
 
@@ -88,8 +88,8 @@ plot_score_index <- function(score_df){
 
   ggplot2::ggplot(score_tbl, ggplot2::aes(.data$b_c_score, .data$d_score, fill = .data$index))+
     ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0.9)+
-    ggplot2::coord_cartesian(xlim = c(0, score_lim$b_c_score_lim),
-                         ylim = c(-1, score_lim$d_score_lim))+
+    ggplot2::coord_cartesian(xlim = c(-0.5, score_lim$b_c_score_lim),
+                         ylim = c(-1.25, score_lim$d_score_lim), clip = "on")+
     ggplot2::scale_fill_manual(values = rev(c("#008000", "#FFC125", "#FF8C00", "#FF0000")))+
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(),
                                 breaks = c(-1:score_lim$d_score_lim))+

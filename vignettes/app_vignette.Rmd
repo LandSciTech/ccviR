@@ -119,7 +119,7 @@ This tab includes the vulnerability questions that have a spatial component. Eac
 
 ![](./spat_vulnqs.PNG){width=70% fig-align="center"}
 
-The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple change rasters are used.  
+The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple scenarios are used.  
 
 ![](./spat_vulnqs2.PNG){width=70% fig-align="center"}
 
@@ -144,7 +144,7 @@ The next graph shows how the scores based on the exposure and the sensitivity an
 
 ![](./comb_ind_plot.PNG){width=70% fig-align="center"}
 
-The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mouse to show the pop-up for each bar to get more details on how the score was reached.
+The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mouse to show the pop-up for each bar to get more details on how the score was reached. 
 
 ![](./vulnq_plot.PNG){width=70% fig-align="center"}
 

@@ -60,19 +60,67 @@ plot_q_score <- function(vuln_df){
                     custom_tooltip = paste0(.data$Question, ":\n",
                                             "Exposure Multiplier: ", round(.data$exp, 2), "\n",
                                             "Score: ", round(.data$score, 2))) %>%
-    filter(!is.na(.data$score))
+    filter(!is.na(.data$score)) %>%
+    mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"))
 
-  plt <- ggplot2::ggplot(vuln_df,
-                         ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip))+
-    # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
-    ggplot2::geom_point(size = 0.1, color = "grey35")+
-    ggplot2::geom_col(color = "grey35")+
-    ggplot2::facet_wrap(~scenario_name, ncol = 3)+
-    ggplot2::labs(x = "Question", y = "Score")+
-    ggplot2::scale_x_discrete(limits = rev)+
-    ggplot2::coord_flip(expand = FALSE)
+  # get maximum scores for each question
+  max_df <- make_vuln_df("test") %>%
+    mutate(Value1 = as.numeric(.data$Max_Value)) %>%
+    calc_vuln_score(spat_df = data.frame(temp_exp_cave = 2.4,
+                                         moist_exp_cave = 2,
+                                         comb_exp_cave = mean(c(2.4, 2)))) %>%
+    filter(!is.na(.data$score)) %>%
+    mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"),
+           section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
 
-  plotly::ggplotly(plt, tooltip = "text")
+  #plotly doesn't respect space = free so need to make subplots individually see
+  #https://github.com/plotly/plotly.R/issues/908
+
+  # define plot yaxis limits
+  limits <- max_df %>%
+    summarise(max = ceiling(max(.data$score)),
+              min = floor(min(.data$score)))
+
+  #define width of subplots by finding the absolut range of each "facet"
+  plot_width<- vuln_df %>%
+    group_by(.data$sub_index) %>%
+    summarise(range = n()) %>%
+    ungroup() %>%
+    mutate(width_pct = range/sum(range))
+
+  # add colors by section
+  cols_use <- c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3')
+  cols_use <- c(B = cols_use[5], C = cols_use[1], D = cols_use[4])
+
+  #define a list of ggplot and feed it in the subplot function with the calculated limits
+  vuln_df %>%
+    mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor()) %>%
+    split(.$sub_index) %>%
+    purrr::map2(
+      split(max_df, max_df$sub_index),
+      function(x, y) {
+        plt <- ggplot2::ggplot(
+          x,
+          ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip,
+                       fill = .data$section)
+        )+
+          # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
+          ggplot2::geom_point(size = 0.1, color = "grey35")+
+          ggplot2::geom_col(color = "grey35")+
+          ggplot2::scale_fill_discrete(type = cols_use, drop = FALSE)+
+          ggplot2::geom_col(ggplot2::aes(x = .data$Code, y = .data$score, fill = .data$section),
+                            data = y, alpha = 0.4,
+                            inherit.aes = FALSE)+
+          ggplot2::facet_grid(sub_index ~ scenario_name, scales = "free")+
+          ggplot2::labs(x = "Question", y = "Score")+
+          ggplot2::scale_x_discrete(limits = rev)+
+          ggplot2::coord_flip(expand = FALSE, ylim = c(0, limits$max))+
+          ggplot2::theme(legend.position = "none")
+        plotly::ggplotly(plt, tooltip = "text")
+      }) %>%
+    plotly::subplot(margin = 0.02, nrows = 2, shareY = TRUE, shareX = TRUE,
+                    heights = plot_width$width_pct)
+
 
   # Version with error bars for aggregated results
 
