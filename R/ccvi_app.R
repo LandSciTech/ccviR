@@ -63,40 +63,39 @@ ccvi_app <- function(testmode_in, ...){
           "Welcome",
           fluidPage(
             h2("Welcome"),
-            p("This app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
+            p("The ccviR app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
               a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"),
               "that automates the spatial analysis needed to inform the index. ",
-              "The app is based on version 3.02 of the NatureServe CCVI. "),
-            p("The NatureServe CCVI scores the vulnerability of a species to climate change based on:"),
-              tags$ul(
-                tags$li("The species’ predicted exposure to climate change (", strong("Section A"), ")"),
-                tags$li("Factors associated with the species’ climate change sensitivity, including:"),
-                tags$ul(
-                  tags$li("Indirect exposure to climate change (", strong("Section B"), ")"),
-                  tags$li("Species-specific sensitivity and adaptive capacity factors (", strong("Section C"), ")"),
-                  tags$li("Documented and modeled response to climate change (", strong("Section D"), ")"),)),
-            p("For more information about the index see the ",
-              a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf", target="_blank"),
+              "The app is based on version 3.02 of the NatureServe CCVI. ",
               "For a demonstration of how to use the app, see the app ",
               a("tutorial.", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),),
-            p("Required datasets are indicated with ", labelMandatory("a"), "."),
+            p("The NatureServe CCVI scores the vulnerability of a species to climate change based on:"),
+              tags$ul(
+                tags$li("The species’ predicted exposure to climate change -", strong("Section A")),
+                tags$li("Factors associated with the species’ climate change sensitivity, including:"),
+                tags$ul(
+                  tags$li("Indirect exposure to climate change -", strong("Section B")),
+                  tags$li("Species-specific sensitivity and adaptive capacity factors -", strong("Section C")),
+                  tags$li("Documented and modeled response to climate change -", strong("Section D")),)),
+            p("For more information about the index see the ",
+              a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf", target="_blank"),),
             h3("Preparing to use the app"),
-
             p(strong("Step 0: "),"The first time you use the app you can either",
               a("download", href = "https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link", target="_blank"),
               "a pre-prepared climate data set used in the app or",
               " prepare your own using raw climate data and the ",
               a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html", target="_blank")),
-            p(strong("Step 1: "), "Acquire species-specific spatial datasets:",
+            p(strong("Step 1: "), "Acquire species-specific spatial datasets
+              (required datasets are indicated with" , labelMandatory("a"), "):",
               tags$ul(
                 tags$li(labelMandatory("Species North American or global range polygon")),
                 tags$li(labelMandatory("Assessment area polygon")),
                 tags$li("Non-breeding range polygon"),
                 tags$li("Projected range change raster"),
-                tags$li("Physiological thermal niche (PTN) polygon. ",
-                        "PTN polygon should include cool or cold environments ",
+                tags$li("Physiological thermal niche (PTN) polygon - ",
+                        "polygon should include cool or cold environments ",
                         "that the species occupies that may be lost or reduced ",
-                        "in the assessment area as a result of climate change."))),
+                        "within the assessment area as a result of climate change"))),
             p(strong("Step 2: "), "Acquire species-specific sensitivity and life history data.",
               "Including information about dispersal and movement ability, ",
               "temperature/precipitation regime, dependence on disturbance events, ",
@@ -123,8 +122,8 @@ ccvi_app <- function(testmode_in, ...){
             #load_bookmark_ui("load"),
             shinyFilesButton("loadcsv", "Select file", "Select file", multiple = FALSE),
             br(),
-            strong("Download column definitions for saved data"),
             br(),
+            p("Download column definitions for saved data"),
             downloadButton("downloadDefs", "Download csv"),
             br(),
             h3("Citation"),
@@ -154,7 +153,7 @@ ccvi_app <- function(testmode_in, ...){
             width = 12,
             div(
               id = "form_sp_info",
-              h3("Species information"),
+              h2("Species Information"),
               p("The basic details input in this section will be used in the generated
                 report. The selected taxonomic group will determine which taxa specific
                 vulnerability factors (Section C) are displayed."),
@@ -167,7 +166,7 @@ ccvi_app <- function(testmode_in, ...){
               textInput("species_name", labelMandatory("Species Scientific Name")),
               textInput("common_name", "Common Name"),
               br(),
-              h4("Special kinds of species"),
+              h3("Special kinds of species"),
               p("If the assessed species is a special kind of species (as outlined
                 in the NatureServe Guidelines), check the appropriate box. Checking
                 these boxes will tailor the spatial analysis that calculates the exposure
@@ -188,7 +187,7 @@ ccvi_app <- function(testmode_in, ...){
               12,
               div(
                 id = "spatial",
-                h3("Spatial data analysis"),
+                h2("Spatial Data Analysis"),
                 p("The spatial data input in this section will be used to calculate
                   the exposure to climate change (Section A). It will also be used
                   to evaluate select questions in Section C that have a spatial
@@ -231,10 +230,10 @@ ccvi_app <- function(testmode_in, ...){
                                  numericInput("gain_mod", NULL, 1, min = 0, max = 1, step = 0.1),
                                  textAreaInput("gain_mod_comm", "Gain modifier explanation")
                                  ),
-                strong("Click Run to begin the spatial analysis or to re-run it",
-                       " after changing inputs"),
                 br(),
-                actionButton("startSpatial", "Run", class = "btn-primary"),
+                h5("Click button to begin the spatial analysis or to re-run it",
+                       " after changing inputs:"),
+                actionButton("startSpatial", "Run Spatial Analysis", class = "btn-primary"),
                 br(),
                 conditionalPanel(
                   condition = "input.startSpatial > 0",
@@ -275,16 +274,20 @@ ccvi_app <- function(testmode_in, ...){
                 shinycssloaders::withSpinner(leaflet::leafletOutput("texp_map")),
                 tableOutput("texp_tbl")
               ),
+              br(),
               div(
                 id = "cmd_map_div",
                 h3("Moisture exposure"),
                 leaflet::leafletOutput("cmd_map"),
                 tableOutput("cmd_tbl")
               ),
+              br(),
               div(
-                h3("Migratory exposure - Climate change exposure index"),
+                h3("Migratory exposure (Climate Change Exposure Index)"),
                 div(id = "missing_ccei",
-                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font> <br>CCEI data and a non-breeding range are needed to calculate."),
+                    HTML("<font color=\"#FF0000\"><b>Data set not provided.</b></font>
+                         <br>CCEI data and a non-breeding range are needed to calculate
+                         the migratory exposure."),
                     br(),
                     br()),
                 div(
@@ -309,20 +312,21 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
-              h3("Vulnerability Questions"),
+              h2("Vulnerability Questions"),
               p("This section scores factors associated with the species’ indirect
                 exposure to climate change (Section B), sensitivity and adaptive
                 capacity (Section C), and modeled or documented responses to
-                climate change (Section D)."),
+                climate change (Section D). Questions from Sections C and D with
+                a spatial componant are adressed in the \"Spatial Vulnerability
+                Questions\" tab."),
               p("The NatureServe Guidelines for scoring each question can be accessed
                 by clicking the info button next to the question. Use published studies
                 to support your response. Provide detailed information about how the
                 answer was reached in the comment boxes."),
               div(
                 id = "secB",
-                h4("Section B: Indirect Exposure to Climate Change"),
-                h4("Evaluate for specific geographical area under consideration"),
-                h5("Factors that influence vulnerability"),
+                h3("Section B: Indirect Exposure to Climate Change"),
+                h5("Evaluate for assessment area under consideration"),
                 check_comment_ui("B1", "1) Exposure to sea level rise:",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
@@ -336,16 +340,17 @@ ccvi_app <- function(testmode_in, ...){
                 check_comment_ui("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4])
-              )
+              ),
+              br(),
             )
           ),
-          # Section C questions #=============================
+        # Section C questions #=============================
           fluidRow(
             column(
               12,
               div(
                 id = "secC",
-                h4("Section C: Sensitivity and Adaptive Capacity"),
+                h3("Section C: Sensitivity and Adaptive Capacity"),
                 check_comment_ui("C1", "1) Dispersal and movements",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
@@ -423,17 +428,18 @@ ccvi_app <- function(testmode_in, ...){
                 check_comment_ui("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4])
-              )
+              ),
+              br(),
             )
           ),
-          # Section D questions #=============================
+        # Section D questions #=============================
           fluidRow(
             column(
               12,
               div(
                 id = "secD",
-                h4("Section D: Documented or Modeled Response to Climate Change"),
-                h5("(Optional; May apply across the range of a species)"),
+                h3("Section D: Documented or Modeled Response to Climate Change"),
+                h5("(Optional - May apply across the range of a species)"),
 
                 check_comment_ui("D1", "1) Documented response to recent climate change. ",
                                  choiceNames = valueNms,
@@ -454,38 +460,44 @@ ccvi_app <- function(testmode_in, ...){
           fluidRow(
             column(
               12,
-              h3("Spatial Vulnerability Questions"),
+              h2("Spatial Vulnerability Questions"),
               p("This section scores factors associated with species’ climate change
                 sensitivity from Sections C and D that have a spatial component.
                 The spatial data analysis evaluates these factors and pre-selects
                 a response accordingly. The data used to pre-select a response is
                 shown in a map and table accompanying each question. The pre-selected
                 response can be changed if needed."),
-              h4("Section C: Sensitivity and Adaptive Capacity"),
-              br(),
+              p("The NatureServe Guidelines for scoring each question can be accessed
+                by clicking the info button next to the question. Use published studies
+                to support your response. Provide detailed information about how the
+                answer was reached in the comment boxes."),
+              h3("Section C: Sensitivity and Adaptive Capacity"),
+              h4("2) Predicted sensitivity to temperature and moisture changes"),
               spat_vuln_ui(
                 id = "C2ai",
-                header = "Predicted sensitivity to temperature and moisture changes:",
-                vuln_q_nm = "2a) i) Historical thermal niche."
+                vuln_q_nm = "2a) i) Historical thermal niche"
               ),
-              spat_vuln_ui(
-                id = "C2aii",
-                vuln_q_nm = "2a) ii) Physiological thermal niche."
-              ),
-              spat_vuln_ui(
-                id = "C2bi",
-                vuln_q_nm = "2b) i) Historical hydrological niche."
-              ),
-              h4("Section D: Documented or Modeled Response to Climate Change"),
               br(),
               spat_vuln_ui(
+                id = "C2aii",
+                vuln_q_nm = "2a) ii) Physiological thermal niche"
+              ),
+              br(),
+              spat_vuln_ui(
+                id = "C2bi",
+                vuln_q_nm = "2b) i) Historical hydrological niche"
+              ),
+              br(),
+              h3("Section D: Documented or Modeled Response to Climate Change"),
+              h4("Modeled future range change"),
+              spat_vuln_ui(
                 id = "D2_3",
-                header = "Modeled future range change",
                 chk_box = FALSE
               ),
-              fluidRow(column(9, strong("2) Modeled future (2050) change in population or range size.")),
+              fluidRow(column(9, strong("2) Modeled future (2050) change in population or range size")),
                        column(1, actionButton(paste0("help_", "D2"), label = "", icon = icon("info")))),
               uiOutput("box_D2"),
+              br(),
               fluidRow(column(9, strong("3) Overlap of modeled future (2050) range with current range"),),
                        column(1, actionButton(paste0("help_", "D3"), label = "", icon = icon("info")))),
               uiOutput("box_D3"),
@@ -500,21 +512,21 @@ ccvi_app <- function(testmode_in, ...){
             div(
               id = "formData",
               #style = 'width:800px;',
-              h3("Index results"),
+              h2("Index Results"),
               p("This section calculates the CCVI using the results of Sections
                 A, B, C, and D. Once the index has been calculated, a report
                 summarizing the results of the assessment can be generated by
                 selecting the “Generate report” button at the bottom of the page."),
-              h5("Click the button to calculate or re-calculate the index"),
-              actionButton("calcIndex", "Calculate", class = "btn-primary")
+              h5("Click button to calculate or re-calculate the index:"),
+              actionButton("calcIndex", "Calculate CCVI", class = "btn-primary")
               ),
 
               conditionalPanel(
                 condition = "output.calcFlag == true",
-                h4("Data completeness"),
+                h3("Data completeness"),
                 tableOutput("n_factors"),
 
-                h4("Variation in index"),
+                h3("Variation in index"),
                 p("When multiple values are selected for any of the vulnerability ",
                   "factors the average of the values is used to calculate the ",
                   "overall index. To test the uncertainty in the result a Monte Carlo ",
@@ -529,7 +541,7 @@ ccvi_app <- function(testmode_in, ...){
                 id = "indplt",
                 #style = 'width:800px;',
                 br(),
-                h4("Factors contributing to index value"),
+                h3("Factors contributing to index value"),
                 p("The CCVI is calculated by combining the index calculated based on ",
                   "exposure, sensitivity and adaptive capacity with the index ",
                   "calculated based on documented or modelled responses to climate change. ",
@@ -1285,12 +1297,12 @@ ccvi_app <- function(testmode_in, ...){
 
       if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_change)){
         valueNm <- valueNms[ 4- box_val]
-        div(strong("Calculated effect on vulnerability."),
+        div(strong("Calculated effect on vulnerability:"),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
             HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
       } else {
-        check_comment_ui("D2", HTML("Calculated effect on vulnerability."),
+        check_comment_ui("D2", HTML("Calculated effect on vulnerability:"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
                          selected = box_val,
@@ -1313,12 +1325,12 @@ ccvi_app <- function(testmode_in, ...){
 
       if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_overlap)){
         valueNm <- valueNms[4 - box_val]
-        div(strong("Calculated effect on vulnerability."),
+        div(strong("Calculated effect on vulnerability:"),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
             HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
 
       } else {
-        check_comment_ui("D3", HTML("Calculated effect on vulnerability."),
+        check_comment_ui("D3", HTML("Calculated effect on vulnerability:"),
                          choiceNames = valueNms,
                          choiceValues = valueOpts,
                          selected = box_val,
