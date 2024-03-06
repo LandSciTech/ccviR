@@ -288,10 +288,10 @@ update_restored <- function(df, session){
     left_join(df_coms, by = "input") %>%
     left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
     filter(!is.na(.data$update_fun)) %>%
-    mutate(comment = ifelse(is.na(comment) & stringr::str_detect(input, "^[B,C,D]\\d.*"),
-                            "", comment),
-           value = ifelse(is.na(value) & stringr::str_detect(input, "pth"),
-                          "", value)) %>%
+    mutate(comment = ifelse(is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
+                            "", .data$comment),
+           value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
+                          "", .data$value)) %>%
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 

@@ -674,7 +674,7 @@ ccvi_app <- function(testmode_in, ...){
               file_pths(loaded_pths)
             }
 
-            clim_dir_pth(df_loaded %>% slice(1) %>% .$clim_dir_pth)
+            clim_dir_pth(df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth))
 
             updateTabsetPanel(session, "tabset",
                               selected = "Species Information"

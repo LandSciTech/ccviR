@@ -43,12 +43,12 @@ guide_popup <- function(id){
   q1 <- stringr::str_extract(id, "[a-h]")
   q2 <- stringr::str_extract(id, "i+")
 
-  txt <- guideline_lu_tbl %>% filter(section == sec, question == q |is.na(question),
-                              sub_question == q1 | is.na(sub_question),
-                              sub2_question == q2 | is.na(sub2_question)) %>%
-    pull(guide_text) %>% paste(collapse = "\n")
+  txt <- guideline_lu_tbl %>% filter(.data$section == sec, .data$question == q |is.na(.data$question),
+                              .data$sub_question == q1 | is.na(.data$sub_question),
+                              .data$sub2_question == q2 | is.na(.data$sub2_question)) %>%
+    pull(.data$guide_text) %>% paste(collapse = "\n")
 
-  ttl <- vulnq_code_lu_tbl %>% filter(Code == id) %>% pull(Question)
+  ttl <- vulnq_code_lu_tbl %>% filter(.data$Code == id) %>% pull(.data$Question)
 
   showModal(modalDialog(title = ttl, HTML({txt})))
 }
