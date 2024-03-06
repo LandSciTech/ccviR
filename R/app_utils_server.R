@@ -256,14 +256,16 @@ combine_outdata <- function(out_data_lst){
 
   # add in missing column names
   add_nms <- setdiff(exp_nms, colnames(out_dat))
-  template <- rep("", length.out = length(add_nms))
-  names(template) <- add_nms
-  template <- tibble::as_tibble(as.list(template))
+  if(length(add_nms) > 0){
+    template <- rep("", length.out = length(add_nms))
+    names(template) <- add_nms
+    template <- tibble::as_tibble(as.list(template))
 
-  dplyr::bind_rows(out_dat %>% tibble::as_tibble(), template) %>%
-    slice(-n())
+    out_dat <- out_dat %>% tibble::as_tibble() %>% bind_rows(template) %>%
+      slice(-n())
+  }
 
-
+  return(out_dat)
 }
 
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
