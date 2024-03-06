@@ -255,7 +255,7 @@ ccvi_app <- function(testmode_in, ...){
             column(
               12,
               # # helpful for testing
-              # shinyjs::runcodeUI(type = "textarea"),
+              shinyjs::runcodeUI(type = "textarea"),
               h2("Exposure Results"),
               p("This section displays the results of the spatial analysis that
                 determines the species' exposure to climate change (Section A)."),
@@ -1065,6 +1065,10 @@ ccvi_app <- function(testmode_in, ...){
         },
         error = function(cnd) conditionMessage(cnd))
 
+       # force these to invalidate when re-run
+       spat_res(FALSE)
+       spat_res2(FALSE)
+
       removeNotification("spat_restore_note")
       return(out)
 
@@ -1118,6 +1122,7 @@ ccvi_app <- function(testmode_in, ...){
     observe({
       req(!is.character(spat_res()))
       req(spat_res())
+      message("updateing spat_res2")
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
     })
@@ -1251,18 +1256,9 @@ ccvi_app <- function(testmode_in, ...){
         distinct()
     }, align = "r")
 
-    # create reactive for value used to choose checkbox b/c can't depend on
-    # spat_res2 directly or it never renders when restoring
-    box_val <- reactiveVal()
-
-    observe({
-      if(isTruthy(spat_res2())){
-        box_val(spat_res2())
-      }
-    })
-
     output$box_C2ai <- renderUI({
-      render_spat_vuln_box("C2ai", box_val(), input, valueNms, valueOpts)
+      req(spat_res2)
+      render_spat_vuln_box("C2ai", spat_res2(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1290,7 +1286,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$box_C2aii <- renderUI({
-      render_spat_vuln_box("C2aii", box_val(), input, valueNms, valueOpts)
+      render_spat_vuln_box("C2aii", spat_res2(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1318,7 +1314,7 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$box_C2bi <- renderUI({
-      render_spat_vuln_box("C2bi", box_val(), input, valueNms, valueOpts)
+      render_spat_vuln_box("C2bi", spat_res2(), input, valueNms, valueOpts)
     })
 
     # This makes sure that the value is updated even if the tab isn't reopened
@@ -1591,7 +1587,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # # helpful for testing
-     # shinyjs::runcodeServer()
+     shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
