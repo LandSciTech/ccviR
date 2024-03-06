@@ -1432,6 +1432,14 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     observeEvent(input$calcIndex,{
+      if(!isTruthy(spat_res())){
+        showNotification(
+          p(strong("Error: "), "Please run the spatial data analysis before trying to calculate the index."),
+          type = "error",
+          duration = 10)
+        req(FALSE)
+      }
+
       z_df <- data.frame(Code = c("Z2", "Z3"),
                          Value1 = as.numeric(c(input$cave, input$mig)))
 
