@@ -167,10 +167,12 @@ ccvi_app <- function(testmode_in, ...){
               textInput("common_name", "Common Name"),
               br(),
               h3("Special kinds of species"),
-              p("If the assessed species is a special kind of species (as outlined
-                in the NatureServe Guidelines), check the appropriate box. Checking
-                these boxes will tailor the spatial analysis that calculates the exposure
-                score (Section A) to these special cases."),
+              p("If the assessed species falls under one of the special cases below,
+                check the appropriate box. Checking these boxes will tailor the
+                calculation of the index to these special cases. See the ",
+                a("NatureServe Guidelines",
+                  href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf", target="_blank"),
+                " for more details."),
               checkboxInput("cave", "Species is an obligate of caves or groundwater systems"),
               checkboxInput("mig", "Species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
               actionButton("next1", "Next", class = "btn-primary"),
@@ -317,12 +319,12 @@ ccvi_app <- function(testmode_in, ...){
                 exposure to climate change (Section B), sensitivity and adaptive
                 capacity (Section C), and modeled or documented responses to
                 climate change (Section D). Questions from Sections C and D with
-                a spatial componant are adressed in the \"Spatial Vulnerability
+                a spatial component are adressed in the \"Spatial Vulnerability
                 Questions\" tab."),
               p("The NatureServe Guidelines for scoring each question can be accessed
-                by clicking the info button next to the question. Use published studies
-                to support your response. Provide detailed information about how the
-                answer was reached in the comment boxes."),
+                by clicking the info button next to the question. Use published studies,
+                empirical data or expert opinion to support your responses. Provide
+                detailed information about how the answer was reached in the comment boxes."),
               div(
                 id = "secB",
                 h3("Section B: Indirect Exposure to Climate Change"),
