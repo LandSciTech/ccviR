@@ -119,7 +119,7 @@ This tab includes the vulnerability questions that have a spatial component. Eac
 
 ![](./spat_vulnqs.PNG){width=70% fig-align="center"}
 
-The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple change rasters are used.  
+The modeled response to climate change will be different depending on the climate change scenario used so the modeled future range change map includes a layer for each scenario which can be toggled on or off in the same way as the exposure maps. The responses to these questions can not be edited when multiple scenarios are used.  
 
 ![](./spat_vulnqs2.PNG){width=70% fig-align="center"}
 
@@ -144,7 +144,7 @@ The next graph shows how the scores based on the exposure and the sensitivity an
 
 ![](./comb_ind_plot.PNG){width=70% fig-align="center"}
 
-The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mouse to show the pop-up for each bar to get more details on how the score was reached.
+The last graph shows the scores for each vulnerability factor in each scenario. The scores reflect the the answer to the question and the exposure multiplier that was applied. Use the mouse to show the pop-up for each bar to get more details on how the score was reached. 
 
 ![](./vulnq_plot.PNG){width=70% fig-align="center"}
 
@@ -181,6 +181,8 @@ The app is launched by calling the `run_ccvi_app()` function, which will launch 
 The state of the app can be saved by clicking the "Save progress" button at the bottom of the app at any point in the assessment. Choose a name and location to save a csv file with all the app content that is easy to remember, you will need to find it again to load the saved app. To load the app from a saved csv file click "Select file" under "Load data from a previous assessment" at the bottom of the Welcome page and select the saved csv file. 
 
 Note, only the path to the spatial data is stored, not the data itself, so the app will not be able to load if data is moved or its name is changed. If the data has moved, you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press "Run" which will re-run the spatial analysis but keep the answers to the non-spatial vulnerability questions from the saved file. 
+
+Be sure to save your progress throughout the assessment to prevent the loss of data. Refreshing the app or timing out will result in your progress being lost. It is recommended that you save your progress before you step away from the assessment for an extended period of time or after you input data that would be difficult/time consuming to reproduce (ex: filling out Vulnerability Questions).
 
 To interpret the names of the columns in the saved csv file you can download the column definitions from the bottom of the Welcome page.
 

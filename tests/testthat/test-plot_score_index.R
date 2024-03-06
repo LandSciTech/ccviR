@@ -18,6 +18,13 @@ make_exp_df <- function(exp_lev){
   exp_df_out
 }
 
+# theme used in app
+my_theme <- ggplot2::theme_classic() +
+  ggplot2::theme(text = ggplot2::element_text(size = 12),
+                 strip.background = ggplot2::element_blank())
+
+ggplot2::theme_set(my_theme)
+
 test_that("single plot works", {
   expect_s3_class(plot_score_index(calc_vulnerability(make_exp_df(1), make_vuln_df("nm", 0),
                                                       tax_grp = "Bird")),
