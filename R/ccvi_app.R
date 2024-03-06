@@ -661,7 +661,8 @@ ccvi_app <- function(testmode_in, ...){
               spat_res(df_spat)
               repeatSpatial(TRUE)
               doSpatial((doSpatial() +1))
-              message("doSpatial restore")
+              showNotification("Re-running spatial analysis from loaded file.",
+                               duration = NULL, id = "spat_restore_note")
             }
 
             index_res(recreate_index_res(df_loaded))
@@ -1051,7 +1052,7 @@ ccvi_app <- function(testmode_in, ...){
     spat_res1 <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars())
-        tryCatch({
+       out <- tryCatch({
           analyze_spatial(range_poly = range_poly_in(),
                       non_breed_poly = nonbreed_poly(),
                       scale_poly = assess_poly(),
@@ -1063,6 +1064,9 @@ ccvi_app <- function(testmode_in, ...){
                       scenario_names = clim_readme()$Scenario_Name)
         },
         error = function(cnd) conditionMessage(cnd))
+
+      removeNotification("spat_restore_note")
+      return(out)
 
     }, ignoreInit = TRUE)
 
