@@ -412,7 +412,7 @@ ccvi_app <- function(testmode_in, ...){
             column(
               12,
               # # helpful for testing
-              shinyjs::runcodeUI(type = "textarea"),
+              # shinyjs::runcodeUI(type = "textarea"),
               h3("Spatial Vulnerability Questions"),
               h4("Section C: Sensitivity and Adaptive Capacity"),
               br(),
@@ -691,37 +691,32 @@ ccvi_app <- function(testmode_in, ...){
     #   file_pths(pths_in)
     # })
 
-    # TODO: Not working. Trying to make parsing files independent for each file
-    # so cleared file names are not retrieved by parse
+    # make parsing files independent for each file so cleared file names are not
+    # retrieved by parse
     observe({
-      pths_in <- file_pths()
-
       purrr::walk(filePathIds(),
                  ~observeEvent(input[[.x]], {
                    if(!is.integer(input[[.x]])){
-                     pths_in[[.x]] <<- parseFilePaths(volumes, input[[.x]])$datapath
+                     pths_in <- file_pths()
+                     pths_in[[.x]] <- parseFilePaths(volumes, input[[.x]])$datapath
+                     file_pths(pths_in)
                    }
                  }, ignoreInit = TRUE))
-      file_pths(pths_in)
     })
 
     # clear output filepaths when x clicked
-    toClear <- reactive({
-      purrr::map(paste0(filePathIds(), "_clear"), \(x){input[[x]]})
-    })
-
-    observeEvent(toClear(),{
+    observe({
       buttonIds <- paste0(filePathIds(), "_clear")
-      pths_in <- file_pths()
       purrr::walk(buttonIds,
-                  \(x){ if(input[[x]] > 0){
-                    fl_x <- stringr::str_extract(x, "(.*)(_clear)", group = 1)
-                    pths_in[[fl_x]] <<- ""
-                    shinyjs::reset(fl_x)
-                  }})
-
-      file_pths(pths_in)
-    }, ignoreInit = TRUE)
+                  ~observeEvent(input[[.x]], {
+                    if(input[[.x]] > 0){
+                      pths_in <- file_pths()
+                      fl_x <- stringr::str_extract(.x, "(.*)(_clear)", group = 1)
+                      pths_in[[fl_x]] <- ""
+                      file_pths(pths_in)
+                    }
+                  }, ignoreInit = TRUE))
+    })
 
 
     # Enable the Submit button when all mandatory fields are filled out
@@ -887,6 +882,19 @@ ccvi_app <- function(testmode_in, ...){
 
       }
     })
+
+    observeEvent(input$rng_chg_used, {
+      # check for names of old rng_chg_pths
+      nms_old <- stringr::str_subset(names(input), "rng_chg_pth$|rng_chg_pth_\\d")
+      if(length(nms_old) > 0){
+        purrr::walk(nms_old, \(x){
+          pths_in <- file_pths()
+          pths_in[[x]] <- ""
+          file_pths(pths_in)
+        })
+
+      }
+    }, ignoreInit = TRUE)
     # doing this rather than eventReactive so that it still has a value (NULL)
     # if shinyalert is not called
     hs_rast <- reactiveVal()
@@ -1497,7 +1505,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # # helpful for testing
-     shinyjs::runcodeServer()
+     # shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
