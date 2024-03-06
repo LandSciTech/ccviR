@@ -100,13 +100,13 @@ plot_score_index <- function(score_df){
                                          ymax = .data$d_score_max),
                             col = "black",
                             linewidth = 1.25, alpha = 0.4,
-                            inherit.aes = FALSE)+
+                            inherit.aes = FALSE, na.rm = TRUE)+
     ggplot2::geom_linerange(data = score_pt,
                            ggplot2::aes(y = .data$d_score, xmin = .data$b_c_score_min,
                                         xmax = .data$b_c_score_max),
                            col = "black",
                            linewidth = 1.25, alpha = 0.4,
-                           inherit.aes = FALSE)+
+                           inherit.aes = FALSE, na.rm = TRUE)+
     ggplot2::geom_point(data = score_pt,
                         ggplot2::aes(.data$b_c_score, .data$d_score, shape = .data$scenario_name),
                         stroke = 2,

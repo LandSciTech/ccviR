@@ -569,7 +569,7 @@ ccvi_app <- function(testmode_in, ...){
                   "had the highest scores and how exposure impacted the score. ",
                   "The lighter coloured bars indicate the maximum possible score ",
                   "for that factor. The chart is broken up by section to highlight ",
-                  "that the B/C and C sections affect the final score differently. ",
+                  "that the B/C and D sections affect the final score differently. ",
                   "See the plot above for more details on combining the scores."),
                 plotly::plotlyOutput("q_score_plt", height = "500px")
               ),
@@ -1489,6 +1489,9 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$slr <- renderText({
+      if(is.null(index_res()[["slr_vuln"]])){
+        return(NULL)
+      }
       if(!any(index_res()$slr_vuln)){
         return(NULL)
       }
