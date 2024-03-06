@@ -571,7 +571,7 @@ ccvi_app <- function(testmode_in, ...){
                   "for that factor. The chart is broken up by section to highlight ",
                   "that the B/C and D sections affect the final score differently. ",
                   "See the plot above for more details on combining the scores."),
-                plotly::plotlyOutput("q_score_plt", height = "500px")
+                plotly::plotlyOutput("q_score_plt", height = "400px")
               ),
               br(),
               br(),
@@ -1126,6 +1126,7 @@ ccvi_app <- function(testmode_in, ...){
     output$texp_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
+      req(clim_vars())
 
       make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
                rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
@@ -1134,6 +1135,7 @@ ccvi_app <- function(testmode_in, ...){
     output$cmd_map <- leaflet::renderLeaflet({
       req(!is.character(spat_res()))
       req(doSpatial())
+      req(clim_vars())
 
       make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
                rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
