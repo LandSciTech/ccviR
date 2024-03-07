@@ -672,7 +672,7 @@ ccvi_app <- function(testmode_in, ...){
               as.list()
 
             if(length(loaded_pths)>0){
-              file_pths(loaded_pths)
+              file_pths(purrr::discard(loaded_pths, is.na))
             }
 
             clim_dir_pth(df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth))
@@ -745,21 +745,6 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     # Spatial Analysis #===============
-
-    # toListen <- reactive({
-    #   purrr::map(filePathIds(), \(x){input[[x]]})
-    # })
-    #
-    # observeEvent(toListen(),{
-    #   pths_in <- file_pths()
-    #
-    #   purrr::walk(filePathIds(),
-    #               \(x) if(!is.integer(input[[x]])){
-    #                 pths_in[[x]] <<- parseFilePaths(volumes, input[[x]])$datapath
-    #               })
-    #
-    #   file_pths(pths_in)
-    # })
 
     # make parsing files independent for each file so cleared file names are not
     # retrieved by parse
