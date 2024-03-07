@@ -259,9 +259,9 @@ combine_outdata <- function(out_data_lst){
   if(length(add_nms) > 0){
     template <- rep("", length.out = length(add_nms))
     names(template) <- add_nms
-    template <- tibble::as_tibble(as.list(template))
+    template <- as.data.frame(as.list(template))
 
-    out_dat <- out_dat %>% tibble::as_tibble() %>% bind_rows(template) %>%
+    out_dat <- out_dat %>% bind_rows(template) %>%
       slice(-n())
   }
 
