@@ -43,11 +43,9 @@ Imports:
     stats,
     utils,
     scales,
-    shinyvalidate,
     terra,
     methods,
-    leaflet (>= 2.1.2.9000),
-    kableExtra
+    leaflet (>= 2.1.2.9000)
 Suggests: 
     testthat (>= 3.0.0),
     knitr,

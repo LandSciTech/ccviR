@@ -255,7 +255,7 @@ ccvi_app <- function(testmode_in, ...){
             column(
               12,
               # # helpful for testing
-              shinyjs::runcodeUI(type = "textarea"),
+              # shinyjs::runcodeUI(type = "textarea"),
               h2("Exposure Results"),
               p("This section displays the results of the spatial analysis that
                 determines the species' exposure to climate change (Section A)."),
@@ -1572,7 +1572,7 @@ ccvi_app <- function(testmode_in, ...){
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
 
     # # helpful for testing
-     shinyjs::runcodeServer()
+    #  shinyjs::runcodeServer()
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
