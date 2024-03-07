@@ -228,30 +228,44 @@ combine_outdata <- function(out_data_lst){
       select(-any_of(colnames(out_data_lst$index)), -any_of(colnames(out_data_lst$start)))
   }
 
-  bind_cols(out_data_lst) %>%
-    select(any_of(c(
-      'scenario_name', 'species_name', 'common_name', 'geo_location', 'assessor_name',
-      'tax_grp', 'mig', 'cave', 'CCVI_index',
-      'CCVI_conf_index', 'mig_exposure', 'b_c_score', 'd_score',
-      'MC_freq_EV', 'MC_freq_HV', 'MC_freq_MV', 'MC_freq_LV', 'MC_freq_IE',
-      'MAT_1', 'MAT_2', 'MAT_3', 'MAT_4', 'MAT_5', 'MAT_6', 'CMD_1', 'CMD_2', 'CMD_3',
-      'CMD_4', 'CMD_5', 'CMD_6', 'CCEI_1', 'CCEI_2', 'CCEI_3', 'CCEI_4',
-      'prop_non_breed_over_ccei', 'HTN_1', 'HTN_2', 'HTN_3', 'HTN_4', 'PTN',
-      'MAP_max', 'MAP_min', 'range_change', 'range_overlap', 'range_size',
-      'gain_mod', 'gain_mod_comm',
-      'B1', 'com_B1', 'B2a', 'com_B2a', 'B2b', 'com_B2b', 'B3', 'com_B3',
-      'C1', 'com_C1', 'C2ai', 'com_C2ai', 'C2aii', 'com_C2aii', 'C2bi',
-      'com_C2bi', 'C2bii', 'com_C2bii', 'C2c', 'com_C2c', 'C2d',
-      'com_C2d', 'C3', 'com_C3', 'C4a', 'com_C4a', 'C4b', 'com_C4b',
-      'C4c', 'com_C4c', 'C4d', 'com_C4d', 'C4e', 'com_C4e', 'C4f',
-      'com_C4f', 'C4g', 'com_C4g', 'C5a', 'com_C5a', 'C5b', 'com_C5b',
-      'C5c', 'com_C5c', 'C6', 'com_C6', 'D1', 'com_D1', 'D2', 'com_D2',
-      'D3', 'com_D3', 'D4', 'com_D4', 'GCM_or_Ensemble_name',
-      'Historical_normal_period', 'Future_period', 'Emissions_scenario',
-      'Link_to_source', 'range_poly_pth', 'nonbreed_poly_pth', 'assess_poly_pth',
-      'ptn_poly_pth', 'clim_dir_pth', 'ccviR_version'
-    )), contains("rng_chg_pth"))
+  exp_cols <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
+                                          package = "ccviR"))
+  exp_nms <- exp_cols %>% filter(Column.Name != "") %>%
+    rowwise() %>%
+    mutate(names_exp = case_when(
+      stringr::str_detect(Column.Name, "HTN|CCEI") ~
+        paste0(stringr::str_remove(Column.Name, "#"), 1:4, collapse = ","),
+      stringr::str_detect(Column.Name, "MAT|CMD") ~
+        paste0(stringr::str_remove(Column.Name, "#"), 1:6, collapse = ","),
+      stringr::str_detect(Column.Name, "HTN|CCEI") ~
+        paste0(stringr::str_remove(Column.Name, "#"), 1:4, collapse = ","),
+      stringr::str_detect(Column.Name, "MC_freq") ~
+        paste0(stringr::str_remove(Column.Name, "\\*"),
+               c("EV", "HV", "MV", "LV", "IE"), collapse = ","),
+      stringr::str_detect(Column.Name, "^[B,C,D]\\d.*") ~
+        paste0("com_", Column.Name, ",", Column.Name),
+      stringr::str_detect(Column.Name, "MAP") ~
+        paste0(stringr::str_remove(Column.Name, "max/min"), c("max", "min"), collapse = ","),
+      TRUE ~ Column.Name
+      )) %>%
+    tidyr::separate_rows(names_exp, sep = ",") %>%
+    pull(names_exp)
 
+  out_dat <- bind_cols(out_data_lst) %>%
+    select(any_of(exp_nms), contains("rng_chg_pth"))
+
+  # add in missing column names
+  add_nms <- setdiff(exp_nms, colnames(out_dat))
+  if(length(add_nms) > 0){
+    template <- rep("", length.out = length(add_nms))
+    names(template) <- add_nms
+    template <- tibble::as_tibble(as.list(template))
+
+    out_dat <- out_dat %>% tibble::as_tibble() %>% bind_rows(template) %>%
+      slice(-n())
+  }
+
+  return(out_dat)
 }
 
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
@@ -276,8 +290,10 @@ update_restored <- function(df, session){
     left_join(df_coms, by = "input") %>%
     left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
     filter(!is.na(.data$update_fun)) %>%
-    mutate(comment = ifelse(is.na(comment) & stringr::str_detect(input, "^[B,C,D]\\d.*"),
-                            "", comment)) %>%
+    mutate(comment = ifelse(is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
+                            "", .data$comment),
+           value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
+                          "", .data$value)) %>%
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
@@ -359,7 +375,7 @@ render_spat_vuln_box <- function(id, spat_df, input, valueNms, valueOpts){
 
 # recreate index_res object on loading from csv
 recreate_index_res <- function(df){
-  if(is.null(df$CCVI_index)){
+  if(is.null(df$CCVI_index) || all(is.na(df$CCVI_index))){
     return(NULL)
   }
 

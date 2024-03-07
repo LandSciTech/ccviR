@@ -93,9 +93,9 @@ plot_q_score <- function(vuln_df){
   cols_use <- c(B = cols_use[5], C = cols_use[1], D = cols_use[4])
 
   #define a list of ggplot and feed it in the subplot function with the calculated limits
-  vuln_df %>%
-    mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor()) %>%
-    split(.$sub_index) %>%
+  vuln_df <- vuln_df %>%
+    mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
+  split(vuln_df, vuln_df$sub_index) %>%
     purrr::map2(
       split(max_df, max_df$sub_index),
       function(x, y) {
