@@ -1664,6 +1664,24 @@ ccvi_app <- function(testmode_in, ...){
       shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
     })
 
+    # NOTE: Remove if deployed to a server with multiple users possible. Will
+    # stop for all users. Not an issue when run locally
+    session$onSessionEnded(function() {
+      # save the csv to a temp file is case user forgot to save
+      file_nm <- paste0("ccviR_temp_save_",
+                        Sys.time() %>% format() %>%
+                          stringr::str_replace_all("\\W", "_"),
+                        "_")
+      file_nm <- tempfile(pattern = file_nm, fileext = ".csv")
+      isolate(
+        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)),
+                  file_nm,
+                  row.names = FALSE)
+      )
+      message("Temporary file saved to:\n ", file_nm, "\n This will be deleted after R is closed")
+      stopApp()
+    })
+
   }
 
   onStop(function(){options(testmode_in)})
