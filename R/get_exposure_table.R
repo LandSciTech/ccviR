@@ -16,7 +16,8 @@ get_exposure_table <- function(spattbl, varname, brks){
   scenario_cols <- spattbl$scenario_name
 
   # create df with scenarios, classes, and breaks
-  scn_brks_df <- spattbl %>% select(scenario_name, contains(varname)) %>%
+  scn_brks_df <- spattbl %>%
+    select(scenario_name, matches(paste0(varname, "_\\d"))) %>%
     tidyr::pivot_longer(-scenario_name) %>%
     tidyr::pivot_wider(names_from = scenario_name, values_from = value) %>%
     mutate(class_brks = class_brks) %>%
@@ -54,8 +55,9 @@ get_exposure_table <- function(spattbl, varname, brks){
               location = cells_column_spanners()) %>%
     tab_style(style = cell_text(weight = "bold"),
               location = cells_body(columns = 2, rows = 7)) %>%
-    tab_style(style = list(cell_fill(color = "lightgrey"),
-                           cell_borders(side = "top", style = "hidden")),
+    tab_style(style = list(cell_fill(color = "#F8F8F8"),
+                           cell_borders(side = c("top", "bottom"),
+                                        weight = px(2), color = "lightgray")),
               location = cells_body(rows = 7))
 
   exp_res_tbl
