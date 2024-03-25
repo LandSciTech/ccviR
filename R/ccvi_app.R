@@ -274,14 +274,14 @@ ccvi_app <- function(testmode_in, ...){
                 id = "texp_map_div",
                 h3("Temperature exposure"),
                 shinycssloaders::withSpinner(leaflet::leafletOutput("texp_map")),
-                tableOutput("texp_tbl")
+                gt::gt_output("texp_tbl")
               ),
               br(),
               div(
                 id = "cmd_map_div",
                 h3("Moisture exposure"),
                 leaflet::leafletOutput("cmd_map"),
-                tableOutput("cmd_tbl")
+                gt::gt_output("cmd_tbl")
               ),
               br(),
               div(
@@ -1134,23 +1134,12 @@ ccvi_app <- function(testmode_in, ...){
 
     })
 
-    output$texp_tbl <- renderTable({
-      req(spat_res2())
-      class_brks <- clim_readme()$brks_mat %>% unique() %>%
-        stringr::str_split_1(";") %>% sort()
-      exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", matches("MAT_\\d"), "temp_exp_cave") %>%
-        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
-    }, align = "r")
 
-    output$cmd_tbl <- renderTable({
-      req(spat_res2())
-      class_brks <- clim_readme()$brks_cmd %>% unique() %>%
-        stringr::str_split_1(";") %>% sort()
-      exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", matches("CMD_\\d"), "moist_exp_cave") %>%
-        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
-    }, align = "r")
+    output$texp_tbl <- gt::render_gt(get_exposure_table(spat_res2(), "MAT",
+                                                        clim_readme()$brks_mat))
+
+    output$cmd_tbl <- gt::render_gt(get_exposure_table(spat_res2(), "CMD",
+                                                       clim_readme()$brks_cmd))
 
 
     observe({
