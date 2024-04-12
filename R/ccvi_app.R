@@ -1136,9 +1136,11 @@ ccvi_app <- function(testmode_in, ...){
 
 
     output$texp_tbl <- gt::render_gt(get_exposure_table(spat_res2(), "MAT",
+                                                        clim_readme(),
                                                         clim_readme()$brks_mat))
 
     output$cmd_tbl <- gt::render_gt(get_exposure_table(spat_res2(), "CMD",
+                                                       clim_readme(),
                                                        clim_readme()$brks_cmd))
 
 
