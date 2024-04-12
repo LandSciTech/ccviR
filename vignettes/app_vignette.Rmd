@@ -14,15 +14,9 @@ knitr::opts_chunk$set(
 )
 ```
 ## Introduction
+This tutorial is directed at users who are new to the ccviR app but are familiar with the NatureServe Climate Change Vulnerability Index. More detailed information about the index can be found in `vignette("app_details_vignette", package = "ccviR")` and the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf)
+
 The ccviR app implements the [NatureServe Climate Change Vulnerability Index (CCVI)](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) in a Shiny App. The app allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. It also includes new features and enhanced user friendliness to make it easier to calculate the index and explore the results. 
-
-The NatureServe CCVI is a trait based climate change vulnerability assessment framework. It includes three commonly used components of vulnerability: exposure, sensitivity and adaptive capacity. In addition, it optionally incorporates the results of documented or modeled responses to climate change. 
-
-Exposure is assessed by determining the proportion of the species range that falls into 6 classes of temperature and moisture change which is used to assign an exposure multiplier. Sensitivity and adaptive capacity are assessed by scoring 23 vulnerability factors, on a scale from 0 (‘neutral’)  to 3 (‘greatly increases vulnerability’). These scores are then multiplied by the exposure multiplier and are summed to give a total score for this section. Factors that cannot be answered can be left blank and contribute 0 to the total score. If fewer than 13 factors are scored the index value cannot be calculated. 
-
-In addition, there are 4 vulnerability factors for documented or modeled responses to climate change that can optionally be scored on a similar scale. These scores are simply summed to get the total score for this section. An index value is then determined for the two sections (exposure *x* sensitivity and adaptive capacity, and documented or modeled responses) by applying a set of thresholds to the scores. The two index values are then combined using a table that gives more weight to the sensitivity and adaptive capacity section. The possible index values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable, Extremely Vulnerable or Insufficient Evidence (if not enough factors of the CCVI are scored). 
-
-For more detailed information on how the index works and how each factor is scored see the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) and the references below.
 
 ## Run a demonstration
 Before using the app to assess a real species we recommend walking through the app with the demo data set provided. 
