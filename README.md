@@ -20,10 +20,20 @@ in an R package and Shiny App. The package allows all of the geospatial
 aspects of calculating the CCVI to be done in R, removing the need for
 separate GIS calculations. The app provides an interactive application
 designed to offer a user-friendly and simple interface for calculating
-the NatureServe CCVI. See [Young et. al
-(2012)](https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html)
-and [Young et. al. (2015)](https://doi.org/10.1002/wsb.478) for a
-detailed description of the index.
+the NatureServe CCVI.
+
+The NatureServe CCVI is a rapid assessment tool designed to allow a
+relative grouping of unrelated taxa by vulnerability to climate change
+and to highlight which factors contribute to the climate change
+vulnerability of individual species or groups of taxa. This information
+can be used to inform conservation decision making and to help identify
+actions to increase species resilience to climate change. See [Young et.
+al
+(2012)](https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html),
+[Young et. al. (2015)](https://doi.org/10.1002/wsb.478) and the
+[NatureServe CCVI
+Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf)
+for more detailed descriptions of the index and how it was created.
 
 ## Installation
 
@@ -79,8 +89,10 @@ Monte Carlo uncertainty analysis produced are the same.
 
 ## Vignettes/tutorials available
 
-See `vignette("app_vignette", package = "ccviR")` for a more detailed
-description of how to use the app,
+See `vignette("app_vignette", package = "ccviR")` for an introduction to
+how to use the app with a demo data set,
+`vignette("app_details_vignette", package = "ccviR")` for a more
+detailed look at how to use the app in practice,
 `vignette("data_prep_vignette", package = "ccviR")` for how to use an
 app to prepare custom climate data sets, and
 `vignette("package_vignette", package = "ccviR")` for a tutorial on how

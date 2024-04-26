@@ -159,7 +159,7 @@ The following spatial data sets can be input for each species:
 * Projected range change raster and a matrix to reclassify it as 0 = unsuitable, 1 = lost, 2 = maintained and 3 = gained
 * Physiological thermal niche (PTN) polygon. PTN polygon should include cool or cold environments that the species occupies that may be lost or reduced in the assessment area as a result of climate change.
 
-For this example all of the data is provided with the package.  
+See [here](https://landscitech.github.io/ccviR/articles/app_details_vignette.html) for more details on these spatial inputs. For this example all of the data is provided with the package.  
 
 ```{r load_sp_data}
 rng_poly <- read_sf(file.path(data_pth, "rng_poly.shp"), agr = "constant")
