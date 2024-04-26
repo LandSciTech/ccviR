@@ -1135,13 +1135,15 @@ ccvi_app <- function(testmode_in, ...){
     })
 
 
-    output$texp_tbl <- gt::render_gt(get_exposure_table(spat_res2(), "MAT",
-                                                        clim_readme(),
-                                                        clim_readme()$brks_mat))
+    output$texp_tbl <- gt::render_gt({
+      req(spat_res2())
+      get_exposure_table(spat_res2(), "MAT", clim_readme(), clim_readme()$brks_mat)
+      })
 
-    output$cmd_tbl <- gt::render_gt(get_exposure_table(spat_res2(), "CMD",
-                                                       clim_readme(),
-                                                       clim_readme()$brks_cmd))
+    output$cmd_tbl <- gt::render_gt({
+      req(spat_res2())
+      get_exposure_table(spat_res2(), "CMD", clim_readme(),clim_readme()$brks_cmd)
+      })
 
 
     observe({
@@ -1170,22 +1172,11 @@ ccvi_app <- function(testmode_in, ...){
     output$tbl_ccei <- gt::render_gt({
       req(spat_res2())
       if(is.null(clim_readme()$brks_ccei)){
-        stop("climate readme file does not contain breaks for ccei")
+        class_brks <- "4: (> 7);3: (6 - 7);2: (4 - 5);1: (< 4)"
+      } else {
+        class_brks <- clim_readme()$brks_ccei
       }
-      class_brks <- clim_readme()$brks_ccei %>% unique() %>%
-        stringr::str_split_1(";") %>% sort()
-      exp_df <-  spat_res2() %>%
-        select("scenario_name",
-               contains("CCEI", ignore.case = FALSE)) %>%
-        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier")) %>%
-        gt::gt() %>%
-        gt::tab_options(table.font.size = 14,
-                        column_labels.padding.horizontal = 10,
-                        column_labels.padding = 2,
-                        data_row.padding = 2) %>%
-        gt::cols_align(align = "center", columns = everything()) %>%
-        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
-                      location = gt::cells_column_labels(columns = everything()))
+      get_exposure_table(spat_res2(), "CCEI", clim_readme(), class_brks)
     })
 
     # When next button is clicked move to next panel

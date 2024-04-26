@@ -12,9 +12,17 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
     breaks_col <- gt::html("Moisture change (mm)")
   }
 
+  if(varname == "CCEI"){
+    exp_val <- "NA"
+    class_col <- gt::html("CCEI class")
+    breaks_col <- gt::html("CCEI values")
+  }
+
   scenario_cols <- spattbl$scenario_name
   class_brks <- brks %>% unique()
 
+  # if class breaks are the same for all scenarios
+  # else class breaks are not the same for all scenarios
   if(length(class_brks) == 1){
 
     class_brks <- class_brks %>% stringr::str_split_1(";") %>% sort()
@@ -75,7 +83,6 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
       mutate(breaks = stringr::str_replace_all(breaks, "[()]", "")) %>%
       mutate(breaks = stringr::str_replace_all(breaks, " - ", " to ")) %>%
       select(scenario_name, class, breaks)
-
 
     # create df with scenarios, classes, and breaks
     scn_brks_df <- spattbl %>%
