@@ -45,7 +45,8 @@ Imports:
     scales,
     terra,
     methods,
-    leaflet (>= 2.1.2.9000)
+    leaflet (>= 2.1.2.9000),
+    gt
 Suggests: 
     testthat (>= 3.0.0),
     knitr,

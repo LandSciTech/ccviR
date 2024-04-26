@@ -274,14 +274,14 @@ ccvi_app <- function(testmode_in, ...){
                 id = "texp_map_div",
                 h3("Temperature exposure"),
                 shinycssloaders::withSpinner(leaflet::leafletOutput("texp_map")),
-                tableOutput("texp_tbl")
+                gt::gt_output("texp_tbl")
               ),
               br(),
               div(
                 id = "cmd_map_div",
                 h3("Moisture exposure"),
                 leaflet::leafletOutput("cmd_map"),
-                tableOutput("cmd_tbl")
+                gt::gt_output("cmd_tbl")
               ),
               br(),
               div(
@@ -295,7 +295,7 @@ ccvi_app <- function(testmode_in, ...){
                 div(
                   id = "ccei_exp",
                   leaflet::leafletOutput("ccei_map"),
-                  tableOutput("tbl_ccei"))
+                  gt::gt_output("tbl_ccei"))
 
               )
             )
@@ -528,7 +528,7 @@ ccvi_app <- function(testmode_in, ...){
               conditionalPanel(
                 condition = "output.calcFlag == true",
                 h3("Data completeness"),
-                tableOutput("n_factors"),
+                gt::gt_output("n_factors"),
 
                 h3("Variation in index"),
                 p("When multiple values are selected for any of the vulnerability ",
@@ -1134,23 +1134,16 @@ ccvi_app <- function(testmode_in, ...){
 
     })
 
-    output$texp_tbl <- renderTable({
-      req(spat_res2())
-      class_brks <- clim_readme()$brks_mat %>% unique() %>%
-        stringr::str_split_1(";") %>% sort()
-      exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", matches("MAT_\\d"), "temp_exp_cave") %>%
-        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
-    }, align = "r")
 
-    output$cmd_tbl <- renderTable({
+    output$texp_tbl <- gt::render_gt({
       req(spat_res2())
-      class_brks <- clim_readme()$brks_cmd %>% unique() %>%
-        stringr::str_split_1(";") %>% sort()
-      exp_df <-  spat_res2() %>% rowwise() %>%
-        select("scenario_name", matches("CMD_\\d"), "moist_exp_cave") %>%
-        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
-    }, align = "r")
+      get_exposure_table(spat_res2(), "MAT", clim_readme(), clim_readme()$brks_mat)
+      })
+
+    output$cmd_tbl <- gt::render_gt({
+      req(spat_res2())
+      get_exposure_table(spat_res2(), "CMD", clim_readme(),clim_readme()$brks_cmd)
+      })
 
 
     observe({
@@ -1176,19 +1169,15 @@ ccvi_app <- function(testmode_in, ...){
 
     })
 
-    output$tbl_ccei <- renderTable({
+    output$tbl_ccei <- gt::render_gt({
       req(spat_res2())
       if(is.null(clim_readme()$brks_ccei)){
-        stop("climate readme file does not contain breaks for ccei")
+        class_brks <- "4: (> 7);3: (6 - 7);2: (4 - 5);1: (< 4)"
+      } else {
+        class_brks <- clim_readme()$brks_ccei
       }
-      class_brks <- clim_readme()$brks_ccei %>% unique() %>%
-        stringr::str_split_1(";") %>% sort()
-      exp_df <-  spat_res2() %>%
-        select("scenario_name",
-               contains("CCEI", ignore.case = FALSE)) %>%
-        purrr::set_names(c("Scenario Name", class_brks, "Exposure Multiplier"))
-
-    }, align = "r")
+      get_exposure_table(spat_res2(), "CCEI", clim_readme(), class_brks)
+    })
 
     # When next button is clicked move to next panel
     observeEvent(input$next3, {
@@ -1229,19 +1218,32 @@ ccvi_app <- function(testmode_in, ...){
                rast_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
-    output$tbl_C2ai <- renderTable({
+    output$tbl_C2ai <- gt::render_gt({
       req(spat_res2())
-      exp_df <-  spat_res2() %>%
-        select(contains("HTN")) %>%
+      exp_tbl <- spat_res2() %>%
+        select(matches("HTN_\\d")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
         tidyr::pivot_longer(cols = contains("Class"),
                      names_to = "Sensitivity Class", values_to = "Proportion of Range") %>%
-        transmute(`Sensitivity Class` = stringr::str_replace(.data$`Sensitivity Class`, "Class 1", "Low - 1") %>%
-                    stringr::str_replace("Class 4", "High - 4") %>%
+        transmute(`Sensitivity Class` = stringr::str_replace(.data$`Sensitivity Class`, "Class 1", "1 - Low") %>%
+                    stringr::str_replace("Class 4", "4 - High") %>%
                     stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
-        distinct()
-    }, align = "r")
+        distinct() %>%
+        mutate(`Historical Temperature Variation` = c("> 43.0", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
+        mutate_if(is.numeric, round, digits = 2) %>%
+        select(`Sensitivity Class`, `Historical Temperature Variation`, `Proportion of Range`) %>%
+        gt::gt() %>%
+        gt::cols_label(`Historical Temperature Variation` = gt::html("Historical Temperature Variation (&deg;C)")) %>%
+        gt::tab_options(table.width = 600,
+                        table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = c(2, 3)) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
+    })
 
     output$box_C2ai <- renderUI({
       req(spat_res2)
@@ -1263,13 +1265,22 @@ ccvi_app <- function(testmode_in, ...){
       make_map(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
     })
 
-    output$tbl_C2aii <- renderTable({
+    output$tbl_C2aii <- gt::render_gt({
       req(spat_res())
       exp_df <-  spat_res() %>%
         select(contains("PTN", ignore.case = FALSE)) %>%
         tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
                      names_to = "Variable", values_to = "Proportion of Range") %>%
-        distinct()
+        mutate_if(is.numeric, round, digits = 2) %>%
+        distinct() %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
     })
 
     output$box_C2aii <- renderUI({
@@ -1292,12 +1303,20 @@ ccvi_app <- function(testmode_in, ...){
                rast_nm = "map")
     })
 
-    output$tbl_C2bi <- renderTable({
+    output$tbl_C2bi <- gt::render_gt({
       req(spat_res())
       exp_df <-  spat_res() %>%
         select("MAP_max", "MAP_min") %>%
         rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
-        distinct()
+        distinct() %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
     })
 
     output$box_C2bi <- renderUI({
@@ -1330,12 +1349,21 @@ ccvi_app <- function(testmode_in, ...){
                                      value = c(0, 1, 2, 3)))
     })
 
-    output$tbl_D2_3 <- renderTable({
+    output$tbl_D2_3 <- gt::render_gt({
       req(spat_res())
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Range Lost` = .data$range_change,
-               `% Maintained` = .data$range_overlap)
+               `% Maintained` = .data$range_overlap) %>%
+        mutate_if(is.numeric, round, digits = 2) %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
     })
 
     output$box_D2 <- renderUI({
@@ -1467,14 +1495,22 @@ ccvi_app <- function(testmode_in, ...){
     output$calcFlag <- reactive(isTruthy(index_res()))
     outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
 
-    output$n_factors <- renderTable({
+    output$n_factors <- gt::render_gt({
       facts <- index_res() %>% distinct(across(contains("factors")))
       tibble(Section = c("Section B: Indirect Exposure to Climate Change",
                          "Section C: Sensitivity and Adaptive Capacity",
                          "Section D: Documented or Modeled Response to Climate Change"),
              `Factors completed` = c(paste0(facts$n_b_factors, "/4"),
                                      paste0(facts$n_c_factors, "/16"),
-                                     paste0(facts$n_d_factors, "/4")))
+                                     paste0(facts$n_d_factors, "/4"))) %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = 2) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", align = "center", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
     })
 
     output$slr <- renderText({
