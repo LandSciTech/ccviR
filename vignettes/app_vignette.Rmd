@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 ## Introduction
 This tutorial is directed at users who are new to the ccviR app but are familiar with the NatureServe Climate Change Vulnerability Index. More detailed information about the index can be found in `vignette("app_details_vignette", package = "ccviR")` and the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf)
 
-The ccviR app implements the [NatureServe Climate Change Vulnerability Index (CCVI)](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) in a Shiny App. The app allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. It also includes new features and enhanced user friendliness to make it easier to calculate the index and explore the results. 
+The ccviR app implements the [NatureServe Climate Change Vulnerability Index (CCVI)](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) in a Shiny App. The app allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. It also includes new features and enhanced user friendliness to make it easier to calculate the index and explore the results. The resulting index is a relative measure of climate change vulnerability and index values should only be compared across species assessed with the same climate data.  
 
 ## Run a demonstration
 Before using the app to assess a real species we recommend walking through the app with the demo data set provided. 
