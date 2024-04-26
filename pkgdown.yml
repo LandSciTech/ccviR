@@ -2,10 +2,11 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
+  app_details_vignette: app_details_vignette.html
   app_vignette: app_vignette.html
   data_prep_vignette: data_prep_vignette.html
   package_vignette: package_vignette.html
-last_built: 2024-04-26T21:06Z
+last_built: 2024-04-26T21:10Z
 urls:
   reference: https://landscitech.github.io/ccviR/reference
   article: https://landscitech.github.io/ccviR/articles

@@ -57,7 +57,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/app_vignette.html">Using the ccviR app</a>
+      <a href="../articles/app_details_vignette.html">The ccviR app: Additional details</a>
+    </li>
+    <li>
+      <a href="../articles/app_vignette.html">The ccviR app: Getting started</a>
     </li>
     <li>
       <a href="../articles/data_prep_vignette.html">Preparing Custom Climate Data</a>
@@ -101,9 +104,9 @@
 
     
     
-<div class="section level3">
-<h3 id="custom-climate-data">Custom Climate Data<a class="anchor" aria-label="anchor" href="#custom-climate-data"></a>
-</h3>
+<div class="section level2">
+<h2 id="custom-climate-data">Custom Climate Data<a class="anchor" aria-label="anchor" href="#custom-climate-data"></a>
+</h2>
 <p>If you wish to use a custom set of climate data to calculate the
 NatureServe Climate Change Vulnerability Index you will need to prepare
 the climate data into the form used to calculate the index. The raw
@@ -116,9 +119,7 @@ periods</li>
 <li>Mean annual precipitation (MAP) for the historical time period</li>
 <li>Minimum coldest and warmest month temperatures (MCMT and MWMT) for
 the historical time period</li>
-<li>Optionally, the climate change exposure index (CCEI) for
-South/Central America which is available from <a href="https://www.natureserve.org/ccvi-species" class="external-link">NatureServe</a>
-</li>
+<li>Optionally, a climate change exposure index (CCEI) raster</li>
 </ul>
 <p>Climate data for multiple scenarios can be used to calculate the CCVI
 index for each scenario simultaneously, in which case the MAT and CMD
@@ -126,6 +127,21 @@ for each future scenario is needed in the raw climate data set. The app
 will use the raw climate data to create the classified versions of the
 climate data that are used to calculate the index and save them in the
 selected folder.</p>
+<div class="section level3">
+<h3 id="climate-data-sources">Climate data sources<a class="anchor" aria-label="anchor" href="#climate-data-sources"></a>
+</h3>
+<p>Step 1 is to acquire the necessary climate data. There are many
+options for where to acquire climate data depending on the desired
+climate change emissions scenario, General Circulation Model, or
+downscaling method you prefer. One good source for all of North America
+is from <a href="https://adaptwest.databasin.org/pages/adaptwest-climatena/" class="external-link">AdaptWest</a>.
+On the AdpatWest page select the bioclimatic variables for the normal
+period and the desired future climate scenario(s). We recommend using
+the 1961-1990 normal period and the ensemble data for SSP2-4.5 and
+SSP5-8.5 2050s for the future. Save the downloaded data in a folder you
+can easily find.</p>
+<p>The Climate Change Exposure Index (CCEI) for South America is
+available from <a href="https://www.natureserve.org/ccvi-species" class="external-link">NatureServe</a>.</p>
 </div>
 <div class="section level3">
 <h3 id="launch-the-app">Launch the app<a class="anchor" aria-label="anchor" href="#launch-the-app"></a>
@@ -142,13 +158,6 @@ avoid having to open the data folder every time I select a file.
 Alternatively, the complete path to the data folder can be supplied
 e.g. “C:/Users/username/Documents/path/to/folder” (Note that paths in R
 must be supplied using forward slashes).</p>
-</div>
-<div class="section level3">
-<h3 id="acquire-climate-data">Acquire climate data<a class="anchor" aria-label="anchor" href="#acquire-climate-data"></a>
-</h3>
-<p>Step 1 in the app explains the data required and some recommended
-sources of data. For this demonstration we will use the data contained
-in the app.</p>
 </div>
 <div class="section level3">
 <h3 id="describe-the-data">Describe the data<a class="anchor" aria-label="anchor" href="#describe-the-data"></a>
@@ -186,11 +195,10 @@ Complete”.</p>
 </h3>
 <p>If you wish to calculate the CCVI for multiple climate change
 scenarios simultaneously you can create a climate change data set with
-multiple scenarios in the “Data Preparation for the ccviR app”. To do
-this click on “Add Another Scenario” after the first scenario has
-completed processing. All scenarios must be processed in one session in
-order for the same thresholds to be applied for classifying all
-scenarios.</p>
+multiple scenarios. To do this click on “Add Another Scenario” after the
+first scenario has completed processing. All scenarios must be processed
+in one session in order for the same thresholds to be applied for
+classifying all scenarios.</p>
 <p>The first scenario processed will determine the thresholds used to
 classify the temperature and moisture exposure based on the median and
 1/2 the interquartile range. Therefore, we recommend processing the
@@ -200,16 +208,26 @@ each scenario but the values will only be erased for inputs that are
 expected to change between scenarios or are not required for additional
 scenarios. MAT and CMD must be provided for the additional scenario. The
 historical values will not change but must still be supplied since the
-amount of change is used to inform the exposure. The rest MCMT, MWMT and
-MAP are not needed for additional scenarios because they are used to
+amount of change is used to inform the exposure. The rest: MCMT, MWMT
+and MAP are not needed for additional scenarios because they are used to
 inform the species’ sensitivity based on its current range and
 historical climate so they will not change between scenarios.</p>
+</div>
+<div class="section level3">
+<h3 id="more-information">More information<a class="anchor" aria-label="anchor" href="#more-information"></a>
+</h3>
+<p>See the <code><a href="../articles/package_vignette.html">vignette("package_vignette", package = "ccviR")</a></code>
+for a more detailed walk through of how the categories in the exposure
+rasters are determined.</p>
+</div>
 </div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 

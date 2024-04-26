@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Using the ccviR app • ccviR</title>
+<title>The ccviR app: Getting started • ccviR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Using the ccviR app">
+<script src="../pkgdown.js"></script><meta property="og:title" content="The ccviR app: Getting started">
 <meta property="og:description" content="ccviR">
 <meta property="og:image" content="https://landscitech.github.io/ccviR/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -57,7 +57,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/app_vignette.html">Using the ccviR app</a>
+      <a href="../articles/app_details_vignette.html">The ccviR app: Additional details</a>
+    </li>
+    <li>
+      <a href="../articles/app_vignette.html">The ccviR app: Getting started</a>
     </li>
     <li>
       <a href="../articles/data_prep_vignette.html">Preparing Custom Climate Data</a>
@@ -91,7 +94,7 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Using the ccviR app</h1>
+      <h1 data-toc-skip>The ccviR app: Getting started</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/see24/ccviR/blob/HEAD/vignettes/app_vignette.Rmd" class="external-link"><code>vignettes/app_vignette.Rmd</code></a></small>
@@ -104,40 +107,20 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
+<p>This tutorial is directed at users who are new to the ccviR app but
+are familiar with the NatureServe Climate Change Vulnerability Index.
+More detailed information about the index can be found in
+<code><a href="../articles/app_details_vignette.html">vignette("app_details_vignette", package = "ccviR")</a></code> and the
+<a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe
+CCVI Guidelines</a></p>
 <p>The ccviR app implements the <a href="https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index" class="external-link">NatureServe
 Climate Change Vulnerability Index (CCVI)</a> in a Shiny App. The app
 allows all of the geospatial aspects of calculating the CCVI to be done
 in R, removing the need for separate GIS calculations. It also includes
 new features and enhanced user friendliness to make it easier to
-calculate the index and explore the results.</p>
-<p>The NatureServe CCVI is a trait based climate change vulnerability
-assessment framework. It includes three commonly used components of
-vulnerability: exposure, sensitivity and adaptive capacity. In addition,
-it optionally incorporates the results of documented or modeled
-responses to climate change.</p>
-<p>Exposure is assessed by determining the proportion of the species
-range that falls into 6 classes of temperature and moisture change which
-is used to assign an exposure multiplier. Sensitivity and adaptive
-capacity are assessed by scoring 23 vulnerability factors, on a scale
-from 0 (‘neutral’) to 3 (‘greatly increases vulnerability’). These
-scores are then multiplied by the exposure multiplier and are summed to
-give a total score for this section. Factors that cannot be answered can
-be left blank and contribute 0 to the total score. If fewer than 13
-factors are scored the index value cannot be calculated.</p>
-<p>In addition, there are 4 vulnerability factors for documented or
-modeled responses to climate change that can optionally be scored on a
-similar scale. These scores are simply summed to get the total score for
-this section. An index value is then determined for the two sections
-(exposure <em>x</em> sensitivity and adaptive capacity, and documented
-or modeled responses) by applying a set of thresholds to the scores. The
-two index values are then combined using a table that gives more weight
-to the sensitivity and adaptive capacity section. The possible index
-values are Less Vulnerable, Moderately Vulnerable, Highly Vulnerable,
-Extremely Vulnerable or Insufficient Evidence (if not enough factors of
-the CCVI are scored).</p>
-<p>For more detailed information on how the index works and how each
-factor is scored see the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe
-CCVI Guidelines</a> and the references below.</p>
+calculate the index and explore the results. The resulting index is a
+relative measure of climate change vulnerability and index values should
+only be compared across species assessed with the same climate data.</p>
 </div>
 <div class="section level2">
 <h2 id="run-a-demonstration">Run a demonstration<a class="anchor" aria-label="anchor" href="#run-a-demonstration"></a>
@@ -386,81 +369,6 @@ comment section. Once rendered, the report will appear in your
 downloads. Note this may take a long time the first time that you run it
 since some LaTex packages will need to be installed.</p>
 </div>
-</div>
-<div class="section level2">
-<h2 id="use-the-app-with-real-data">Use the app with real data<a class="anchor" aria-label="anchor" href="#use-the-app-with-real-data"></a>
-</h2>
-<p>Once you have completed the demonstration you are ready to use the
-app with real world data.</p>
-<div class="section level3">
-<h3 id="assemble-the-data">Assemble the data<a class="anchor" aria-label="anchor" href="#assemble-the-data"></a>
-</h3>
-<p>The first time you use the app you will need to acquire a climate
-data set that includes the predicted future change in mean annual
-temperature (MAT), and climate moisture deficit (CMD) as well as
-historical mean annual precipitation and the difference between
-historical maximum warmest month temperature (MWMT) and minimum coldest
-month temperature (MCMT). The data is classified based on the median and
-interquartile range for the future change in MAT and CMD and based on
-thresholds defined by the NatureServe Guidelines for MAP and
-MWMT-MCMT.</p>
-<p>There are several versions of the data set available for download <a href="https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link" class="external-link">here</a>.
-To use the data you need to download one of the files, unzip it and
-store it in a convenient location. If you wish to create your own
-climate data set for use with the index based on different climate data
-you can follow the instructions in the “Preparing Custom Climate Data”
-<a href="https://landscitech.github.io/ccviR/articles/data_prep_vignette.html">vignette</a>.
-When using the app to assess multiple different species the same climate
-data set should be used for all species so this step only needs to be
-done once.</p>
-<p>In addition to the climate data the following spatial data sets for
-each species can be input:</p>
-<ul>
-<li>Species range polygon (required): Ideally this is the complete area
-occupied by the species in North America since it is used to determine
-the range of climate conditions that the species can tolerate.</li>
-<li>Assessment area polygon (required): The area within which the
-species vulnerability is being assessed. For example, a country,
-province, state, or protected area. This can also be a subset of the
-species range if you are assessing sub-populations. This polygon is
-overlapped with the range to determine the exposure to climate change in
-the area of interest.</li>
-<li>Physiological thermal niche (PTN) polygon: The PTN polygon should
-include cool or cold environments occupied by the species that may be
-lost or reduced in the assessment area as a result of climate
-change.</li>
-<li>Non-breeding range polygon: If applicable, the area outside North
-America occupied in the non-breeding season.</li>
-<li>Projected range change raster: The modeled change in the species
-range caused by climate change. The values of the raster cells should
-indicate whether the cell was lost, maintained, gained or was never
-included in the range.</li>
-</ul>
-<p>The species range and assessment area are required but other spatial
-data sets are optional. If the non-breeding range is not included the
-migratory exposure index will not be calculated. If spatial data for the
-projected range change or PTN are not provided these factors can be
-filled in manually based on non-spatial information. All polygon data
-should be provided as a shapefile while raster data can be in any file
-format accepted by the <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">terra::rast</a></code> function but “.tif”
-files are recommended.</p>
-</div>
-<div class="section level3">
-<h3 id="launching-the-app">Launching the app<a class="anchor" aria-label="anchor" href="#launching-the-app"></a>
-</h3>
-<p>The app is launched by calling the <code><a href="../reference/run_ccvi_app.html">run_ccvi_app()</a></code>
-function, which will launch the app in the user’s default internet
-browser. All file selection windows will start in the current working
-directory. To run the app with data stored in a different folder you can
-call <code><a href="../reference/run_ccvi_app.html">run_ccvi_app()</a></code> with the folder path as the first
-argument. For example, if all of the data is stored in a subdirectory
-named “data” of the RStudio project where I am calling the function I
-would call <code>run_ccvi_app("data")</code> to avoid having to open the
-data folder every time I select a file. Alternatively, the complete path
-to the data folder can be supplied
-e.g. “C:/Users/username/Documents/path/to/folder” (Note that paths in R
-must be supplied using forward slashes).</p>
-</div>
 <div class="section level3">
 <h3 id="saving-the-app">Saving the app<a class="anchor" aria-label="anchor" href="#saving-the-app"></a>
 </h3>
@@ -487,17 +395,6 @@ reproduce (ex: filling out Vulnerability Questions).</p>
 <p>To interpret the names of the columns in the saved csv file you can
 download the column definitions from the bottom of the Welcome page.</p>
 </div>
-<div class="section level3">
-<h3 id="multiple-related-assessments">Multiple related assessments<a class="anchor" aria-label="anchor" href="#multiple-related-assessments"></a>
-</h3>
-<p>You can use a saved partially completed assessment as a template for
-running multiple related assessments. For example, to assess multiple
-populations of a species that are in different locations and may have
-different stressors fill in the app with all the information that will
-not change between populations and save the state of the app in a csv.
-Use this csv to load the template assessment and then modify it for each
-population and save the completed assessments in new csv files.</p>
-</div>
 </div>
 <div class="section level2">
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
@@ -512,8 +409,8 @@ error message can be found in the R console.</p>
 analysis using the ccviR package. You will often be able to figure out
 what is causing the problem and return to the app. See
 <code><a href="../articles/package_vignette.html">vignette("package_vignette", package = "ccviR")</a></code> for a
-tutorial on how to use the package. Or if you are not an R user, contact
-sarah.endicott at ec.gc.ca and I will try to help.</p>
+tutorial on how to use the package. Or you can ask a question or report
+an issue through the package GitHub <a href="https://github.com/LandSciTech/ccviR/issues" class="external-link">page</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
