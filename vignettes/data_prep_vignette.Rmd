@@ -26,7 +26,7 @@ If you wish to use a custom set of climate data to calculate the NatureServe Cli
 Climate data for multiple scenarios can be used to calculate the CCVI index for each scenario simultaneously, in which case the MAT and CMD for each future scenario is needed in the raw climate data set. The app will use the raw climate data to create the classified versions of the climate data that are used to calculate the index and save them in the selected folder. 
 
 ### Climate data sources
-There are many options for where to acquire climate data depending on the desired climate change emissions scenario, General Circulation Model, or downscaling method you prefer. One good source for all of North America is from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/).
+Step 1 is to acquire the necessary climate data. There are many options for where to acquire climate data depending on the desired climate change emissions scenario, General Circulation Model, or downscaling method you prefer. One good source for all of North America is from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/).
 On the AdpatWest page select the bioclimatic variables for the normal period and the desired future climate scenario(s). We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 and SSP5-8.5 2050s for the future. Save the downloaded data in a folder you can easily find.
 
 The Climate Change Exposure Index (CCEI) for South America is available from [NatureServe](https://www.natureserve.org/ccvi-species).
