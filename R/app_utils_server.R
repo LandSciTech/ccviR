@@ -312,6 +312,7 @@ update_call <- function(input, update_fun, value, arg_name, comment, session){
     }
   } else {
     if(arg_name == "value"){
+      value <- ifelse(value == "TRUE", TRUE, value)
       value <- ifelse(value == "FALSE", FALSE, value)
       update_fun(session = session, inputId = input, value = value)
     } else if(arg_name == "selected"){
