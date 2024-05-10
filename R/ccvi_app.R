@@ -320,7 +320,9 @@ ccvi_app <- function(testmode_in, ...){
                 capacity (Section C), and modeled or documented responses to
                 climate change (Section D). Questions from Sections C and D with
                 a spatial component are adressed in the \"Spatial Vulnerability
-                Questions\" tab."),
+                Questions\" tab and questions that only apply to certain taxa are
+                only displayed if applicable. As a result, the question numbering
+                is not sequential but will match the NatureServe version."),
               p("The NatureServe Guidelines for scoring each question can be accessed
                 by clicking the info button next to the question. Use published studies,
                 empirical data or expert opinion to support your responses. Provide
