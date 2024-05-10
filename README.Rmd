@@ -62,7 +62,7 @@ ccviR uses the same vulnerability factors and scoring algorithm as the original 
 - Plots that explain the drivers of the index value
 - Allows the full assessment to be carried out in a reproducible environment
 - Simplifies synthetic analyses across many species, groups or regions
-- The  Shiny app provides a Graphical User Interface to calculate the NatureServe CCVI
+- The Shiny app provides a Graphical User Interface to calculate the NatureServe CCVI
 - The Shiny app allows users to calculate the index without knowing R
 - Makes the NatureServe CCVI accessible to a wider audience
 
