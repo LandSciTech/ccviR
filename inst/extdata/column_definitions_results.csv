@@ -25,6 +25,11 @@ range_overlap,The percentage of the current range that is projected to remain in
 range_size,The area of the species' range in m2
 gain_mod, Gain modifier. Used to down-weight modelled range gains
 gain_mod_comm, Explaination for gain modifier choice
+lost,"lower, upper bounds for raster values interpreted as range lost under climate change"
+maint,"lower, upper bounds for raster values interpreted as range maintained under climate change"
+gain,"lower, upper bounds for raster values interpreted as range gained under climate change"
+ns,"lower, upper bounds for raster values interpreted as not suitable habitat at any point"
+rng_chg_used,"Whether range change rasters showing projected future change in species range were used. Options are no, one, or multiple"
 ,
 ,"Answers to each question plus any comments. -1) No selection, 0) Neutral, 1) Somewhat increase, 2) Increase, 3) Greatly increase. If there are 2 numbers then two boxes were checked and the average of the scores was used in the total score"
 B1,  1) Exposure to sea level rise

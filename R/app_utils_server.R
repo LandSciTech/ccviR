@@ -281,14 +281,16 @@ update_restored <- function(df, session){
                         values_transform = as.character) %>%
     mutate(comment = ifelse(is.na(comment), "", comment)) %>%
     distinct()
-
+  browser()
   df2 <- df %>% select(-matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
                              values_to = "value",
                              values_transform = as.character) %>%
     distinct() %>%
+    mutate(input2 = ifelse(stringr::str_detect(input, "rng_chg_pth"), "rng_chg_pth", input)) %>%
     left_join(df_coms, by = "input") %>%
-    left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
+    left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input2" = "id")) %>%
+    select(-input2) %>%
     filter(!is.na(.data$update_fun)) %>%
     mutate(comment = ifelse(is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
                             "", .data$comment),

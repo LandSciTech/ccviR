@@ -638,7 +638,7 @@ ccvi_app <- function(testmode_in, ...){
     clim_dir_pth <- reactiveVal()
 
     # Restore from saved file #=================================================
-    restored_df <- eventReactive(input$loadcsv, {
+    df_loaded <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
         df_loaded <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
 
@@ -658,38 +658,43 @@ ccvi_app <- function(testmode_in, ...){
 
             update_restored(df_loaded, session)
 
-            if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-              df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-              spat_res(df_spat)
-              repeatSpatial(TRUE)
-              doSpatial((doSpatial() +1))
-              showNotification("Re-running spatial analysis from loaded file.",
-                               duration = NULL, id = "spat_restore_note")
-            }
-
-            index_res(recreate_index_res(df_loaded))
-
-            loaded_pths <- df_loaded %>% slice(1) %>%
-              select(contains("pth"), -any_of("clim_dir_pth")) %>%
-              as.list()
-
-            if(length(loaded_pths)>0){
-              file_pths(purrr::discard(loaded_pths, is.na))
-            }
-
-            clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
-            clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
-            clim_dir_pth(clim_pth_ldd)
-
-            updateTabsetPanel(session, "tabset",
-                              selected = "Species Information"
-            )
-            shinyjs::runjs("window.scrollTo(0, 0)")
-
-            return(TRUE)
+            return(df_loaded)
           }
         }
       }
+    })
+    restored_df <- eventReactive(df_loaded(), {
+      browser()
+      df_loaded <- df_loaded()
+      if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
+        # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+        # spat_res(df_spat)
+        repeatSpatial(TRUE)
+        doSpatial((doSpatial() +1))
+        showNotification("Re-running spatial analysis from loaded file.",
+                         duration = NULL, id = "spat_restore_note")
+      }
+
+      index_res(recreate_index_res(df_loaded))
+
+      loaded_pths <- df_loaded %>% slice(1) %>%
+        select(contains("pth"), -any_of("clim_dir_pth")) %>%
+        as.list()
+
+      if(length(loaded_pths)>0){
+        file_pths(purrr::discard(loaded_pths, is.na))
+      }
+
+      clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
+      clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
+      clim_dir_pth(clim_pth_ldd)
+
+      updateTabsetPanel(session, "tabset",
+                        selected = "Species Information"
+      )
+      shinyjs::runjs("window.scrollTo(0, 0)")
+
+      return(TRUE)
     })
 
     observeEvent(restored_df(), {
@@ -959,11 +964,12 @@ ccvi_app <- function(testmode_in, ...){
     hs_rast <- reactiveVal()
 
     observeEvent(doSpatial(), {
+      browser()
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
       } else {
-        pth <- file_pths()[stringr::str_subset(names(input), "rng_chg_pth")] %>%
+        pth <- file_pths()[stringr::str_subset(names(file_pths()), "rng_chg_pth")] %>%
           unlist()
         pth <- pth[sort(names(pth))]
       }
@@ -972,7 +978,7 @@ ccvi_app <- function(testmode_in, ...){
         hs_rast(NULL)
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
-
+        message("loading rng_chg_rasts")
         out <- check_trim(terra::rast(pth))
         hs_rast(out)
       }
@@ -1108,9 +1114,10 @@ ccvi_app <- function(testmode_in, ...){
 
     # calculate exp multipliers and vuln Q values for spat
     spat_res2 <- reactiveVal(FALSE)
-    observe({
+    observeEvent(spat_res(), {
       req(!is.character(spat_res()))
       req(spat_res())
+      browser()
       message("updateing spat_res2")
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
@@ -1139,6 +1146,7 @@ ccvi_app <- function(testmode_in, ...){
 
     output$texp_tbl <- gt::render_gt({
       req(spat_res2())
+      browser()
       get_exposure_table(spat_res2(), "MAT", clim_readme(), clim_readme()$brks_mat)
       })
 
@@ -1569,8 +1577,14 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.null(file_pths()))
 
       message("spat out_data")
-      spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
-                                       gain_mod_comm = input$gain_mod_comm)
+      spat_df <- spat_res() %>%
+        mutate(gain_mod = input$gain_mod,
+               gain_mod_comm = input$gain_mod_comm,
+               lost = paste0(input$lost_from, ", ", input$lost_to),
+               maint = paste0(input$maint_from, ", ", input$maint_to),
+               gain = paste0(input$gain_from, ", ", input$gain_to),
+               ns = paste0(input$ns_from, ", ", input$ns_to),
+               rng_chg_used = input$rng_chg_used)
       clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
       spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
         as.data.frame() %>%
