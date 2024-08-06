@@ -82,18 +82,18 @@ plot_q_score <- function(vuln_df){
               min = floor(min(.data$score)))
 
   #define width of subplots by finding the absolut range of each "facet"
-  plot_width<- vuln_df %>%
+  plot_width<- max_df %>%
     group_by(.data$sub_index) %>%
     summarise(range = n()) %>%
-    ungroup() %>%
-    mutate(width_pct = range/sum(range))
+    mutate(width_pct = ifelse(.data$sub_index == "D index", 0.02 + range/sum(range),
+                              -0.02 + range/sum(range)))
 
   # add colors by section
   cols_use <- c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3')
   cols_use <- c(B = cols_use[5], C = cols_use[1], D = cols_use[4])
 
   #define a list of ggplot and feed it in the subplot function with the calculated limits
-  vuln_df <- vuln_df %>%
+  vuln_df <- vuln_df %>% right_join(vulnq_code_lu_tbl) %>%
     mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
   split(vuln_df, vuln_df$sub_index) %>%
     purrr::map2(
