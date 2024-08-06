@@ -1127,7 +1127,6 @@ ccvi_app <- function(testmode_in, ...){
     # calculate exp multipliers and vuln Q values for spat
     spat_res2 <- reactiveVal(FALSE)
     observeEvent(spat_res(), {
-      browser()
       req(!is.character(spat_res()))
       req(spat_res())
       req(!doSpatial() == doSpatialRestore())
@@ -1135,7 +1134,6 @@ ccvi_app <- function(testmode_in, ...){
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
     })
-    observe(cat("doSpatial", print(doSpatial())))
 
     # Exposure maps #=========================================================
     output$texp_map <- leaflet::renderLeaflet({
@@ -1364,7 +1362,6 @@ ccvi_app <- function(testmode_in, ...){
     output$map_D2_3 <- leaflet::renderLeaflet({
       req(doSpatial())
       req(hs_rast2())
-
       make_map(poly1 = range_poly(), rast = hs_rast2(),
                poly2 = assess_poly(), poly2_nm = "assess_poly",
                rast_nm = "hs_rast",
