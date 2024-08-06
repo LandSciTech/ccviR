@@ -640,7 +640,7 @@ ccvi_app <- function(testmode_in, ...){
     spat_res <- reactiveVal(FALSE)
     file_pths <- reactiveVal()
     clim_dir_pth <- reactiveVal()
-    doSpatialRestore <- reactiveVal()
+    doSpatialRestore <- reactiveVal(FALSE)
 
     # Restore from saved file #=================================================
     df_loaded <- eventReactive(input$loadcsv, {
@@ -1127,6 +1127,7 @@ ccvi_app <- function(testmode_in, ...){
     # calculate exp multipliers and vuln Q values for spat
     spat_res2 <- reactiveVal(FALSE)
     observeEvent(spat_res(), {
+      browser()
       req(!is.character(spat_res()))
       req(spat_res())
       req(!doSpatial() == doSpatialRestore())
@@ -1134,6 +1135,7 @@ ccvi_app <- function(testmode_in, ...){
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
     })
+    observe(cat("doSpatial", print(doSpatial())))
 
     # Exposure maps #=========================================================
     output$texp_map <- leaflet::renderLeaflet({
