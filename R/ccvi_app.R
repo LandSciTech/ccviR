@@ -640,6 +640,7 @@ ccvi_app <- function(testmode_in, ...){
     spat_res <- reactiveVal(FALSE)
     file_pths <- reactiveVal()
     clim_dir_pth <- reactiveVal()
+    doSpatialRestore <- reactiveVal()
 
     # Restore from saved file #=================================================
     df_loaded <- eventReactive(input$loadcsv, {
@@ -678,9 +679,11 @@ ccvi_app <- function(testmode_in, ...){
         df_loaded <- df_loaded()
         if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
           # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          # spat_res(df_spat)
+          # spat_res2(df_spat)
           repeatSpatial(TRUE)
           doSpatial((doSpatial() +1))
+          # set to same as doSpatial so can check value and if same don't update spat_res2
+          doSpatialRestore(doSpatial())
           showNotification("Re-running spatial analysis from loaded file.",
                            duration = NULL, id = "spat_restore_note")
         }
@@ -1056,7 +1059,6 @@ ccvi_app <- function(testmode_in, ...){
     spat_res1 <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars())
-      browser()
       out <- tryCatch({
         analyze_spatial(range_poly = range_poly_in(),
                         non_breed_poly = nonbreed_poly(),
@@ -1127,6 +1129,7 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(spat_res(), {
       req(!is.character(spat_res()))
       req(spat_res())
+      req(!doSpatial() == doSpatialRestore())
       message("updateing spat_res2")
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
