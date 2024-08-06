@@ -122,6 +122,10 @@ ccvi_app <- function(testmode_in, ...){
             #load_bookmark_ui("load"),
             shinyFilesButton("loadcsv", "Select file", "Select file", multiple = FALSE),
             br(),
+            # this hidden input will allow us to stop processing until returning
+            # to the UI so that values from the saved file are updated in input
+            # before using
+            div(style = "display:none", textInput(inputId = "hidden", label = "", value = "")),
             br(),
             p("Download column definitions for saved data"),
             downloadButton("downloadDefs", "Download csv"),
@@ -640,62 +644,68 @@ ccvi_app <- function(testmode_in, ...){
     # Restore from saved file #=================================================
     df_loaded <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
-        df_loaded <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
+        df_in <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
 
         # Check that csv is not empty
-        if(inherits(df_loaded, "try-error")){
+        if(inherits(df_in, "try-error")){
           message("CSV file is empty, cannot restore from file.")
           return(FALSE)
 
         } else {
 
           # Check that csv contains the right data
-          if(nrow(df_loaded) < 1 || !"scenario_name" %in% colnames(df_loaded)){
+          if(nrow(df_in) < 1 || !"scenario_name" %in% colnames(df_in)){
             message("CSV file is invalid, cannot restore from file.")
             return(FALSE)
 
           } else {
 
-            update_restored(df_loaded, session)
-
-            return(df_loaded)
+            update_restored(df_in, session)
+            return(df_in)
           }
         }
       }
     })
-    restored_df <- eventReactive(df_loaded(), {
-      browser()
-      df_loaded <- df_loaded()
-      if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-        # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-        # spat_res(df_spat)
-        repeatSpatial(TRUE)
-        doSpatial((doSpatial() +1))
-        showNotification("Re-running spatial analysis from loaded file.",
-                         duration = NULL, id = "spat_restore_note")
-      }
+    restored_df <- eventReactive(
+      {
+        df_loaded()
+        # this is to make it trigger after update_restored
+        input$hidden},
+      {
+        # this is to avoid running before input has been updated
+        req(input$hidden)
 
-      index_res(recreate_index_res(df_loaded))
+        df_loaded <- df_loaded()
+        if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
+          # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          # spat_res(df_spat)
+          repeatSpatial(TRUE)
+          doSpatial((doSpatial() +1))
+          showNotification("Re-running spatial analysis from loaded file.",
+                           duration = NULL, id = "spat_restore_note")
+        }
 
-      loaded_pths <- df_loaded %>% slice(1) %>%
-        select(contains("pth"), -any_of("clim_dir_pth")) %>%
-        as.list()
+        index_res(recreate_index_res(df_loaded))
 
-      if(length(loaded_pths)>0){
-        file_pths(purrr::discard(loaded_pths, is.na))
-      }
+        loaded_pths <- df_loaded %>% slice(1) %>%
+          select(contains("pth"), -any_of("clim_dir_pth")) %>%
+          as.list()
 
-      clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
-      clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
-      clim_dir_pth(clim_pth_ldd)
+        if(length(loaded_pths)>0){
+          file_pths(purrr::discard(loaded_pths, is.na))
+        }
 
-      updateTabsetPanel(session, "tabset",
-                        selected = "Species Information"
-      )
-      shinyjs::runjs("window.scrollTo(0, 0)")
+        clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
+        clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
+        clim_dir_pth(clim_pth_ldd)
 
-      return(TRUE)
-    })
+        updateTabsetPanel(session, "tabset",
+                          selected = "Species Information"
+        )
+        shinyjs::runjs("window.scrollTo(0, 0)")
+
+        return(TRUE)
+      })
 
     observeEvent(restored_df(), {
       if (restored_df()){
@@ -964,7 +974,6 @@ ccvi_app <- function(testmode_in, ...){
     hs_rast <- reactiveVal()
 
     observeEvent(doSpatial(), {
-      browser()
       if (isTRUE(getOption("shiny.testmode"))) {
         pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
@@ -1047,22 +1056,23 @@ ccvi_app <- function(testmode_in, ...){
     spat_res1 <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars())
-       out <- tryCatch({
-          analyze_spatial(range_poly = range_poly_in(),
-                      non_breed_poly = nonbreed_poly(),
-                      scale_poly = assess_poly(),
-                      hs_rast = hs_rast(),
-                      ptn_poly = ptn_poly(),
-                      clim_vars_lst = clim_vars(),
-                      hs_rcl = hs_rcl_mat(),
-                      gain_mod = input$gain_mod,
-                      scenario_names = clim_readme()$Scenario_Name)
-        },
-        error = function(cnd) conditionMessage(cnd))
+      browser()
+      out <- tryCatch({
+        analyze_spatial(range_poly = range_poly_in(),
+                        non_breed_poly = nonbreed_poly(),
+                        scale_poly = assess_poly(),
+                        hs_rast = hs_rast(),
+                        ptn_poly = ptn_poly(),
+                        clim_vars_lst = clim_vars(),
+                        hs_rcl = hs_rcl_mat(),
+                        gain_mod = input$gain_mod,
+                        scenario_names = clim_readme()$Scenario_Name)
+      },
+      error = function(cnd) conditionMessage(cnd))
 
-       # force these to invalidate when re-run
-       spat_res(FALSE)
-       spat_res2(FALSE)
+      # force these to invalidate when re-run
+      spat_res(FALSE)
+      spat_res2(FALSE)
 
       removeNotification("spat_restore_note")
       return(out)
@@ -1117,7 +1127,6 @@ ccvi_app <- function(testmode_in, ...){
     observeEvent(spat_res(), {
       req(!is.character(spat_res()))
       req(spat_res())
-      browser()
       message("updateing spat_res2")
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
@@ -1146,7 +1155,6 @@ ccvi_app <- function(testmode_in, ...){
 
     output$texp_tbl <- gt::render_gt({
       req(spat_res2())
-      browser()
       get_exposure_table(spat_res2(), "MAT", clim_readme(), clim_readme()$brks_mat)
       })
 

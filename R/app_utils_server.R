@@ -281,7 +281,7 @@ update_restored <- function(df, session){
                         values_transform = as.character) %>%
     mutate(comment = ifelse(is.na(comment), "", comment)) %>%
     distinct()
-  browser()
+
   df2 <- df %>% select(-matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
                              values_to = "value",
@@ -299,9 +299,12 @@ update_restored <- function(df, session){
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
+  # this is used as a trigger to skip running spatial until after returning to
+  # UI so that input is updated with values from csv
+  updateTextInput(inputId = "hidden", value = "yes")
+
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
-
   purrr::pwalk(df2, update_call, session = session)
 }
 
