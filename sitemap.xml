@@ -1,84 +1,30 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://landscitech.github.io/ccviR/404.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/articles/app_details_vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/articles/app_vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/articles/data_prep_vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/articles/package_vignette.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/index.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/analyze_spatial.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/brks_to_txt.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/calc_vulnerability.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/ccviR-package.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/comb_index_tbl.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/context_North_Am.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/get_clim_vars.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/make_vuln_df.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/plot_bivar_exp.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/plot_q_score.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/plot_score_index.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/prep_clim_data.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/run_ccvi_app.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/run_data_prep.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/ui_build_table.html</loc>
-  </url>
-  <url>
-    <loc>https://landscitech.github.io/ccviR/reference/vulnq_code_lu_tbl.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://landscitech.github.io/ccviR/404.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/LICENSE.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/articles/app_details_vignette.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/articles/app_vignette.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/articles/data_prep_vignette.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/articles/index.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/articles/package_vignette.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/authors.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/index.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/news/index.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/analyze_spatial.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/brks_to_txt.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/calc_vulnerability.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/ccviR-package.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/comb_index_tbl.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/context_North_Am.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/get_clim_vars.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/index.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/make_vuln_df.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/plot_bivar_exp.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/plot_q_score.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/plot_score_index.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/prep_clim_data.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/run_ccvi_app.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/run_data_prep.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/ui_build_table.html</loc></url>
+<url><loc>https://landscitech.github.io/ccviR/reference/vulnq_code_lu_tbl.html</loc></url>
 </urlset>
+
