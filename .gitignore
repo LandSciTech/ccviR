@@ -7,7 +7,8 @@ inst/doc
 docs/
 inst/rmd/results_report_files/
 inst/rmd/*.pdf
-inst/joss_paper/
+inst/joss_paper/*.pdf
+inst/joss_paper/*.log
 inst/rmd/results_report.tex
 rsconnect/
 # {shinytest2}: Ignore new debug snapshots for `$expect_values()`
