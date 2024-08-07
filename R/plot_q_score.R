@@ -94,7 +94,7 @@ plot_q_score <- function(vuln_df){
 
   #define a list of ggplot and feed it in the subplot function with the calculated limits
   vuln_df <- vuln_df %>%
-    right_join(vulnq_code_lu_tbl, by = join_by(Code, Question, Max_Value, is_spatial)) %>%
+    right_join(vulnq_code_lu_tbl, by = join_by(Code, Question)) %>%
     mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
 
   max_lst <- rep(split(max_df, max_df$sub_index), n_distinct(vuln_df$scenario_name, na.rm = TRUE))
