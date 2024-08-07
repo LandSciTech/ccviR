@@ -95,9 +95,14 @@ plot_q_score <- function(vuln_df){
   #define a list of ggplot and feed it in the subplot function with the calculated limits
   vuln_df <- vuln_df %>% right_join(vulnq_code_lu_tbl) %>%
     mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
-  split(vuln_df, vuln_df$sub_index) %>%
+
+  max_lst <- rep(split(max_df, max_df$sub_index), n_distinct(vuln_df$scenario_name, na.rm = TRUE))
+
+  plt_lst <- split(vuln_df, list(vuln_df$scenario_name, vuln_df$sub_index)) %>%
     purrr::map2(
-      split(max_df, max_df$sub_index),
+      #Reorder with odd and even elements
+      c(max_lst[c(TRUE, FALSE)],
+        max_lst[c(FALSE, TRUE)]),
       function(x, y) {
         plt <- ggplot2::ggplot(
           x,
@@ -117,7 +122,8 @@ plot_q_score <- function(vuln_df){
           ggplot2::coord_flip(expand = FALSE, ylim = c(0, limits$max))+
           ggplot2::theme(legend.position = "none")
         plotly::ggplotly(plt, tooltip = "text")
-      }) %>%
+      })
+  plt_lst %>%
     plotly::subplot(margin = 0.02, nrows = 2, shareY = TRUE, shareX = TRUE,
                     heights = plot_width$width_pct)
 
