@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ccviR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
       </span>
     </div>
 
@@ -217,10 +217,10 @@ flagged with 99.</p>
 but we will leave it at 1 which assumes that the model has already
 accounted for whether habitat gains are likely to be realized.</p>
 <p><img src="gain_mod_run.PNG" style="width:70.0%" fig-align="center"></p>
-<p>Then, click “Run”. A loading symbol will appear while the data is
-being processed. When the “Spatial analysis complete” message appears,
-click “Next”. To see messages explaining what the spatial analysis is
-doing look at the console in R studio.</p>
+<p>Then, click “Run Spatial Analysis”. A loading symbol will appear
+while the data is being processed. When the “Spatial analysis complete”
+message appears, click “Next”. To see messages explaining what the
+spatial analysis is doing look at the console in R studio.</p>
 </div>
 <div class="section level3">
 <h3 id="exposure-results">Exposure Results<a class="anchor" aria-label="anchor" href="#exposure-results"></a>
@@ -297,16 +297,16 @@ includes a layer for each scenario which can be toggled on or off in the
 same way as the exposure maps. The responses to these questions can not
 be edited when multiple scenarios are used.</p>
 <p><img src="spat_vulnqs2.PNG" style="width:70.0%" fig-align="center"></p>
-<p>Note that if the check box is changed and then the “Run” button on
-the Spatial Analysis page is clicked again, you will see a warning that
-the value of the check boxes on this page will be updated to the value
-based on the re-run spatial analysis. The ‘Spatial Vulnerability
-Questions’ comments will not be affected though, so you can explain the
-reason for any adjustments in the comments and then remake those
-adjustments if they are still applicable. If the spatial data for a
-vulnerability question was not provided on the ‘Spatial Data Analysis’
-tab then the map will not be included and the question can be answered
-using non-spatial information or left blank for unknown.</p>
+<p>Note that if the check box is changed and then the “Run Spatial
+Analysis” button is clicked again, you will see a warning that the value
+of the check boxes on this page will be updated to the value based on
+the re-run spatial analysis. The ‘Spatial Vulnerability Questions’
+comments will not be affected though, so you can explain the reason for
+any adjustments in the comments and then remake those adjustments if
+they are still applicable. If the spatial data for a vulnerability
+question was not provided on the ‘Spatial Data Analysis’ tab then the
+map will not be included and the question can be answered using
+non-spatial information or left blank for unknown.</p>
 <p>For the demonstration, leave the check boxes as they are and then
 click “Next”.</p>
 </div>
@@ -341,12 +341,12 @@ and the lines show the range of scores produced by the Monte Carlo
 simulations.</p>
 <p><img src="comb_ind_plot.PNG" style="width:70.0%" fig-align="center"></p>
 <p>The last graph shows the scores for each vulnerability factor in each
-scenario. The scores reflect the the answer to the question and the
-exposure multiplier that was applied. Use the mouse to show the pop-up
-for each bar to get more details on how the score was reached.</p>
+scenario. The scores reflect the answer to the question and the exposure
+multiplier that was applied. Use the mouse to show the pop-up for each
+bar to get more details on how the score was reached.</p>
 <p><img src="vulnq_plot.PNG" style="width:70.0%" fig-align="center"></p>
 <p>If you go back and change the answer to a vulnerability question you
-will need to click the “Calculate” button again to see the updated
+will need to click the “Calculate CCVI” button again to see the updated
 results.</p>
 </div>
 <div class="section level3">
@@ -375,9 +375,9 @@ select the saved csv file.</p>
 itself, so the app will not be able to load if data is moved or its name
 is changed. If the data has moved, you will get an error message but you
 can go back to the Spatial Analysis tab and select the new file location
-and then press “Run” which will re-run the spatial analysis but keep the
-answers to the non-spatial vulnerability questions from the saved
-file.</p>
+and then press “Run Spatial Analysis” which will re-run the spatial
+analysis but keep the answers to the non-spatial vulnerability questions
+from the saved file.</p>
 <p>Be sure to save your progress throughout the assessment to prevent
 the loss of data. Refreshing the app or timing out will result in your
 progress being lost. It is recommended that you save your progress

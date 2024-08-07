@@ -34,7 +34,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ccviR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
       </span>
     </div>
 
@@ -93,7 +93,6 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><em>This application/package is under active development. Backwards compatibility is not guaranteed</em></p>
 <p>The ccviR package implements the <a href="https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index" class="external-link">NatureServe Climate Change Vulnerability Index (CCVI) version 3.02</a> in an R package and Shiny App. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. The app provides an interactive application designed to offer a user-friendly and simple interface for calculating the NatureServe CCVI.</p>
 <p>The NatureServe CCVI is a rapid assessment tool designed to allow a relative grouping of unrelated taxa by vulnerability to climate change and to highlight which factors contribute to the climate change vulnerability of individual species or groups of taxa. This information can be used to inform conservation decision making and to help identify actions to increase species resilience to climate change. See <a href="https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html" class="external-link">Young et. al (2012)</a>, <a href="https://doi.org/10.1002/wsb.478" class="external-link">Young et. al. (2015)</a> and the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe CCVI Guidelines</a> for more detailed descriptions of the index and how it was created.</p>
 <div class="section level2">
@@ -123,15 +122,15 @@
 <h3 id="new-features">New Features<a class="anchor" aria-label="anchor" href="#new-features"></a>
 </h3>
 <ul>
-<li>Spatial analyses are included in the package so no GIS skills are needed.</li>
-<li>Uses climate data from the whole species range rather than the range in the assessment area to score thermal and hydrological niche factors.</li>
+<li>Spatial analyses are included in the package so no GIS skills are needed</li>
+<li>Uses climate data from the whole species range rather than the range in the assessment area to score thermal and hydrological niche factors</li>
 <li>Simultaneously calculates the index for multiple scenarios such as, emissions scenarios, time horizons or GCMs</li>
-<li>A function to classify new climate data sets into exposure categories</li>
+<li>A function and Shiny app to classify new climate data sets into exposure categories</li>
 <li>Plots that explain the drivers of the index value</li>
 <li>Allows the full assessment to be carried out in a reproducible environment</li>
 <li>Simplifies synthetic analyses across many species, groups or regions</li>
 <li>The Shiny app provides a Graphical User Interface to calculate the NatureServe CCVI</li>
-<li>The App allows users to calculate the index without knowing R</li>
+<li>The Shiny app allows users to calculate the index without knowing R</li>
 <li>Makes the NatureServe CCVI accessible to a wider audience</li>
 </ul>
 </div>
@@ -186,8 +185,8 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
 </ul>
 </div>
 
