@@ -14,9 +14,15 @@
 #'
 #' @noRd
 calc_gain_loss <- function(rast, poly, gain_mod){
-
   out <- calc_prop_raster(rast, poly, var_name = "HS", val_range = 0:3,
-                          digits = 10) %>%
+                          digits = 10)
+  if(!is.null(out[["HS_NA"]])){
+    if(any(out$HS_NA > 10)){
+      warning("More than 10% of the range change raster does not match the expected values.\n",
+              "Is the classification table correct?", call. = FALSE)
+    }
+  }
+  out <- out %>%
     transmute(range_change = ((.data$HS_1 - .data$HS_3 * gain_mod)/(.data$HS_1 + .data$HS_2) * 100) %>% round(3),
               range_overlap = (.data$HS_2/(.data$HS_1 + .data$HS_2) * 100) %>% round(3))
 

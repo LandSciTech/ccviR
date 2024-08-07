@@ -122,6 +122,10 @@ ccvi_app <- function(testmode_in, ...){
             #load_bookmark_ui("load"),
             shinyFilesButton("loadcsv", "Select file", "Select file", multiple = FALSE),
             br(),
+            # this hidden input will allow us to stop processing until returning
+            # to the UI so that values from the saved file are updated in input
+            # before using
+            div(style = "display:none", textInput(inputId = "hidden", label = "", value = "")),
             br(),
             p("Download column definitions for saved data"),
             downloadButton("downloadDefs", "Download csv"),
@@ -320,7 +324,9 @@ ccvi_app <- function(testmode_in, ...){
                 capacity (Section C), and modeled or documented responses to
                 climate change (Section D). Questions from Sections C and D with
                 a spatial component are adressed in the \"Spatial Vulnerability
-                Questions\" tab."),
+                Questions\" tab and questions that only apply to certain taxa are
+                only displayed if applicable. As a result, the question numbering
+                is not sequential but will match the NatureServe version."),
               p("The NatureServe Guidelines for scoring each question can be accessed
                 by clicking the info button next to the question. Use published studies,
                 empirical data or expert opinion to support your responses. Provide
@@ -571,7 +577,7 @@ ccvi_app <- function(testmode_in, ...){
                   "for that factor. The chart is broken up by section to highlight ",
                   "that the B/C and D sections affect the final score differently. ",
                   "See the plot above for more details on combining the scores."),
-                plotly::plotlyOutput("q_score_plt", height = "400px")
+                plotly::plotlyOutput("q_score_plt", height = "500px")
               ),
               br(),
               br(),
@@ -634,61 +640,75 @@ ccvi_app <- function(testmode_in, ...){
     spat_res <- reactiveVal(FALSE)
     file_pths <- reactiveVal()
     clim_dir_pth <- reactiveVal()
+    doSpatialRestore <- reactiveVal(FALSE)
 
     # Restore from saved file #=================================================
-    restored_df <- eventReactive(input$loadcsv, {
+    df_loaded <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
-        df_loaded <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
+        df_in <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
 
         # Check that csv is not empty
-        if(inherits(df_loaded, "try-error")){
+        if(inherits(df_in, "try-error")){
           message("CSV file is empty, cannot restore from file.")
           return(FALSE)
 
         } else {
 
           # Check that csv contains the right data
-          if(nrow(df_loaded) < 1 || !"scenario_name" %in% colnames(df_loaded)){
+          if(nrow(df_in) < 1 || !"scenario_name" %in% colnames(df_in)){
             message("CSV file is invalid, cannot restore from file.")
             return(FALSE)
 
           } else {
 
-            update_restored(df_loaded, session)
-
-            if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-              df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-              spat_res(df_spat)
-              repeatSpatial(TRUE)
-              doSpatial((doSpatial() +1))
-              showNotification("Re-running spatial analysis from loaded file.",
-                               duration = NULL, id = "spat_restore_note")
-            }
-
-            index_res(recreate_index_res(df_loaded))
-
-            loaded_pths <- df_loaded %>% slice(1) %>%
-              select(contains("pth"), -any_of("clim_dir_pth")) %>%
-              as.list()
-
-            if(length(loaded_pths)>0){
-              file_pths(purrr::discard(loaded_pths, is.na))
-            }
-
-            clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
-            clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
-            clim_dir_pth(clim_pth_ldd)
-
-            updateTabsetPanel(session, "tabset",
-                              selected = "Species Information"
-            )
-            shinyjs::runjs("window.scrollTo(0, 0)")
-
-            return(TRUE)
+            update_restored(df_in, session)
+            return(df_in)
           }
         }
       }
     })
+    restored_df <- eventReactive(
+      {
+        df_loaded()
+        # this is to make it trigger after update_restored
+        input$hidden},
+      {
+        # this is to avoid running before input has been updated
+        req(input$hidden)
+
+        df_loaded <- df_loaded()
+        if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
+          # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          # spat_res2(df_spat)
+          repeatSpatial(TRUE)
+          doSpatial((doSpatial() +1))
+          # set to same as doSpatial so can check value and if same don't update spat_res2
+          doSpatialRestore(doSpatial())
+          showNotification("Re-running spatial analysis from loaded file.",
+                           duration = NULL, id = "spat_restore_note")
+        }
+
+        index_res(recreate_index_res(df_loaded))
+
+        loaded_pths <- df_loaded %>% slice(1) %>%
+          select(contains("pth"), -any_of("clim_dir_pth")) %>%
+          as.list()
+
+        if(length(loaded_pths)>0){
+          file_pths(purrr::discard(loaded_pths, is.na))
+        }
+
+        clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
+        clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
+        clim_dir_pth(clim_pth_ldd)
+
+        updateTabsetPanel(session, "tabset",
+                          selected = "Species Information"
+        )
+        shinyjs::runjs("window.scrollTo(0, 0)")
+
+        return(TRUE)
+      })
 
     observeEvent(restored_df(), {
       if (restored_df()){
@@ -961,7 +981,7 @@ ccvi_app <- function(testmode_in, ...){
         pth <- system.file("extdata/rng_chg_45.tif",
                            package = "ccviR")
       } else {
-        pth <- file_pths()[stringr::str_subset(names(input), "rng_chg_pth")] %>%
+        pth <- file_pths()[stringr::str_subset(names(file_pths()), "rng_chg_pth")] %>%
           unlist()
         pth <- pth[sort(names(pth))]
       }
@@ -970,7 +990,7 @@ ccvi_app <- function(testmode_in, ...){
         hs_rast(NULL)
       }else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
-
+        message("loading rng_chg_rasts")
         out <- check_trim(terra::rast(pth))
         hs_rast(out)
       }
@@ -1039,22 +1059,22 @@ ccvi_app <- function(testmode_in, ...){
     spat_res1 <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars())
-       out <- tryCatch({
-          analyze_spatial(range_poly = range_poly_in(),
-                      non_breed_poly = nonbreed_poly(),
-                      scale_poly = assess_poly(),
-                      hs_rast = hs_rast(),
-                      ptn_poly = ptn_poly(),
-                      clim_vars_lst = clim_vars(),
-                      hs_rcl = hs_rcl_mat(),
-                      gain_mod = input$gain_mod,
-                      scenario_names = clim_readme()$Scenario_Name)
-        },
-        error = function(cnd) conditionMessage(cnd))
+      out <- tryCatch({
+        analyze_spatial(range_poly = range_poly_in(),
+                        non_breed_poly = nonbreed_poly(),
+                        scale_poly = assess_poly(),
+                        hs_rast = hs_rast(),
+                        ptn_poly = ptn_poly(),
+                        clim_vars_lst = clim_vars(),
+                        hs_rcl = hs_rcl_mat(),
+                        gain_mod = input$gain_mod,
+                        scenario_names = clim_readme()$Scenario_Name)
+      },
+      error = function(cnd) conditionMessage(cnd))
 
-       # force these to invalidate when re-run
-       spat_res(FALSE)
-       spat_res2(FALSE)
+      # force these to invalidate when re-run
+      spat_res(FALSE)
+      spat_res2(FALSE)
 
       removeNotification("spat_restore_note")
       return(out)
@@ -1106,9 +1126,10 @@ ccvi_app <- function(testmode_in, ...){
 
     # calculate exp multipliers and vuln Q values for spat
     spat_res2 <- reactiveVal(FALSE)
-    observe({
+    observeEvent(spat_res(), {
       req(!is.character(spat_res()))
       req(spat_res())
+      req(!doSpatial() == doSpatialRestore())
       message("updateing spat_res2")
       spat_res2(apply_spat_tholds(spat_res(), input$cave))
 
@@ -1341,7 +1362,6 @@ ccvi_app <- function(testmode_in, ...){
     output$map_D2_3 <- leaflet::renderLeaflet({
       req(doSpatial())
       req(hs_rast2())
-
       make_map(poly1 = range_poly(), rast = hs_rast2(),
                poly2 = assess_poly(), poly2_nm = "assess_poly",
                rast_nm = "hs_rast",
@@ -1472,8 +1492,9 @@ ccvi_app <- function(testmode_in, ...){
     # insert index dials for each scenario
     observe({
       req(index_res())
+
       removeUI(
-        selector = "#*index_result*"
+        selector = "span[id*='index_result']", multiple = TRUE, immediate = TRUE
       )
 
       ind_ls <- index_res() %>% arrange(desc(.data$scenario_name)) %>%
@@ -1567,8 +1588,14 @@ ccvi_app <- function(testmode_in, ...){
       req(!is.null(file_pths()))
 
       message("spat out_data")
-      spat_df <- spat_res() %>% mutate(gain_mod = input$gain_mod,
-                                       gain_mod_comm = input$gain_mod_comm)
+      spat_df <- spat_res() %>%
+        mutate(gain_mod = input$gain_mod,
+               gain_mod_comm = input$gain_mod_comm,
+               lost = paste0(input$lost_from, ", ", input$lost_to),
+               maint = paste0(input$maint_from, ", ", input$maint_to),
+               gain = paste0(input$gain_from, ", ", input$gain_to),
+               ns = paste0(input$ns_from, ", ", input$ns_to),
+               rng_chg_used = input$rng_chg_used)
       clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
       spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
         as.data.frame() %>%

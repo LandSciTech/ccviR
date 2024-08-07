@@ -7,7 +7,7 @@ make_exp_df <- function(exp_lev){
     lev6 <- c(10, 12, 30, 25, 10, 5)
   }
   if(exp_lev == 3){
-    lev6 <- rev(c(5, 10, 10, 25, 25, 25))
+    lev6 <- rev(c(0, 0, 0, 0, 50, 50))
   }
 
   exp_df_out <- tribble(
@@ -43,4 +43,16 @@ test_that("multi plot works", {
                     tidyr::unnest(vuln_df) %>%
                     plot_q_score(),
                   "plotly")
+
+  # with 3 scenarios
+  exp_df3 <- bind_rows(exp_df2, make_exp_df(3))
+  exp_df3[3,1] <- "Scn3"
+  res <- calc_vulnerability(exp_df3,
+                            make_vuln_df("nm", 2, use_spatial = FALSE),
+                            tax_grp = "Bird")
+  expect_s3_class(select(res, scenario_name, vuln_df) %>%
+                    tidyr::unnest(vuln_df) %>%
+                    plot_q_score(),
+                  "plotly")
+
 })

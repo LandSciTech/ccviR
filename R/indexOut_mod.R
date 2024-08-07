@@ -9,21 +9,20 @@ indexOutServer <- function(id, ind_df) {
 
     output$index_result <- renderUI({
       tagList(
-        #wellPanel(
-          fluidRow(column(12, htmlOutput(NS(id, "scenario_name")))),
-          fluidRow(column(width = 6,
-                          plotly::plotlyOutput(NS(id, "ind_gauge"),
-                                               height = "190px",
-                                               inline = F),
-                          htmlOutput(NS(id, "ind_def"))),
-                   column(width = 6,
-                          plotly::plotlyOutput(NS(id, "mig_exp_gauge"),
-                                               height = "190px",
-                                               inline = F)),
-          ),
-          hr(style="border-color: grey;",
-             .noWS = c("before", "after", "outside", "after-begin", "before-end"))
-        #)
+        fluidRow(column(12, htmlOutput(NS(id, "scenario_name")))),
+        fluidRow(column(width = 6,
+                        plotly::plotlyOutput(NS(id, "ind_gauge"),
+                                             height = "190px",
+                                             inline = F),
+                        htmlOutput(NS(id, "ind_def"))),
+                 column(width = 6,
+                        plotly::plotlyOutput(NS(id, "mig_exp_gauge"),
+                                             height = "190px",
+                                             inline = F)),
+        ),
+        hr(style="border-color: grey;",
+           .noWS = c("before", "after", "outside", "after-begin", "before-end"))
+
       )
     })
 

@@ -82,11 +82,11 @@ plot_q_score <- function(vuln_df){
               min = floor(min(.data$score)))
 
   #define width of subplots by finding the absolut range of each "facet"
-  plot_width<- vuln_df %>%
+  plot_width<- max_df %>%
     group_by(.data$sub_index) %>%
     summarise(range = n()) %>%
-    ungroup() %>%
-    mutate(width_pct = range/sum(range))
+    mutate(width_pct = ifelse(.data$sub_index == "D index", 0.02 + range/sum(range),
+                              -0.02 + range/sum(range)))
 
   # add colors by section
   cols_use <- c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3')
@@ -94,10 +94,16 @@ plot_q_score <- function(vuln_df){
 
   #define a list of ggplot and feed it in the subplot function with the calculated limits
   vuln_df <- vuln_df %>%
+    right_join(vulnq_code_lu_tbl, by = join_by(Code, Question)) %>%
     mutate(section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
-  split(vuln_df, vuln_df$sub_index) %>%
+
+  max_lst <- rep(split(max_df, max_df$sub_index), n_distinct(vuln_df$scenario_name, na.rm = TRUE))
+
+  plt_lst <- split(vuln_df, list(vuln_df$scenario_name, vuln_df$sub_index)) %>%
     purrr::map2(
-      split(max_df, max_df$sub_index),
+      #Reorder with odd and even elements
+      c(max_lst[c(TRUE, FALSE)],
+        max_lst[c(FALSE, TRUE)]),
       function(x, y) {
         plt <- ggplot2::ggplot(
           x,
@@ -117,7 +123,8 @@ plot_q_score <- function(vuln_df){
           ggplot2::coord_flip(expand = FALSE, ylim = c(0, limits$max))+
           ggplot2::theme(legend.position = "none")
         plotly::ggplotly(plt, tooltip = "text")
-      }) %>%
+      })
+  plt_lst %>%
     plotly::subplot(margin = 0.02, nrows = 2, shareY = TRUE, shareX = TRUE,
                     heights = plot_width$width_pct)
 

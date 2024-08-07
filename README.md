@@ -5,13 +5,10 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![R-CMD-check](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml)
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 <!-- badges: end -->
-
-*This application/package is under active development. Backwards
-compatibility is not guaranteed*
 
 The ccviR package implements the [NatureServe Climate Change
 Vulnerability Index (CCVI) version
