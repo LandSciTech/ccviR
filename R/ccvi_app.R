@@ -1492,8 +1492,9 @@ ccvi_app <- function(testmode_in, ...){
     # insert index dials for each scenario
     observe({
       req(index_res())
+
       removeUI(
-        selector = "#*index_result*"
+        selector = "span[id*='index_result']", multiple = TRUE, immediate = TRUE
       )
 
       ind_ls <- index_res() %>% arrange(desc(.data$scenario_name)) %>%
