@@ -287,8 +287,10 @@ update_restored <- function(df, session){
                              values_to = "value",
                              values_transform = as.character) %>%
     distinct() %>%
+    mutate(input2 = ifelse(stringr::str_detect(input, "rng_chg_pth"), "rng_chg_pth", input)) %>%
     left_join(df_coms, by = "input") %>%
-    left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input" = "id")) %>%
+    left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input2" = "id")) %>%
+    select(-input2) %>%
     filter(!is.na(.data$update_fun)) %>%
     mutate(comment = ifelse(is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
                             "", .data$comment),
@@ -297,9 +299,12 @@ update_restored <- function(df, session){
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
+  # this is used as a trigger to skip running spatial until after returning to
+  # UI so that input is updated with values from csv
+  updateTextInput(inputId = "hidden", value = "yes")
+
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
-
   purrr::pwalk(df2, update_call, session = session)
 }
 

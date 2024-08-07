@@ -1,7 +1,7 @@
 Package: ccviR
 Title: Calculate the NatureServe Climate Change Vulnerability Index in R
 Date: 2023-10-10
-Version: 0.0.4
+Version: 0.1.0
 Authors@R: c(person(given = "Sarah",
   family = "Endicott",
   role = c("aut", "cre"),
@@ -38,6 +38,7 @@ Imports:
     ggplot2,
     shinycssloaders,
     R.utils,
+    kableExtra,
     fs,
     plotly,
     stats,
@@ -57,7 +58,7 @@ Suggests:
     readxl,
     raster,
     shinytest2
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

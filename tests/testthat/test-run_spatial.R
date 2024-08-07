@@ -8,7 +8,7 @@ scn_nms <- c("RCP 4.5", "RCP 8.5")
 clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
                            scn_nms)
 
-rng_chg_mat <- matrix(c(-1:1, 1:3), ncol = 2)
+rng_chg_mat <- matrix(c(-1:1,NA, 1:3,0), ncol = 2)
 
 # make the crs's match to avoid warning it has to be verbatim the same
 # nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",

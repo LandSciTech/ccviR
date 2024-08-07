@@ -117,7 +117,8 @@ from_to_ui <- function(id, header, vals){
 
 }
 
-updateFrom_to_ui <- function(inputId, vals, session){
+updateFrom_to_ui <- function(inputId, value, session){
+  vals <- as.integer(unlist(strsplit(value,",")))
   updateNumericInput(session = session, paste0(inputId, "_from"), value = vals[1])
   updateNumericInput(session = session, paste0(inputId, "_to"), value = vals[2])
 }
