@@ -38,6 +38,7 @@ Imports:
     ggplot2,
     shinycssloaders,
     R.utils,
+    kableExtra,
     fs,
     plotly,
     stats,
