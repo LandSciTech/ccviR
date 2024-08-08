@@ -27,4 +27,4 @@ RUN Rscript -e 'remotes::install_github("LandSciTech/ccviR")'
 EXPOSE 3838
 
 # run app on container start
-CMD ["R", "-e", "ccviR::run_ccvi_app('demo', port = 3838)"]
+CMD ["R", "-e", "ccviR::run_ccvi_app('demo', port = 80)"]
