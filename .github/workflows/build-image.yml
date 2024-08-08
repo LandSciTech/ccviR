@@ -31,5 +31,5 @@ jobs:
         with:
           context: "{{defaultContext}}:deploy"
           push: true
-          tags: see24/ccviRApp:latest
+          tags: see24/ccvirapp:latest
 
