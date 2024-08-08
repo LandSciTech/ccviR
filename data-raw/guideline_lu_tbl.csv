@@ -34,10 +34,12 @@ low-lying island(s) or in coastal zone). Includes inland areas not subject to
 sea level rise. Also, species that occur in an intertidal habitat that is
 expected to increase in extent with a rising sea level.</p>
 
-<p><i>Tools</i>: For information about the sensitivity of the Canadian coast to
-potential sea level rise, see <a
+<p><i>Tools</i>: For information about the sensitivity of the coast to
+potential sea level rise, see Canada: <a
 href=""https://geoscan.nrcan.gc.ca/text/geoscan/fulltext/of_8551.pdf""
-target=""_blank"">CanCoast 2.0</a>.</p>
+target=""_blank"">CanCoast 2.0</a> or US <a
+href=""https://coast.noaa.gov/slr/""
+target=""_blank"">NOAA Sea Level Rise Viewer</a>.</p>
 
 
 ",NA
@@ -56,7 +58,7 @@ related species). Natural and anthropogenic barriers are defined for many
 species and taxonomic groups in NatureServe's Element Occurrence Specifications
 (viewable in the Population/Occurrence Delineation section of species accounts
 on <a href=""https://explorer.natureserve.org/"" target = ""_blank"">
-Natureserve Explorer</a>), but usually these readily can be determined by
+NatureServe Explorer</a>), but usually these readily can be determined by
 considering a species' basic movement capacity and ecological tolerances.</p>
 
 <p>The distinction between a barrier and unsuitable habitat sometimes may be
@@ -100,7 +102,7 @@ up to 10 km when measured across areas where climate changes abruptly over
 latitude or longitude (e.g.mountainous or steep terrain). Use 25 km for species
 that occur in intermediate topography, such as moderate hill country. These
 distances apply to both terrestrial and aquatic species. These distances are
-derived from Loarie et al.(2009, Nature 462:1052).</p>
+derived from Loarie et al.(2009).</p>
 
 <p>The following categories and criteria apply to both natural and anthropogenic
 barriers, but the two types of barriers are scored separately. Note that it is
@@ -110,6 +112,9 @@ completely surround a species' range). If both barriers occur, estimate the
 relative portions of the circumference of the range blocked by each and then
 score accordingly.</p>
 
+
+<p>Loarie, S. R., P. B. Duffy, H. Hamilton, G. P. Asner, C. B. Field, and D. D. Ackerly. 2009. The velocity of climate change. Nature 462:1052-1055. <a href=""https://doi.org/10.1038/nature08649"" target = ""_blank"">
+https://doi.org/10.1038/nature08649</a></p>
 
 ",NA
 "B","2","a","<h3>a) Natural barriers</h3>
@@ -135,14 +140,27 @@ favorable climate envelope is fairly well understood and barriers prevent a
 range shift in that direction. See Neutral for species in habitats not
 vulnerable to climate change.</p>
 
+<p><i>Examples:</i> lowland terrestrial species completely surrounded by high
+mountains (or bordered closely and completely on the north side by high
+mountains); cool-water stream fishes for which barriers would completely
+prevent access to other cool-water areas if the present occupied habitat
+became too warm as a result of climate change; most nonvolant species that exist
+only on the south side of a very large lake in an area where habitats are
+expected to shift northward with foreseeable climate change.</p>
+
 <p><b>Increase Vulnerability </b>: Barriers border the current distribution such
 that climate change-caused distributional shifts in the assessment area are
 likely to be greatly but not completely or almost completely impaired.</p>
+
+<p><i>Examples:</i> certain lowland plant or small mammal species whose ranges
+are mostly (50-90%) bordered by high mountains or a large lake.</p>
 
 <p><b>Somewhat Increase Vulnerability</b>: Barriers border the current
 distribution such that climate change-caused distributional shifts in the
 assessment area are likely to be significantly but not greatly or completely
 impaired. </p>
+
+<p><i>Examples:</i> certain lowland plant or small mammal species whose ranges are partially but not mostly bordered by high mountains or a large lake.</p>
 
 <p><b>Neutral</b>: Significant barriers do not exist for this species, OR small
 barriers exist in the assessment area but likely would not significantly impair
@@ -151,6 +169,15 @@ not likely to contribute significantly to a reduction or loss of the species'
 habitat or area of occupancy with projected climate change in the assessment
 area.</p>
 
+<p><i>Examples:</i> most birds (for which barriers do not exist); terrestrial
+snakes in extensive plains or deserts that may have small barriers that would
+not impede distributional shifts with climate change; small alpine-subalpine
+mammal (e.g., ermine, snowshoe hare) in extensive mountainous wilderness area
+lacking major rivers or lakes; fishes in large deep lakes or large main-stem
+rivers that are basically invulnerable to projected climate change and lack
+dams, waterfalls, and significant pollution; a plant whose climate envelope is
+shifting northward and range is bordered on the west by a barrier but for which
+no barriers exist to the north.</p>
 
 ",NA
 "B","2","b","<h3>b) Anthropogenic barriers</h3>
@@ -175,14 +202,25 @@ favorable climate envelope is fairly well understood and barriers prevent a
 range shift in that direction. See Neutral for species in habitats not
 vulnerable to climate change.</p>
 
+<p><i>Examples:</i> species limited to small habitats within intensively
+developed urban or agricultural landscapes through which the species cannot
+pass, A specific example of this category is provided by the quino checkerspot
+butterfly (Euphydryas editha quino), a resident of northern Baja California and
+southern California; warming climates are forcing this butterfly northward, but
+urbanization in San Diego blocks its movement (Parmesan 1996).</p>
+
 <p><b>Increase Vulnerability</b>: Barriers border the current distribution such
 that climate change-caused distributional shifts in the assessment area are
 likely to be greatly but not completely or almost completely impaired.</p>
+
+<p><i>Examples:</i> most streams inhabited by a fish species have dams that would prevent access to suitable habitat if the present occupied habitat became too warm as a result of climate change; intensive urbanization surrounds 75% of the range of a salamander species.</p>
 
 <p><b>Somewhat Increase Vulnerability</b>: Barriers border the current
 distribution such that climate change-caused distributional shifts in the
 assessment area are likely to be significantly but not greatly or completely
 impaired.</p>
+
+<p><i>Examples:</i> 10-50% of the margin of a plant species' range is bordered by intensive urban development; 25% of the streams occupied by a fish species include dams that are likely to impede range shifts driven by climate change.</p>
 
 <p><b>Neutral</b>: Significant barriers do not exist for this species, OR small
 barriers exist in the assessment area but likely would not significantly impair
@@ -191,6 +229,11 @@ not likely to contribute significantly to a reduction or loss of the species'
 habitat or area of occupancy with projected climate change in the assessment
 area.</p>
 
+<p><i>Tools</i>: One useful data source for assessing intensity of land use as a potential anthropogenic barrier is the published maps and downloadable GIS data for Wildland-Urban Interface of the Silvis Lab (University of Wisconsin-Madison and the USDA Forest Service North Central Research Station, <a
+href=""https://silvis.forest.wisc.edu/maps-data/""
+target=""_blank"">https://silvis.forest.wisc.edu/maps-data/</a>).</p>
+
+<p>Parmesan, C. 1996. Climate change and species’ range. Nature 382:765-766.</p>
 
 ",NA
 "B","3",NA,"<h2>3) Predicted Impact of Land Use Changes Resulting from Human Responses to
@@ -273,7 +316,9 @@ range; OR it may benefit from mitigation-related land use changes. </p>
 <a href=""https://natural-resources.canada.ca/energy/renewable-electricity/wind/7323""
 target=""_blank"">Natural Resources Canada Wind Energy</a> and
 <a href=""http://www.windatlas.ca/index-en.php"" target=""_blank"">Environment
-and Climate Change Canada's Wind Atlas</a>.</p>
+and Climate Change Canada's Wind Atlas</a>. For a library of renewable energy maps from the US see <a href=""https://www.nrel.gov/gis/data-tools.html""
+target=""_blank"">https://www.nrel.gov/gis/data-tools.html</a> </p>
+
 ",NA
 "C",NA,NA,"
 <style>
@@ -314,7 +359,7 @@ similar and relevant morphological features.</p>
 almost completely block dispersal, are treated in factor B2. If a species
 requires other species for propagule dispersal, please also complete factor C4d.
 The following categorization for plants is loosely based on Vittoz and Engler
-(2007 Botanica Helvetica 117:109-124).</p>
+(2007).</p>
 
 <p>A small number of species are confined by barriers to areas that are
 smaller than the species' potential dispersal distance (fishes in small
@@ -344,6 +389,12 @@ restricted dispersal or movement capability. Species is represented by
 sessile organisms that almost never disperse more than 10 meters per
 dispersal event.</p>
 
+<p><i>Examples:</i> plants with large or heavy propagules for which the
+disperser is extinct or so rare as to be ineffective; species with dispersal
+limited to vegetative shoots, buds, or similar structures that do not survive
+(at least initially) if detached from the parent; plants dispersed only
+ballistically.</p>
+
 <p><b>Increase Vulnerability</b>: Species is characterized by highly restricted
 dispersal or movement capability. Species rarely disperses through
 unsuitable habitat more than about 10-100 meters per dispersal event; OR
@@ -352,14 +403,49 @@ of suitable habitat) periodically or irregularly occurs but is dependent on
 highly fortuitous or rare events; OR species has substantial movement
 capability but exhibits a very high degree of site fidelity.</p>
 
+<p><i>Examples:</i> branchiopods whose resting stages sometimes are transported
+in mud attached to birds or mammals; small clams that may disperse while clamped
+onto bird feathers or frog toes; small, nonvolant animals of relatively low
+vagility, including small, slow-moving animals such as slugs, snails, and the
+smallest terrestrial salamanders that rarely shift location by more than 100
+meters within a single year; many ant-dispersed plant species; plant or animal
+species with free-living propagules or individuals that may be carried more than
+100 meters by a tornado or unusually strong hurricane or large flood but that
+otherwise rarely disperse more than 100 meters; plants that do not fit criteria
+for Greatly Increase but lack obvious dispersal adaptations (i.e., propagules
+lack any known method for moving more than 100 meters away from the source
+plant); birds that exhibit an extremely high degree of site fidelity or
+exceptionally low rate of colonization of vacant suitable habitat.</p>
+
 <p><b>Somewhat Increase Vulnerability</b>: Species is characterized by limited
 or moderate but not highly or severely restricted dispersal or movement
-capability. A significant percentage (at least approximately 50%) of
+capability. A significant percentage (at least approximately 5%) of
 propagules or individuals disperse approximately 100-1,000 meters per
 dispersal event (rarely farther); OR species has substantial movement
 capability but exhibits a moderate to high degree of site fidelity and has
 very limited existing or potential habitat within the assessment area; OR
 dispersal likely is consistent with one of the following examples.</p>
+
+<p><i>Examples:</i> species that exist in small isolated patches of suitable
+habitat but regularly disperse or move among patches that are up to 1,000 meters
+(rarely farther) apart; plants whose propagules are dispersed primarily by small
+animals (e.g., some rodents) that typically move propagules approximately
+100-1,000 meters from the source (propagules may be cached or transported
+incidentally on fur or feathers); plants dispersed by wind with low efficiency
+(e.g., species with inefficiently plumed seeds and/or that occur predominantly
+in forests); many small but somewhat vagile animals (e.g., many small mammals
+and lizards); species whose individuals exist in small isolated patches of
+suitable habitat but regularly disperse or move among patches that are 100-1,000
+meters (rarely farther) apart; plant and animal species whose propagules or
+individuals are dispersed by small animals (e.g., rodents, grouse) that
+regularly but perhaps infrequently move propagules approximately 100-1,000
+meters from the source; many denning snakes and some pond-breeding amphibians
+that are otherwise terrestrial as adults) (note that these short-distance
+migratory animals may exhibit strong fidelity to natal areas but nevertheless
+generally include individuals that colonize or move into other nearby areas);
+birds that exhibit a high degree of site fidelity or relatively low rate of
+colonization of vacant suitable habitat (as in Increase Vulnerability but the
+degree site fidelity or colonization rate is not as extreme).</p>
 
 <p><b>Neutral</b>: Species is characterized by good to excellent dispersal or
 movement capability. Species has propagules or dispersing individuals that
@@ -374,10 +460,36 @@ examples. Note that species in the Neutral category are not necessarily
 certain 'late successional' or equilibrium ('K-selected') species that
 have excellent innate or vector-aided dispersal capability.</p>
 
+<p><i>Examples:</i> plant species regularly dispersed more than 1 km by large or
+mobile animals (e.g., plant has seeds that are cached, regurgitated, or
+defecated at least 1 km from the source by birds [e.g., corvids, songbirds that
+eat small fleshy fruits] or mammals or that are transported on fur of large
+mobile animals such as most Carnivora or ungulates); animal species that
+regularly disperse or move long distances via their own locomotory abilities
+(e.g., most large and some medium-sized mammals, most bats, many common birds);
+many plant species dispersed by wind with high efficiency (e.g., species with
+efficiently plumed seeds or very small propagules that occur predominantly in
+open areas); plant or animal species whose individuals often or regularly are
+dispersed more than 1 kilometer by air or ocean currents, or humans, including
+species that readily become established outside their native ranges as a result
+of intentional or unintentional translocations by humans; animal species whose
+populations within the assessment area are known to migrate facultatively
+according to changing environmental conditions (e.g., some northern finches and
+owls exhibit short or long migrations in some years but not in others);
+nonmigratory species whose populationsmay shift location by 1 kilometer or more
+in response to changing environmental conditions (e.g., the black-backed
+woodpecker [Picoides arcticus] often makes substantial shifts in its
+distribution in accordance with concentrations of wood-boring insects);
+migratory species that show clear ability to track variable resources over broad
+geographies; bird species lacking a high degree of site fidelity; bird species
+that readily colonize vacant suitable habitat.</p>
+
 <p><i>Tools</i>: Seed biological trait data for some species can be found at
 <a href=""https://data.kew.org/species/"" target=""_blank"">Royal Botanic
 Gardens Kew Data Portal</a>.</p>
 
+<p>Vittoz, P., and R. Engler. 2007. Seed dispersal distances: a typology based
+on dispersal modes and plant traits. Bot. Helv. 117:109–124.</p>
 
 ",NA
 "C","2",NA,"<h2>2) Predicted Sensitivity to Temperature and Moisture Changes</h2>
