@@ -1,0 +1,8 @@
+# docker-compose.yml
+services:
+  web:
+    build: .
+    image: see24/ccvirapp:latest
+    container_name: ccvir-app
+    ports:
+      - "80:80"
