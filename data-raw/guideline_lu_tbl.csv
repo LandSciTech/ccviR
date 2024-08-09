@@ -516,13 +516,7 @@ species has experienced in recent historical times (i.e., the past 50
 years), as approximated by mean seasonal temperature variation (difference
 between highest mean monthly maximum temperature and lowest mean monthly
 minimum temperature) for occupied cells within the assessment area. It is a
-proxy for species' temperature tolerance at a broad scale. This factor may
-be evaluated by comparing the species range with the Annual Temperature
-Variation map (see Figure 5 in the <a
-href=""https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3_0_canada_jan2016.pdf""
-target=""_blank"">Canadian NatureServe CCVI Guidelines</a>) or calculate using
-GIS data downloaded from <a
-href=""http://www.natureserve.org/ccvi"" target=""_blank"">NatureServe</a>. For
+proxy for species' temperature tolerance at a broad scale. For
 aquatic species, follow the same procedure as for terrestrial species, since
 this factor measures broad regional patterns.</p>
 
@@ -612,11 +606,8 @@ precipitation)</h4>
 <p>This factor measures large-scale precipitation variation that a
 species has experienced in recent historical times (i.e., the past 50
 years), as approximated by mean annual precipitation variation across
-occupied cells within the assessment area. Overlay the species' range on
-the mean annual precipitation map (see Figure 6 in the <a
-href=""https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3_0_canada_jan2016.pdf""
-target=""_blank"">Canadian NatureServe CCVI Guidelines</a>). Subtract the
-lowest pixel value from the highest value to assess this factor. Use the
+occupied cells within the assessment area. The lowest pixel value is subtracted
+from the highest value to assess the amount of variation. Use the
 extreme pixel values for this calculation. Use annual data for migratory
 species, as this measure reflects the precipitation regime of the ecosystem
 as a whole.</p>
@@ -662,8 +653,7 @@ impacts (and, if so, score as Neutral).</p>
 
 <p>For plant species, the advantage of the C4 photosynthetic pathway for water
 use efficiency will likely enable C4 plants to be less vulnerable to
-decline under drying conditions than C3 plants (Taylor et al. 2010, New
-Phytologist 185:780). The predicted vulnerability of these plants with
+decline under drying conditions than C3 plants (Taylor et al. 2010). The predicted vulnerability of these plants with
 respect to this factor has been adjusted accordingly.</p>
 
 <p>For nonmigratory species, 'range' refers to the range within the assessment
@@ -685,15 +675,39 @@ be the overriding factor; otherwise they should be scored here.</p>
 habitat or localized moisture regime that is likely to be highly vulnerable to
 loss or reduction with climate change.</p>
 
+<p><i>Examples:</i> species dependent on small/isolated/shallow water-bodies or
+wetlands in arid landscapes; ephemeral-pool-dependent branchiopods; plants that
+are exclusively or very strongly associated with localized moist microsites
+(e.g., "hanging gardens" in arid landscapes).</p>
+
 <p><b>Increase Vulnerability</b>: Moderately (50-90% of occurrences or range)
 dependent on a strongly seasonal hydrologic regime and/or a specific
 aquatic/wetland habitat or localized moisture regime that is likely to be
 highly vulnerable to loss or reduction with climate change.</p>
 
+<p><i>Examples:</i> certain amphibians that often breed in vernal pools but also
+regularly use other aquatic or wetland habitats; certain plants whose life
+cycles are highly synchronized with Mediterranean precipitation patterns in
+areas vulnerable to large changes in the amount and seasonal distribution of
+precipitation; desert or semidesert plants that frequently occur in but are not
+restricted to or almost restricted to moisture-accumulating microsites; plants
+(and animals that depend on these species) for which >50% of populations occur
+in areas such as sandy soils that are highly prone to desiccation; plants that
+use the C4 photosynthetic pathway and that otherwise qualify for the Greatly
+Increase Vulnerability category.</p>
+
 <p><b>Somewhat Increase Vulnerability</b>: Somewhat (10-50%) dependent on a
 strongly seasonal hydrologic regime and/or a specific aquatic/wetland habitat or
 localized moisture regime that is highly vulnerable to loss or reduction
 with climate change.</p>
+
+<p><i>Examples:</i> plants (and animals that depend on these species) for which
+10-50% of populations occur in areas such as sandy soils that are sensitive to
+changes in precipitation; certain plants with ranges restricted to seasonal
+precipitation environments (e.g., summer rainfall deserts) and which have a
+moderate degree of adaptation to that seasonality; plants that use the C4
+photosynthetic pathway and that otherwise qualify for the Increase Vulnerability
+category.</p>
 
 <p><b>Neutral</b>: Species has little or no dependence on a strongly seasonal
 hydrologic regime and/or a specific aquatic/wetland habitat or localized
@@ -702,6 +716,15 @@ change; OR hydrological requirements are not likely to be significantly
 disrupted in major portion of the range; OR species tolerates a very wide
 range of moisture conditions.</p>
 
+<p><i>Examples:</i> water-limited species in areas with increasing water
+availability; arid-adapted species in areas with decreasing moisture
+availability; species dependent on springs tied to a regional aquifer that would
+not be expected to change significantly with climate change; aquatic species
+inhabiting caves fed by groundwater aquifers that are not expected to change
+significantly with climate change; plants that use the C4 photosynthetic pathway
+and that otherwise qualify for the Somewhat Increase Vulnerability category.</p>
+
+<p>Taylor, S.H., S.P. Hulme, M. Rees, B.S. Ripley, F.I. Woodward and C.P. Osborne. 2010. Ecophysiological traits in C3 and C4 grasses: a phylogenetically controlled screening experiment. New Phytologist 185: 780-791.</p>
 
 ","ii"
 "C","2","c","<h3>c) Dependence on a specific disturbance regime likely to be impacted by
@@ -753,12 +776,15 @@ disturbance regime in a way that increases the species' distribution.</p>
 <p><i>Tools</i>: For information on fire effects, see the <a
 href=""https://www.feis-crs.org/feis/"" target=""_blank"">USDA Fire Effects
 Information System</a>. For a map of modeled future fire regime, see Figure 2 in
-<a href=""https://doi.org/10.1371/journal.pone.0005102"" target=""_blank"">
-Krawchuck et al. (2009)</a>.</p>
+Krawchuck et al. (2009).</p>
 
+<p>Krawchuk, M. A. Moritz, M.-A. Parisien, J. Van Dorn, and K. Hayhoe. 2009.
+Global pyrogeography: The current and future distribution of wildfire. PLoS ONE
+4:e5102. <a href=""https://doi.org/10.1371/journal.pone.0005102"" target=""_blank"">https://doi.org/10.1371/journal.pone.0005102</a>.</p>
 
 ",NA
 "C","2","d","<h3>d) Dependence on ice, ice-edge, or snow cover habitats</h3>
+
 <p>This factor pertains to a species' dependence on habitats associated
 with ice (e.g., sea ice, glaciers) or snow (e.g., long-lasting snow beds,
 avalanche chutes) throughout the year or seasonally during an essential
@@ -828,12 +854,31 @@ mammals), choose Neutral.</p>
 endemic to, or &gt; 85% of occurrences found on) a particular highly uncommon
 landscape or geological feature or derivative (e.g., soil, water chemistry).</p>
 
+<p><i>Examples:</i> serpentine (broad and strict) endemic plants; plants of
+calcareous substrates where such substrates are uncommon; plants restricted to
+one or a few specific rock strata; species more or less restricted to inland
+sand dunes or shale barrens; obligate cave-dwelling organisms; springsnails
+restricted to springs with high dissolved CO2; fish species that require a
+highly uncommon substrate particle size for effective spawning; many colonially
+nesting seabirds that are essentially restricted to predator-free islands for
+successful reproduction.</p>
+
 <p><b>Somewhat Increase Vulnerability</b>: Moderately dependent upon a
 particular uncommon landscape or geological feature or derivative, i.e., (1) an
 indicator of but not an endemic to (65-85% of occurrences found on) the
 types of features described under Increase, OR (2) more or less restricted
 to a landscape or geological feature or derivative that is not highly
 uncommon within the species' range, but is not one of the dominant types.</p>
+
+<p><i>Examples:</i> as in Increase Vulnerability but with a lesser degree of
+dependence; species moderately restricted to active coastal sand dunes, cliffs,
+salt flats (including shorebirds that require sodic soils), inland waters within
+a particular salinity range, or nondominant rock types such as occasional
+igneous rock intrusions within a landscape mostly dominated by sedimentary
+and/or metamorphic rocks; species that inhabit multiple geological features each
+of which is uncommon; fish species that require a specific substrate particle
+size, if that of stream bottom type is not one of the dominant types within the
+species' range.</p>
 
 <p><b>Neutral</b>: Having a clear preference for (&gt; 85% of occurrences found
 on) a particular landscape or geological feature or derivative, but the
@@ -845,14 +890,16 @@ geological features or derivatives; species is described as a generalist
 and/or occurrences have been documented on widely varied substrates or
 water chemistries.</p>
 
+<p><i>Examples:</i> plants (e.g., red spruce) that are usually associated with acidic organic soils that are not uncommon within the range; many species whose habitat descriptions specify one pH category (acidic, neutral, or basic) and/or one soil particle size (e.g., rocky, sandy, or loamy) but that substrate type is not particularly uncommon within the species’ range; species inhabiting multiple relatively widespread geological features; species with many occurrences associated with both acidic and basic soils or waters, or with both sandy and clay soils); species not strongly tied to any specific landscape or geological feature or derivative, such as common yarrow (Achillea millefolium), coyote (Canis latrans), and many other plants and animals.</p>
 
 ",NA
 "C","4",NA,"<h2>4) Interspecific Interactions</h2>
 
 <p>The primary impact of climate change on many species may occur via
 effects on synchrony with other species on which they depend (Parmesan
-2006, ARES 37:637), rather than through direct physiological stress.</p>
+2006), rather than through direct physiological stress.</p>
 
+<p>Parmesan, C. 1996. Climate change and species’ range. Nature 382:765-766.</p>
 
 ",NA
 "C","4","a","<h3>a) Dependence on other species to generate habitat</h3>
@@ -892,12 +939,34 @@ niches); if in doubt, score under C2aii or C2bii.</p>
 <p><b>Increase Vulnerability</b>: Required habitat is generated primarily by one
 species.</p>
 
+<p><i>Examples:</i> animals that require marshes dominated by a single plant
+species (such as <i>Spartina</i> sp. or <i>Typha</i> sp.) (e.g., in most areas, seaside
+sparrows nest only in marsh areas that contain the tall form of <i>Spartina
+alterniflora</i>).</p>
+
 <p><b>Somewhat Increase Vulnerability</b>: Required habitat is generated by only
 a few species.</p>
+
+<p><i>Examples:</i> certain cacti that depend on a few specific plant species
+for creating required specific habitat conditions necessary for seedling
+establishment; plants species that depend on biological soil crusts for
+favorable conditions for seed germination, water and nutrient flow to
+vegetation, and soil stability; plant species with preference for particular
+canopy species like long leaf pine (<i>Pinus palustris</i>); species such as
+nesting burrowing owls (<i>Athene cunicularia</i>) that depend on excavations
+made by relatively few species of burrowing mammals; birds such as marbled
+murrelets (<i>Brachyramphus marmoratus</i>) that strongly depend on a few
+species of large trees to provide suitable nesting platforms; lichens (e.g.,
+<i>Nephroma occultum</i>) strongly associated with old-growth
+Douglas-fir/western hemlock forests in the Pacific Northwest; certain plant
+species that depend on large grazing animals to generate habitats (localized
+disturbances) required for establishment and early growth.</p>
 
 <p><b>Neutral</b>: Required habitat is generated by more than a few species; or
 species does not require any uncommon/restricted habitats; or habitat
 requirements do not involve species-specific processes.</p>
+
+<p><i>Examples:</i> many mammal species that do not rely on burrows or shelters made by one or a few other species; many bird species that do not depend on one or a few other species to provide suitable nesting or foraging sites; most species of reptiles, amphibians, fishes, aquatic invertebrates, and butterflies and moths; epiphytic species (orchids, lichens, bromeliads) with no host preference; many species of forest understory plants that thrive under a wide range of forest tree species.</p>
 
 
 ",NA
@@ -917,32 +986,58 @@ dependent on one species during any part of the year; equivalent
 alternatives to this single-species food resource are not readily
 available.</p>
 
+<p><i>Examples:</i> Clark's nutcracker (<i>Nucifraga columbiana</i>), which
+depends heavily on the seeds of whitebark pine (<i>Pinus albicaulis</i>); red
+knot, some populations of which during spring migration may be completely or
+almost completely dependent on horseshoe crab (<i>Limulus</i>) eggs; bog elfin
+(<i>Callophrys lanoraieensis</i>), the larval diet of which consists entirely on
+black spruce.
+
 <p><b>Somewhat Increase Vulnerability</b>: 'Completely or almost completely
 (&gt;90%) dependent during any part of the year on (1) a few species from a
 restricted taxonomic group or (2) a narrow guild the members of which are
 thought to respond similarly to climate change.</p>
+
+<p><i>Examples:</i> larvae of various fritillary butterflies that rely heavily
+on a few species of Viola violets; western pine elfin (<i>Callophrys
+eryphon</i>), the larval diet of which generally includes only a few pine
+(<i>Pinus</i>) species; swifts and swallows that are dependent on aerial insects
+(often a limited number of species at any particular time) that may become
+unavailable or less available as a result of climate change (e.g., through
+increased incidence of prolonged rainy conditions that restrict aerial feeding
+opportunities, or increased incidence of conditions that reduce populations of
+aerial insects).</p>
 
 <p><b>Neutral</b>: 'Diet flexible; during any season species readily switches
 among multiple food resources according to availability; not strongly dependent
 on one or a few species; omnivorous, with diet including numerous species
 of both plants and animals.</p>
 
+<p><i>Examples:</i> most Carnivora, ungulates, nonmigratory birds, amphibians,
+reptiles, fishes, and many Lepidoptera (e.g., mule deer seasonally may focus
+their foraging on only a few favored plant species, but in the absence of those
+species they readily switch to other species); great horned owl (<i>Bubo
+virginianus</i>), which has a flexible diet and is not strongly dependent on one
+or a few species (although its diet may be dominated by one or a few readily
+available species in a particular location or season); black-capped chickadee
+(<i>Poecile atricapillus</i>) and other birds that are highly opportunistic
+during any season and readily switch among different food resources as
+availability changes.</p>
+
 
 ",NA
 "C","4","c","<h3>c) Pollinator versatility (plants only)</h3>
 
-<p>Quantitative thresholds loosely follow data in Waser et al. (1996,
-Ecology 77:1043). If appropriate, scoring of species whose pollinators is
+<p>Quantitative thresholds loosely follow data in Waser et al. (1996). If appropriate, scoring of species whose pollinators is
 not known can be based on characteristics of closely related species that
 have similar and relevant morphological floral features that may have
-similar pollination syndromes (Willmer 2011, Pollination and Floral
-Ecology, Princeton Press).</p>
+similar pollination syndromes (Willmer 2011).</p>
 
 <p>In some cases, sympatric, sequentially flowering species may enhance
 reproductive success for each other through maintenance of pollinator
 populations. Species that are documented to benefit from such interactions
 with one or only a few sympatric species should be scored one category
-higher (Hegland et al. 2009, Ecology Letters 12:184).</p>
+higher (Hegland et al. 2009).</p>
 
 <p><b>Increase Vulnerability</b>: Completely or almost completely dependent on
 one species for pollination (&gt; 90% of effective pollination accomplished by
@@ -968,6 +1063,16 @@ syndromes can be found at <a
 href=""https://www.fs.usda.gov/wildflowers/pollinators/What_is_Pollination/syndromes.shtml""
 target=""_blank"">USDA Pollinator Syndromes</a>.</p>
 
+<p>Hegland, S. J., Nielsen, A., Lázaro, A., Bjerknes, A.-L. and Totland, Ø. 2009 How does climate warming affect plant-pollinator interactions? Ecology Letters 12:184-195. doi: 10.1111/j.1461-0248.2008.01269.x</p>
+
+<p>van der Pijl, L. 1961. Ecological aspects of flower evolution. III. Zoophilous flower classes. Evolution 15: 44-59.</p>
+
+<p>Waser, N. M., L. Chittka, M. V. Price, N. M. Williams and J. Ollerton. 1996.
+Generalization in pollination systems, and why it matters. Ecology
+77:1043-1060.</p>
+
+<p>Willmer, P. 2011. Pollination and Floral Ecology. Princeton University Press, Princeton, New Jersey, USA. 778 pp.</p>
+
 ",NA
 "C","4","d","<h3>d) Dependence on other species for propagule dispersal</h3>
 
@@ -976,7 +1081,7 @@ freshwater mussels can be dispersed by one to many fish species; fruit
 dispersal by animals.</p>
 
 <p><b>Increase Vulnerability</b>: Completely or almost completely (roughly &gt;
-90%) dependent on a single species for propagule dispersal.For example,
+90%) dependent on a single species for propagule dispersal. For example,
 whitebark pine would fit here because Clark's nutcracker is the primary
 dispersal agent.</p>
 
@@ -998,10 +1103,8 @@ pathogenic due to climate change, or vectors of disease when they expand
 their distributions due to changes in climate and therefore become more
 harmful or influence a greater portion of the distribution of the species
 being evaluated. Examples include the chytrid fungal pathogen that can
-become more harmful to frogs because of climate change (Pounds et al. 2006
-Nature 439:161) or sudden oak death in California caused by a pathogen that
-is invasive under favorable climate conditions (Meentenmeyer et al. 2011
-Ecosphere 2:1).</p>
+become more harmful to frogs because of climate change (Pounds et al. 2006) or sudden oak death in California caused by a pathogen that
+is invasive under favorable climate conditions (Meentemeyer et al. 2011).</p>
 
 <p><b>Increase Vulnerability</b>: Species is negatively affected to a high
 degree by a pathogen or natural enemy that is likely to increase in
@@ -1022,19 +1125,24 @@ or natural enemies is likely to decrease with climate change. Example: A
 warmer/drier climate may reduce the negative impact of certain fungal
 pathogens that depend/thrive on relatively cold/moist conditions.</p>
 
+<p>Meentemeyer, R. K., N. J. Cunniffe, A. R. Cook, J. A. N. Filipe, R. D. Hunter, D. M. Rizzo, and C. A. Gilligan. 2011. Epidemiological modeling of invasion in heterogeneous landscapes: spread of sudden oak death in California (1990–2030). Ecosphere 2:1-24.</p>
+
+<p>Pounds, J. A., M. R. Bustamante, L. A. Coloma, J. A. Consuegra, M. P L.
+Fogden, P. N. Foster, E. La Marca, K. L. Masters, A. Merino-Viteri, R.
+Puschendorf, S. R. Ron, G. A. Sánchez-Azofeifa, C. J. Still, and B. E. Young.
+2006. Widespread amphibian extinctions from epidemic disease driven by global
+warming. Nature 439:161-167.</p>
 
 ",NA
 "C","4","f","<h3>f) Sensitivity to competition from native or non-native species</h3>
 
 <p>Species may suffer when competitors are favored by both changing
 climates and the effects these climates have on disturbance regimes
-(Abatzoglou and Kolden 2011 Rangeland Ecology &amp; Management 64:471,
-Dukes et al. 2011 Ecological Applications 21:1887, Pint&#x00F3-Marijuan and
-Munn&#x00E9-Bosch 2013, Grossman and Rice 2014 Ecology Letters 17:710). However,
+(Abatzoglou and Kolden 2011, Dukes et al. 2011, Pint&#x00F3-Marijuan and
+Munn&#x00E9-Bosch 2013, Grossman and Rice 2014). However,
 in some cases climate change will decrease the spread of particular
-invasive species (Bradley et al. 2010 Trends in Ecology &amp; Evolution
-25:310). To score this factor, some indication is needed that a potential
-competitor is favored by projected future climates.</p>
+invasive species (Bradley et al. 2010). To score this factor, some indication is
+needed that a potential competitor is favored by projected future climates.</p>
 
 <p><b>Increase Vulnerability</b>: Strongly affected by a native or non-native
 competing species that is likely to be favored by climate change.</p>
@@ -1049,6 +1157,25 @@ climate change is likely to decrease or have no effect on the spread or
 abundance of a native or non-native species that negatively impacts the
 species.</p>
 
+<p>Abatzoglou, J. T., and C. A. Kolden. 2011. Climate Change in Western US
+Deserts: Potential for Increased Wildfire and Invasive Annual Grasses. Rangeland
+Ecology & Management 64:471-478.</p>
+
+<p>Bradley, B. A., D. M. Blumenthal, D. S. Wilcove, and L. H. Ziska. 2010.
+Predicting plant invasions in an era of global change. Trends in Ecology &
+Evolution 25:310-318.</p>
+
+<p>Dukes, J. S., N. R. Chiariello, S. R. Loarie, and C. B. Field. 2011. Strong
+response of an invasive plant species (Centaurea solstitialis L.) to global
+environmental changes. Ecological Applications 21:1887-1894.</p>
+
+<p>Grossman, J. D., and K. J. Rice. 2014. Contemporary evolution of an invasive
+grass in response to elevated atmospheric CO2 at a Mojave Desert FACE site.
+Ecology Letters 17:710-716.</p>
+
+<p>Pint&#x00F3-Marijuan, M., and S. Munn&#x00E9-Bosch. 2013. Ecophysiology of
+invasive plants: osmotic adjustment and antioxidants. Trends in Plant Science
+18:660-666.</p>
 
 ",NA
 "C","4","g","<h3>g) Forms part of an interspecific interaction not covered by C5a-f</h3>
@@ -1162,6 +1289,24 @@ assessment area based on reproductive system. Includes species that have either
 mixed mating systems or are obligate outcrossers AND there are no known major
 disruptions to gene flow.</p>
 
+<p>Franks, S. J., J. J. Weber, and S. N. Aitken. 2014. Evolutionary and plastic
+responses to climate change in terrestrial plant populations. Evolutionary
+Applications 7:123-139.</p>
+
+<p>Jones, N. T., B. C. Husband, and A. S. MacDougall. 2013. Reproductive system
+of a mixed-mating plant responds to climate perturbation by increased selfing.
+Proceedings of the Royal Society B 280: 20131336.</p>
+
+<p>Jump, A. S. and J. Peñuelas. 2005. Running to stand still: adaptation and the
+response of plants to rapid climate change. Ecology Letters 8:1010-1020.</p>
+
+<p>Morran, L. T., M. D. Parmenter, P. C. Phillips. 2009. Mutation load and rapid
+adaptation favour outcrossing over self-fertilization. Nature 462:350-352.</p>
+
+<p>Morran, L. T., O. G. Schmidt, I. A. Gelarden, R. C. Parrish II, C. M. Lively.
+2011. Running with the Red Queen: host-parasite coevolution selects for
+biparental sex. Science 333:216-218.</p>
+
 
 ",NA
 "C","6",NA,"<h2>6) Phenological Response to Changing Seasonal Temperature or Precipitation
@@ -1195,7 +1340,7 @@ species' range show no detectable change.</p>
 
 <p><i>Tools</i>: Some phenological information can be gleaned from papers listed
 in the <a href=""https://doi.org/10.13016/M22G2V"" target=""_blank"">Inouye
-Pollinator Reference Database</a></p>
+Pollinator Reference Database</a>. The National Phenology Network website is <a href=""http://www.usanpn.org/"" target=""blank"">http://www.usanpn.org/</a>.</p>
 ",NA
 "D",NA,NA,"
 <style>
@@ -1217,9 +1362,9 @@ have responded to recent climate change based on published accounts in the
 peer-reviewed literature. Time frame for the reduction or increase is 10
 years or three generations, whichever is longer. Some examples include
 population declines due to phenology mismatches between species and
-critical food or pollinator resources, e.g., great tits (Parus major) or
-pied flycatchers (Ficedula hypoleuca) with winter moth (Operophtera
-brumata) caterpillars, or honey-buzzards (Pernis apivorus) with wasps.</p>
+critical food or pollinator resources, e.g., great tits (<i>Parus major</i>) or
+pied flycatchers (<i>Ficedula hypoleuca</i>) with winter moth (<i>Operophtera
+brumata</i>) caterpillars, or honey-buzzards (<i>Pernis apivorus</i>) with wasps.</p>
 
 <p>Note that not all responses to climate change necessarily indicate
 vulnerability. Species that respond to climate change by shifting (but not
@@ -1285,6 +1430,12 @@ a decrease of less than a 20% relative to current range within the assessment
 area OR predicted future abundance increases, remains stable, or decreases
 &lt; 20% as a result of climate change processes.</p>
 
+<p>Calosi, P., D. T. Bilton, and J. I. Spicer. 2008. Thermal tolerance, acclimatory capacity and vulnerability to global climate change. Biology Letters 4:99-102.</p>
+
+<p>Deutsch, C. A., J. J. Tewksbury, R. B. Huey, K. S. Sheldon, C. K. Ghalambor, D. C. Haak, and P. R. Martin. 2008. Impacts of climate warming on terrestrial ectotherms across latitude. Proceedings of the National Academy of Sciences (USA) 105:6668-6672.</p>
+
+<p>Visser, M. E., and C. Both. 2005. Shifts in phenology due to global climate
+change: the need for a yardstick. Proceedings of the Royal Society B 272:2561-1569.</p>
 
 ",NA
 "D","3",NA,"<h2>3) Overlap of Modeled Future (2050) Range with Current Range</h2>
