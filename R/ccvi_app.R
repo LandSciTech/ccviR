@@ -244,10 +244,11 @@ ccvi_app <- function(testmode_in, ...){
                 conditionalPanel(
                   condition = "input.startSpatial > 0",
                   shinycssloaders::withSpinner(verbatimTextOutput("spat_error"),
-                                               proxy.height = "50px"),
-                  actionButton("next2", "Next", class = "btn-primary"),
-                  br(), br()
-                )
+                                               proxy.height = "50px")
+                ),
+                br(),br(),
+                actionButton("next2", "Next", class = "btn-primary"),
+                br(), br()
               )
             )
           )
@@ -678,8 +679,14 @@ ccvi_app <- function(testmode_in, ...){
 
         df_loaded <- df_loaded()
         if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
+          # need spat tholds to get exp multipliers
           df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          spat_res2(df_spat)
+          # need use df_loaded for all other values to preserve changes to spat vuln qs
+          df_spat2 <- df_loaded %>%
+            left_join(df_spat %>%
+                        select(scenario_name, setdiff(names(df_spat), names(df_loaded))),
+                      by = 'scenario_name')
+          spat_res2(df_spat2)
           repeatSpatial(TRUE)
           doSpatial((doSpatial() +1))
           # set to same as doSpatial so can check value and if same don't update spat_res2
@@ -1239,8 +1246,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2ai <- gt::render_gt({
-      req(spat_res())
-      exp_tbl <- spat_res() %>%
+      req(spat_res2())
+      exp_tbl <- spat_res2() %>%
         select(matches("HTN_\\d")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
@@ -1286,8 +1293,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2aii <- gt::render_gt({
-      req(spat_res())
-      exp_df <-  spat_res() %>%
+      req(spat_res2())
+      exp_df <-  spat_res2() %>%
         select(contains("PTN", ignore.case = FALSE)) %>%
         tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
                      names_to = "Variable", values_to = "Proportion of Range") %>%
