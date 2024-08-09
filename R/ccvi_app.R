@@ -1240,8 +1240,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2ai <- gt::render_gt({
-      req(spat_res2())
-      exp_tbl <- spat_res2() %>%
+      req(spat_res())
+      exp_tbl <- spat_res() %>%
         select(matches("HTN_\\d")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
