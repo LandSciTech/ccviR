@@ -678,8 +678,8 @@ ccvi_app <- function(testmode_in, ...){
 
         df_loaded <- df_loaded()
         if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-          # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          # spat_res2(df_spat)
+          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          spat_res2(df_spat)
           repeatSpatial(TRUE)
           doSpatial((doSpatial() +1))
           # set to same as doSpatial so can check value and if same don't update spat_res2
@@ -1074,7 +1074,6 @@ ccvi_app <- function(testmode_in, ...){
 
       # force these to invalidate when re-run
       spat_res(FALSE)
-      spat_res2(FALSE)
 
       removeNotification("spat_restore_note")
       return(out)
@@ -1394,7 +1393,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D2)
 
-      if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_change)){
+      if(nrow(spat_res2()) > 1 & isTruthy(spat_res2()$range_change)){
         valueNm <- valueNms[ 4- box_val]
         div(strong("Calculated effect on vulnerability:"),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
@@ -1422,7 +1421,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D3)
 
-      if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_overlap)){
+      if(nrow(spat_res2()) > 1 & isTruthy(spat_res2()$range_overlap)){
         valueNm <- valueNms[4 - box_val]
         div(strong("Calculated effect on vulnerability:"),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
