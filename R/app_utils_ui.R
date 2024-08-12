@@ -46,7 +46,15 @@ guide_popup <- function(id){
   txt <- guideline_lu_tbl %>% filter(.data$section == sec, .data$question == q |is.na(.data$question),
                               .data$sub_question == q1 | is.na(.data$sub_question),
                               .data$sub2_question == q2 | is.na(.data$sub2_question)) %>%
-    pull(.data$guide_text) %>% paste(collapse = "\n")
+    pull(.data$guide_text) %>%
+    c(paste0(
+      "<p><i>These guidelines are taken from the ",
+      a("NatureServe Guidelines",
+        href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf",
+        target="_blank"),
+      ".", "</i></p>"
+      )) %>%
+    paste(collapse = "\n")
 
   ttl <- vulnq_code_lu_tbl %>% filter(.data$Code == id) %>% pull(.data$Question)
 
