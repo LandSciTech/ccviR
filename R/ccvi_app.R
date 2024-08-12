@@ -244,10 +244,11 @@ ccvi_app <- function(testmode_in, ...){
                 conditionalPanel(
                   condition = "input.startSpatial > 0",
                   shinycssloaders::withSpinner(verbatimTextOutput("spat_error"),
-                                               proxy.height = "50px"),
-                  actionButton("next2", "Next", class = "btn-primary"),
-                  br(), br()
-                )
+                                               proxy.height = "50px")
+                ),
+                br(),br(),
+                actionButton("next2", "Next", class = "btn-primary"),
+                br(), br()
               )
             )
           )
@@ -678,8 +679,14 @@ ccvi_app <- function(testmode_in, ...){
 
         df_loaded <- df_loaded()
         if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-          # df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          # spat_res2(df_spat)
+          # need spat tholds to get exp multipliers
+          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          # need use df_loaded for all other values to preserve changes to spat vuln qs
+          df_spat2 <- df_loaded %>%
+            left_join(df_spat %>%
+                        select(scenario_name, setdiff(names(df_spat), names(df_loaded))),
+                      by = 'scenario_name')
+          spat_res2(df_spat2)
           repeatSpatial(TRUE)
           doSpatial((doSpatial() +1))
           # set to same as doSpatial so can check value and if same don't update spat_res2
@@ -1074,7 +1081,6 @@ ccvi_app <- function(testmode_in, ...){
 
       # force these to invalidate when re-run
       spat_res(FALSE)
-      spat_res2(FALSE)
 
       removeNotification("spat_restore_note")
       return(out)
@@ -1287,8 +1293,8 @@ ccvi_app <- function(testmode_in, ...){
     })
 
     output$tbl_C2aii <- gt::render_gt({
-      req(spat_res())
-      exp_df <-  spat_res() %>%
+      req(spat_res2())
+      exp_df <-  spat_res2() %>%
         select(contains("PTN", ignore.case = FALSE)) %>%
         tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
                      names_to = "Variable", values_to = "Proportion of Range") %>%
@@ -1394,7 +1400,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D2)
 
-      if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_change)){
+      if(nrow(spat_res2()) > 1 & isTruthy(spat_res2()$range_change)){
         valueNm <- valueNms[ 4- box_val]
         div(strong("Calculated effect on vulnerability:"),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
@@ -1422,7 +1428,7 @@ ccvi_app <- function(testmode_in, ...){
       box_val <- spat_res2() %>%
         pull(.data$D3)
 
-      if(nrow(spat_res2()) > 1 & isTruthy(spat_res()$range_overlap)){
+      if(nrow(spat_res2()) > 1 & isTruthy(spat_res2()$range_overlap)){
         valueNm <- valueNms[4 - box_val]
         div(strong("Calculated effect on vulnerability:"),
             HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),

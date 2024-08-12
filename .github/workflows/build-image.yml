@@ -1,9 +1,8 @@
-name: Deploy ccviR Shiny app for Climate Change Vulnerability Assessment
+name: build app docker image
 
 on:
   push:
     branches:
-      - master
       - try-deploy
 
 jobs:
