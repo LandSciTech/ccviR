@@ -52,7 +52,6 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    shinytest,
     future,
     furrr,
     readxl,
