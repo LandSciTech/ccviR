@@ -7,6 +7,9 @@
 #'
 #' @noRd
 ccvi_app <- function(testmode_in, ...){
+  # package only used in report rmd causing R-CMD note so adding here
+  kableExtra::kbl
+
   # which fields are mandatory
   fieldsMandatory1 <- c("assessor_name", "geo_location", "tax_grp", "species_name")
 
