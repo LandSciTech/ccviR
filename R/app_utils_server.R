@@ -230,26 +230,26 @@ combine_outdata <- function(out_data_lst){
 
   exp_cols <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                           package = "ccviR"))
-  exp_nms <- exp_cols %>% filter(Column.Name != "") %>%
+  exp_nms <- exp_cols %>% filter(.data$Column.Name != "") %>%
     rowwise() %>%
     mutate(names_exp = case_when(
-      stringr::str_detect(Column.Name, "HTN|CCEI") ~
+      stringr::str_detect(.data$Column.Name, "HTN|CCEI") ~
         paste0(stringr::str_remove(Column.Name, "#"), 1:4, collapse = ","),
-      stringr::str_detect(Column.Name, "MAT|CMD") ~
+      stringr::str_detect(.data$Column.Name, "MAT|CMD") ~
         paste0(stringr::str_remove(Column.Name, "#"), 1:6, collapse = ","),
-      stringr::str_detect(Column.Name, "HTN|CCEI") ~
+      stringr::str_detect(.data$Column.Name, "HTN|CCEI") ~
         paste0(stringr::str_remove(Column.Name, "#"), 1:4, collapse = ","),
-      stringr::str_detect(Column.Name, "MC_freq") ~
-        paste0(stringr::str_remove(Column.Name, "\\*"),
+      stringr::str_detect(.data$Column.Name, "MC_freq") ~
+        paste0(stringr::str_remove(.data$Column.Name, "\\*"),
                c("EV", "HV", "MV", "LV", "IE"), collapse = ","),
-      stringr::str_detect(Column.Name, "^[B,C,D]\\d.*") ~
-        paste0("com_", Column.Name, ",", Column.Name),
-      stringr::str_detect(Column.Name, "MAP") ~
-        paste0(stringr::str_remove(Column.Name, "max/min"), c("max", "min"), collapse = ","),
-      TRUE ~ Column.Name
+      stringr::str_detect(.data$Column.Name, "^[B,C,D]\\d.*") ~
+        paste0("com_", .data$Column.Name, ",", .data$Column.Name),
+      stringr::str_detect(.data$Column.Name, "MAP") ~
+        paste0(stringr::str_remove(.data$Column.Name, "max/min"), c("max", "min"), collapse = ","),
+      TRUE ~ .data$Column.Name
       )) %>%
-    tidyr::separate_rows(names_exp, sep = ",") %>%
-    pull(names_exp)
+    tidyr::separate_rows(.data$names_exp, sep = ",") %>%
+    pull(.data$names_exp)
 
   out_dat <- bind_cols(out_data_lst) %>%
     select(any_of(exp_nms), contains("rng_chg_pth"))
@@ -287,10 +287,10 @@ update_restored <- function(df, session){
                              values_to = "value",
                              values_transform = as.character) %>%
     distinct() %>%
-    mutate(input2 = ifelse(stringr::str_detect(input, "rng_chg_pth"), "rng_chg_pth", input)) %>%
+    mutate(input2 = ifelse(stringr::str_detect(.data$input, "rng_chg_pth"), "rng_chg_pth", .data$input)) %>%
     left_join(df_coms, by = "input") %>%
     left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input2" = "id")) %>%
-    select(-input2) %>%
+    select(-"input2") %>%
     filter(!is.na(.data$update_fun)) %>%
     mutate(comment = ifelse(is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
                             "", .data$comment),

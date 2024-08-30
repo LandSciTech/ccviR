@@ -687,7 +687,7 @@ ccvi_app <- function(testmode_in, ...){
           # need use df_loaded for all other values to preserve changes to spat vuln qs
           df_spat2 <- df_loaded %>%
             left_join(df_spat %>%
-                        select(scenario_name, setdiff(names(df_spat), names(df_loaded))),
+                        select("scenario_name", setdiff(names(df_spat), names(df_loaded))),
                       by = 'scenario_name')
           spat_res2(df_spat2)
           repeatSpatial(TRUE)
@@ -1262,7 +1262,7 @@ ccvi_app <- function(testmode_in, ...){
         distinct() %>%
         mutate(`Historical Temperature Variation` = c("> 43.0", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
         mutate_if(is.numeric, round, digits = 2) %>%
-        select(`Sensitivity Class`, `Historical Temperature Variation`, `Proportion of Range`) %>%
+        select("Sensitivity Class", "Historical Temperature Variation", "Proportion of Range") %>%
         gt::gt() %>%
         gt::cols_label(`Historical Temperature Variation` = gt::html("Historical Temperature Variation (&deg;C)")) %>%
         gt::tab_options(table.width = 600,

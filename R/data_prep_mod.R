@@ -223,7 +223,7 @@ data_prep_ui <- function(id){
           mutate(across(contains("brks_") & where(~!all(is.na(.x)|.x == "")), \(b){
             list(b %>% unique() %>% stringr::str_split(";") %>% unlist() %>%
                    as_tibble() %>%
-                   tidyr::separate(value, into = c("class", "min", "max"),
+                   tidyr::separate(.data$value, into = c("class", "min", "max"),
                                    sep = ": | - ", ) %>%
                    mutate(across(everything(),
                                  \(x) stringr::str_remove(x, "\\(|\\)") %>%

@@ -29,25 +29,25 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
 
     # create df with scenarios, classes, and breaks
     scn_brks_df <- spattbl %>%
-      select(scenario_name, matches(paste0(varname, "_\\d"))) %>%
-      tidyr::pivot_longer(-scenario_name) %>%
-      tidyr::pivot_wider(names_from = scenario_name, values_from = value) %>%
+      select("scenario_name", matches(paste0(varname, "_\\d"))) %>%
+      tidyr::pivot_longer(-"scenario_name") %>%
+      tidyr::pivot_wider(names_from = "scenario_name", values_from = "value") %>%
       mutate(class_brks = class_brks) %>%
-      tidyr::separate(class_brks, into = c("class", "breaks"), sep = ": ") %>%
-      mutate(breaks = stringr::str_replace_all(breaks, "[()]", "")) %>%
-      mutate(breaks = stringr::str_replace_all(breaks, " - ", " to ")) %>%
-      select(class, breaks, scenario_cols)
+      tidyr::separate("class_brks", into = c("class", "breaks"), sep = ": ") %>%
+      mutate(breaks = stringr::str_replace_all(.data$breaks, "[()]", "")) %>%
+      mutate(breaks = stringr::str_replace_all(.data$breaks, " - ", " to ")) %>%
+      select("class", "breaks", scenario_cols)
 
     # create df with exposure multipliers
-    exp_df <- spattbl %>% select(scenario_name, contains("exp_cave")) %>%
-      tidyr::pivot_longer(-scenario_name) %>%
-      tidyr::pivot_wider(names_from = scenario_name, values_from = value) %>%
+    exp_df <- spattbl %>% select("scenario_name", contains("exp_cave")) %>%
+      tidyr::pivot_longer(-"scenario_name") %>%
+      tidyr::pivot_wider(names_from = "scenario_name", values_from = "value") %>%
       mutate(breaks = "Exposure Multiplier")
 
     # add exposure multipliers to scenarios, classes, and breaks
     exp_res_df <- bind_rows(scn_brks_df, exp_df %>%
-                               filter(name == exp_val) %>%
-                               select(-name)) %>%
+                               filter(.data$name == exp_val) %>%
+                               select(-"name")) %>%
       mutate_if(is.numeric, round, digits = 2)
 
     # create table
@@ -74,37 +74,37 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
   } else {
 
     class_brks <- clim_readme %>%
-      select(Scenario_Name, matches(varname)) %>%
-      mutate(scenario_name = stringr::str_replace_all(Scenario_Name, "\t", "")) %>%
-      select(scenario_name, matches(varname)) %>%
+      select("Scenario_Name", matches(varname)) %>%
+      mutate(scenario_name = stringr::str_replace_all(.data$Scenario_Name, "\t", "")) %>%
+      select("scenario_name", matches(varname)) %>%
       tidyr::separate(matches(varname), into = c("6", "5", "4", "3", "2", "1"), sep = ";") %>%
-      tidyr::pivot_longer(-scenario_name) %>%
-      tidyr::separate(value, into = c("class", "breaks"), sep = ": ") %>%
-      mutate(breaks = stringr::str_replace_all(breaks, "[()]", "")) %>%
-      mutate(breaks = stringr::str_replace_all(breaks, " - ", " to ")) %>%
-      select(scenario_name, class, breaks)
+      tidyr::pivot_longer(-"scenario_name") %>%
+      tidyr::separate("value", into = c("class", "breaks"), sep = ": ") %>%
+      mutate(breaks = stringr::str_replace_all(.data$breaks, "[()]", "")) %>%
+      mutate(breaks = stringr::str_replace_all(.data$breaks, " - ", " to ")) %>%
+      select("scenario_name", "class", "breaks")
 
     # create df with scenarios, classes, and breaks
     scn_brks_df <- spattbl %>%
-      select(scenario_name, matches(paste0(varname, "_\\d"))) %>%
-      mutate(scenario_name = stringr::str_replace_all(scenario_name, "\t", "")) %>%
-      tidyr::pivot_longer(-scenario_name) %>%
-      mutate(class = stringr::str_replace(name, paste0(varname, "_"), "")) %>%
+      select("scenario_name", matches(paste0(varname, "_\\d"))) %>%
+      mutate(scenario_name = stringr::str_replace_all(.data$scenario_name, "\t", "")) %>%
+      tidyr::pivot_longer(-"scenario_name") %>%
+      mutate(class = stringr::str_replace(.data$name, paste0(varname, "_"), "")) %>%
       merge(class_brks, by = c("scenario_name", "class")) %>%
-      select(scenario_name, class, breaks, value)
+      select("scenario_name", "class", "breaks", "value")
 
     # create df with exposure multipliers
-    exp_df <- spattbl %>% select(scenario_name, contains("exp_cave")) %>%
-      mutate(scenario_name = stringr::str_replace_all(scenario_name, "\t", "")) %>%
-      tidyr::pivot_longer(-scenario_name) %>%
+    exp_df <- spattbl %>% select("scenario_name", contains("exp_cave")) %>%
+      mutate(scenario_name = stringr::str_replace_all(.data$scenario_name, "\t", "")) %>%
+      tidyr::pivot_longer(-"scenario_name") %>%
       mutate(breaks = "Exposure Multiplier")
 
     # add exposure multipliers to scenarios, classes, and breaks
     exp_res_df <- bind_rows(scn_brks_df, exp_df %>%
-                              filter(name == exp_val) %>%
-                              select(-name)) %>%
+                              filter(.data$name == exp_val) %>%
+                              select(-"name")) %>%
       mutate_if(is.numeric, round, digits = 2) %>%
-      group_by(scenario_name)
+      group_by(.data$scenario_name)
 
     # create table
     exp_res_tbl <- gt::gt(exp_res_df) %>%
