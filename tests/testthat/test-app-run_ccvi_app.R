@@ -4,11 +4,18 @@ library(ccviR)
 # call for snapshot review
 # testthat::snapshot_review('run_ccvi_app/', path = 'tests/testthat/app/')
 
+Sys.setenv(
+  CHROMOTE_CHROME = "C:/Users/EndicottS/AppData/Local/Google/Chrome/Application/chrome.exe"
+)
+
+# Note seems you need to shut Chrome for it to work
+
 test_that("{shinytest2} app test", {
   # Don't run these tests on the CRAN build servers
   skip_on_cran()
   skip_on_ci()
-  app <- AppDriver$new(".", name = "ccviR", seed = 7)
+  app_obj <- run_ccvi_app("demo", test.mode = TRUE)
+  app <- AppDriver$new(app_obj, name = "ccviR", seed = 7)
   # app <- AppDriver$new("tests/testthat/app", name = "ccviR", seed = 7)
 
   # Update output value

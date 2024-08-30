@@ -1643,7 +1643,8 @@ ccvi_app <- function(testmode_in, ...){
       out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
     })
 
-    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
+    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst),
+                     doSpatial = doSpatial())
 
     # # helpful for testing
     #  shinyjs::runcodeServer()
