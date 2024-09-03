@@ -334,7 +334,8 @@ ccvi_app <- function(testmode_in, ...){
               p("The NatureServe Guidelines for scoring each question can be accessed
                 by clicking the info button next to the question. Use published studies,
                 empirical data or expert opinion to support your responses. Provide
-                detailed information about how the answer was reached in the comment boxes."),
+                detailed information about how the answer was reached in the comment boxes.
+                To reflect uncertainty you may select more than one response to each question"),
               div(
                 id = "secB",
                 h3("Section B: Indirect Exposure to Climate Change"),
@@ -478,7 +479,8 @@ ccvi_app <- function(testmode_in, ...){
                 The spatial data analysis evaluates these factors and pre-selects
                 a response accordingly. The data used to pre-select a response is
                 shown in a map and table accompanying each question. The pre-selected
-                response can be changed if needed."),
+                response can be changed if needed and multiple responses can be
+                selected to reflect uncertainty."),
               p("The NatureServe Guidelines for scoring each question can be accessed
                 by clicking the info button next to the question. Use published studies
                 to support your response. Provide detailed information about how the
