@@ -53,6 +53,7 @@ Suggests:
     knitr,
     rmarkdown,
     future,
+    stringi,
     furrr,
     readxl,
     raster,
