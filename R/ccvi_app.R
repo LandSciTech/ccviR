@@ -202,7 +202,7 @@ ccvi_app <- function(testmode_in, ...){
                   to evaluate select questions in Section C that have a spatial
                   component. If provided, the range change raster(s) will be used to
                   evalaute questions about the modeled response to climate change
-                  in Section D."),
+                  in Section D. Required datasets are indicated with", labelMandatory("a")),
                 get_file_ui("clim_var_dir", "Folder location of prepared climate data",
                             type = "dir", mandatory = TRUE, spinner = TRUE),
                 verbatimTextOutput("clim_var_error", ),
@@ -339,17 +339,17 @@ ccvi_app <- function(testmode_in, ...){
                 id = "secB",
                 h3("Section B: Indirect Exposure to Climate Change"),
                 h5("Evaluate for assessment area under consideration"),
-                check_comment_ui("B1", "1) Exposure to sea level rise:",
+                check_comment_ui("B1", "B1) Exposure to sea level rise:",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
-                check_comment_ui("B2a", "2a) Distribution relative to natural barriers",
+                check_comment_ui("B2a", "B2 a) Distribution relative to natural barriers",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
-                check_comment_ui("B2b", "2b) Distribution relative to anthropogenic barriers",
+                check_comment_ui("B2b", "B2 b) Distribution relative to anthropogenic barriers",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                check_comment_ui("B3", "  3) Predicted impact of land use changes resulting from human responses to climate change",
+                check_comment_ui("B3", "B3) Predicted impact of land use changes resulting from human responses to climate change",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4])
               ),
@@ -363,33 +363,33 @@ ccvi_app <- function(testmode_in, ...){
               div(
                 id = "secC",
                 h3("Section C: Sensitivity and Adaptive Capacity"),
-                check_comment_ui("C1", "1) Dispersal and movements",
+                check_comment_ui("C1", "C1) Dispersal and movements",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                strong("2b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
+                strong("C2 b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
 
-                check_comment_ui("C2bii", "ii) physiological hydrological niche.",
+                check_comment_ui("C2bii", "C2 b ii) physiological hydrological niche.",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                check_comment_ui("C2c", "2c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
+                check_comment_ui("C2c", "C2 c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                check_comment_ui("C2d", "2d) Dependence on ice, ice-edge, or snow-cover habitats.",
+                check_comment_ui("C2d", "C2 d) Dependence on ice, ice-edge, or snow-cover habitats.",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                check_comment_ui("C3", "3) Restriction to uncommon landscape/geological features or derivatives.",
+                check_comment_ui("C3", "C3) Restriction to uncommon landscape/geological features or derivatives.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                check_comment_ui("C4a", "4a) Dependence on other species to generate required habitat.",
+                check_comment_ui("C4a", "C4 a) Dependence on other species to generate required habitat.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
                 shinyjs::hidden(
                   div(
                     id = "animal_only",
-                    check_comment_ui("C4b", "4b) Dietary versatility (animals only).",
+                    check_comment_ui("C4b", "C4 b) Dietary versatility (animals only).",
                                      choiceNames = valueNms[2:4],
                                      choiceValues = valueOpts[2:4])
                   )
@@ -397,30 +397,30 @@ ccvi_app <- function(testmode_in, ...){
                 shinyjs::hidden(
                   div(
                     id = "plant_only",
-                    check_comment_ui("C4c", "4c) Pollinator versatility (plants only).",
+                    check_comment_ui("C4c", "C4 c) Pollinator versatility (plants only).",
                                      choiceNames = valueNms[2:4],
                                      choiceValues = valueOpts[2:4])
                   )
                 ),
-                check_comment_ui("C4d", "4d) Dependence on other species for propagule dispersal.",
+                check_comment_ui("C4d", "C4 d) Dependence on other species for propagule dispersal.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                check_comment_ui("C4e", "4e) Sensitivity to pathogens or natural enemies.",
+                check_comment_ui("C4e", "C4 e) Sensitivity to pathogens or natural enemies.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                check_comment_ui("C4f", "4f) Sensitivity to competition from native or non-native species.",
+                check_comment_ui("C4f", "C4 f) Sensitivity to competition from native or non-native species.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
-                check_comment_ui("C4g", "4g) Forms part of an interspecific interaction not covered by 4a-f.",
+                check_comment_ui("C4g", "C4 g) Forms part of an interspecific interaction not covered by 4a-f.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
 
-                check_comment_ui("C5a", "5a) Measured genetic variation.",
+                check_comment_ui("C5a", "C5 a) Measured genetic variation.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
                 conditionalPanel(
                   "input.C5a == ''",
-                  check_comment_ui("C5b", "5b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
+                  check_comment_ui("C5b", "C5 b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
                                    choiceNames = valueNms[2:4],
                                    choiceValues = valueOpts[2:4]),
 
@@ -430,14 +430,14 @@ ccvi_app <- function(testmode_in, ...){
                   shinyjs::hidden(
                     div(
                       id = "plant_only2",
-                      check_comment_ui("C5c", "5c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+                      check_comment_ui("C5c", "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
                                        choiceNames = valueNms[2:4],
                                        choiceValues = valueOpts[2:4])
                     )
                   )
                 ),
 
-                check_comment_ui("C6", "6) Phenological response to changing seasonal temperature and precipitation dynamics.",
+                check_comment_ui("C6", "C6) Phenological response to changing seasonal temperature and precipitation dynamics.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4])
               ),
@@ -453,11 +453,11 @@ ccvi_app <- function(testmode_in, ...){
                 h3("Section D: Documented or Modeled Response to Climate Change"),
                 h5("(Optional - May apply across the range of a species)"),
 
-                check_comment_ui("D1", "1) Documented response to recent climate change. ",
+                check_comment_ui("D1", "D1) Documented response to recent climate change. ",
                                  choiceNames = valueNms,
                                  choiceValues = valueOpts),
 
-                check_comment_ui("D4", "4) Occurrence of protected areas in modeled future distribution.",
+                check_comment_ui("D4", "D4) Occurrence of protected areas in modeled future distribution.",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4]),
                 actionButton("next4", "Next", class = "btn-primary"),
@@ -487,17 +487,17 @@ ccvi_app <- function(testmode_in, ...){
               h4("2) Predicted sensitivity to temperature and moisture changes"),
               spat_vuln_ui(
                 id = "C2ai",
-                vuln_q_nm = "2a) i) Historical thermal niche"
+                vuln_q_nm = "C2 a) i) Historical thermal niche"
               ),
               br(),
               spat_vuln_ui(
                 id = "C2aii",
-                vuln_q_nm = "2a) ii) Physiological thermal niche"
+                vuln_q_nm = "C2 a) ii) Physiological thermal niche"
               ),
               br(),
               spat_vuln_ui(
                 id = "C2bi",
-                vuln_q_nm = "2b) i) Historical hydrological niche"
+                vuln_q_nm = "C2 b) i) Historical hydrological niche"
               ),
               br(),
               h3("Section D: Documented or Modeled Response to Climate Change"),
@@ -506,11 +506,11 @@ ccvi_app <- function(testmode_in, ...){
                 id = "D2_3",
                 chk_box = FALSE
               ),
-              fluidRow(column(9, strong("2) Modeled future (2050) change in population or range size")),
+              fluidRow(column(9, strong("D2) Modeled future (2050) change in population or range size")),
                        column(1, actionButton(paste0("help_", "D2"), label = "", icon = icon("info")))),
               uiOutput("box_D2"),
               br(),
-              fluidRow(column(9, strong("3) Overlap of modeled future (2050) range with current range"),),
+              fluidRow(column(9, strong("D3) Overlap of modeled future (2050) range with current range"),),
                        column(1, actionButton(paste0("help_", "D3"), label = "", icon = icon("info")))),
               uiOutput("box_D3"),
               actionButton("next5", "Next", class = "btn-primary")
