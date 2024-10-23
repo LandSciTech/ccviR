@@ -1002,6 +1002,7 @@ ccvi_app <- function(testmode_in, ...){
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
         message("loading rng_chg_rasts")
         out <- check_trim(terra::rast(pth))
+        terra::set.names(out, clim_readme()$Scenario_Name)
         hs_rast(out)
       }
     }, ignoreInit = TRUE)
