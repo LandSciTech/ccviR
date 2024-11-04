@@ -20,7 +20,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                      max_cell = 5000000){
 
   # Name of input data layers for mapping
-  rast_nms <- list(`Temperature class` = "mat",
+  rast_nms <- list(`Temperature exposure class` = "mat",
                    `Historical precipitation (mm)` = "map",
                    `Moisture class` = "cmd",
                    `Climate change exposure index` = "ccei",
