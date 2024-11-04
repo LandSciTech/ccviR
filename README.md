@@ -67,8 +67,8 @@ Monte Carlo uncertainty analysis produced are the same.
 
 ### New Features
 
-- Spatial analyses are included in the package so no GIS skills are
-  needed
+- Spatial analyses are included in the package so only minimal GIS
+  skills are needed
 - Uses climate data from the whole species range rather than the range
   in the assessment area to score thermal and hydrological niche factors
 - Simultaneously calculates the index for multiple scenarios such as,
