@@ -8,6 +8,7 @@
 [![R-CMD-check](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![DOI](https://zenodo.org/badge/330706883.svg)](https://doi.org/10.5281/zenodo.14170050)
 <!-- badges: end -->
 
 The ccviR package implements the [NatureServe Climate Change
