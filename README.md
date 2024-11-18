@@ -8,7 +8,7 @@
 [![R-CMD-check](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-[![DOI](https://zenodo.org/badge/330706883.svg)](https://doi.org/10.5281/zenodo.14170050)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07150/status.svg)](https://doi.org/10.21105/joss.07150)
 <!-- badges: end -->
 
 The ccviR package implements the [NatureServe Climate Change
@@ -98,7 +98,7 @@ to use the package to calculate the index directly in R.
 
 ## Citation
 
-Endicott S, Naujokaitis-Lewis I (2023). *ccviR: Calculate the
-NatureServe Climate Change Vulnerability Index in R*. Environment and
-Climate Change Canada, Science and Technology Branch.
-<https://landscitech.github.io/ccviR/>.
+Endicott, S., Naujokaitis-Lewis, I., 2024. ccviR: an R package and Shiny
+app to implement the NatureServe Climate Change Vulnerability Index.
+Journal of Open Source Software 9, 7150.
+<https://doi.org/10.21105/joss.07150>
