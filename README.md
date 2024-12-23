@@ -8,6 +8,7 @@
 [![R-CMD-check](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07150/status.svg)](https://doi.org/10.21105/joss.07150)
 <!-- badges: end -->
 
 The ccviR package implements the [NatureServe Climate Change
@@ -67,8 +68,8 @@ Monte Carlo uncertainty analysis produced are the same.
 
 ### New Features
 
-- Spatial analyses are included in the package so no GIS skills are
-  needed
+- Spatial analyses are included in the package so only minimal GIS
+  skills are needed
 - Uses climate data from the whole species range rather than the range
   in the assessment area to score thermal and hydrological niche factors
 - Simultaneously calculates the index for multiple scenarios such as,
@@ -97,7 +98,7 @@ to use the package to calculate the index directly in R.
 
 ## Citation
 
-Endicott S, Naujokaitis-Lewis I (2023). *ccviR: Calculate the
-NatureServe Climate Change Vulnerability Index in R*. Environment and
-Climate Change Canada, Science and Technology Branch.
-<https://landscitech.github.io/ccviR/>.
+Endicott, S., Naujokaitis-Lewis, I., 2024. ccviR: an R package and Shiny
+app to implement the NatureServe Climate Change Vulnerability Index.
+Journal of Open Source Software 9, 7150.
+<https://doi.org/10.21105/joss.07150>
