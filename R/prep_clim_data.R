@@ -96,7 +96,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     stop("out_folder does not exist", call. = FALSE)
   }
 
-  ext_accept <- c(".asc", ".tif", ".nc", ".grd", ".img")
+  ext_accept <- c(".asc", ".tif", ".tiff", ".nc", ".grd", ".img")
 
   make_pat <- function(x, ext_accept){
     paste0(x, ext_accept, "$", collapse = "|")

@@ -181,7 +181,7 @@ Next we will load in the climate data that we prepared in the first step using t
 clim_dat <- get_clim_vars(file.path(data_pth, "clim_files/processed"), 
                           scenario_names = c("RCP 4.5", "RCP 8.5"))
 
-str(clim_dat, max.level = 1)
+str(clim_dat, max.level = 1, give.attr = FALSE)
 ```
 
 

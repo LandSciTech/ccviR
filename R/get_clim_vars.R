@@ -37,8 +37,8 @@ get_clim_vars <- function(root_pth, scenario_names = "scn1"){
   # remove spaces from scenario_names
   scenario_names <- stringr::str_replace_all(scenario_names, "\\s", "_")
 
-  pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
-            "MWMT.*tif$|HTN.*tif$", "clim_poly.*shp")
+  pats <- c("MAT.*\\.tif", "CMD.*\\.tif", "MAP.*\\.tif", "ccei.*\\.tif|CCEI.*\\.tif",
+            "MWMT.*\\.tif|HTN.*\\.tif", "clim_poly.*\\.shp")
   err <- c(T, T, F, F, F, T)
 
   clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y, scenario_names)) %>%
