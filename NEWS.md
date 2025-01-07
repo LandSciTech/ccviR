@@ -1,3 +1,7 @@
+# ccviR 0.1.1
+
+  * paper submission for JOSS
+
 # ccviR 0.1.0
 
 # ccviR 0.0.4
