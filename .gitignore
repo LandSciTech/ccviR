@@ -13,5 +13,4 @@ inst/rmd/results_report.tex
 rsconnect/
 # {shinytest2}: Ignore new debug snapshots for `$expect_values()`
 *_.new.png
-# {shinytest2}: Ignore new debug snapshots for `$expect_values()`
-*_.new.png
+misc
