@@ -17,3 +17,15 @@ Data used for preparing data sets for the package.
 
 Workflows (i.e. not functions, but for example scripts to create internal data)
 use sections (# Header -------) to create the TOC used in RStudio.
+
+## Naming
+- Snake case is used wherever possible
+- Test files are named `test-XX_DESCRIPTION.R`, where `XX` is the order they 
+  should be run (try to test lower order functions first).
+
+## Documentation
+- `aa_common_docs.R` holds documentation that is common to multiple functions.
+  Use `@inheritParams` to pull out the documentation for function parameters 
+  from the common docs. If you include your own documentation for that parameter
+  it will take precedence.
+  
