@@ -54,7 +54,10 @@ params_future <- c("bioc", "prec")
 years_hist <- c("1960-1969", "1970-1979", "1980-1989") # 1960-1990
 years_future <- "2041-2060"                            # 2050
 
-models <- c("MIROC6")
+# See selection discussion: https://github.com/LandSciTech/ccviR/issues/25#issuecomment-2593765878
+models <- c("ACCESS-ESM1-5", "BCC-CSM2-MR", "CanESM5", "CNRM-ESM2-1", "GISS-E2-1-G",
+            "INM-CM5-0", "IPSL-CM6A-LR", "MIROC6", "MPI-ESM1-2-HR", "MRI-ESM2-0",
+            "UKESM1-0-LL")
 scenarios <- c("ssp245", "ssp585")
 
 # Helpers
@@ -112,7 +115,7 @@ purrr::walk2(u, f, ~ {
 })
 
 # Unzip historical data ------------------------------------------------------
-purrr::walk(f_hist, unzip(.x, exdir = dir_hist, overwrite = TRUE))
+purrr::walk(f_hist, ~unzip(.x, exdir = dir_hist, overwrite = TRUE))
 
 # Option to remove zip files after unzipping, but may be better to keep them
 # for now...(depends on space requirements). Make TRUE to remove
