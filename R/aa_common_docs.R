@@ -1,8 +1,7 @@
 #' Documentation common to different functions
 #'
-#' @param path_hist Character. Path to pre-downloaded historical climate data.
-#' @param path_future Character. Path to pre-downloaded future climate data.
-#' @param workers
+#' @param path_ccei Character. Path to pre-downloaded climate data to be used to
+#'   calculate CCEI. Expects two folders `historical` and `future`.
 #'
 #' @details
 #' Use `@inheritParams common_docs` to include the above in any function

@@ -20,10 +20,9 @@
 #  - Future 2041-2060 (centred on 2050)
 #
 # Parameters:
-#  - Precipitation (all)
-#  - MAT  (future)
-#  - Tmin (historical)
-#  - Tmax (historical)
+#  - Precipitation
+#  - Tmin
+#  - Tmax
 
 library(httr2)
 library(fs)
@@ -48,8 +47,7 @@ url_hist <- glue(
 url_future <- glue("https://geodata.ucdavis.edu/{v_future}/{res}/")
 
 # Details
-params_hist <- c("tmin", "tmax", "prec")
-params_future <- c("bioc", "prec")
+params <- c("tmin", "tmax", "prec")
 
 years_hist <- c("1960-1969", "1970-1979", "1980-1989") # 1960-1990
 years_future <- "2041-2060"                            # 2050
@@ -60,25 +58,6 @@ models <- c("ACCESS-ESM1-5", "BCC-CSM2-MR", "CanESM5", "CNRM-ESM2-1", "GISS-E2-1
             "UKESM1-0-LL")
 scenarios <- c("ssp245", "ssp585")
 
-# Helpers
-is_downloaded <- function(files) {
-  purrr::map_lgl(files, ~ {
-    tryCatch({
-      if(file_exists(.x)) {
-        if(fs::path_ext(.x) == "zip") {
-          unzip(.x, list = TRUE)
-        } else if(path_ext(.x) == "tif") {
-          terra::rast(.x)
-        }
-        TRUE       # If exists and unzippable
-      } else FALSE # If doesn't exist
-    },
-    # If not readable (download unfinished)
-    warning = function(w) FALSE,
-    error = function(e) FALSE)
-  })
-}
-
 # Files to download
 
 # Example URLS
@@ -86,12 +65,12 @@ is_downloaded <- function(files) {
 # Future - https://geodata.ucdavis.edu/cmip6/2.5m/MIROC6/ssp585/wc2.1_2.5m_bioc_MIROC6_ssp585_2041-2060.tif
 
 # Get all specific file urls
-u_hist <- tidyr::expand_grid(v_wc2, v_hist, res, params_hist, years_hist) %>%
-  glue_data("wc{v_wc2}_cruts{v_hist}_{res}_{params_hist}_{years_hist}.zip") %>%
+u_hist <- tidyr::expand_grid(v_wc2, v_hist, res, params, years_hist) %>%
+  glue_data("wc{v_wc2}_cruts{v_hist}_{res}_{params}_{years_hist}.zip") %>%
   path(url_hist, .)
 
-u_future <- tidyr::expand_grid(v_wc2, res, models, scenarios, params_future, years_future) %>%
-  glue_data("{models}/{scenarios}/wc{v_wc2}_{res}_{params_future}_{models}_{scenarios}_{years_future}.tif") %>%
+u_future <- tidyr::expand_grid(v_wc2, res, models, scenarios, params, years_future) %>%
+  glue_data("{models}/{scenarios}/wc{v_wc2}_{res}_{params}_{models}_{scenarios}_{years_future}.tif") %>%
   path(url_future, .)
 
 u <- c(u_hist, u_future)

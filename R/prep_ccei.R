@@ -2,6 +2,7 @@
 #' Prepare Climate Change Exposure Index raster
 #'
 #' Using the Standardized Euclidean Distance method from Williams et al., 2007
+#' and NatureServe v3.02.1 2016.
 #'
 #' @inheritParams common_docs
 #'
@@ -10,22 +11,125 @@
 #'   novel and disappearing climates by 2100 AD, Proc. Natl. Acad. Sci. U.S.A.
 #'   104 (14) 5738-5742, https://doi.org/10.1073/pnas.0606292104 (2007).
 #'
+#'   B.E. Young, E. Byers, G. Hammerson, A. Frances, L. Oliver, A. Treher,
+#'   Guidelines for Using the NatureServe Climate Change Vulnerability Index.
+#'   Release 3.02. https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf (June 1st 2016)
+#'
 #' @returns
 #' @export
 #'
 #' @examples
 #' prep_ccei()
 #'
-prep_ccei <- function(path_hist = "misc/ccei/historical",
-                      path_future = "misc/ccei/future") {
+prep_ccei <- function(path_ccei = "misc/ccei",
+                      overwrite = TRUE, quiet = FALSE) {
 #  - SED equation from Williams et al., 2007
 #  - CMD equation from Wang et al. 2012
 #  - But requires a value of Extra Terrestrical Radiation (Ra) in mm/day
 #  - ASK climr GROUP TO EXPORT, OTHERWISE WE'LL INCLUDE WITH LICENSE
+  prep_ccei_historical(path_ccei, overwrite, quiet)
+  prep_ccei_future(path_ccei, overwrite, quiet)
+
+}
+
+#' Prepare Historical Data for Climate Change Exposure Index
+#'
+#' Calculate CMD and Tmean from monthly data, calculate annual values (see
+#' `ccei_annual()`). Combine and calculate mean and interannual standard
+#' deviations for each raster cell over the entire historical record.
+#'
+#' @inheritParams common_docs
+#'
+#' @returns
+#' @export
+#'
+#' @examples
+#' prep_ccei_historical()
+prep_ccei_historical <- function(path_ccei = "misc/ccei",
+                                 overwrite = TRUE, quiet = FALSE) {
+
+  # Output files
+  out_dir <- fs::path(path_ccei, "intermediate")
+  fs::dir_create(out_dir)
+  out <- fs::path(out_dir, "hist")
+
+  rasts <- fs::path(path_ccei, "historical") %>%
+    fs::dir_ls(regexp = "\\.tiff?$") %>%
+    dplyr::tibble(file = .) %>%
+    dplyr::mutate(
+      year = stringr::str_extract(file, "\\d{4}"),
+      month = as.numeric(stringr::str_extract(file, "(?<=\\d{4}-)\\d{2}")),
+      var = stringr::str_extract(file, "prec|tmin|tmax"),
+      group = year)
+
+  if(getOption("ccvir.testing")) {
+    rasts <- dplyr::filter(rasts, year %in% c(1960:1961))
+  }
 
   # Calculate annual CMD and Tmean for historical data
-  ccei_annual()
+  # - Calculate overall mean CMD and mean TMean, and then sd as well
+  # - Took ~ 10 min to run all 40 years (down from 30min!)
+  ccei_values(rasts, out, sd = TRUE, overwrite = overwrite, quiet = quiet)
+}
 
+#' Title
+#'
+#' WorldClim Biclimatic variables: https://www.worldclim.org/data/bioclim.html
+#'
+#' - BIO1 - Annual Mean Temperature
+#' -
+#'
+#' @param path_ccei
+#'
+#' @returns
+#' @export
+#'
+#' @examples
+#' prep_ccei_future()
+prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE) {
+
+  # Output files
+  out_dir <- fs::path(path_ccei, "intermediate")
+  fs::dir_create(out_dir)
+  out <- fs::path(out_dir, "future")
+
+  # Get raster files and combine layers by model and scenario
+  rasts <- fs::path(path_ccei, "future") %>%
+    fs::dir_ls(regexp = "\\.tiff?$") %>%
+    dplyr::tibble(file = .) %>%
+    dplyr::mutate(
+      model = stringr::str_extract(file, "(?<=_)[A-Za-z0-9-]+(?=_ssp)"),
+      ssp = stringr::str_extract(file, "ssp(245|585)"),
+      var = stringr::str_extract(file, "prec|tmin|tmax"),
+      group = paste0(model, "-", ssp)) %>%
+    arrange(model, ssp)
+
+  if(getOption("ccvir.testing")) {
+    rasts <- dplyr::filter(rasts, model == "ACCESS-ESM1-5")
+  }
+
+  # Report models and scenarios used
+  rlang::inform(c(
+    paste0("Using models (n = ", dplyr::n_distinct(future$model), ") for ",
+           paste0(unique(future$ssp), collapse = " and "), ":"),
+    unique(future$model)))
+
+  # Check potential missing data
+  should_have <- dplyr::n_distinct(future$model) * dplyr::n_distinct(future$ssp) * 3
+  have <- nrow(future)
+  if(have != should_have) {
+    rlang::abort(
+      c("Missing data for some variable, model, and ssp combinations",
+        paste("Only have", have, "files, should have", should_have, "files"),
+        "We need 3 variables ('prec', 'tmin', 'tmax') for each model/ssp combo"
+      ),
+      call = NULL)
+  }
+
+  # Calculate annual CMD and Tmean for future data
+  # - Calculate overall mean CMD and mean TMean, but do not require SD
+  # - Took ~ 10 min to run all 40 years (down from 30min!)
+  ccei_values(rasts, out, overwrite = overwrite, quiet = quiet)
 }
 
 
@@ -38,115 +142,143 @@ prep_ccei <- function(path_hist = "misc/ccei/historical",
 #' precipitation)
 #'
 #' Annual Mean Temperature = Mean of monthly average temperature
-#' (Midpoint: (Monthly maximum temp - Monthly minimum temp) / 2)
+#' (Midpoint: (Monthly maximum temp + Monthly minimum temp) / 2)
 #'
 #' @inheritParams common_docs
 #' @returns Annual CMD raster tif and Annual Mean Temperature raster tif saved
-#'   to an 'intermediate' folder in the `path_hist`.
+#'   to an 'intermediate' folder in the `path_ccei`.
 #' @export
 #'
 #' @examples
 #' ccei_annual()
 
-ccei_annual <- function(path_hist = "misc/ccei/historical", quiet = FALSE) {
+ccei_values <- function(rasts, out, sd = FALSE, overwrite = TRUE, quiet = FALSE) {
 
-  # TODO: Temp for testing - REMOVE
-  path_hist <- "misc/ccei/historical"
-
-  # Output files
-  out_dir <- fs::path(fs::path_dir(path_hist), "intermediate")
-  fs::dir_create(out_dir)
-  out_cmd <- fs::path(out_dir, "all_years_cmd.tiff")
-  out_tmean <- fs::path(out_dir, "all_years_tmean.tiff")
+  # Files
+  out_cmd <- paste0(out, "_years_cmd.tif")
+  out_tmean <- paste0(out, "_years_tmean.tif")
+  out_final <- paste0(out, "_ccei.tif")
 
   # Get boundaries of western hemisphere
   clip <- ccei_clip()
 
-  # Get raster files and combine layers by month
-  hist <- dplyr::tibble(file = fs::dir_ls(path_hist, regexp = "\\.tiff?$")) %>%
-    dplyr::mutate(
-      year = stringr::str_extract(file, "\\d{4}"),
-      month = as.numeric(stringr::str_extract(file, "(?<=\\d{4}-)\\d{2}"))) %>%
-    dplyr::summarize(
-      raster = list(terra::rast(file)),
-      raster = purrr::map(
-        raster,
-        ~stats::setNames(.x, stringr::str_extract(names(.x), "prec|tmin|tmax"))),
-      .by = c("year", "month"))
+  groups <- unique(rasts$group)
 
-  # Took ~ 30-35min to run all 40 years
-  all <- purrr::map(unique(hist$year), ~ {
-    rlang::inform(paste0(.x, " - ", Sys.time()))
-    h <- filter(hist, year == .x)
-    h1 <- purrr::map2(h$raster, h$month,
-                      ~ccei_monthly(.x, .y, clip, quiet = quiet))
-    cmd <- purrr::map(h1, ~.x[["cmd"]]) %>%
-      terra::rast() %>%
-      sum() %>%
-      setNames("cmd")
-    tmean <- purrr::map(h1, ~.x[["tmean"]]) %>%
-      terra::rast() %>%
-      terra::mean(na.rm = TRUE) %>%
-      setNames("tmean")
-
-    c(cmd, tmean)
+  all <- purrr::map(groups, function(g) {
+    rlang::inform(paste0(g, " - ", round(Sys.time())))
+    r <- filter(rasts, group == g)
+    ccei_vars(prec_files = r$file[r$var == "prec"],
+              tmax_files = r$file[r$var == "tmax"],
+              tmin_files = r$file[r$var == "tmin"],
+              clip,
+              quiet)
   }, .progress = !quiet)
 
   all_cmd <- terra::rast(purrr::map(all, ~.x[["cmd"]]))
   all_tmean <- terra::rast(purrr::map(all, ~.x[["tmean"]]))
-  terra::writeRaster(all_cmd, out_cmd)
-  terra::writeRaster(all_tmean, out_tmean)
+
+  all_cmd <- stats::setNames(all_cmd, paste0(names(all_cmd), "_", groups))
+  all_tmean <- stats::setNames(all_tmean, paste0(names(all_tmean), "_", groups))
+
+  rlang::inform("Saving rasters with annual data")
+  terra::writeRaster(all_cmd, out_cmd, overwrite = overwrite)
+  terra::writeRaster(all_tmean,out_tmean, overwrite = overwrite)
+
+  # Calculate  final climate stats
+  # - Mean (either averaging over years or models)
+  # - SD for historical only, interannual standard deviation
+
+  # NOTE: for stdev() using default, pop = TRUE, to calculate Population SD
+  rlang::inform("Final calculations")
+  final <- c(
+    stats::setNames(terra::mean(all_cmd), "cmd_mean"),
+    if(sd) stats::setNames(terra::stdev(all_cmd), "cmd_sd"),
+    stats::setNames(terra::mean(all_tmean), "tmean_mean"),
+    if(sd) stats::setNames(terra::stdev(all_tmean), "tmean_sd")
+  )
+
+  terra::writeRaster(final, out_final, overwrite = overwrite)
 }
-
-
-
-
 
 #' Calculate monthly Climate Moisture Deficit and Mean Temperature
 #'
-#' Because climr:::calc_Eref() and and climr:::calc_cmd are expected to work
-#' on vectors, they don't work with a raster in memory.
+#' Because `climr:::calc_Eref()` and and `climr:::calc_cmd()` are expected to
+#' work on vectors, they don't work with a raster in memory.
 #'
-#' terra::app() is very slow as it applies a function to every cell, where as
+#' `terra::app()` is very slow as it applies a function to every cell, where as
 #' even if we extract the raster values to memory, being able to apply things in
 #' parallel is much faster.
 #'
 #' Therefore we extract raster values calculate the Eref and CMD and then return
-#' as a raster.
+#' as a raster. It's faster if we omit the NAs for these calculations.
 #'
-#' @param r SpatRaster. Historical values for one month, `prec`, `tmin`, `tmax`.
-#' @param month Numeric. Which month?
+#' @param prec_files Character. Files paths to precipitation rasters
+#' @param tmin_files Character. Files paths to minimum temperature rasters
+#' @param tmax_files  Character. Files paths to maximum temperature rasters
 #' @param clip SpatExtent. Area which to clip the raster to.
 #' @param quiet Logical. Silence progress messages.
 #'
 #' @returns SpatRaster with `tmean` and `cmd`
 
-ccei_monthly <- function(r, month, clip, quiet) {
-  if(!quiet) rlang::inform(paste0("  ", month))
+ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
 
-  # Prep for calculations
-  r <- terra::crop(r, clip)
-  r <- c(r, setNames(terra::init(r, "y"), "latitude")) # Add latitude for Eref
+  # Months stored as layers vs. files
+  # - Crop first if layers, later if files
+  if(length(prec_files) == 1) {
+    get_rast <- function(x, m) x[[m]]
+    rlang::inform("  Cropping rasters first...")
+    prec_files <- terra::rast(prec_files) %>% terra::crop(clip)
+    tmax_files <- terra::rast(tmax_files) %>% terra::crop(clip)
+    tmin_files <- terra::rast(tmin_files) %>% terra::crop(clip)
+    sample <- prec_files
+  } else {
+    get_rast <- function(x, m) {
+      terra::rast(x[m]) %>%
+        terra::crop(clip)
+    }
+    sample <- terra::rast(prec_files[1], lyrs = 1) %>%
+      terra::crop(clip)
+  }
 
-  # Extract values
-  df <- terra::values(r)
+  # Prep infrastructure
+  cells <- terra::ncell(sample)
+  vals_cmd <- vals_tmean <- matrix(nrow = cells, ncol = 12)
+  lat <-  setNames(terra::init(sample, "y"), "latitude") %>%
+    terra::values(mat = FALSE)
 
   # Calculate eref, cmd, tmean
   # TODO: Use exported climr functions when available
-  eref <- climr:::calc_Eref(
-    month,
-    tmmin = df[,"tmin"],
-    tmmax = df[,"tmax"],
-    latitude = df[,"latitude"])
-  r$cmd <- climr:::calc_CMD(eref, df[,"prec"])
-  r$eref <- eref
-  r$tmean <- (df[, "tmax"] - df[,"tmin"])/2
 
-  # Keep only new layers
-  r[[-which(names(r) %in% c("prec", "tmax", "tmin"))]]
+  for(m in 1:12) {
+    rlang::inform(paste0("  Month: ", m))
+
+    prec <- get_rast(prec_files, m) %>%
+      terra::values(mat = FALSE)
+    tmmax <- get_rast(tmax_files, m) %>%
+        terra::values(mat = FALSE)
+    tmmin <- get_rast(tmin_files, m) %>%
+      terra::values(mat = FALSE)
+
+    # Here, slightly faster to use non-na values only
+    n <- !is.na(prec)
+    eref <- climr:::calc_Eref(
+      m, tmmin = tmmin[n], tmmax = tmmax[n], latitude = lat[n])
+    vals_cmd[n, m] <- climr:::calc_CMD(eref, prec[n])
+    vals_tmean[n, m] <- (tmmax[n] + tmmin[n])/2
+  }
+
+  # Here, much faster to use non-nva values only
+  rlang::inform("  Calculate Annual values")
+  r <- terra::rast(sample)
+  a <- rep(NA_real_, cells)
+  a[n] <- rowSums(vals_cmd[n, ])
+  r[["cmd"]] <- a
+
+  a <- rep(NA_real_, cells)
+  a[n] <- rowSums(vals_tmean[n, ])
+  r[["tmean"]] <- a
+  r
 }
-
-
 
 
 ccei_clip <- function() {
@@ -156,24 +288,12 @@ ccei_clip <- function() {
     terra::ext()
 }
 
-#' Standard deviation of the interannual variability
-#'
-#' @returns
-#' @noRd
-calc_sd <- function() {
-
-  # NOTE: Using default, pop = TRUE, for Population SD
-  terra::stdev(r)
-
-}
-
-
 #' Standardized Euclidean Distance for local climate
 #'
 #' From Williams et al. 2007, calculate the Standardized Euclidean Distance
 #' (SED) for local climate change for a series of raster tiles.
 #'
-#' Each named vector represents a different climate variable Names must be
+#' Each named list item represents a different climate variable. Names must be
 #' consistent among `b`, `a`, and `s`. Each value represents the value for that
 #' climate variable for a given raster tile.
 #'
@@ -194,3 +314,33 @@ calc_sed <- function(b, a, s) {
 
 }
 
+
+#' Utility function to test if a tif or zip file has been fully downloaded
+#'
+#' Used by the `data-raw/data_ccei.R` workflow for downloading historical and
+#' future CCEI data.
+#'
+#' @param files Character Vector. Files to check.
+#'
+#' @returns Logical vector same length as input. TRUE for downloaded, FALSE for
+#' either not present, or not readable.
+#'
+#' @noRd
+
+is_downloaded <- function(files) {
+  purrr::map_lgl(files, ~ {
+    tryCatch({
+      if(file_exists(.x)) {
+        if(fs::path_ext(.x) == "zip") {
+          unzip(.x, list = TRUE)
+        } else if(path_ext(.x) == "tif") {
+          terra::rast(.x)
+        }
+        TRUE       # If exists and unzippable
+      } else FALSE # If doesn't exist
+    },
+    # If not readable (download unfinished)
+    warning = function(w) FALSE,
+    error = function(e) FALSE)
+  })
+}

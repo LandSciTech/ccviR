@@ -4,11 +4,8 @@
 \alias{common_docs}
 \title{Documentation common to different functions}
 \arguments{
-\item{path_hist}{Character. Path to pre-downloaded historical climate data.}
-
-\item{path_future}{Character. Path to pre-downloaded future climate data.}
-
-\item{workers}{}
+\item{path_ccei}{Character. Path to pre-downloaded climate data to be used to
+calculate CCEI. Expects two folders \code{historical} and \code{future}.}
 }
 \description{
 Documentation common to different functions

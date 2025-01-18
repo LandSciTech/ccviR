@@ -20,7 +20,7 @@ From Williams et al. 2007, calculate the Standardized Euclidean Distance
 (SED) for local climate change for a series of raster tiles.
 }
 \details{
-Each named vector represents a different climate variable Names must be
+Each named list item represents a different climate variable. Names must be
 consistent among \code{b}, \code{a}, and \code{s}. Each value represents the value for that
 climate variable for a given raster tile.
 }
