@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' prep_ccei()
-#'
+
 prep_ccei <- function(path_ccei = "misc/ccei",
                       overwrite = TRUE, quiet = FALSE) {
 #  - SED equation from Williams et al., 2007
@@ -29,7 +29,9 @@ prep_ccei <- function(path_ccei = "misc/ccei",
 #  - ASK climr GROUP TO EXPORT, OTHERWISE WE'LL INCLUDE WITH LICENSE
   prep_ccei_historical(path_ccei, overwrite, quiet)
   prep_ccei_future(path_ccei, overwrite, quiet)
-
+  if(!quiet) rlang::inform("Calculating CCEI")
+  calc_ccei(path_ccei, scenario = "ssp245", overwrite = overwrite, quiet = quiet)
+  calc_ccei(path_ccei, scenario = "ssp585", overwrite = overwrite, quiet = quiet)
 }
 
 #' Prepare Historical Data for Climate Change Exposure Index
@@ -45,6 +47,7 @@ prep_ccei <- function(path_ccei = "misc/ccei",
 #'
 #' @examples
 #' prep_ccei_historical()
+
 prep_ccei_historical <- function(path_ccei = "misc/ccei",
                                  overwrite = TRUE, quiet = FALSE) {
 
@@ -62,14 +65,14 @@ prep_ccei_historical <- function(path_ccei = "misc/ccei",
       var = stringr::str_extract(file, "prec|tmin|tmax"),
       group = year)
 
-  if(getOption("ccvir.testing")) {
+  if(!is.null(getOption("ccvir.testing")) && getOption("ccvir.testing")) {
     rasts <- dplyr::filter(rasts, year %in% c(1960:1961))
   }
 
   # Calculate annual CMD and Tmean for historical data
   # - Calculate overall mean CMD and mean TMean, and then sd as well
   # - Took ~ 10 min to run all 40 years (down from 30min!)
-  ccei_values(rasts, out, sd = TRUE, overwrite = overwrite, quiet = quiet)
+  ccei_values(rasts, out, aggregate = TRUE, overwrite = overwrite, quiet = quiet)
 }
 
 #' Title
@@ -86,6 +89,7 @@ prep_ccei_historical <- function(path_ccei = "misc/ccei",
 #'
 #' @examples
 #' prep_ccei_future()
+
 prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE) {
 
   # Output files
@@ -104,19 +108,19 @@ prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = 
       group = paste0(model, "-", ssp)) %>%
     arrange(model, ssp)
 
-  if(getOption("ccvir.testing")) {
+  if(!is.null(getOption("ccvir.testing")) && getOption("ccvir.testing")) {
     rasts <- dplyr::filter(rasts, model == "ACCESS-ESM1-5")
   }
 
   # Report models and scenarios used
   rlang::inform(c(
-    paste0("Using models (n = ", dplyr::n_distinct(future$model), ") for ",
-           paste0(unique(future$ssp), collapse = " and "), ":"),
-    unique(future$model)))
+    paste0("Using models (n = ", dplyr::n_distinct(rasts$model), ") for ",
+           paste0(unique(rasts$ssp), collapse = " and "), ":"),
+    unique(rasts$model)))
 
   # Check potential missing data
-  should_have <- dplyr::n_distinct(future$model) * dplyr::n_distinct(future$ssp) * 3
-  have <- nrow(future)
+  should_have <- dplyr::n_distinct(rasts$model) * dplyr::n_distinct(rasts$ssp) * 3
+  have <- nrow(rasts)
   if(have != should_have) {
     rlang::abort(
       c("Missing data for some variable, model, and ssp combinations",
@@ -152,52 +156,67 @@ prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = 
 #' @examples
 #' ccei_annual()
 
-ccei_values <- function(rasts, out, sd = FALSE, overwrite = TRUE, quiet = FALSE) {
+ccei_values <- function(rasts, out, aggregate = FALSE,
+                        overwrite = TRUE, quiet = FALSE) {
 
   # Files
-  out_cmd <- paste0(out, "_years_cmd.tif")
-  out_tmean <- paste0(out, "_years_tmean.tif")
-  out_final <- paste0(out, "_ccei.tif")
+  out_cmd <- paste0(out, "_groups_cmd.tif")
+  out_tmean <- paste0(out, "_groups_tmean.tif")
+  out_final <- paste0(out, "_all_vars.tif")
 
   # Get boundaries of western hemisphere
   clip <- ccei_clip()
 
   groups <- unique(rasts$group)
 
-  all <- purrr::map(groups, function(g) {
+  all <- purrr::walk(groups, function(g) {
     rlang::inform(paste0(g, " - ", round(Sys.time())))
+    rlang::inform(capture.output(lobstr::mem_used()))
     r <- filter(rasts, group == g)
-    ccei_vars(prec_files = r$file[r$var == "prec"],
-              tmax_files = r$file[r$var == "tmax"],
-              tmin_files = r$file[r$var == "tmin"],
-              clip,
-              quiet)
+    v <- ccei_vars(prec_files = r$file[r$var == "prec"],
+                   tmax_files = r$file[r$var == "tmax"],
+                   tmin_files = r$file[r$var == "tmin"],
+                   clip, quiet)
+    terra::writeRaster(v, paste0(out, "_", g, ".tif"), overwrite = overwrite)
   }, .progress = !quiet)
 
-  all_cmd <- terra::rast(purrr::map(all, ~.x[["cmd"]]))
-  all_tmean <- terra::rast(purrr::map(all, ~.x[["tmean"]]))
+  rlang::inform(capture.output(lobstr::mem_used()))
 
-  all_cmd <- stats::setNames(all_cmd, paste0(names(all_cmd), "_", groups))
-  all_tmean <- stats::setNames(all_tmean, paste0(names(all_tmean), "_", groups))
+  f <- fs::dir_ls(fs::path_dir(out), regexp = paste0(groups, collapse = "|"))
 
-  rlang::inform("Saving rasters with annual data")
-  terra::writeRaster(all_cmd, out_cmd, overwrite = overwrite)
-  terra::writeRaster(all_tmean,out_tmean, overwrite = overwrite)
+  rlang::inform("Combining and Saving rasters with annual data")
 
-  # Calculate  final climate stats
-  # - Mean (either averaging over years or models)
-  # - SD for historical only, interannual standard deviation
+  # Combine all cmd layers
+  terra::rast(f, lyrs = seq(1, length.out=length(f), by = 2)) %>%
+    stats::setNames(paste0("cmd_", groups)) %>%
+    terra::writeRaster(out_cmd, overwrite = overwrite)
+
+  # Combine all tmean layers
+  terra::rast(f, lyrs = seq(2, length.out=length(f), by = 2)) %>%
+    stats::setNames(paste0("tmean_", groups)) %>%
+    terra::writeRaster(out_tmean, overwrite = overwrite)
 
   # NOTE: for stdev() using default, pop = TRUE, to calculate Population SD
-  rlang::inform("Final calculations")
-  final <- c(
-    stats::setNames(terra::mean(all_cmd), "cmd_mean"),
-    if(sd) stats::setNames(terra::stdev(all_cmd), "cmd_sd"),
-    stats::setNames(terra::mean(all_tmean), "tmean_mean"),
-    if(sd) stats::setNames(terra::stdev(all_tmean), "tmean_sd")
-  )
+  if(aggregate) {
+    # Calculate  final historical means and sd (interannual standard deviation)
 
-  terra::writeRaster(final, out_final, overwrite = overwrite)
+    all_cmd <- terra::rast(out_cmd)
+    all_tmean <- terra::rast(out_tmean)
+
+    rlang::inform("Final calculations")
+    rlang::inform(capture.output(lobstr::mem_used()))
+    final <- c(
+      stats::setNames(terra::mean(all_cmd), "cmd_mean"),
+      stats::setNames(terra::stdev(all_cmd), "cmd_sd"),
+      stats::setNames(terra::mean(all_tmean), "tmean_mean"),
+      stats::setNames(terra::stdev(all_tmean), "tmean_sd")
+    )
+
+    terra::writeRaster(final, out_final, overwrite = overwrite)
+  } else {
+    c(terra::rast(out_cmd), terra::rast(out_tmean)) |>
+      terra::writeRaster(out_final, overwrite = overwrite)
+  }
 }
 
 #' Calculate monthly Climate Moisture Deficit and Mean Temperature
@@ -267,7 +286,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
     vals_tmean[n, m] <- (tmmax[n] + tmmin[n])/2
   }
 
-  # Here, much faster to use non-nva values only
+  # Here, much faster to use non-na values only
   rlang::inform("  Calculate Annual values")
   r <- terra::rast(sample)
   a <- rep(NA_real_, cells)
@@ -275,7 +294,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
   r[["cmd"]] <- a
 
   a <- rep(NA_real_, cells)
-  a[n] <- rowSums(vals_tmean[n, ])
+  a[n] <- rowMeans(vals_tmean[n, ])
   r[["tmean"]] <- a
   r
 }
@@ -308,12 +327,78 @@ ccei_clip <- function() {
 #'
 #' @examples
 calc_sed <- function(b, a, s) {
+  l <- list(b, a, s) %>%
+    stats::setNames(c(".b", ".a", ".s")) %>%
+    purrr::pmap(function(.b, .a, .s) (.b - .a)^2 / .s^2)
 
-  purrr::pmap(list(b, a, s), (b - a)^2 / s^2) %>%
-    purrr::pmap(~sqrt(sum(..1, ..2)))
-
+  sqrt(l[[1]] + l[[2]])
 }
 
+
+#' Caculate CCEI from prepared rasters
+#'
+#' @inheritParams common_docs
+#' @param models Character Vector. Subset of models to include (otherwise uses
+#'   all models).
+#' @param scenario Character. Which scenario to calculate CCEI for. Must match
+#'   scenario used in raster file names, e.g., "ssp245" or "ssp585"
+#'
+#' @returns
+#' @export
+#'
+#' @examples
+#' calc_ccei(scenario = "ssp245")
+#' calc_ccei(scenario = "ssp585")
+#' calc_ccei(scenario = "ssp245",
+#'           models = c("ACCESS-ESM1-5", "CanESM5"),
+#'           out_append = "test")
+calc_ccei <- function(path_ccei = "misc/ccei", scenario,
+                      models = NULL, out_append = NULL,
+                      overwrite = FALSE, quiet = FALSE) {
+
+  m <- fs::dir_ls(fs::path(path_ccei, "intermediate"),
+                  regexp = paste0("future(.+)", scenario))
+  if(!is.null(models)) m <- stringr::str_subset(m, paste0(models, collapse = "|"))
+
+  # Report models and scenarios used
+  if(!quiet) {
+    rlang::inform(c(
+      paste0("Using models (n = ", dplyr::n_distinct(m), ") for ", scenario, ":"),
+      stringr::str_remove_all(fs::path_file(m), "(future_)|(-ssp\\d{3}\\.tiff?)")))
+  }
+
+  hist <- terra::rast(fs::path(path_ccei, "intermediate", "hist_all_vars.tif")) %>%
+    terra::values()
+
+  ccei <- purrr::map(m, ~{
+    future <- terra::rast(.x) %>%
+      terra::values()
+
+    b <- list(future[, "cmd"], future[, "tmean"])
+    a <- list(hist[, "cmd_mean"], hist[, "tmean_mean"])
+    s <- list(hist[, "cmd_sd"], hist[,"tmean_sd"])
+
+    #r <- terra::rast(terra::rast(m[.x]))
+    #r[["ccei"]] <- calc_sed(b, a, s)
+    #r
+    calc_sed(b, a, s)
+  }, .progress = !quiet)
+
+
+  c <- ccei
+  #c <- purrr::map(ccei, ~{
+  #  .x[.x > 50] <- NA
+  #  .x})
+  c <- rlang::exec("cbind", !!!c) %>%
+    rowMeans()
+
+  r <- terra::rast(terra::rast(m[1]))
+  r[["ccei"]] <- c
+  terra::writeRaster(r, fs::path(path_ccei, paste0(
+    "ccei_", scenario,
+    if(!is.null(out_append)) paste0("_", out_append),
+    ".tif")), overwrite = overwrite)
+}
 
 #' Utility function to test if a tif or zip file has been fully downloaded
 #'
