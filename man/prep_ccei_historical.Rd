@@ -10,11 +10,19 @@ prep_ccei_historical(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE)
 \item{path_ccei}{Character. Path to pre-downloaded climate data to be used to
 calculate CCEI. Expects two folders \code{historical} and \code{future}.}
 }
+\value{
+Writes intermediate and final rasters to \code{path_ccei} in the
+"Intermediate" folder. Annual means (\code{hist_YYYY.tif} and
+\code{hist_groups_VAR.tif})as well as overall historical averages and standard
+deviations \code{hist_all_vars.tif}.
+}
 \description{
 Calculate CMD and Tmean from monthly data, calculate annual values (see
 \code{ccei_annual()}). Combine and calculate mean and interannual standard
 deviations for each raster cell over the entire historical record.
 }
 \examples{
-prep_ccei_historical()
+\dontrun{
+  prep_ccei_historical()
+}
 }

@@ -10,13 +10,18 @@ prep_ccei(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE)
 \item{path_ccei}{Character. Path to pre-downloaded climate data to be used to
 calculate CCEI. Expects two folders \code{historical} and \code{future}.}
 }
+\value{
+Creates rasters and saves them to \code{path_ccei}. The final CCEI rasters are
+saved as \code{ccei_ssp245.tif} and \code{ccei_ssp585.tif}.
+}
 \description{
 Using the Standardized Euclidean Distance method from Williams et al., 2007
 and NatureServe v3.02.1 2016.
 }
 \examples{
-prep_ccei()
-
+\dontrun{
+  prep_ccei()
+}
 }
 \references{
 J.W. Williams, S.T. Jackson, J.E. Kutzbach, Projected distributions of

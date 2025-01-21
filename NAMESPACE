@@ -2,7 +2,7 @@
 
 export(analyze_spatial)
 export(brks_to_txt)
-export(calc_sed)
+export(calc_ccei)
 export(calc_vulnerability)
 export(ccei_values)
 export(get_clim_vars)

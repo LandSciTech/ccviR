@@ -15,11 +15,14 @@
 #'   Guidelines for Using the NatureServe Climate Change Vulnerability Index.
 #'   Release 3.02. https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf (June 1st 2016)
 #'
-#' @returns
+#' @returns Creates rasters and saves them to `path_ccei`. The final CCEI rasters are
+#' saved as `ccei_ssp245.tif` and `ccei_ssp585.tif`.
 #' @export
 #'
 #' @examples
-#' prep_ccei()
+#' \dontrun{
+#'   prep_ccei()
+#' }
 
 prep_ccei <- function(path_ccei = "misc/ccei",
                       overwrite = TRUE, quiet = FALSE) {
@@ -42,11 +45,16 @@ prep_ccei <- function(path_ccei = "misc/ccei",
 #'
 #' @inheritParams common_docs
 #'
-#' @returns
+#' @returns Writes intermediate and final rasters to `path_ccei` in the
+#'   "Intermediate" folder. Annual means (`hist_YYYY.tif` and
+#'   `hist_groups_VAR.tif`)as well as overall historical averages and standard
+#'   deviations `hist_all_vars.tif`.
 #' @export
 #'
 #' @examples
-#' prep_ccei_historical()
+#' \dontrun{
+#'   prep_ccei_historical()
+#' }
 
 prep_ccei_historical <- function(path_ccei = "misc/ccei",
                                  overwrite = TRUE, quiet = FALSE) {
@@ -75,20 +83,20 @@ prep_ccei_historical <- function(path_ccei = "misc/ccei",
   ccei_values(rasts, out, aggregate = TRUE, overwrite = overwrite, quiet = quiet)
 }
 
-#' Title
+#' Prepare Future Data for Climate Change Exposure Index
 #'
-#' WorldClim Biclimatic variables: https://www.worldclim.org/data/bioclim.html
+#' Calculate CMD and Tmean from monthly data averages.
 #'
-#' - BIO1 - Annual Mean Temperature
-#' -
+#' @inheritParams common_docs
 #'
-#' @param path_ccei
-#'
-#' @returns
+#' @returns Writes rasters to `path_ccei` in the "Intermediate" folder. Overall
+#'   averages for each model/scenario `future_MODEL-SCENARIO.tif`.
 #' @export
 #'
 #' @examples
-#' prep_ccei_future()
+#' \dontrun{
+#'   prep_ccei_future()
+#' }
 
 prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE) {
 
@@ -139,22 +147,25 @@ prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = 
 
 #' Calculate Annual Climate Moisture Deficit and Mean Temperature
 #'
-#' Calculate Annual CMD and Mean Temperature for historical values in
+#' Calculate Annual CMD and Mean Temperature in
 #' preparation for creating the Climate Exposure Index Raster.
 #'
-#' Annual CMD = Sum of Monthly CMD (difference between Eref and monthly
+#' CMD = Sum of Monthly CMD (difference between Eref and monthly
 #' precipitation)
 #'
-#' Annual Mean Temperature = Mean of monthly average temperature
+#' Mean Temperature = Mean of monthly average temperature
 #' (Midpoint: (Monthly maximum temp + Monthly minimum temp) / 2)
 #'
 #' @inheritParams common_docs
 #' @returns Annual CMD raster tif and Annual Mean Temperature raster tif saved
-#'   to an 'intermediate' folder in the `path_ccei`.
+#'   to an 'intermediate' folder in the `path_ccei`. If `aggregate == TRUE`,
+#'   then a final raster with mean and standard deviations calculated.
 #' @export
 #'
 #' @examples
-#' ccei_annual()
+#' \dontrun{
+#'   ccei_values()
+#' }
 
 ccei_values <- function(rasts, out, aggregate = FALSE,
                         overwrite = TRUE, quiet = FALSE) {
@@ -300,6 +311,8 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
 }
 
 
+#' Bounding box to clip rasters to the Americas
+#' @noRd
 ccei_clip <- function() {
   rnaturalearth::ne_countries(continent = c("North America", "South America")) %>%
     sf::st_buffer(units::set_units(100, "km")) %>%
@@ -321,11 +334,8 @@ ccei_clip <- function() {
 #' @param s Named List of Numeric vectors. Each list item represents a vector for a
 #'   different climate variable. Values are standard deviations of the
 #'   interannual variability for historical climate variable.
-#'
-#' @returns
-#' @export
-#'
-#' @examples
+#' @noRd
+
 calc_sed <- function(b, a, s) {
   l <- list(b, a, s) %>%
     stats::setNames(c(".b", ".a", ".s")) %>%
@@ -343,7 +353,8 @@ calc_sed <- function(b, a, s) {
 #' @param scenario Character. Which scenario to calculate CCEI for. Must match
 #'   scenario used in raster file names, e.g., "ssp245" or "ssp585"
 #'
-#' @returns
+#' @returns Writes final CCEI rasters (one for each scenario) to `path_ccei`.
+#'   `ccei_SCENARIO.tif`.
 #' @export
 #'
 #' @examples

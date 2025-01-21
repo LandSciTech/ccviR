@@ -2,22 +2,23 @@
 % Please edit documentation in R/prep_ccei.R
 \name{prep_ccei_future}
 \alias{prep_ccei_future}
-\title{Title}
+\title{Prepare Future Data for Climate Change Exposure Index}
 \usage{
 prep_ccei_future(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE)
 }
 \arguments{
-\item{path_ccei}{}
+\item{path_ccei}{Character. Path to pre-downloaded climate data to be used to
+calculate CCEI. Expects two folders \code{historical} and \code{future}.}
+}
+\value{
+Writes rasters to \code{path_ccei} in the "Intermediate" folder. Overall
+averages for each model/scenario \code{future_MODEL-SCENARIO.tif}.
 }
 \description{
-WorldClim Biclimatic variables: https://www.worldclim.org/data/bioclim.html
-}
-\details{
-\itemize{
-\item BIO1 - Annual Mean Temperature
-\item 
-}
+Calculate CMD and Tmean from monthly data averages.
 }
 \examples{
-prep_ccei_future()
+\dontrun{
+  prep_ccei_future()
+}
 }

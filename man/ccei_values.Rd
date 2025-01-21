@@ -4,23 +4,26 @@
 \alias{ccei_values}
 \title{Calculate Annual Climate Moisture Deficit and Mean Temperature}
 \usage{
-ccei_values(rasts, out, sd = FALSE, overwrite = TRUE, quiet = FALSE)
+ccei_values(rasts, out, aggregate = FALSE, overwrite = TRUE, quiet = FALSE)
 }
 \value{
 Annual CMD raster tif and Annual Mean Temperature raster tif saved
-to an 'intermediate' folder in the \code{path_ccei}.
+to an 'intermediate' folder in the \code{path_ccei}. If \code{aggregate == TRUE},
+then a final raster with mean and standard deviations calculated.
 }
 \description{
-Calculate Annual CMD and Mean Temperature for historical values in
+Calculate Annual CMD and Mean Temperature in
 preparation for creating the Climate Exposure Index Raster.
 }
 \details{
-Annual CMD = Sum of Monthly CMD (difference between Eref and monthly
+CMD = Sum of Monthly CMD (difference between Eref and monthly
 precipitation)
 
-Annual Mean Temperature = Mean of monthly average temperature
+Mean Temperature = Mean of monthly average temperature
 (Midpoint: (Monthly maximum temp + Monthly minimum temp) / 2)
 }
 \examples{
-ccei_annual()
+\dontrun{
+  ccei_values()
+}
 }

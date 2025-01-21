@@ -37,7 +37,7 @@ dir_create(c(dir_ccei, dir_hist, dir_future)) # Ensure the misc/ccei folders exi
 # Data versions (most recent as of Jan 2025)
 v_wc1 <- "2_1"      # WorldClim version 2.1
 v_wc2 <- "2.1"      # Because they're not consistent
-v_hist <- "4.06" # Downscaled from CRU-TS 4.06
+v_hist <- "4.06"    # Downscaled from CRU-TS 4.06
 v_future <- "cmip6" # Downscaled from CMIP
 res <- "2.5m"
 
@@ -100,6 +100,18 @@ purrr::walk(f_hist, ~unzip(.x, exdir = dir_hist, overwrite = TRUE))
 # for now...(depends on space requirements). Make TRUE to remove
 
 if(FALSE) unlink(f_hist)
+
+# Calculate CCEI
+
+# Run all at once
+#prep_ccei()
+
+# Or run piece by piece
+prep_ccei_historical()
+prep_ccei_future()
+calc_ccei(scenario = "ssp245")
+calc_ccei(scenario = "ssp585")
+
 
 # Citations -----------------------------------
 
