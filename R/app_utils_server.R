@@ -271,10 +271,12 @@ combine_outdata <- function(out_data_lst){
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
 
 # Update UI based on values loaded from csv
-update_restored <- function(df, session){
+update_restored <- function(df, section = NULL, session){
   # match column names to inputs and/or maybe reactive values?
   # will need some sort of lookup for what type of input needs to be updated
-  df_coms <- df %>% select(matches("^com_")) %>%
+
+  df_coms <- df %>%
+    select(matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
                         names_prefix = "com_",
                         values_to = "comment",
@@ -282,20 +284,25 @@ update_restored <- function(df, session){
     mutate(comment = ifelse(is.na(comment), "", comment)) %>%
     distinct()
 
-  df2 <- df %>% select(-matches("^com_")) %>%
+  df2 <- df %>%
+    select(-matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
                              values_to = "value",
                              values_transform = as.character) %>%
     distinct() %>%
-    mutate(input2 = ifelse(stringr::str_detect(.data$input, "rng_chg_pth"), "rng_chg_pth", .data$input)) %>%
+    mutate(input2 = ifelse(stringr::str_detect(.data$input, "rng_chg_pth"),
+                           "rng_chg_pth", .data$input)) %>%
     left_join(df_coms, by = "input") %>%
-    left_join( ui_build_table %>% select(id, .data$update_fun), by = c("input2" = "id")) %>%
+    left_join(select(ui_build_table, "id", "section", "update_fun"),
+              by = c("input2" = "id")) %>%
     select(-"input2") %>%
     filter(!is.na(.data$update_fun)) %>%
-    mutate(comment = ifelse(is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
-                            "", .data$comment),
-           value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
-                          "", .data$value)) %>%
+    mutate(
+      comment = ifelse(
+        is.na(.data$comment) & stringr::str_detect(.data$input, "^[B,C,D]\\d.*"),
+        "", .data$comment),
+      value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
+                     "", .data$value)) %>%
     rowwise() %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
@@ -303,8 +310,14 @@ update_restored <- function(df, session){
   # UI so that input is updated with values from csv
   updateTextInput(inputId = "hidden", value = "yes")
 
+  if(!is.null(section)) {
+    df2 <- filter(df2, .data$section %in% .env$section) %>%
+      select(-"section")
+  }
+
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
+
   purrr::pwalk(df2, update_call, session = session)
 }
 
@@ -419,4 +432,9 @@ recreate_index_res <- function(df){
 
   return(index_res)
 
+}
+
+switch_tab <- function(tab, parent_session) {
+  updateTabsetPanel(session = parent_session, input = "tabset", selected = tab)
+  shinyjs::runjs("window.scrollTo(0, 0)")
 }

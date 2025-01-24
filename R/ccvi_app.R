@@ -667,7 +667,7 @@ ccvi_app <- function(testmode_in, ...){
 
           } else {
 
-            update_restored(df_in, session)
+            update_restored(df_in, session = session)
             return(df_in)
           }
         }

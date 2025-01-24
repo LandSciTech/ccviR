@@ -1,0 +1,220 @@
+
+mod_home_test <- function() {
+  ui <- ui_setup(mod_home_ui(id = "test"))
+  server <- function(input, output, session) {
+    volumes <- server_setup()
+    mod_home_server(id = "test", volumes = volumes)
+  }
+
+  shinyApp(ui, server)
+}
+
+mod_home_ui <- function(id, title) {
+
+  ns <- NS(id)
+
+  tabPanel(
+    "Welcome",
+    fluidPage(
+      h2("Welcome"),
+      p("The ccviR app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
+        a("NatureServe", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"),
+        "that automates the spatial analysis needed to inform the index. ",
+        "The app is based on version 3.02 of the NatureServe CCVI. ",
+        "For a demonstration of how to use the app, see the app ",
+        a("tutorial.", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),),
+      p("The NatureServe CCVI scores the vulnerability of a species to climate change based on:"),
+      tags$ul(
+        tags$li("The species' predicted exposure to climate change -", strong("Section A")),
+        tags$li("Factors associated with the species' climate change sensitivity, including:"),
+        tags$ul(
+          tags$li("Indirect exposure to climate change -", strong("Section B")),
+          tags$li("Species-specific sensitivity and adaptive capacity factors -", strong("Section C")),
+          tags$li("Documented and modeled response to climate change -", strong("Section D")),)),
+      p("For more information about the index see the ",
+        a("NatureServe Guidelines.", href = "https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf", target="_blank"),),
+      h3("Preparing to use the app"),
+      p(strong("Step 0: "),"The first time you use the app you can either",
+        a("download", href = "https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link", target="_blank"),
+        "a pre-prepared climate data set used in the app or",
+        " prepare your own using raw climate data and the ",
+        a("data preparation app.", href = "https://landscitech.github.io/ccviR/articles/data_prep_vignette.html", target="_blank")),
+      p(strong("Step 1: "), "Acquire species-specific spatial datasets
+              (required datasets are indicated with" , labelMandatory("a"), "):",
+        tags$ul(
+          tags$li(labelMandatory("Species North American or global range polygon")),
+          tags$li(labelMandatory("Assessment area polygon")),
+          tags$li("Non-breeding range polygon"),
+          tags$li("Projected range change raster"),
+          tags$li("Physiological thermal niche (PTN) polygon - ",
+                  "polygon should include cool or cold environments ",
+                  "that the species occupies that may be lost or reduced ",
+                  "within the assessment area as a result of climate change"))),
+      p(strong("Step 2: "), "Acquire species-specific sensitivity and life history data.",
+        "Including information about dispersal and movement ability, ",
+        "temperature/precipitation regime, dependence on disturbance events, ",
+        "relationship with ice or snow-cover habitats, physical",
+        " specificity to geological features or their derivatives, ",
+        "interactions with other species including diet and pollinator ",
+        "specificity, genetic variation, and phenological response to ",
+        "changing seasons. Recognizing that some of this information is",
+        " unknown for many species, the Index is designed such that only",
+        " 10 of the 19 sensitivity factors require input in order to ",
+        "obtain an overall Index score."),
+      p(strong("Note: "), "The app will NOT save your progress automatically.
+              Be sure to save your progress throughout the assessment to prevent
+              loss of data. The state of the app can be saved by clicking the
+              \"Save progress\" button at the bottom of the app at any point during
+              the assessment. Refreshing the app or timing out will result in
+              progress being lost."),
+      h3("Start assessment"),
+      actionButton(ns("start"), "Start", class = "btn-primary"),
+      br(),
+      br(),
+      strong("Or load data from a previous assessment"),
+      br(),
+      #load_bookmark_ui("load"),
+      shinyFilesButton(ns("loadcsv"), "Select file", "Select file", multiple = FALSE),
+      br(),
+      # this hidden input will allow us to stop processing until returning
+      # to the UI so that values from the saved file are updated in input
+      # before using
+      div(style = "display:none", textInput(inputId = ns("hidden"), label = "", value = "")),
+      br(),
+      p("Download column definitions for saved data"),
+      downloadButton(ns("downloadDefs"), "Download csv"),
+      br(),
+      h3("Citation"),
+      p("Endicott S, Naujokaitis-Lewis I (2023). ",
+        em("ccviR: Calculate the NatureServe Climate Change Vulnerability ",
+           "Index in R. "),
+        "Environment and Climate Change Canada, Science and Technology ",
+        "Branch. ",
+        a("https://landscitech.github.io/ccviR/.", href = "https://landscitech.github.io/ccviR/")),
+      h3("References"),
+      p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
+        " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",
+        "animal vulnerability to climate change. Pages 129-150 in ",
+        "Wildlife Conservation in a Changing Climate, edited by J. ",
+        "Brodie, E. Post, and D. Doak. University of Chicago Press, ",
+        "Chicago, IL."),
+      p("Young, B. E., N. S. Dubois, and E. L. Rowland. 2015. Using the",
+        " Climate Change Vulnerability Index to inform adaptation ",
+        "planning: lessons, innovations, and next steps. Wildlife ",
+        "Society Bulletin 39:174-181.")
+    )
+  )
+}
+
+mod_home_server <- function(id, volumes, parent_session) {
+
+  moduleServer(id, function(input, output, session) {
+
+
+    #outputOptions(output, "", suspendWhenHidden = FALSE)
+
+    observeEvent(input$start, switch_tab("Species Information", parent_session))
+
+    # restore a previous session
+    shinyFileChoose("loadcsv", root = volumes, input = input,
+                    filetypes = "csv")
+
+    index_res <- reactiveVal(FALSE)
+    spat_res <- reactiveVal(FALSE)
+    file_pths <- reactiveVal()
+    clim_dir_pth <- reactiveVal()
+    doSpatialRestore <- reactiveVal(FALSE)
+
+    # Restore from saved file #=================================================
+    df_loaded <- eventReactive(input$loadcsv, {
+      if(!is.integer(input$loadcsv)){
+        df_in <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
+
+        # Check that csv is not empty
+        if(inherits(df_in, "try-error")){
+          message("CSV file is empty, cannot restore from file.")
+          return(FALSE)
+
+        } else {
+
+          # Check that csv contains the right data
+          if(nrow(df_in) < 1 || !"scenario_name" %in% colnames(df_in)){
+            message("CSV file is invalid, cannot restore from file.")
+            return(FALSE)
+
+          } else {
+
+            #update_restored(df_in, session)
+            return(df_in)
+          }
+        }
+      }
+    })
+    restored_df <- eventReactive(
+      {
+        df_loaded()
+        # this is to make it trigger after update_restored
+        #input$hidden
+        },
+      {
+        # this is to avoid running before input has been updated
+        #req(input$hidden)
+
+        df_loaded <- df_loaded()
+        if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
+          # need spat tholds to get exp multipliers
+          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
+          # need use df_loaded for all other values to preserve changes to spat vuln qs
+          df_spat2 <- df_loaded %>%
+            left_join(df_spat %>%
+                        select("scenario_name", setdiff(names(df_spat), names(df_loaded))),
+                      by = 'scenario_name')
+          spat_res2(df_spat2)
+          repeatSpatial(TRUE)
+          doSpatial((doSpatial() +1))
+          # set to same as doSpatial so can check value and if same don't update spat_res2
+          doSpatialRestore(doSpatial())
+          showNotification("Re-running spatial analysis from loaded file.",
+                           duration = NULL, id = "spat_restore_note")
+        }
+browser()
+        index_res(recreate_index_res(df_loaded))
+
+        loaded_pths <- df_loaded %>% slice(1) %>%
+          select(contains("pth"), -any_of("clim_dir_pth")) %>%
+          as.list()
+
+        if(length(loaded_pths)>0){
+          file_pths(purrr::discard(loaded_pths, is.na))
+        }
+
+        clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
+        clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
+        clim_dir_pth(clim_pth_ldd)
+
+        switch_tab("Species Information", parent_session)
+
+        return(TRUE)
+      })
+
+    observeEvent(restored_df(), {
+      if (restored_df()){
+        showNotification("Successfully restored from file.", duration = 10)
+      } else {
+        showNotification("CSV file is invalid. Failed to restore from file.", duration = 10)
+      }
+    })
+
+
+    # Return to app -------------------------------------------------
+    list(
+      "index_res" = index_res,
+      "spat_res" = spat_res,
+      "file_pths" = file_pths,
+      "clim_dir_pth" = clim_dir_pth,
+      "doSpatialRestore" = doSpatialRestore,
+      "df_loaded" = df_loaded
+    )
+  })
+
+}
