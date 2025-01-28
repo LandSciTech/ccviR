@@ -1,4 +1,5 @@
-apply_spat_tholds <-function(spat_df, cave){
+# Only adds variables to spat_df, doesn't change any existing
+apply_spat_tholds <-function(spat_df, cave) {
   spat_df %>% rowwise() %>%
     mutate(
       temp_exp = case_when(

@@ -568,7 +568,14 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
     })
 
     # Return -------------------------------------------------
-    list("spatial_data" = spatial_data)
+    list("spatial_data" = spatial_data,
+         "spatial_details" = list(
+           "spat_res" = spat_res2,
+           "clim_vars" = clim_vars,
+           "clim_readme" = clim_readme,
+           "range_poly" = range_poly,
+           "nonbreed_poly" = nonbreed_poly
+         ))
   })
 
 }
