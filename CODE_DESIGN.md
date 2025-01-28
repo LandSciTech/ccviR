@@ -29,3 +29,21 @@ use sections (# Header -------) to create the TOC used in RStudio.
   from the common docs. If you include your own documentation for that parameter
   it will take precedence.
   
+## Shiny Modules
+
+### Namespacing
+Namespacing can be a bit tricky in modules. In the simplest way, you just need
+to use the `NS()` function in the UI or the `ns` variable in the server (if
+using `renderUI()`, not required for anything going to/from `output` or `input`)
+
+- UI: Use `ns <- NS(id)` at the start, wrap all UI ids in `ns(my_id)`
+- Server: Use `ns <- server$ns` at the start, then wrap ids in `ns(my_id)`. 
+
+**Notes**
+
+- You only need to use `ns(my_id)` in the server if creating your own UI elements
+  i.e. with `renderUI()`
+- In functions which dynamically create UIs, use `NS(id, ui_id)` *inside* the 
+  function, cf `get_file_ui2()`
+- `conditionalPanel()` has a `ns` argument you should use (https://stackoverflow.com/a/76905697)
+- `NS()` (or `ns`) is *not* required for shinyjs
