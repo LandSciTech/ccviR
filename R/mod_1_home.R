@@ -68,7 +68,7 @@ mod_home_ui <- function(id, title) {
               the assessment. Refreshing the app or timing out will result in
               progress being lost."),
       h3("Start assessment"),
-      actionButton(ns("start"), "Start", class = "btn-primary"),
+      actionButton(ns("continue"), "Start", class = "btn-primary"),
       br(),
       br(),
       strong("Or load data from a previous assessment"),
@@ -76,10 +76,6 @@ mod_home_ui <- function(id, title) {
       #load_bookmark_ui("load"),
       shinyFilesButton(ns("loadcsv"), "Select file", "Select file", multiple = FALSE),
       br(),
-      # this hidden input will allow us to stop processing until returning
-      # to the UI so that values from the saved file are updated in input
-      # before using
-      div(style = "display:none", textInput(inputId = ns("hidden"), label = "", value = "")),
       br(),
       p("Download column definitions for saved data"),
       downloadButton(ns("downloadDefs"), "Download csv"),
@@ -113,17 +109,11 @@ mod_home_server <- function(id, volumes, parent_session) {
 
     #outputOptions(output, "", suspendWhenHidden = FALSE)
 
-    observeEvent(input$start, switch_tab("Species Information", parent_session))
+    observeEvent(input$continue, switch_tab("Species Information", parent_session))
 
     # restore a previous session
     shinyFileChoose("loadcsv", root = volumes, input = input,
                     filetypes = "csv")
-
-    index_res <- reactiveVal(FALSE)
-    spat_res <- reactiveVal(FALSE)
-    file_pths <- reactiveVal()
-    clim_dir_pth <- reactiveVal()
-    doSpatialRestore <- reactiveVal(FALSE)
 
     # Restore from saved file #=================================================
     df_loaded <- eventReactive(input$loadcsv, {
@@ -150,70 +140,20 @@ mod_home_server <- function(id, volumes, parent_session) {
         }
       }
     })
-    restored_df <- eventReactive(
-      {
-        df_loaded()
-        # this is to make it trigger after update_restored
-        #input$hidden
-        },
-      {
-        # this is to avoid running before input has been updated
-        #req(input$hidden)
 
-        df_loaded <- df_loaded()
-        if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-          # need spat tholds to get exp multipliers
-          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          # need use df_loaded for all other values to preserve changes to spat vuln qs
-          df_spat2 <- df_loaded %>%
-            left_join(df_spat %>%
-                        select("scenario_name", setdiff(names(df_spat), names(df_loaded))),
-                      by = 'scenario_name')
-          spat_res2(df_spat2)
-          repeatSpatial(TRUE)
-          doSpatial((doSpatial() +1))
-          # set to same as doSpatial so can check value and if same don't update spat_res2
-          doSpatialRestore(doSpatial())
-          showNotification("Re-running spatial analysis from loaded file.",
-                           duration = NULL, id = "spat_restore_note")
-        }
-browser()
-        index_res(recreate_index_res(df_loaded))
 
-        loaded_pths <- df_loaded %>% slice(1) %>%
-          select(contains("pth"), -any_of("clim_dir_pth")) %>%
-          as.list()
-
-        if(length(loaded_pths)>0){
-          file_pths(purrr::discard(loaded_pths, is.na))
-        }
-
-        clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
-        clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
-        clim_dir_pth(clim_pth_ldd)
-
-        switch_tab("Species Information", parent_session)
-
-        return(TRUE)
-      })
-
-    observeEvent(restored_df(), {
-      if (restored_df()){
-        showNotification("Successfully restored from file.", duration = 10)
-      } else {
-        showNotification("CSV file is invalid. Failed to restore from file.", duration = 10)
+    output$downloadDefs <- downloadHandler(
+      filename = "CCVI_column_definitions_results.csv",
+      content = function(file) {
+        out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
+                                           package = "ccviR"))
+        write.csv(out, file, row.names = FALSE)
       }
-    })
+    )
 
 
-    # Return to app -------------------------------------------------
-    list(
-      "index_res" = index_res,
-      "spat_res" = spat_res,
-      "file_pths" = file_pths,
-      "clim_dir_pth" = clim_dir_pth,
-      "doSpatialRestore" = doSpatialRestore,
-      "df_loaded" = df_loaded
+    # Return -------------------------------------------------
+    list("df_loaded" = df_loaded
     )
   })
 

@@ -221,6 +221,7 @@ widen_vuln_coms <- function(vuln_df, coms_df){
 }
 
 combine_outdata <- function(out_data_lst){
+
   if(!is.null(out_data_lst$index)){
     out_data_lst$start <- out_data_lst$start %>%
       select(-any_of(colnames(out_data_lst$index)))
@@ -271,10 +272,11 @@ combine_outdata <- function(out_data_lst){
 # read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
 
 # Update UI based on values loaded from csv
-update_restored <- function(df, section = NULL, session){
+update_restored <- function(df, session){
   # match column names to inputs and/or maybe reactive values?
   # will need some sort of lookup for what type of input needs to be updated
 
+  # Catch comments
   df_coms <- df %>%
     select(matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
@@ -284,6 +286,7 @@ update_restored <- function(df, section = NULL, session){
     mutate(comment = ifelse(is.na(comment), "", comment)) %>%
     distinct()
 
+  # Catch input values
   df2 <- df %>%
     select(-matches("^com_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
@@ -293,7 +296,7 @@ update_restored <- function(df, section = NULL, session){
     mutate(input2 = ifelse(stringr::str_detect(.data$input, "rng_chg_pth"),
                            "rng_chg_pth", .data$input)) %>%
     left_join(df_coms, by = "input") %>%
-    left_join(select(ui_build_table, "id", "section", "update_fun"),
+    left_join(select(ui_build_table, "id", "update_fun"),
               by = c("input2" = "id")) %>%
     select(-"input2") %>%
     filter(!is.na(.data$update_fun)) %>%
@@ -309,11 +312,6 @@ update_restored <- function(df, section = NULL, session){
   # this is used as a trigger to skip running spatial until after returning to
   # UI so that input is updated with values from csv
   updateTextInput(inputId = "hidden", value = "yes")
-
-  if(!is.null(section)) {
-    df2 <- filter(df2, .data$section %in% .env$section) %>%
-      select(-"section")
-  }
 
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
@@ -437,4 +435,12 @@ recreate_index_res <- function(df){
 switch_tab <- function(tab, parent_session) {
   updateTabsetPanel(session = parent_session, input = "tabset", selected = tab)
   shinyjs::runjs("window.scrollTo(0, 0)")
+}
+
+track_mandatory <- function(m, input) {
+  all_filled <- vapply(m,
+                   function(x) !is.null(input[[x]]) && input[[x]] != "",
+                   FUN.VALUE = logical(1)) %>%
+    all()
+  shinyjs::toggleState(id = "continue", condition = all_filled)
 }

@@ -30,7 +30,7 @@ mod_species_ui <- function(id, title) {
           " for more details."),
         checkboxInput(ns("cave"), "Species is an obligate of caves or groundwater systems"),
         checkboxInput(ns("mig"), "Species is migratory and you wish to enter exposure data for the migratory range that lies outside of the assessment area"),
-        actionButton(ns("next"), "Next", class = "btn-primary"),
+        actionButton(ns("continue"), "Next", class = "btn-primary"),
         br(),br()
 
       )
@@ -38,40 +38,33 @@ mod_species_ui <- function(id, title) {
   )
 }
 
-mod_species_server <- function(id, df_loaded) {
+mod_species_server <- function(id, df_loaded, parent_session) {
   stopifnot(is.reactive(df_loaded))
 
   moduleServer(id, function(input, output, session) {
 
-    observeEvent(df_loaded(), {
-      update_restored(df_loaded(), section = "sp_info", session)
-    })
 
-    # Mandatory fields
-    fieldsMandatory <- c("assessor_name", "geo_location", "tax_grp", "species_name")
+    # Setup --------------------
 
-    # Species Info #=================
+    # Continue Button
+    observeEvent(input$continue, switch_tab("Spatial Data Analysis", parent_session))
+
     # Enable the Submit button when all mandatory fields are filled out
     observe({
-      mandatoryFilled <-
-        vapply(fieldsMandatory,
-               function(x) {
-                 !is.null(input[[x]]) && input[[x]] != ""
-               },
-               logical(1))
-      mandatoryFilled <- all(mandatoryFilled)
-
-      shinyjs::toggleState(id = "next1", condition = mandatoryFilled)
+      m <- c("assessor_name", "geo_location", "tax_grp", "species_name")
+      track_mandatory(m, input)
     })
 
-    # When next button is clicked move to next panel
-    observeEvent(input$next1, {
-      updateTabsetPanel(session, "tabset",
-                        selected = "Spatial Data Analysis"
-      )
-      shinyjs::runjs("window.scrollTo(0, 0)")
+
+    # Restore data -----------------
+    observeEvent(df_loaded(), {
+      update_restored2(df_loaded(), section = "sp_info", session)
     })
 
+
+    # UI --------------------------
+    # Show/Hide Fields depending on inputs
+    # TODO: Better as conditional panels?
     observe({
       tax_lg <- ifelse(input$tax_grp %in% c("Vascular Plant", "Nonvascular Plant"),
                        "Plant",
@@ -98,10 +91,19 @@ mod_species_server <- function(id, df_loaded) {
 
     })
 
+    species_data <- reactive({
+      data.frame(species_name = input$species_name,
+                 common_name = input$common_name,
+                 geo_location = input$geo_location,
+                 assessor_name = input$assessor_name,
+                 tax_grp = input$tax_grp,
+                 mig = input$mig,
+                 cave = input$cave)
+    })
 
-    # Return to app ---------------------------------------------
-#    tax_lg
-
+    # Return -------------------------------------------------
+    list("species_data" = species_data,
+         "cave" = reactive(input$cave))
   })
 
 }

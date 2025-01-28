@@ -23,17 +23,34 @@ ccvi_app2 <- function(testmode_in, ...){
 
   ui <- ui_setup(
     mod_home_ui(id = "home"),
-    mod_species_ui(id = "species")
+    mod_species_ui(id = "species"),
+    mod_spatial_ui(id = "spatial")
     #mod_A_ui(id = "section_a"),
     #mod_B_ui(id = "section_b"),
     #mod_C_ui(id = "section_c")
-  )
+  ) # Note: mod_save_ui() is inside ui_setup()
 
   server <- function(input, output, session) {
     volumes <- server_setup()
-    x <- mod_home_server(id = "home", volumes = volumes, parent_session = session)
-    mod_species_server(id = "species", df_loaded = x$df_loaded)
-    #mod_A_server(id = "section_a")
+
+    restore <- mod_home_server(id = "home", volumes, parent_session = session)
+
+    sp <- mod_species_server(
+      id = "species",
+      df_loaded = restore$df_loaded,
+      parent_session = session)
+
+    spatial <- mod_spatial_server(
+      id = "spatial", volumes,
+      df_loaded = restore$df_loaded,
+      cave = sp$cave,
+      parent_session = session)
+    #x <- mod_A_server(id = "section_a")
+
+    mod_save_server(
+      id = "save", volumes,
+      sp$species_data,
+      spatial$spatial_data)
   }
 
 
@@ -78,16 +95,7 @@ ui_setup <- function(...) {
       widths = c(3, 9),
       ...
     ),
-    div(
-      id = "footer",
-      style = "float:right",
-      br(), br(), br(), br(),
-      shinySaveButton("downloadData", "Save progress", "Save app data as a csv file",
-                      class = "btn-primary", icon = shiny::icon("save")),
-      br(),
-      br(),
-      br()
-    )
+    mod_save_ui("save")
   )
 }
 
@@ -99,7 +107,7 @@ server_setup <- function() {
   # made the getVolumes function hang forever because it was looking for
   # drives that were no longer connected. Now it will give an error
   timeout <- R.utils::withTimeout({
-    volumes <- c(wd = getShinyOption("file_dir"),
+    volumes <- c(wd = "inst/extdata/",# TODO: revert: getShinyOption("file_dir"),
                  Home = fs::path_home(),
                  getVolumes()())
   }, timeout = 200, onTimeout = "silent")
