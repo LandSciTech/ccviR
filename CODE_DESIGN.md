@@ -41,9 +41,17 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 
 **Notes**
 
-- You only need to use `ns(my_id)` in the server if creating your own UI elements
+- We only need to use `ns(my_id)` in the server if creating our own UI elements
   i.e. with `renderUI()`
 - In functions which dynamically create UIs, use `NS(id, ui_id)` *inside* the 
   function, cf `get_file_ui2()`
-- `conditionalPanel()` has a `ns` argument you should use (https://stackoverflow.com/a/76905697)
+- `conditionalPanel()` has a `ns` argument we should use (https://stackoverflow.com/a/76905697)
 - `NS()` (or `ns`) is *not* required for shinyjs
+
+### Passing variables
+- We return reactives from a module like returning outputs from a function,
+  put them in a list calling them by name (i.e. `spatial_data`,
+  not`spatial_data()`)
+- Then pass them as arguments to other module functions
+- Remember that we want a list of reactives, not a reactive that returns a list
+  (otherwise anytime any list item is updated, the whole reactive invalidates)
