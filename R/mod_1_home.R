@@ -9,7 +9,7 @@ mod_home_test <- function() {
   shinyApp(ui, server)
 }
 
-mod_home_ui <- function(id, title) {
+mod_home_ui <- function(id) {
 
   ns <- NS(id)
 

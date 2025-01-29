@@ -49,3 +49,58 @@ update_restored2 <- function(df, session, section = NULL){
 
   purrr::pwalk(df2, update_call, session = session)
 }
+
+
+spat_vuln_hide2 <- function(id, spatial, values) {
+  mis <- paste0("missing_", id)
+  mapid <- paste0("map_", id)
+  nmis <- paste0("not_missing_", id)
+  tblid <- paste0("tbl_", id)
+
+  # TODO: Replace this with validate(need())?
+
+  # Do we have the spatial map?
+  if(isTruthy(spatial)) {
+    # Show everything (hide missing message)
+    shinyjs::hide(mis)
+    shinyjs::show(mapid)
+    shinyjs::show(tblid)
+    shinyjs::show(nmis)
+
+  # Do we have the values?
+  } else if(isTruthy(values)) {
+    # Show table and message that not missing, but hide map (because we haven't recalculated the spatial data)
+    shinyjs::hide(mis)
+    shinyjs::hide(mapid)
+    shinyjs::show(nmis)
+    shinyjs::show(tblid)
+
+    # Otherwise...
+  } else {
+    # Hide all details and show "missing" message
+    shinyjs::show(mis)
+    shinyjs::hide(mapid)
+    shinyjs::hide(tblid)
+    shinyjs::hide(nmis)
+  }
+}
+
+render_spat_vuln_box2 <- function(id, ui_id, spat_df, input) {
+  com_id <- NS(id, paste0("com", ui_id))
+  # get previous comment
+  prevCom <- isolate(input[[com_id]])
+  prevCom <- ifelse(is.null(prevCom), "", prevCom)
+
+  if(isTruthy(spat_df)){
+    box_val <- spat_df[[ui_id]] %>% unique()
+  } else {
+    box_val <- NULL
+  }
+
+  check_comment_ui2(id, ui_id, HTML("Calculated effect on vulnerability."),
+                    choiceNames = valueNms,
+                    choiceValues = valueOpts,
+                    selected = box_val,
+                    com = prevCom)
+}
+

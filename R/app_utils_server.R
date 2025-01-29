@@ -343,25 +343,35 @@ spat_vuln_hide <- function(id, check_exists, do_spat, restored, spat_inc){
   nmis <- paste0("not_missing_", id)
   tblid <- paste0("tbl_", id)
 
+  # If has been run at least once
   if(isTruthy(do_spat)){
+    # And we have the data
+    #  - Show all details, hide "missing" message
     if(isTruthy(check_exists)){
       shinyjs::hide(mis)
       shinyjs::show(mapid)
       shinyjs::show(tblid)
       shinyjs::show(nmis)
     } else {
+    # And we don't have the data
+    # - Hide all details and show "missing" message
+      shinyjs::show(mis)
       shinyjs::hide(mapid)
       shinyjs::hide(tblid)
       shinyjs::hide(nmis)
-      shinyjs::show(mis)
     }
+    # Otherwise if was restored
   } else if(isTruthy(restored)){
+    # And we have spatial data results for this variable
+    # - Show not missing and table, hide map (because we haven't recovered the spatial data); hide missing
     if(isTruthy(spat_inc)){
       shinyjs::hide(mis)
       shinyjs::hide(mapid)
       shinyjs::show(nmis)
       shinyjs::show(tblid)
     } else {
+      # And we don't have spatial data results for this variable
+      # - Hide all details and show "missing" message
       shinyjs::show(mis)
       shinyjs::hide(mapid)
       shinyjs::hide(nmis)
@@ -443,4 +453,14 @@ track_mandatory <- function(m, input) {
                    FUN.VALUE = logical(1)) %>%
     all()
   shinyjs::toggleState(id = "continue", condition = all_filled)
+}
+
+show_guidelines <- function(input) {
+  # Show guidelines with additional info for each section
+  help_ins <- stringr::str_subset(names(input), "help")
+
+  purrr::map(help_ins,
+             ~observeEvent(input[[.x]], {
+               guide_popup(.x)
+             }, ignoreInit = TRUE))
 }

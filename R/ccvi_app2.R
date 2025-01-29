@@ -10,9 +10,10 @@
 
 ccvi_app2 <- function(testmode_in, ...){
 
+  # MOVED TO lookup_tbls.R so available to all functions
   # Input options
-  valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
-  valueOpts <- c(3, 2, 1, 0)
+  #valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
+  #valueOpts <- c(3, 2, 1, 0)
 
   # set theme
   my_theme <- ggplot2::theme_classic() +
@@ -26,8 +27,9 @@ ccvi_app2 <- function(testmode_in, ...){
     mod_species_ui(id = "species"),
     mod_spatial_ui(id = "spatial"),
     mod_A_ui(id = "section_a"),
-    #mod_B_ui(id = "section_b"),
-    #mod_C_ui(id = "section_c")
+    mod_B_ui(id = "section_b"),
+    mod_C_ui(id = "section_c"),
+    mod_D_ui(id = "section_d"),
   ) # Note: mod_save_ui() is inside ui_setup()
 
   server <- function(input, output, session) {
@@ -46,8 +48,19 @@ ccvi_app2 <- function(testmode_in, ...){
       cave = sp$cave,
       parent_session = session)
 
-    x <- mod_A_server(
+    mod_A_server(
       id = "section_a",
+      spatial_details = spatial$spatial_details,
+      parent_session = session)
+
+    x <- mod_B_server(
+      id = "section_b",
+      df_loaded = restore$df_loaded,
+      parent_session = session)
+
+    x <- mod_C_server(
+      id = "section_c",
+      df_loaded = restore$df_loaded,
       spatial_details = spatial$spatial_details,
       parent_session = session)
 

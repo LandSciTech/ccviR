@@ -1,104 +1,281 @@
-mod_C_ui <- function(id, title) {
+mod_C_ui <- function(id) {
+
+  ns <- NS(id)
+
   tabPanel(
     "Vulnerability Questions - C",
     fluidRow(
       column(
         12,
+        h2("Section C: Sensitivity and Adaptive Capacity"),
+        p("This section scores factors associated with the species' sensitivity and adaptive
+                capacity."),
+        p("Questions with a spatial component are also included. ",
+          "The spatial data analysis evaluates these factors and pre-selects a response accordingly. ",
+          "The data used to pre-select a response is
+                shown in a map and table accompanying each question. The pre-selected
+                response can be changed if needed and multiple responses can be
+                selected to reflect uncertainty."),
+        p("Questions that only apply to certain taxa are
+                only displayed if applicable. As a result, the question numbering
+                is not sequential but will match the NatureServe version."),
+        p("The NatureServe Guidelines for scoring each question can be accessed
+                by clicking the info button next to the question. Use published studies,
+                empirical data or expert opinion to support your responses. Provide
+                detailed information about how the answer was reached in the comment boxes.
+                To reflect uncertainty you may select more than one response to each question"),
         div(
           id = "secC",
-          h3("Section C: Sensitivity and Adaptive Capacity"),
-          check_comment_ui("C1", "C1) Dispersal and movements",
+          h3("Questions"),
+          check_comment_ui2(id, "C1", "C1) Dispersal and movements",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
+
+          strong("C2 a) Predicted sensitivity to temperature and moisture changes:"),
+          #h4("2) Predicted sensitivity to temperature and moisture changes"),
+          spat_vuln_ui2(
+            id,
+            ui_id = "C2ai",
+            vuln_q_nm = "C2 a) i) Historical thermal niche"
+          ),
+          br(),
+          spat_vuln_ui2(
+            id,
+            ui_id = "C2aii",
+            vuln_q_nm = "C2 a) ii) Physiological thermal niche"
+          ),
+          br(),
+          spat_vuln_ui2(
+            id,
+            ui_id = "C2bi",
+            vuln_q_nm = "C2 b) i) Historical hydrological niche"
+          ),
+          br(),
 
           strong("C2 b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime:"),
 
-          check_comment_ui("C2bii", "C2 b ii) physiological hydrological niche.",
+          check_comment_ui2(id, "C2bii", "C2 b ii) physiological hydrological niche.",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
-          check_comment_ui("C2c", "C2 c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
+          check_comment_ui2(id, "C2c", "C2 c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          check_comment_ui("C2d", "C2 d) Dependence on ice, ice-edge, or snow-cover habitats.",
+          check_comment_ui(id, "C2d", "C2 d) Dependence on ice, ice-edge, or snow-cover habitats.",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
-          check_comment_ui("C3", "C3) Restriction to uncommon landscape/geological features or derivatives.",
+          check_comment_ui2(id, "C3", "C3) Restriction to uncommon landscape/geological features or derivatives.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          check_comment_ui("C4a", "C4 a) Dependence on other species to generate required habitat.",
+          check_comment_ui2(id, "C4a", "C4 a) Dependence on other species to generate required habitat.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
           shinyjs::hidden(
             div(
-              id = "animal_only",
-              check_comment_ui("C4b", "C4 b) Dietary versatility (animals only).",
+              id = ns("animal_only"),
+              check_comment_ui2(id, "C4b", "C4 b) Dietary versatility (animals only).",
                                choiceNames = valueNms[2:4],
                                choiceValues = valueOpts[2:4])
             )
           ),
           shinyjs::hidden(
             div(
-              id = "plant_only",
-              check_comment_ui("C4c", "C4 c) Pollinator versatility (plants only).",
+              id = ns("plant_only"),
+              check_comment_ui2(id, "C4c", "C4 c) Pollinator versatility (plants only).",
                                choiceNames = valueNms[2:4],
                                choiceValues = valueOpts[2:4])
             )
           ),
-          check_comment_ui("C4d", "C4 d) Dependence on other species for propagule dispersal.",
+          check_comment_ui2(id, "C4d", "C4 d) Dependence on other species for propagule dispersal.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          check_comment_ui("C4e", "C4 e) Sensitivity to pathogens or natural enemies.",
+          check_comment_ui2(id, "C4e", "C4 e) Sensitivity to pathogens or natural enemies.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          check_comment_ui("C4f", "C4 f) Sensitivity to competition from native or non-native species.",
+          check_comment_ui2(id, "C4f", "C4 f) Sensitivity to competition from native or non-native species.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          check_comment_ui("C4g", "C4 g) Forms part of an interspecific interaction not covered by 4a-f.",
+          check_comment_ui2(id, "C4g", "C4 g) Forms part of an interspecific interaction not covered by 4a-f.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
 
-          check_comment_ui("C5a", "C5 a) Measured genetic variation.",
+          check_comment_ui2(id, "C5a", "C5 a) Measured genetic variation.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
           conditionalPanel(
             "input.C5a == ''",
-            check_comment_ui("C5b", "C5 b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
+            check_comment_ui2(id, "C5b", "C5 b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown).",
                              choiceNames = valueNms[2:4],
                              choiceValues = valueOpts[2:4]),
-
+            ns = NS(id)
           ),
           conditionalPanel(
             "input.C5a == '' && input.C5b == ''",
             shinyjs::hidden(
               div(
                 id = "plant_only2",
-                check_comment_ui("C5c", "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+                check_comment_ui(id, "C5c", "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
                                  choiceNames = valueNms[2:4],
                                  choiceValues = valueOpts[2:4])
               )
-            )
+            ),
+            ns = NS(id)
           ),
 
-          check_comment_ui("C6", "C6) Phenological response to changing seasonal temperature and precipitation dynamics.",
+          check_comment_ui2(id, "C6", "C6) Phenological response to changing seasonal temperature and precipitation dynamics.",
                            choiceNames = valueNms[2:4],
-                           choiceValues = valueOpts[2:4])
+                           choiceValues = valueOpts[2:4]),
+          actionButton("continue", "Next", class = "btn-primary"),
+          br(), br()
         ),
-        br(),
       )
     )
   )
-
-
-
 }
 
-mod_C_server <- function(id) {
+mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
+
+  purrr::map(spatial_details, ~stopifnot(is.reactive(.x)))
+
+  # Split up reactives
+  spat_res <- spatial_details$spat_res
+  clim_vars <- spatial_details$clim_vars
+  clim_readme <- spatial_details$clim_readme
+  range_poly <- spatial_details$range_poly
+  range_poly_clim <- spatial_details$range_poly_clim
+  ptn_poly <- spatial_details$ptn_poly
+  nonbreed_poly <- spatial_details$nonbreed_poly
 
   moduleServer(id, function(input, output, session) {
 
+    # Setup --------------------
 
+    # Continue Button
+    observeEvent(input$continue, switch_tab("Vulnerability Questions - D", parent_session))
+    observe(show_guidelines(input)) # Create Guideline buttons
+
+    # Restore data ----------------
+    observeEvent(df_loaded(), {
+      update_restored2(df_loaded(), section = "vuln_qs", session)
+    })
+
+    # Spatial data ---------------------
+
+    ## C2 ai ------------
+    observe(spat_vuln_hide2("C2ai", spatial = clim_vars()$htn, values = spat_res()["HTN_1"]))
+
+    output$map_C2ai <- leaflet::renderLeaflet({
+      req(clim_vars()$htn)
+
+      make_map(range_poly_clim(), rast = clim_vars()$htn, rast_nm = "htn",
+               rast_lbl = c("1 Low", "2", "3", "4 High"))
+    })
+
+    output$tbl_C2ai <- gt::render_gt({
+      req(spat_res())
+      exp_tbl <- spat_res() %>%
+        select(matches("HTN_\\d")) %>%
+        rename_at(vars(contains("HTN")),
+                  ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
+        tidyr::pivot_longer(cols = contains("Class"),
+                            names_to = "Sensitivity Class", values_to = "Proportion of Range") %>%
+        transmute(`Sensitivity Class` = stringr::str_replace(.data$`Sensitivity Class`, "Class 1", "1 - Low") %>%
+                    stringr::str_replace("Class 4", "4 - High") %>%
+                    stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
+        distinct() %>%
+        mutate(`Historical Temperature Variation` = c("> 43.0", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
+        mutate_if(is.numeric, round, digits = 2) %>%
+        select("Sensitivity Class", "Historical Temperature Variation", "Proportion of Range") %>%
+        gt::gt() %>%
+        gt::cols_label(`Historical Temperature Variation` = gt::html("Historical Temperature Variation (&deg;C)")) %>%
+        gt::tab_options(table.width = 600,
+                        table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = c(2, 3)) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
+    })
+
+    output$box_C2ai <- renderUI({
+      req(spat_res)
+      render_spat_vuln_box2(id, "C2ai", spat_res(), input)
+    })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2ai", suspendWhenHidden = FALSE)
+
+    ## C2 aii ----
+    observe({
+      spat_vuln_hide2("C2aiI", spatial = ptn_poly(), values = spat_res()["PTN"])
+    })
+
+    output$map_C2aii <- leaflet::renderLeaflet({
+      #req(doSpatial())
+      req(ptn_poly())
+      make_map(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
+    })
+
+    output$tbl_C2aii <- gt::render_gt({
+      req(spat_res())
+      exp_df <-  spat_res() %>%
+        select(contains("PTN", ignore.case = FALSE)) %>%
+        tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
+                            names_to = "Variable", values_to = "Proportion of Range") %>%
+        mutate_if(is.numeric, round, digits = 2) %>%
+        distinct() %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
+    })
+
+    output$box_C2aii <- renderUI({
+      render_spat_vuln_box2(id, "C2aii", spat_res(), input)
+    })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
+
+    ## C2 bi ---------
+    observe({
+      spat_vuln_hide2("C2bi", spatial = clim_vars()$map, values = spat_res()["MAP_max"])
+    })
+
+    output$map_C2bi <- leaflet::renderLeaflet({
+      req(clim_vars()$map)
+      make_map(poly1 = range_poly_clim(), rast = clim_vars()$map,
+               rast_nm = "map")
+    })
+
+    output$tbl_C2bi <- gt::render_gt({
+      req(spat_res())
+      exp_df <-  spat_res() %>%
+        select("MAP_max", "MAP_min") %>%
+        rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%
+        distinct() %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
+    })
+
+    output$box_C2bi <- renderUI({
+      render_spat_vuln_box2(id, "C2bi", spat_res(), input)
+    })
+
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_C2bi", suspendWhenHidden = FALSE)
 
   })
 

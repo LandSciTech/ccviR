@@ -1,4 +1,4 @@
-mod_species_ui <- function(id, title) {
+mod_species_ui <- function(id) {
 
   ns <- NS(id)
 

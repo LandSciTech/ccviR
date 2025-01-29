@@ -1,4 +1,4 @@
-mod_spatial_ui <- function(id, title) {
+mod_spatial_ui <- function(id) {
 
   ns <- NS(id)
 
@@ -110,7 +110,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
     clim_dir_pth <- reactiveVal()
 
     # Continue Button
-    observeEvent(input$continue, switch_tab("Exposure Results", parent_session))
+    observeEvent(input$continue, switch_tab("Vulnerability Questions - A", parent_session))
 
     # Enable the Start Spatial button when all mandatory fields are filled out
     observe({
@@ -574,7 +574,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
            "clim_vars" = clim_vars,
            "clim_readme" = clim_readme,
            "range_poly" = range_poly,
-           "nonbreed_poly" = nonbreed_poly
+           "range_poly_clim" = range_poly_clim,
+           "ptn_poly" = ptn_poly,
+           "nonbreed_poly" = nonbreed_poly,
+           "hs_rast" = hs_rast,
+           "hs_rcl_mat" = hs_rcl_mat
          ))
   })
 
