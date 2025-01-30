@@ -37,7 +37,7 @@ to use the `NS()` function in the UI or the `ns` variable in the server (if
 using `renderUI()`, not required for anything going to/from `output` or `input`)
 
 - UI: Use `ns <- NS(id)` at the start, wrap all UI ids in `ns(my_id)`
-- Server: Use `ns <- server$ns` at the start, then wrap ids in `ns(my_id)`. 
+- Server: Use `ns <- serssion$ns` at the start, then wrap ids in `ns(my_id)`. 
 
 **Notes**
 
@@ -47,6 +47,7 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
   function, cf `get_file_ui2()`
 - `conditionalPanel()` has a `ns` argument we should use (https://stackoverflow.com/a/76905697)
 - `NS()` (or `ns`) is *not* required for shinyjs
+  - e.g., `spat_vuln_hide2()`
 
 ### Passing variables
 - We return reactives from a module like returning outputs from a function,
@@ -55,3 +56,11 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 - Then pass them as arguments to other module functions
 - Remember that we want a list of reactives, not a reactive that returns a list
   (otherwise anytime any list item is updated, the whole reactive invalidates)
+
+## Notes
+
+- `spat_vuln_hide2()` gets no `req()` because depends on present/absence to hide
+
+## Testing
+- Where possible, testing is performed with the `testServer()` (Rather than 
+shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity

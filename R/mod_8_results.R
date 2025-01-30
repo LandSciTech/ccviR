@@ -1,9 +1,12 @@
-mod_results_ui <- function(id, title) {
+mod_results_ui <- function(id) {
+
+  ns <- NS(id)
+
   tabPanel(
     "Index Results",
     fluidPage(
       div(
-        id = "formData",
+        id = ns("formData"),
         #style = 'width:800px;',
         h2("Index Results"),
         p("This section calculates the CCVI using the results of Sections
@@ -13,13 +16,15 @@ mod_results_ui <- function(id, title) {
           strong("Note: "), "If changes are made after the index has been
                 calculated you will need to click 'Calculate' again for them to be applied."),
         h5("Click button to calculate or re-calculate the index:"),
-        actionButton("calcIndex", "Calculate CCVI", class = "btn-primary")
+        actionButton(ns("calcIndex"), "Calculate CCVI", class = "btn-primary")
       ),
-
       conditionalPanel(
         condition = "output.calcFlag == true",
+
+        uiOutput(NS(id, "all_index_results")),
+
         h3("Data completeness"),
-        gt::gt_output("n_factors"),
+        gt::gt_output(ns("n_factors")),
 
         h3("Variation in index"),
         p("When multiple values are selected for any of the vulnerability ",
@@ -29,9 +34,9 @@ mod_results_ui <- function(id, title) {
           "one of the selected values is randomly chosen and the index is ",
           "calculated. The graph below shows the proportion of runs with each",
           " index value for each scenario. "),
-        plotOutput("conf_graph", width = 300, height = 200),
+        plotOutput(ns("conf_graph"), width = 300, height = 200),
         div(
-          id = "indplt",
+          id = ns("indplt"),
           #style = 'width:800px;',
           br(),
           h3("Factors contributing to index value"),
@@ -47,8 +52,8 @@ mod_results_ui <- function(id, title) {
           # Might want to add something like this to change width dependent
           # on n facets https://stackoverflow.com/questions/50914398/increase-plot-size-in-shiny-when-using-ggplot-facets
 
-          plotOutput("ind_score_plt", height = "300px"),
-          textOutput("slr"),
+          plotOutput(ns("ind_score_plt"), height = "300px"),
+          textOutput(ns("slr")),
           br(), br(),
           p("The score for each vulnerability factor is determined by the ",
             "answers to vulnerability questions (Neutral: 0, Greatly increases: 3)",
@@ -62,28 +67,231 @@ mod_results_ui <- function(id, title) {
             "for that factor. The chart is broken up by section to highlight ",
             "that the B/C and D sections affect the final score differently. ",
             "See the plot above for more details on combining the scores."),
-          plotly::plotlyOutput("q_score_plt", height = "500px")
+          plotly::plotlyOutput(ns("q_score_plt"), height = "500px")
         ),
         br(),
         br(),
-        actionButton("restart", "Assess another species",
+        actionButton(ns("restart"), "Assess another species",
                      class = "btn-primary"),
         br(),
         br(),
-        downloadButton("report", "Generate report", class = "btn-primary"),
+        downloadButton(ns("report"), "Generate report", class = "btn-primary"),
 
-
+        ns = NS(id)
       )
     )
   )
 }
 
-mod_results_server <- function(id) {
+mod_results_server <- function(id, species_data, spatial_details, index_res,
+                               questions) {
+
+  stopifnot(is.reactive(species_data))
+  purrr::map(spatial_details, ~stopifnot(is.reactive(.x)))
+  stopifnot(is.reactive(index_res))
+  purrr::map(questions, ~stopifnot(is.reactive(.x)))
+
+  # Split up reactives
+  spat_res <- spatial_details$spat_res
+  hs_rast <- spatial_details$hs_rast
+  clim_readme <- spatial_details$clim_readme
+  range_poly <- spatial_details$range_poly
+  hs_rcl_mat <- spatial_details$hs_rcl_mat
 
   moduleServer(id, function(input, output, session) {
 
+    ns <- session$ns
+
+    # Calculate Index value #================================
+
+    # Gather all the form inputs
+    vuln_df <- reactive({
+      bind_elements(questions, "questions") %>%
+        rows_append(data.frame(Code = "Z2", Value1 = species_data()$cave)) %>%
+        rows_append(data.frame(Code = "Z3", Value1 = species_data()$mig)) %>%
+        mutate(Species = species_data()$species_name)
+    })
+
+    coms_df <- reactive(bind_elements(questions, "comments"))
+
+    observeEvent(input$calcIndex,{
+      if(!isTruthy(spat_res())){
+        showNotification(
+          p(strong("Error: "), "Please run the spatial data analysis before trying to calculate the index."),
+          type = "error",
+          duration = 10)
+        req(FALSE)
+      }
+
+      calc_vulnerability(spat_res(), vuln_df(), species_data()$tax_grp) %>%
+        index_res()
+    })
+
+    output$species_name <- renderText(species_data()$species_name)
 
 
+    # insert index dials for each scenario
+    scenarios <- reactive({
+      req(index_res())
+      ind_ls <- index_res() %>%
+        arrange(desc(.data$scenario_name)) %>%
+        split(index_res()$scenario_name)
+    })
+
+
+    # Create UIs and Outputs - Looping over nested modules -------------------
+
+    # NOTE: Require ns() in UI (I think) because UIs inside another UI.
+    output$all_index_results <- renderUI({
+      purrr::map(seq_along(scenarios()), ~indexOutUI2(ns(.x)))
+    })
+    observeEvent(scenarios(), {
+      purrr::map(seq_along(scenarios()), ~indexOutServer2(.x, scenarios()[[.x]]))
+    })
+
+    # a flag to hide results until calculated
+    output$calcFlag <- reactive(isTruthy(index_res()))
+    outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
+
+    output$n_factors <- gt::render_gt({
+      facts <- index_res() %>% distinct(across(contains("factors")))
+      tibble(Section = c("Section B: Indirect Exposure to Climate Change",
+                         "Section C: Sensitivity and Adaptive Capacity",
+                         "Section D: Documented or Modeled Response to Climate Change"),
+             `Factors completed` = c(paste0(facts$n_b_factors, "/4"),
+                                     paste0(facts$n_c_factors, "/16"),
+                                     paste0(facts$n_d_factors, "/4"))) %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = 2) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", align = "center", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
+    })
+
+    output$slr <- renderText({
+      if(is.null(index_res()[["slr_vuln"]])){
+        return(NULL)
+      }
+      if(!any(index_res()$slr_vuln)){
+        return(NULL)
+      }
+      scn_slr <- filter(index_res(), .data$slr_vuln) %>% pull(.data$scenario_name)
+      paste0("The index value for this species in scenario ",
+             paste0(scn_slr, collapse = ", "), " was increased to ",
+             "'Extremely Vulnerable' because it is vulnerable to rising ",
+             "sea levels and has significant dispersal barriers")
+    })
+
+    output$ind_score_plt <- renderPlot({
+      plot_score_index(index_res())
+    })
+
+    #output$conf_index <- renderText(index_res()$conf_index)
+    output$conf_graph <- renderPlot({
+      plot_conf_score(index_res())
+
+    })
+
+    output$q_score_plt <- plotly::renderPlotly({
+      index_res() %>%
+        select("scenario_name", "vuln_df") %>%
+        tidyr::unnest(.data$vuln_df) %>%
+        plot_q_score()
+    })
+
+
+
+    # # helpful for testing
+    #  shinyjs::runcodeServer()
+
+
+
+    output$report <- downloadHandler(
+      # For PDF output, change this to "report.pdf"
+      filename = "report.pdf",
+      content = function(file) {
+        withProgress(message = 'Report rendering in progress...', {
+          # Copy the report file to a temporary directory before processing it, in
+          # case we don't have write permissions to the current working dir (which
+          # can happen when deployed).
+          tempReport <- file.path(tempdir(), "report.Rmd")
+          file.copy(system.file("rmd/results_report.Rmd", package = "ccviR"),
+                    tempReport, overwrite = TRUE)
+
+
+          rng_report <- try(range_poly(), silent = TRUE)
+          rng_report_clim <- try(range_poly_clim(), silent = TRUE)
+          if(!isTruthy(rng_report)){
+            message("using range_poly_in")
+            rng_report <- range_poly_in()
+            rng_report_clim <- range_poly_in()
+          }
+
+          # Set up parameters to pass to Rmd document
+          params <- list(out_data = shiny::reactiveValuesToList(out_data_lst) %>%
+                           combine_outdata(),
+                         clim_vars = clim_vars(),
+                         scale_poly = assess_poly(),
+                         range_poly = rng_report,
+                         range_poly_clim = rng_report_clim)
+
+          # Knit the document, passing in the `params` list, and eval it in a
+          # child of the global environment (this isolates the code in the document
+          # from the code in this app).
+          rmarkdown::render(tempReport, output_file = "report.pdf",
+                            params = params,
+                            envir = new.env(parent = globalenv()))
+          file.copy(file.path(tempdir(), 'report.pdf'), file)
+        })
+      }
+    )
+
+    observeEvent(input$restart,{
+      restoreURL <- paste0(session$clientData$url_protocol, "//",
+                           session$clientData$url_hostname, ":",
+                           session$clientData$url_port)
+
+      # redirect user to restoreURL
+      shinyjs::runjs(sprintf("window.location = '%s';", restoreURL))
+    })
+
+
+
+    index <- eventReactive(index_res(), {
+       req(index_res())
+       message("index out_data")
+       vuln_df <- purrr::map_dfr(index_res()$vuln_df, widen_vuln_coms,
+                                 coms_df = coms_df())
+
+       conf_df <- index_res() %>%
+         select("scenario_name", "mc_results") %>%
+         mutate(mc_results = purrr::map(
+           .data$mc_results, ~.x$index %>%
+             factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
+             table() %>%
+             prop.table() %>%
+             as.data.frame(stringsAsFactors = FALSE) %>%
+             `names<-`(c("index", "frequency")))) %>%
+         pull(.data$mc_results) %>%
+         purrr::map_dfr(
+           ~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
+             tidyr::pivot_wider(names_from = "index",
+                                values_from = "frequency"))
+
+       ind_df <- data.frame(CCVI_index = index_res()$index,
+                            CCVI_conf_index = index_res()$conf_index,
+                            mig_exposure = index_res()$mig_exp,
+                            b_c_score = index_res()$b_c_score,
+                            d_score = index_res()$d_score)
+
+       bind_cols(ind_df, conf_df, vuln_df)
+     })
+
+    # Return ------------------------------------
+    list("index" = index)
   })
 
 }

@@ -34,9 +34,10 @@ mod_B_ui <- function(id) {
 
           check_comment_ui2(id, "B3", "B3) Predicted impact of land use changes resulting from human responses to climate change",
                            choiceNames = valueNms[2:4],
-                           choiceValues = valueOpts[2:4])
-        ),
-        br(),
+                           choiceValues = valueOpts[2:4]),
+          actionButton(ns("continue"), "Next", class = "btn-primary"),
+          br(), br()
+        )
       )
     )
   )
@@ -57,6 +58,13 @@ mod_B_server <- function(id, df_loaded, parent_session) {
     observeEvent(df_loaded(), {
       update_restored2(df_loaded(), section = "vuln_qs", session)
     })
+
+    output$test <- renderText({
+      input$B2b
+    })
+
+    # Return -------------------------------------------------
+    list("b" = reactive(collect_questions(input)))
 
   })
 

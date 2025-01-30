@@ -104,3 +104,28 @@ render_spat_vuln_box2 <- function(id, ui_id, spat_df, input) {
                     com = prevCom)
 }
 
+
+widen_vuln_coms2 <- function(questions) {
+
+  comments <- bind_elements(questions, "comments")
+
+  vuln_df <- bind_elements(questions, "questions") %>%
+    select("Code", matches("Value\\d")) %>%
+    filter(!.data$Code %in% c("Z2", "Z3")) %>%
+    arrange(.data$Code) %>%
+    mutate_all(as.character) %>%
+    tidyr::unite("Value", .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
+    left_join(comments, by = "Code") %>%
+    tidyr::pivot_wider(names_from = "Code",
+                       values_from = c("com","Value")) %>%
+    rename_all(~stringr::str_remove(.x, "Value_"))
+
+
+  select(vuln_df, order(colnames(vuln_df)))
+}
+
+bind_elements <- function(questions, type) {
+  questions %>%
+    purrr::map(~.x()[[type]]) %>%
+    purrr::list_rbind()
+}

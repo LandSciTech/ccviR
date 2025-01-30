@@ -153,8 +153,7 @@ mod_home_server <- function(id, volumes, parent_session) {
 
 
     # Return -------------------------------------------------
-    list("df_loaded" = df_loaded
-    )
+    list("df_loaded" = df_loaded)
   })
 
 }

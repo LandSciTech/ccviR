@@ -464,3 +464,14 @@ show_guidelines <- function(input) {
                guide_popup(.x)
              }, ignoreInit = TRUE))
 }
+
+collect_questions <- function(input) {
+  q <- stringr::str_subset(names(input), "^[B,C,D]\\d.*") %>%
+    purrr::map_df(~getMultValues(input[[.x]], .x)) %>%
+    as_tibble()
+
+  c <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*") %>%
+    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "com"),
+                              com = input[[.x]]))
+  list("questions" = q, "comments" = c)
+}

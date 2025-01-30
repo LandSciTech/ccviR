@@ -30,6 +30,7 @@ ccvi_app2 <- function(testmode_in, ...){
     mod_B_ui(id = "section_b"),
     mod_C_ui(id = "section_c"),
     mod_D_ui(id = "section_d"),
+    mod_results_ui(id = "results"),
   ) # Note: mod_save_ui() is inside ui_setup()
 
   server <- function(input, output, session) {
@@ -53,21 +54,37 @@ ccvi_app2 <- function(testmode_in, ...){
       spatial_details = spatial$spatial_details,
       parent_session = session)
 
-    x <- mod_B_server(
+    b <- mod_B_server(
       id = "section_b",
       df_loaded = restore$df_loaded,
       parent_session = session)
 
-    x <- mod_C_server(
+    c <- mod_C_server(
       id = "section_c",
       df_loaded = restore$df_loaded,
       spatial_details = spatial$spatial_details,
       parent_session = session)
 
+    d <- mod_D_server(
+      id = "section_d",
+      df_loaded = restore$df_loaded,
+      spatial_details = spatial$spatial_details,
+      parent_session = session)
+
+    index <- mod_results_server(
+      id = "results",
+      species_data = sp$species_data,
+      spatial_details = spatial$spatial_details,
+      index_res = spatial$index_res,
+      questions = c(b, c, d)
+    )
+
     mod_save_server(
       id = "save", volumes,
       sp$species_data,
-      spatial$spatial_data)
+      spatial$spatial_data,
+      questions = c(b, c, d),
+      index = index$index)
   }
 
 

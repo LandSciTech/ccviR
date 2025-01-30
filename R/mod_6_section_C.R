@@ -61,7 +61,7 @@ mod_C_ui <- function(id) {
           check_comment_ui2(id, "C2c", "C2 c) Dependence on a specific disturbance regime likely to be impacted by climate change.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          check_comment_ui(id, "C2d", "C2 d) Dependence on ice, ice-edge, or snow-cover habitats.",
+          check_comment_ui2(id, "C2d", "C2 d) Dependence on ice, ice-edge, or snow-cover habitats.",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
@@ -126,9 +126,9 @@ mod_C_ui <- function(id) {
           check_comment_ui2(id, "C6", "C6) Phenological response to changing seasonal temperature and precipitation dynamics.",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
-          actionButton("continue", "Next", class = "btn-primary"),
+          actionButton(ns("continue"), "Next", class = "btn-primary"),
           br(), br()
-        ),
+        )
       )
     )
   )
@@ -160,7 +160,7 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
       update_restored2(df_loaded(), section = "vuln_qs", session)
     })
 
-    # Spatial data ---------------------
+    # Spatial Questions ---------------------
 
     ## C2 ai ------------
     observe(spat_vuln_hide2("C2ai", spatial = clim_vars()$htn, values = spat_res()["HTN_1"]))
@@ -200,7 +200,7 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
     })
 
     output$box_C2ai <- renderUI({
-      req(spat_res)
+      req(spat_res())
       render_spat_vuln_box2(id, "C2ai", spat_res(), input)
     })
 
@@ -243,6 +243,7 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
 
+    # Non-Spatial Questions ---------------------
     ## C2 bi ---------
     observe({
       spat_vuln_hide2("C2bi", spatial = clim_vars()$map, values = spat_res()["MAP_max"])
@@ -276,6 +277,9 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_C2bi", suspendWhenHidden = FALSE)
+
+    # Return -------------------------------------------------
+    list("c" = reactive(collect_questions(input)))
 
   })
 

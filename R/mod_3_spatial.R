@@ -159,7 +159,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
           # set to same as doSpatial so can check value and if same don't update spat_res2
           doSpatialRestore(doSpatial())
           showNotification("Re-running spatial analysis from loaded file.",
-                           duration = NULL, id = "spat_restore_note")
+                           duration = NULL, id = ns("spat_restore_note"))
         }
 
         index_res(recreate_index_res(df_loaded))
@@ -486,7 +486,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
       # force these to invalidate when re-run
       spat_res(FALSE)
 
-      removeNotification("spat_restore_note")
+      removeNotification(ns("spat_restore_note"))
       return(out)
 
     }, ignoreInit = TRUE)
@@ -569,6 +569,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
 
     # Return -------------------------------------------------
     list("spatial_data" = spatial_data,
+         "index_res" = index_res,
          "spatial_details" = list(
            "spat_res" = spat_res2,
            "clim_vars" = clim_vars,
@@ -577,6 +578,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
            "range_poly_clim" = range_poly_clim,
            "ptn_poly" = ptn_poly,
            "nonbreed_poly" = nonbreed_poly,
+           "assess_poly" = assess_poly,
            "hs_rast" = hs_rast,
            "hs_rcl_mat" = hs_rcl_mat
          ))

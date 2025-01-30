@@ -14,61 +14,32 @@ mod_save_ui <- function(id, title) {
   )
 }
 
-mod_save_server <- function(id, volumes, species_data, spatial_data) {
+mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
+                            index) {
 
   stopifnot(is.reactive(species_data))
   stopifnot(is.reactive(spatial_data))
+  purrr::map(questions, ~stopifnot(is.reactive(.x)))
 
   moduleServer(id, function(input, output, session) {
 
     # Make out_data #========================================================
     out_data_lst <- reactiveValues()
 
-    # TODO: Split between species and vulnerability
-    observe({
-      # TODO: Move to Vulnerabilityu Qs
-      # res_df <- widen_vuln_coms(inputs$vuln_df, coms_df = inputs$coms_df)
 
-      # TODO: add res_df back in
-      out_data_lst$start <- bind_cols(species_data()) %>% #, res_df) %>%
+    observe({
+      out_data_lst$start <- bind_cols(
+        species_data(),
+        widen_vuln_coms2(questions)) %>%
         mutate(ccviR_version = utils::packageVersion("ccviR"))
     })
 
     observe(out_data_lst$spat <- spatial_data())
+    observe(out_data_lst$index <- index())
 
-   # TODO: Goes in Calc index module
-   #  observeEvent(index_res(), {
-   #    req(index_res())
-   #    message("index out_data")
-   #    vuln_df <- purrr::map_dfr(index_res()$vuln_df, widen_vuln_coms,
-   #                              coms_df = coms_df())
-   #
-   #    conf_df <- index_res() %>%
-   #      select("scenario_name", "mc_results") %>%
-   #      mutate(mc_results = purrr::map(.data$mc_results, ~.x$index %>%
-   #                                       factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
-   #                                       table() %>%
-   #                                       prop.table() %>%
-   #                                       as.data.frame(stringsAsFactors = FALSE) %>%
-   #                                       `names<-`(c("index", "frequency")))) %>%
-   #      pull(.data$mc_results) %>%
-   #      purrr::map_dfr(~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
-   #                       tidyr::pivot_wider(names_from = "index",
-   #                                          values_from = "frequency"))
-   #
-   #    ind_df <- data.frame(CCVI_index = index_res()$index,
-   #                         CCVI_conf_index = index_res()$conf_index,
-   #                         mig_exposure = index_res()$mig_exp,
-   #                         b_c_score = index_res()$b_c_score,
-   #                         d_score = index_res()$d_score)
-   #
-   #    out_data_lst$index <- bind_cols(ind_df, conf_df, vuln_df)
-   #  })
 
     exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst),
                      doSpatial = doSpatial())
-
-
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
@@ -100,6 +71,25 @@ mod_save_server <- function(id, volumes, species_data, spatial_data) {
       # doesn't quite work but better than nothing
       removeModal()
       shinyjs::click("downloadData")
+    })
+
+
+    # NOTE: Remove if deployed to a server with multiple users possible. Will
+    # stop for all users. Not an issue when run locally
+    session$onSessionEnded(function() {
+      # save the csv to a temp file is case user forgot to save
+      file_nm <- paste0("ccviR_temp_save_",
+                        Sys.time() %>% format() %>%
+                          stringr::str_replace_all("\\W", "_"),
+                        "_")
+      file_nm <- tempfile(pattern = file_nm, fileext = ".csv")
+      isolate(
+        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)),
+                  file_nm,
+                  row.names = FALSE)
+      )
+      message("Temporary file saved to:\n ", file_nm, "\n This will be deleted after R is closed")
+      stopApp()
     })
 
   })
