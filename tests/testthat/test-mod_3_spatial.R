@@ -1,5 +1,3 @@
-
-
 test_that("spatial data created", {
 
   volumes <- server_setup()
@@ -23,6 +21,8 @@ test_that("spatial data created", {
     "gain_mod" = 1)
 
   testServer(mod_spatial_server, args = list(volumes, reactive(NULL), cave = reactive(FALSE)), {
+
+    options("shiny.testmode" = TRUE)
 
     # Set the inputs
     session$setInputs(!!!test_inputs)

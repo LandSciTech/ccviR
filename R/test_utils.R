@@ -16,6 +16,10 @@ is_testing <- function() {
   testthat::is_testing() | isTRUE(getOption("shiny.testmode"))
 }
 
+is_shiny_testing <- function() {
+  isTRUE(getOption("shiny.testmode"))
+}
+
 compare_io <- function(i, o) {
   i <- stats::setNames(i, stringr::str_remove_all(names(i), "^[^-]+-"))
   as.data.frame(i[names(o)])
