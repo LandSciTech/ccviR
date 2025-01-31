@@ -56,6 +56,10 @@ test_data <- function(file_dir = system.file("extdata", package = "ccviR"),
 
   range_points <- range %>% sf::st_make_grid(what = "centers")
 
+  range_clim <- st_intersection(range, clim_vars$clim_poly) %>%
+    st_set_agr("constant")
+  range_clim <- valid_or_error(range_clim, "range clim intersection")
+
   list(clim_vars = clim_vars,
        rng_chg_mat = rng_chg_mat,
        assess = assess,
@@ -65,5 +69,6 @@ test_data <- function(file_dir = system.file("extdata", package = "ccviR"),
        hs_terra = hs_terra,
        hs2 = hs2,
        range_points = range_points,
+       range_clim = range_clim,
        scn_nms = scn_nms)
 }
