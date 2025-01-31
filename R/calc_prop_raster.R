@@ -24,6 +24,7 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
     ext_out <- exactextractr::exact_extract(rast, poly, progress = FALSE, include_area = TRUE)
   )
   poly_area <- st_area(poly)
+
   out <- ext_out[[1]] %>% select(-"area") %>%
     stats::setNames(nm = c(names(rast), "coverage_fraction")) %>%
     filter(if_any(.cols = everything(), .fns = ~!is.na(.x))) %>%
@@ -31,7 +32,7 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
                         values_to = "value") %>%
     mutate(value = factor(.data$value, levels = val_range)) %>%
     group_by(.data$layer, .data$value, .drop = FALSE) %>%
-    summarise(sum = sum(.data$coverage_fraction)) %>%
+    summarise(sum = sum(.data$coverage_fraction), .groups = "drop_last") %>%
     transmute(.data$value, prop = (.data$sum/sum(.data$sum) * 100) %>% round(digits)) %>%
     ungroup()
 

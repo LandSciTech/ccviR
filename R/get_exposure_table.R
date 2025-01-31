@@ -36,7 +36,7 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
       tidyr::separate("class_brks", into = c("class", "breaks"), sep = ": ") %>%
       mutate(breaks = stringr::str_replace_all(.data$breaks, "[()]", "")) %>%
       mutate(breaks = stringr::str_replace_all(.data$breaks, " - ", " to ")) %>%
-      select("class", "breaks", scenario_cols)
+      select("class", "breaks", all_of(scenario_cols))
 
     # create df with exposure multipliers
     exp_df <- spattbl %>% select("scenario_name", contains("exp_cave")) %>%
