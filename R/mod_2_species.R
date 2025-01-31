@@ -1,6 +1,7 @@
 
 #' Test the species module
 #'
+#' @noRd
 #' @examples
 #' mod_species_test()
 

@@ -1,6 +1,7 @@
 
 #' Test the home module
 #'
+#' @noRd
 #' @examples
 #' mod_home_test()
 

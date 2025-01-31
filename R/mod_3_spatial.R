@@ -1,6 +1,7 @@
 
 #' Test the spatial module
 #'
+#' @noRd
 #' @examples
 #' mod_spatial_test()
 

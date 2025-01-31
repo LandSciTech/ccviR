@@ -10,8 +10,14 @@ Data used for preparing data sets for the package.
 
 - Smaller data to be accessed by the user are stored in `inst/extdata`. 
 - Large data or data which should not be shared directly, are stored in the 
-  `misc` folder which is Git-ignored.This ensures the same path for all developers
+  `misc` folder which is Git-ignored. This ensures the same path for all developers
   and that data is kept within the project.
+- However, for reasons, R CMD Build actually copies all files to a temp folder 
+  and *then* deletes the ones in .Rbuildignore, which can create problems.
+  The fix to this (if using RStudio) is to add `PKG_BUILD_COPY_METHOD=link` 
+  to your .Renviron file, which will link to those files rather than copying.
+  (https://github.com/r-lib/pkgbuild/issues/59#issuecomment-1327752199)
+  
 
 ## Workflow style
 
