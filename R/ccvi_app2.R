@@ -7,6 +7,8 @@
 #' @examples
 #'
 #' ccvi_app2()
+#'
+#' @importFrom rlang .env
 
 ccvi_app2 <- function(testmode_in, ...){
 
@@ -137,11 +139,19 @@ ui_setup <- function(...) {
 server_setup <- function() {
   file_pths <- NULL
 
+  #TODO: Remove development mode
+  shinyOptions("file_dir" = "inst/extdata")
+
+  if(is_testing()) {
+    shinyOptions("file_dir" = system.file("extdata/", package = "ccviR"))
+  }
+
+
   # start up Note this time out is because when I disconnected from VPN it
   # made the getVolumes function hang forever because it was looking for
   # drives that were no longer connected. Now it will give an error
   timeout <- R.utils::withTimeout({
-    volumes <- c(wd = "inst/extdata/",# TODO: revert: getShinyOption("file_dir"),
+    volumes <- c(wd = getShinyOption("file_dir"),
                  Home = fs::path_home(),
                  getVolumes()())
   }, timeout = 200, onTimeout = "silent")

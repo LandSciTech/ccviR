@@ -33,5 +33,6 @@ for details on how to use the app.
 \examples{
 if(interactive()){
  run_ccvi_app("demo")
+ run_ccvi_app(file_dir = "../")
 }
 }

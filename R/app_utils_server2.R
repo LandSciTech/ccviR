@@ -1,3 +1,36 @@
+parse_path <- function(volumes, shiny_files_list) {
+  req(!is.integer(shiny_files_list))
+  parseFilePaths(volumes, shiny_files_list)$datapath
+}
+
+#' Loads a previously saved data set from a shinyFiles list
+#'
+#' @param path Character. File path
+#'
+#' @returns Loaded data frame
+#' @noRd
+#'
+#' @examples
+#' f <- parse_path(server_setup(), test_files("test_final.csv"))
+#' load_previous(f)
+
+load_previous <- function(path) {
+
+  # TODO: Replace with validate(need())
+  validate(need(fs::is_file(path) & fs::file_exists(path), "File doesn't exist"))
+
+  df <- tryCatch(error = function(cnd) {
+    validate(need(TRUE, "CSV file is empty, cannot restore from file."))
+  },
+  read.csv(path)
+  )
+
+  validate(need(!(nrow(df) < 1 || !"scenario_name" %in% colnames(df)),
+                "CSV file is empty, cannot restore from file."))
+  return(df)
+}
+
+
 # Update UI based on values loaded from csv
 update_restored2 <- function(df, session, section = NULL){
   # match column names to inputs and/or maybe reactive values?
