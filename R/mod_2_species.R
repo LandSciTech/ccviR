@@ -1,3 +1,26 @@
+
+#' Test the species module
+#'
+#' @examples
+#' mod_species_test()
+
+mod_species_test <- function(df_loaded = TRUE) {
+  ui <- ui_setup(mod_species_ui(id = "test"))
+  server <- function(input, output, session) {
+    shinyOptions("file_dir" = "inst/extdata/")
+
+    if(df_loaded) {
+      df_loaded <- parse_path(server_setup(), test_files("test_files/test_final.csv")) %>%
+        load_previous() %>%
+        reactive()
+    } else df_loaded <- reactive(NULL)
+
+    mod_species_server(id = "test", df_loaded)
+  }
+
+  shinyApp(ui, server)
+}
+
 mod_species_ui <- function(id) {
 
   ns <- NS(id)
@@ -66,6 +89,7 @@ mod_species_server <- function(id, df_loaded, parent_session) {
     # Show/Hide Fields depending on inputs
     # TODO: Better as conditional panels?
     observe({
+      req(input$tax_gr)
       tax_lg <- ifelse(input$tax_grp %in% c("Vascular Plant", "Nonvascular Plant"),
                        "Plant",
                        ifelse(
@@ -102,6 +126,11 @@ mod_species_server <- function(id, df_loaded, parent_session) {
     })
 
     # Return -------------------------------------------------
+    exportTestValues(
+      "species_data" = species_data(),
+      "cave" = input$cave
+    )
+
     list("species_data" = species_data,
          "cave" = reactive(input$cave))
   })

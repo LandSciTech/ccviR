@@ -1,0 +1,20 @@
+{
+  "input": {
+    "save-downloadData": 0,
+    "tabset": "Species Information",
+    "test-assessor_name": "Steffi",
+    "test-cave": false,
+    "test-common_name": "Testing sp",
+    "test-continue": 0,
+    "test-geo_location": "Manitoba",
+    "test-mig": false,
+    "test-species_name": "Testing",
+    "test-tax_grp": "Vascular Plant"
+  },
+  "output": {
+
+  },
+  "export": {
+
+  }
+}

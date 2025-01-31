@@ -58,9 +58,37 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
   (otherwise anytime any list item is updated, the whole reactive invalidates)
 
 ## Notes
-
+- 
 - `spat_vuln_hide2()` gets no `req()` because depends on present/absence to hide
 
 ## Testing
+- It makes testing easier if, as much as possible, all code is moved into 
+  functions which can be tested individually, as well as used to create inputs
+  for other parts of tests.
+- `server_setup()` checks `is_testing()` to set the relative path correctly when running tests.
+
+### testServer()
 - Where possible, testing is performed with the `testServer()` (Rather than 
 shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
+- See `?MockShinySession` for some of what you can access in the testServer
+- Can't test input recovery from previous data because doesn't work with
+  `update*()` family of functions (https://mastering-shiny.org/scaling-testing.html#limitations)
+- Can use `browser()` inside `testServer({...})` to interactively test and set
+  up expectations.
+
+
+### shinytest2
+- see `?shinytest2::AppDriver` for some of what you can access form the `AppDriver`
+- shinytest2 can be a bit finicky, but once you get the details right it works well
+- You MUST rebuild the package before running shinytests!
+- Errors in the test pane that imply the app is working (not that specific tests 
+  are failing) are best troubleshooted by using `record_test()` (don't actually 
+  record it, but the errors messages are much better in this mode, and may be 
+  something as simple as misspelling a function name, for example)
+- Because the app is running from a function, `record_test()` can be used to 
+  create the details of the test, but not the whole test file (you need to copy
+  the code and add it to an existing test). 
+- shinyFiles is a pain to test (because it uses actionButtons, which shinytest2
+  insists can only be 'clicked' not set to file values), so we don't test the
+  actual loading directly.
+

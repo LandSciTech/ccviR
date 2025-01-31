@@ -1,3 +1,28 @@
+
+#' Test the spatial module
+#'
+#' @examples
+#' mod_spatial_test()
+
+mod_spatial_test <- function(df_loaded = TRUE) {
+  ui <- ui_setup(mod_spatial_ui(id = "test"))
+  server <- function(input, output, session) {
+    shinyOptions("file_dir" = "inst/extdata/")
+
+    volumes <- server_setup()
+    if(df_loaded) {
+      df_loaded <- parse_path(volumes, test_files("test_final.csv")) %>%
+        load_previous() %>%
+        reactive()
+    } else df_loaded <- reactive(NULL)
+
+    mod_spatial_server(id = "test", volumes, df_loaded, cave = reactive(FALSE),
+                       parent_session = session)
+  }
+
+  shinyApp(ui, server)
+}
+
 mod_spatial_ui <- function(id) {
 
   ns <- NS(id)
@@ -34,6 +59,7 @@ mod_spatial_ui <- function(id) {
             strong("Classification of projected range change raster"),
             p("Enter the range of values in the raster corresponding to ",
               "lost, maintained, gained and not suitable."),
+            # TODO: Replace with sliders?
             from_to_ui2(id, "lost", "Lost:",  c(-1, -1)),
             from_to_ui2(id, "maint", "Maintained:", c(0, 0)),
             from_to_ui2(id, "gain", "Gained:", c(1,1)),
@@ -255,11 +281,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
     # parse file paths
     observeEvent(input$clim_var_dir,{
       if(is.integer(input$clim_var_dir)){
-        if (isTRUE(getOption("shiny.testmode"))) {
-          pth <- system.file("extdata/clim_files/processed", package = "ccviR")
-        } else {
-          return(NULL)
-        }
+        #if (isTRUE(getOption("shiny.testmode"))) {
+        #  pth <- system.file("extdata/clim_files/processed", package = "ccviR")
+        #} else {
+        #  return(NULL)
+        #}
       }  else {
         pth <- parseDirPath(volumes, input$clim_var_dir)
       }
@@ -287,6 +313,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
 
     clim_readme <- reactive({
       req(clim_dir_pth())
+
       if(!file.exists(fs::path(clim_dir_pth(), "climate_data_readme.csv"))){
         stop("The climate folder is missing the required climate_data_readme.csv file",
              call. = FALSE)
@@ -316,26 +343,26 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
 
     observeEvent(doSpatial(), {
 
-      if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/rng_poly.shp",
-                           package = "ccviR")
-      } else {
+      #if (isTRUE(getOption("shiny.testmode"))) {
+      #  pth <- system.file("extdata/rng_poly.shp",
+      #                     package = "ccviR")
+      #} else {
         pth <- file_pths()$range_poly_pth
-      }
+      #}
       range_poly_in(sf::st_read(pth, agr = "constant", quiet = TRUE))
 
     }, ignoreInit = TRUE)
 
 
     observeEvent(doSpatial(), {
-      if (isTRUE(getOption("shiny.testmode"))) {
+      #if (isTRUE(getOption("shiny.testmode"))) {
         # not currently included in package
         # pth <- system.file("extdata/nonbreed_poly.shp",
         #                    package = "ccviR")
+      #  pth <- file_pths()$nonbreed_poly_pth
+      #} else {
         pth <- file_pths()$nonbreed_poly_pth
-      } else {
-        pth <- file_pths()$nonbreed_poly_pth
-      }
+      #}
 
       if(!isTruthy(pth)){
         return(NULL)
@@ -345,16 +372,16 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
 
 
     observeEvent(doSpatial(), {
-      if (isTRUE(getOption("shiny.testmode"))) {
-        sf::st_read(system.file("extdata/assess_poly.shp",
-                                package = "ccviR"),
-                    agr = "constant", quiet = TRUE)
-      } else {
+      #if (isTRUE(getOption("shiny.testmode"))) {
+      #  sf::st_read(system.file("extdata/assess_poly.shp",
+      #                          package = "ccviR"),
+      #              agr = "constant", quiet = TRUE)
+      #} else {
         pol <- sf::st_read(file_pths()$assess_poly_pth,
                            agr = "constant", quiet = TRUE) %>%
           valid_or_error("assessment area polygon")
         assess_poly(pol)
-      }
+      #}
     }, ignoreInit = TRUE)
 
     # use readme to render scenario names for rng chg rasters
@@ -392,18 +419,18 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
 
 
     observeEvent(doSpatial(), {
-      if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/rng_chg_45.tif",
-                           package = "ccviR")
-      } else {
+      #if (isTRUE(getOption("shiny.testmode"))) {
+      #  pth <- system.file("extdata/rng_chg_45.tif",
+      #                     package = "ccviR")
+      #} else {
         pth <- file_pths()[stringr::str_subset(names(file_pths()), "rng_chg_pth")] %>%
           unlist()
         pth <- pth[sort(names(pth))]
-      }
+      #}
 
       if(!isTruthy(pth) || length(pth) == 0){
         hs_rast(NULL)
-      }else {
+      } else {
         names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
         message("loading rng_chg_rasts")
         out <- check_trim(terra::rast(pth))
@@ -414,11 +441,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
 
     observeEvent(doSpatial(), {
 
-      if (isTRUE(getOption("shiny.testmode"))) {
-        pth <- system.file("extdata/PTN_poly.shp", package = "ccviR")
-      } else {
+      #if (isTRUE(getOption("shiny.testmode"))) {
+      #  pth <- system.file("extdata/PTN_poly.shp", package = "ccviR")
+      #} else {
         pth <- file_pths()$ptn_poly_pth
-      }
+      #}
       if(!isTruthy(pth)){
         ptn_poly(NULL)
       } else {
@@ -568,6 +595,22 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session) {
     })
 
     # Return -------------------------------------------------
+    exportTestValues(
+      "spatial_data" = spatial_data(),
+      "index_res" = index_res(),
+      "spatial_details" = list(
+        "spat_res" = spat_res2(),
+        "clim_vars" = clim_vars(),
+        "clim_readme" = clim_readme(),
+        "range_poly" = range_poly(),
+        "range_poly_clim" = range_poly_clim(),
+        "ptn_poly" = ptn_poly(),
+        "nonbreed_poly" = nonbreed_poly(),
+        "assess_poly" = assess_poly(),
+        "hs_rast" = hs_rast(),
+        "hs_rcl_mat" = hs_rcl_mat()
+      ))
+
     list("spatial_data" = spatial_data,
          "index_res" = index_res,
          "spatial_details" = list(

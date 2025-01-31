@@ -1,8 +1,16 @@
 
+#' Test the home module
+#'
+#' @examples
+#' mod_home_test()
+
 mod_home_test <- function() {
   ui <- ui_setup(mod_home_ui(id = "test"))
   server <- function(input, output, session) {
+    shinyOptions("file_dir" = system.file("extdata/", package = "ccviR"))
     volumes <- server_setup()
+    cat(volumes)
+    cat(getwd())
     mod_home_server(id = "test", volumes = volumes)
   }
 
@@ -75,6 +83,7 @@ mod_home_ui <- function(id) {
       br(),
       #load_bookmark_ui("load"),
       shinyFilesButton(ns("loadcsv"), "Select file", "Select file", multiple = FALSE),
+      textOutput(ns("ui_loaded"), inline = TRUE),
       br(),
       br(),
       p("Download column definitions for saved data"),
@@ -115,32 +124,16 @@ mod_home_server <- function(id, volumes, parent_session) {
     shinyFileChoose("loadcsv", root = volumes, input = input,
                     filetypes = "csv")
 
-    # Restore from saved file #=================================================
-    df_loaded <- eventReactive(input$loadcsv, {
-      if(!is.integer(input$loadcsv)){
-        df_in <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
+    # Restore from saved file
+    path <- reactive(parse_path(volumes, input$loadcsv))
 
-        # Check that csv is not empty
-        if(inherits(df_in, "try-error")){
-          message("CSV file is empty, cannot restore from file.")
-          return(FALSE)
+    df_loaded <- reactive(load_previous(path()))
 
-        } else {
-
-          # Check that csv contains the right data
-          if(nrow(df_in) < 1 || !"scenario_name" %in% colnames(df_in)){
-            message("CSV file is invalid, cannot restore from file.")
-            return(FALSE)
-
-          } else {
-
-            #update_restored(df_in, session)
-            return(df_in)
-          }
-        }
-      }
+    output$ui_loaded <- renderText({
+      req(input$loadcsv)
+      req(df_loaded())
+      paste0("Dataset loaded: ", path())
     })
-
 
     output$downloadDefs <- downloadHandler(
       filename = "CCVI_column_definitions_results.csv",
