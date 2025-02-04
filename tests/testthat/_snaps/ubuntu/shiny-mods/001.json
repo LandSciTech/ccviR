@@ -1,0 +1,393 @@
+{
+  "input": {
+    "comsection_c": "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+    "help_section_c": 0,
+    "home-continue": 0,
+    "home-loadcsv": 0,
+    "results-calcIndex": 0,
+    "results-restart": 0,
+    "save-downloadData": 0,
+    "section_a-continue": 0,
+    "section_b-B1": null,
+    "section_b-B2a": null,
+    "section_b-B2b": null,
+    "section_b-B3": null,
+    "section_b-comB1": "",
+    "section_b-comB2a": "",
+    "section_b-comB2b": "",
+    "section_b-comB3": "",
+    "section_b-continue": 0,
+    "section_b-help_B1": 0,
+    "section_b-help_B2a": 0,
+    "section_b-help_B2b": 0,
+    "section_b-help_B3": 0,
+    "section_c": null,
+    "section_c-C1": null,
+    "section_c-C2aii": null,
+    "section_c-C2bi": null,
+    "section_c-C2bii": null,
+    "section_c-C2c": null,
+    "section_c-C2d": null,
+    "section_c-C3": null,
+    "section_c-C4a": null,
+    "section_c-C4b": null,
+    "section_c-C4c": null,
+    "section_c-C4d": null,
+    "section_c-C4e": null,
+    "section_c-C4f": null,
+    "section_c-C4g": null,
+    "section_c-C5a": null,
+    "section_c-C5b": null,
+    "section_c-C6": null,
+    "section_c-comC1": "",
+    "section_c-comC2aii": "",
+    "section_c-comC2bi": "",
+    "section_c-comC2bii": "",
+    "section_c-comC2c": "",
+    "section_c-comC2d": "",
+    "section_c-comC3": "",
+    "section_c-comC4a": "",
+    "section_c-comC4b": "",
+    "section_c-comC4c": "",
+    "section_c-comC4d": "",
+    "section_c-comC4e": "",
+    "section_c-comC4f": "",
+    "section_c-comC4g": "",
+    "section_c-comC5a": "",
+    "section_c-comC5b": "",
+    "section_c-comC6": "",
+    "section_c-continue": 0,
+    "section_c-help_C1": 0,
+    "section_c-help_C2aii": 0,
+    "section_c-help_C2bi": 0,
+    "section_c-help_C2bii": 0,
+    "section_c-help_C2c": 0,
+    "section_c-help_C2d": 0,
+    "section_c-help_C3": 0,
+    "section_c-help_C4a": 0,
+    "section_c-help_C4b": 0,
+    "section_c-help_C4c": 0,
+    "section_c-help_C4d": 0,
+    "section_c-help_C4e": 0,
+    "section_c-help_C4f": 0,
+    "section_c-help_C4g": 0,
+    "section_c-help_C5a": 0,
+    "section_c-help_C5b": 0,
+    "section_c-help_C6": 0,
+    "section_d-D1": null,
+    "section_d-D4": null,
+    "section_d-comD1": "",
+    "section_d-comD4": "",
+    "section_d-continue": 0,
+    "section_d-help_D1": 0,
+    "section_d-help_D2": 0,
+    "section_d-help_D3": 0,
+    "section_d-help_D4": 0,
+    "spatial-assess_poly_pth": 0,
+    "spatial-assess_poly_pth_clear": 0,
+    "spatial-clim_var_dir": 0,
+    "spatial-clim_var_dir_clear": 0,
+    "spatial-continue": 0,
+    "spatial-gain_from": 1,
+    "spatial-gain_mod": 1,
+    "spatial-gain_mod_comm": "",
+    "spatial-gain_to": 1,
+    "spatial-hidden": "",
+    "spatial-lost_from": -1,
+    "spatial-lost_to": -1,
+    "spatial-maint_from": 0,
+    "spatial-maint_to": 0,
+    "spatial-nonbreed_poly_pth": 0,
+    "spatial-nonbreed_poly_pth_clear": 0,
+    "spatial-ns_from": 99,
+    "spatial-ns_to": 99,
+    "spatial-ptn_poly_pth": 0,
+    "spatial-ptn_poly_pth_clear": 0,
+    "spatial-range_poly_pth": 0,
+    "spatial-range_poly_pth_clear": 0,
+    "spatial-rng_chg_used": "no",
+    "spatial-startSpatial": 0,
+    "species-assessor_name": "",
+    "species-cave": false,
+    "species-common_name": "",
+    "species-continue": 0,
+    "species-geo_location": "",
+    "species-mig": false,
+    "species-species_name": "",
+    "species-tax_grp": "Vascular Plant",
+    "tabset": "Welcome"
+  },
+  "output": {
+    "home-ui_loaded": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "results-calcFlag": false,
+    "section_c-box_C2ai": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "section_c-box_C2aii": {
+      "html": "<div id=\"section_c-C2aiidiv\">\n  <div class=\"row\">\n    <div class=\"col-sm-9\">\n      <div id=\"section_c-C2aii\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2aii-label\">\n        <label class=\"control-label\" id=\"section_c-C2aii-label\" for=\"section_c-C2aii\">Calculated effect on vulnerability.<\/label>\n        <div class=\"shiny-options-group\">\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"3\"/>\n            <span>Greatly increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"2\"/>\n            <span>Increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"1\"/>\n            <span>Somewhat increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"0\"/>\n            <span>Neutral<\/span>\n          <\/label>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div class=\"col-sm-1\">\n      <button id=\"section_c-help_C2aii\" type=\"button\" class=\"btn btn-default action-button\">\n        <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n        \n      <\/button>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"section_c-comC2aii\" id=\"section_c-comC2aii-label\"><\/label>\n    <textarea id=\"section_c-comC2aii\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_c-box_C2bi": {
+      "html": "<div id=\"section_c-C2bidiv\">\n  <div class=\"row\">\n    <div class=\"col-sm-9\">\n      <div id=\"section_c-C2bi\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2bi-label\">\n        <label class=\"control-label\" id=\"section_c-C2bi-label\" for=\"section_c-C2bi\">Calculated effect on vulnerability.<\/label>\n        <div class=\"shiny-options-group\">\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"3\"/>\n            <span>Greatly increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"2\"/>\n            <span>Increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"1\"/>\n            <span>Somewhat increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"0\"/>\n            <span>Neutral<\/span>\n          <\/label>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div class=\"col-sm-1\">\n      <button id=\"section_c-help_C2bi\" type=\"button\" class=\"btn btn-default action-button\">\n        <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n        \n      <\/button>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"section_c-comC2bi\" id=\"section_c-comC2bi-label\"><\/label>\n    <textarea id=\"section_c-comC2bi\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_d-box_D2": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "section_d-box_D3": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    }
+  },
+  "export": {
+    "save-out_data": {
+      "start": {
+        "species_name": [
+          ""
+        ],
+        "common_name": [
+          ""
+        ],
+        "geo_location": [
+          ""
+        ],
+        "assessor_name": [
+          ""
+        ],
+        "tax_grp": [
+          "Vascular Plant"
+        ],
+        "mig": [
+          false
+        ],
+        "cave": [
+          false
+        ],
+        "B1": [
+          "-1"
+        ],
+        "B2a": [
+          "-1"
+        ],
+        "B2b": [
+          "-1"
+        ],
+        "B3": [
+          "-1"
+        ],
+        "C1": [
+          "-1"
+        ],
+        "C2aii": [
+          "-1"
+        ],
+        "C2bi": [
+          "-1"
+        ],
+        "C2bii": [
+          "-1"
+        ],
+        "C2c": [
+          "-1"
+        ],
+        "C2d": [
+          "-1"
+        ],
+        "C3": [
+          "-1"
+        ],
+        "C4a": [
+          "-1"
+        ],
+        "C4b": [
+          "-1"
+        ],
+        "C4c": [
+          "-1"
+        ],
+        "C4d": [
+          "-1"
+        ],
+        "C4e": [
+          "-1"
+        ],
+        "C4f": [
+          "-1"
+        ],
+        "C4g": [
+          "-1"
+        ],
+        "C5a": [
+          "-1"
+        ],
+        "C5b": [
+          "-1"
+        ],
+        "C6": [
+          "-1"
+        ],
+        "D1": [
+          "-1"
+        ],
+        "D4": [
+          "-1"
+        ],
+        "com_B1": [
+          ""
+        ],
+        "com_B2a": [
+          ""
+        ],
+        "com_B2b": [
+          ""
+        ],
+        "com_B3": [
+          ""
+        ],
+        "com_C1": [
+          ""
+        ],
+        "com_C2aii": [
+          ""
+        ],
+        "com_C2bi": [
+          ""
+        ],
+        "com_C2bii": [
+          ""
+        ],
+        "com_C2c": [
+          ""
+        ],
+        "com_C2d": [
+          ""
+        ],
+        "com_C3": [
+          ""
+        ],
+        "com_C4a": [
+          ""
+        ],
+        "com_C4b": [
+          ""
+        ],
+        "com_C4c": [
+          ""
+        ],
+        "com_C4d": [
+          ""
+        ],
+        "com_C4e": [
+          ""
+        ],
+        "com_C4f": [
+          ""
+        ],
+        "com_C4g": [
+          ""
+        ],
+        "com_C5a": [
+          ""
+        ],
+        "com_C5b": [
+          ""
+        ],
+        "com_C6": [
+          ""
+        ],
+        "com_D1": [
+          ""
+        ],
+        "com_D4": [
+          ""
+        ],
+        "ccviR_version": [
+          [
+            0,
+            1,
+            1
+          ]
+        ]
+      }
+    },
+    "species-cave": false,
+    "species-species_data": {
+      "species_name": [
+        ""
+      ],
+      "common_name": [
+        ""
+      ],
+      "geo_location": [
+        ""
+      ],
+      "assessor_name": [
+        ""
+      ],
+      "tax_grp": [
+        "Vascular Plant"
+      ],
+      "mig": [
+        false
+      ],
+      "cave": [
+        false
+      ]
+    }
+  }
+}

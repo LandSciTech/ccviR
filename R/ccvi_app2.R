@@ -10,7 +10,7 @@
 #'
 #' @importFrom rlang .env
 
-ccvi_app2 <- function(testmode_in, ...){
+ccvi_app2 <- function(input_files = NULL, ...){
 
   # MOVED TO lookup_tbls.R so available to all functions
   # Input options
@@ -49,7 +49,8 @@ ccvi_app2 <- function(testmode_in, ...){
       id = "spatial", volumes,
       df_loaded = restore$df_loaded,
       cave = sp$cave,
-      parent_session = session)
+      parent_session = session,
+      input_files = input_files)
 
     mod_A_server(
       id = "section_a",
