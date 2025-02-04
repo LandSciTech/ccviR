@@ -70,6 +70,8 @@ mod_results_ui <- function(id) {
             "See the plot above for more details on combining the scores."),
           plotly::plotlyOutput(ns("q_score_plt"), height = "500px")
         ),
+        h3("Types of evidence used"),
+        plotOutput(ns("plot_evidence"), width = 600, height = 300),
         br(),
         br(),
         actionButton(ns("restart"), "Assess another species",
@@ -162,7 +164,8 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
     output$calcFlag <- reactive(isTruthy(index_res()))
     outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
 
-    # Output results ----------------------------------
+
+    # Plots and Tables ----------------------------------
 
     ## Data completeness
     output$n_factors <- gt::render_gt({
@@ -217,6 +220,12 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
         select("scenario_name", "vuln_df") %>%
         tidyr::unnest(.data$vuln_df) %>%
         plot_q_score()
+    })
+
+    ## Summary of data evidence
+    output$plot_evidence <- renderPlot({
+      evidence <- bind_elements(questions, type = "evidence")
+      plot_evidence(evidence)
     })
 
 
