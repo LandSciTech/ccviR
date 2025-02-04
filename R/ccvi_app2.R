@@ -17,12 +17,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
   #valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
   #valueOpts <- c(3, 2, 1, 0)
 
-  # set theme
-  my_theme <- ggplot2::theme_classic() +
-    ggplot2::theme(text = ggplot2::element_text(size = 12),
-          strip.background = ggplot2::element_blank())
 
-  ggplot2::theme_set(my_theme)
 
   ui <- ui_setup(
     mod_home_ui(id = "home"),

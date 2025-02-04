@@ -110,6 +110,7 @@ plot_q_score <- function(vuln_df){
           ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip,
                        fill = .data$section)
         )+
+          ccvir_gg_theme() +
           # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
           ggplot2::geom_point(size = 0.1, color = "grey35")+
           ggplot2::geom_col(color = "grey35")+

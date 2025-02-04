@@ -43,7 +43,7 @@
 #'
 #' plot_score_index(index_vuln)
 #'
-plot_score_index <- function(score_df){
+plot_score_index <- function(score_df) {
   # if b_c is IE no plot if d is IE set to 0 but still plot
   if(all(score_df$n_b_factors < 3)||all(score_df$n_c_factors < 10)){
     return(NULL)
@@ -86,7 +86,8 @@ plot_score_index <- function(score_df){
     shp_vals <- good_shapes[1:nrow(score_pt)]
   }
 
-  ggplot2::ggplot(score_tbl, ggplot2::aes(.data$b_c_score, .data$d_score, fill = .data$index))+
+  ggplot2::ggplot(score_tbl, ggplot2::aes(.data$b_c_score, .data$d_score, fill = .data$index)) +
+    ccvir_gg_theme() +
     ggplot2::geom_raster(alpha = 0.6, hjust = 0, vjust = 0.9)+
     ggplot2::coord_cartesian(xlim = c(-0.5, score_lim$b_c_score_lim),
                          ylim = c(-1.25, score_lim$d_score_lim), clip = "on")+
