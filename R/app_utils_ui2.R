@@ -28,6 +28,10 @@ get_file_ui2 <- function(id, ui_id, title, mandatory = FALSE, type = "file",
   )
 }
 
+updateGet_file_ui2 <- function(inputId, value, ...){
+  NULL
+}
+
 from_to_ui2 <- function(id, ui_id, header, vals){
   tagList(
     strong(header),
@@ -35,11 +39,31 @@ from_to_ui2 <- function(id, ui_id, header, vals){
     tags$div(numericInput(NS(id, paste0(ui_id, "_to")), "To", vals[2]), style="display:inline-block"),
     br()
   )
+}
 
+updateFrom_to_ui2 <- function(inputId, value, session){
+  vals <- as.integer(unlist(strsplit(value,",")))
+  updateNumericInput(session = session, paste0(inputId, "_from"), value = vals[1])
+  updateNumericInput(session = session, paste0(inputId, "_to"), value = vals[2])
 }
 
 
-check_comment_ui2 <- function(id, ui_id, label, com = "", guide = TRUE, ...){
+#' Add Question inputs
+#'
+#' Adds a Question input with (optionally) a help button, comment box, as well
+#' as input for "type of evidence".
+#'
+#' @param id Character. Id of the Shiny Module.
+#' @param ui_id Character. Identifier for this group of inputs.
+#' @param label Character. Question label.
+#' @param com Character. Previous comment value.
+#' @param evi Character. Previous evidence value.
+#' @param guide Logical. Whether or not to include a help or info button.
+#' @param ... Arguments passed on to `checkboxGroupInput()`.
+#'
+#' @noRd
+
+check_comment_ui2 <- function(id, ui_id, label, com = "", evi = "", guide = TRUE, ...){
   if(guide){
     chkbxIn <- fluidRow(
       column(9, checkboxGroupInput(NS(id, ui_id), label, inline = TRUE, ...)),
@@ -52,10 +76,31 @@ check_comment_ui2 <- function(id, ui_id, label, com = "", guide = TRUE, ...){
   div(id = NS(id, paste0(ui_id, "div")),
       chkbxIn,
       #decrease whitespace b/w elements
-      div(style = "margin-top: -1.5em"),
-      textAreaInput(NS(id, paste0("com", ui_id)), label = NULL, placeholder = "Comments",
-                    value = com)
+      div(style = "margin-top: -1.5em",
+          # TODO: Finalize evidence types
+
+          selectInput(NS(id, paste0("evi", ui_id)), label = NULL,
+                      choices = c("Type of Evidence" = "",
+                                  "Literature",
+                                  "Expert Opinion",
+                                  "Spatial Analysis",
+                                  "Spatial Analysis - ccviR", "Other"),
+                      selected = evi),
+      div(style = "margin-top: -1em",
+          textAreaInput(NS(id, paste0("com", ui_id)), label = NULL, placeholder = "Comments",
+                        value = com))
+      )
   )
+
+}
+
+updateCheck_comment_ui2 <- function(inputId, value, com, evi, session) {
+  updateCheckboxGroupInput(session = session, inputId = inputId,
+                           selected = as.integer(unlist(strsplit(value,","))))
+  updateSelectInput(session = session, inputId = paste0("evi", inputId),
+                    selected = if_else(is.na(evi), "", evi))
+  updateTextAreaInput(session = session, inputId = paste0("com", inputId),
+                      value = if_else(is.na(com), "", com))
 }
 
 
@@ -77,4 +122,11 @@ spat_vuln_ui2 <- function(id, ui_id, header = NULL, vuln_q_nm = NULL, chk_box = 
       uiOutput(NS(id, paste0("box_", ui_id)))
     }
   ))
+}
+
+updateSpat_vuln_ui2 <- function(inputId, value, com, evi, session){
+  # Could the spat_res object be recreated from the file...? If yes wouldn't
+  # need to do this...except for the comment so probably better it comes from
+  # the file rather than the spat_res object in case it has been changed.
+  updateCheck_comment_ui2(inputId, value, com, evi, session)
 }

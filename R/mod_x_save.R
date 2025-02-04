@@ -26,7 +26,6 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
     # Make out_data #========================================================
     out_data_lst <- reactiveValues()
 
-
     observe({
       out_data_lst$start <- bind_cols(
         species_data(),
@@ -51,7 +50,7 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
           filename <- paste0(filename, ".csv")
         }
         saveAttempt <- tryCatch({
-          write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
+          write.csv(combine_outdata2(reactiveValuesToList(out_data_lst)), filename,
                     row.names = FALSE)},
           error = function(e){
             showModal(modalDialog(
@@ -84,7 +83,7 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
                         "_")
       file_nm <- tempfile(pattern = file_nm, fileext = ".csv")
       isolate(
-        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)),
+        write.csv(combine_outdata2(reactiveValuesToList(out_data_lst)),
                   file_nm,
                   row.names = FALSE)
       )

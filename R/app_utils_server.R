@@ -473,5 +473,17 @@ collect_questions <- function(input) {
   c <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*") %>%
     purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "com"),
                               com = input[[.x]]))
-  list("questions" = q, "comments" = c)
+
+  e <- stringr::str_subset(names(input), "^evi[B,C,D]\\d.*") %>%
+    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "evi"),
+                              evi = input[[.x]]))
+
+  list("questions" = q, "comments" = c, "evidence" = e)
 }
+
+bind_elements <- function(questions, type) {
+  questions %>%
+    purrr::map(~.x()[[type]]) %>%
+    purrr::list_rbind()
+}
+

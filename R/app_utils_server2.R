@@ -38,17 +38,22 @@ update_restored2 <- function(df, session, section = NULL){
 
   # Catch comments
   df_coms <- df %>%
-    select(matches("^com_")) %>%
-    tidyr::pivot_longer(everything(), names_to = "input",
-                        names_prefix = "com_",
-                        values_to = "comment",
+    select(matches("^(com|evi)_")) %>%
+    distinct() %>%
+    tidyr::pivot_longer(everything(), names_to = c("type", "input"),
+                        names_pattern = "(com|evi)_(.+)",
+                        values_to = "value",
                         values_transform = as.character) %>%
-    mutate(comment = ifelse(is.na(comment), "", comment)) %>%
-    distinct()
+    tidyr::pivot_wider(names_from = "type", values_from = "value") %>%
+    # Rename/Mutates like the following won't fail if evidence column doesn't exist
+    rename_with(~stringr::str_replace_all(
+      .x, c("com" = "comment", "evi" = "evidence"))) %>%
+    mutate(across(any_of(c("comment", "evidence")), ~tidyr::replace_na(.x, "")))
+  if(!"evidence" %in% names(df_coms)) df_coms$evidence <- ""
 
   # Catch input values
   df2 <- df %>%
-    select(-matches("^com_")) %>%
+    select(-matches("^(com|evi)_")) %>%
     tidyr::pivot_longer(everything(), names_to = "input",
                         values_to = "value",
                         values_transform = as.character) %>%
@@ -67,21 +72,44 @@ update_restored2 <- function(df, session, section = NULL){
       value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
                      "", .data$value)) %>%
     rowwise() %>%
+    # TODO: Get rid of this when merging all versions
+    mutate(update_fun = if_else(stringr::str_detect(update_fun, "_"),
+                                paste0(update_fun, "2"), update_fun)) %>%
     mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
 
   # this is used as a trigger to skip running spatial until after returning to
   # UI so that input is updated with values from csv
   updateTextInput(session, inputId = "hidden", value = "yes")
 
-  # Catch both "spatilal" and "spatial_range_change" in "spatial" .env$section
+  # Catch both "spatial" and "spatial_range_change" in "spatial" .env$section
   df2 <- filter(df2, stringr::str_detect(.data$section, .env$section))
   df2 <- select(df2, -"section")
 
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
 
-  purrr::pwalk(df2, update_call, session = session)
+  purrr::pwalk(df2, update_call2, session = session)
 }
+
+# build the call to update function from the inputs
+update_call2 <- function(input, update_fun, value, arg_name, comment, evidence, session){
+  update_fun <- get(update_fun)
+
+  if(!is.na(comment)){
+    if(arg_name == "value"){
+      update_fun(session = session, inputId = input, value = value, com = comment, evi = evidence)
+    }
+  } else {
+    if(arg_name == "value"){
+      value <- ifelse(value == "TRUE", TRUE, value)
+      value <- ifelse(value == "FALSE", FALSE, value)
+      update_fun(session = session, inputId = input, value = value)
+    } else if(arg_name == "selected"){
+      update_fun(session = session, inputId = input, selected = value)
+    }
+  }
+}
+
 
 
 spat_vuln_hide2 <- function(id, spatial, values) {
@@ -120,12 +148,17 @@ spat_vuln_hide2 <- function(id, spatial, values) {
 
 render_spat_vuln_box2 <- function(id, ui_id, spat_df, input) {
   com_id <- NS(id, paste0("com", ui_id))
-  # get previous comment
+  evi_id <- NS(id, paste0("evi", ui_id))
+
+  # get previous comment/evidence
   prevCom <- isolate(input[[com_id]])
   prevCom <- ifelse(is.null(prevCom), "", prevCom)
+  prevEvi <- isolate(input[[evi_id]])
+  prevEvi <- ifelse(is.null(prevEvi), "", prevEvi)
 
   if(isTruthy(spat_df)){
     box_val <- spat_df[[ui_id]] %>% unique()
+    if(prevEvi == "") prevEvi <- "Spatial Analysis - ccviR"
   } else {
     box_val <- NULL
   }
@@ -134,13 +167,14 @@ render_spat_vuln_box2 <- function(id, ui_id, spat_df, input) {
                     choiceNames = valueNms,
                     choiceValues = valueOpts,
                     selected = box_val,
-                    com = prevCom)
+                    com = prevCom, evi = prevEvi)
 }
 
 
 widen_vuln_coms2 <- function(questions) {
 
   comments <- bind_elements(questions, "comments")
+  evidence <- bind_elements(questions, "evidence")
 
   vuln_df <- bind_elements(questions, "questions") %>%
     select("Code", matches("Value\\d")) %>%
@@ -149,16 +183,60 @@ widen_vuln_coms2 <- function(questions) {
     mutate_all(as.character) %>%
     tidyr::unite("Value", .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
     left_join(comments, by = "Code") %>%
+    left_join(evidence, by = "Code") %>%
     tidyr::pivot_wider(names_from = "Code",
-                       values_from = c("com","Value")) %>%
+                       values_from = c("com", "evi", "Value")) %>%
     rename_all(~stringr::str_remove(.x, "Value_"))
-
 
   select(vuln_df, order(colnames(vuln_df)))
 }
 
-bind_elements <- function(questions, type) {
-  questions %>%
-    purrr::map(~.x()[[type]]) %>%
-    purrr::list_rbind()
+
+
+combine_outdata2 <- function(out_data_lst){
+  if(!is.null(out_data_lst$index)){
+    out_data_lst$start <- out_data_lst$start %>%
+      select(-any_of(colnames(out_data_lst$index)))
+    out_data_lst$spat <- out_data_lst$spat %>%
+      select(-any_of(colnames(out_data_lst$index)), -any_of(colnames(out_data_lst$start)))
+  }
+
+  exp_cols <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
+                                          package = "ccviR"))
+  exp_nms <- exp_cols %>% filter(.data$Column.Name != "") %>%
+    rowwise() %>%
+    mutate(names_exp = case_when(
+      stringr::str_detect(.data$Column.Name, "HTN|CCEI") ~
+        paste0(stringr::str_remove(Column.Name, "#"), 1:4, collapse = ","),
+      stringr::str_detect(.data$Column.Name, "MAT|CMD") ~
+        paste0(stringr::str_remove(Column.Name, "#"), 1:6, collapse = ","),
+      stringr::str_detect(.data$Column.Name, "HTN|CCEI") ~
+        paste0(stringr::str_remove(Column.Name, "#"), 1:4, collapse = ","),
+      stringr::str_detect(.data$Column.Name, "MC_freq") ~
+        paste0(stringr::str_remove(.data$Column.Name, "\\*"),
+               c("EV", "HV", "MV", "LV", "IE"), collapse = ","),
+      stringr::str_detect(.data$Column.Name, "^[B,C,D]\\d.*") ~
+        paste0("evi_", .data$Column.Name, ",", "com_", .data$Column.Name, ",", .data$Column.Name),
+      stringr::str_detect(.data$Column.Name, "MAP") ~
+        paste0(stringr::str_remove(.data$Column.Name, "max/min"), c("max", "min"), collapse = ","),
+      TRUE ~ .data$Column.Name
+    )) %>%
+    tidyr::separate_rows(.data$names_exp, sep = ",") %>%
+    pull(.data$names_exp)
+
+  out_dat <- bind_cols(out_data_lst) %>%
+    select(any_of(exp_nms), contains("rng_chg_pth"))
+
+  # add in missing column names
+  add_nms <- setdiff(exp_nms, colnames(out_dat))
+  if(length(add_nms) > 0){
+    template <- rep("", length.out = length(add_nms))
+    names(template) <- add_nms
+    template <- as.data.frame(as.list(template))
+
+    out_dat <- out_dat %>% bind_rows(template) %>%
+      slice(-n())
+  }
+
+  return(out_dat)
 }
