@@ -78,13 +78,8 @@ check_comment_ui2 <- function(id, ui_id, label, com = "", evi = "", guide = TRUE
       #decrease whitespace b/w elements
       div(style = "margin-top: -1.5em",
           # TODO: Finalize evidence types
-
           selectInput(NS(id, paste0("evi", ui_id)), label = NULL,
-                      choices = c("Type of Evidence" = "",
-                                  "Literature",
-                                  "Expert Opinion",
-                                  "Spatial Analysis",
-                                  "Spatial Analysis - ccviR", "Other"),
+                      choices = c("Type of Evidence" = "", valueEvi),
                       selected = evi),
       div(style = "margin-top: -1em",
           textAreaInput(NS(id, paste0("com", ui_id)), label = NULL, placeholder = "Comments",

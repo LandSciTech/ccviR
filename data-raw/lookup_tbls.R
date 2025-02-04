@@ -49,7 +49,12 @@ guideline_lu_tbl <- read.csv("data-raw/guideline_lu_tbl.csv")
 valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
 valueOpts <- c(3, 2, 1, 0)
 
+# Evidence Options
+# TODO: Finalize which ones to use
+valueEvi <- c("Literature", "Expert Opinion", "Spatial Analysis",
+              "Spatial Analysis - ccviR", "Other")
+
 # need to include all object for internal because they are saved together.
 usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, guideline_lu_tbl,
-                  valueNms, valueOpts,
+                  valueNms, valueOpts, valueEvi,
                   overwrite = TRUE, internal = TRUE)
