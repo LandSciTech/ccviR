@@ -84,12 +84,11 @@ mod_results_ui <- function(id) {
   )
 }
 
-mod_results_server <- function(id, species_data, spatial_details, index_res,
-                               questions) {
+mod_results_server <- function(id, df_loaded, species_data, spatial_details, questions) {
 
+  stopifnot(is.reactive(df_loaded))
   stopifnot(is.reactive(species_data))
   purrr::map(spatial_details, ~stopifnot(is.reactive(.x)))
-  stopifnot(is.reactive(index_res))
   purrr::map(questions, ~stopifnot(is.reactive(.x)))
 
   # Split up reactives
@@ -102,6 +101,14 @@ mod_results_server <- function(id, species_data, spatial_details, index_res,
   moduleServer(id, function(input, output, session) {
 
     ns <- session$ns
+
+    # Setup --------------------
+    index_res <- reactiveVal(FALSE)
+
+    # Restore data ----------------
+    observeEvent(df_loaded(), {
+      index_res(recreate_index_res(df_loaded()))
+    })
 
     # Calculate Index value #================================
 

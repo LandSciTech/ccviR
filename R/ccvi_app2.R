@@ -76,9 +76,9 @@ ccvi_app2 <- function(input_files = NULL, ...){
 
     index <- mod_results_server(
       id = "results",
+      df_loaded = restore$df_loaded,
       species_data = sp$species_data,
       spatial_details = spatial$spatial_details,
-      index_res = spatial$index_res,
       questions = c(b, c, d)
     )
 

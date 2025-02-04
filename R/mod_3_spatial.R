@@ -135,7 +135,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     ptn_poly <- reactiveVal()
     hs_rcl_mat <- reactiveVal()
 
-    index_res <- reactiveVal(FALSE)
     spat_res <- reactiveVal(FALSE)
     spat_res2 <- reactiveVal(FALSE)
     doSpatial <- reactiveVal(0)
@@ -214,8 +213,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
           showNotification("Re-running spatial analysis from loaded file.",
                            duration = NULL, id = ns("spat_restore_note"))
         }
-
-        index_res(recreate_index_res(df_loaded))
 
         loaded_pths <- df_loaded %>%
           slice(1) %>%
@@ -585,7 +582,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # # Return -------------------------------------------------
     # exportTestValues(
     #   "spatial_data" = spatial_data(),
-    #   "index_res" = index_res(),
     #   "spatial_details" = list(
     #     "spat_res" = spat_res2(),
     #     "clim_vars" = clim_vars(),
@@ -600,7 +596,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     #   ))
 
     list("spatial_data" = spatial_data,
-         "index_res" = index_res,
          "spatial_details" = list(
            "spat_res" = spat_res2,
            "clim_vars" = clim_vars,
