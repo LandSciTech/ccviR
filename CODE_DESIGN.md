@@ -97,4 +97,6 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
 - shinyFiles is a pain to test (because it uses actionButtons, which shinytest2
   insists can only be 'clicked' not set to file values), so we don't test the
   actual loading directly.
-
+- Clicking on modal buttons: https://github.com/rstudio/shinytest/issues/227
+- comments about "shiny.testmode" being set are almost always red herrings and
+  point out a general error in the app.

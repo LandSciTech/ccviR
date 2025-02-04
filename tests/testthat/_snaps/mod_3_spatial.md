@@ -6,7 +6,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "gain_mod", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "clim_dir_pth"]
+          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "gain_mod", "lost", "maint", "gain", "ns", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "range_poly_pth", "assess_poly_pth", "ptn_poly_pth", "rng_chg_pths", "clim_dir_pth"]
         },
         "class": {
           "type": "character",
@@ -188,11 +188,6 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["multiple", "multiple"]
-        },
-        {
-          "type": "character",
-          "attributes": {},
           "value": ["AdaptWest 15 CMIP5 AOGCM Ensemble", "AdaptWest 15 CMIP5 AOGCM Ensemble"]
         },
         {
@@ -223,11 +218,6 @@
         {
           "type": "character",
           "attributes": {},
-          "value": [null, null]
-        },
-        {
-          "type": "character",
-          "attributes": {},
           "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp"]
         },
         {
@@ -239,11 +229,6 @@
           "type": "character",
           "attributes": {},
           "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_45.tif", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_45.tif"]
-        },
-        {
-          "type": "character",
-          "attributes": {},
-          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif"]
         },
         {
           "type": "character",

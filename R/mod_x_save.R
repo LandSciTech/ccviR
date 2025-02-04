@@ -38,8 +38,8 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
     observe(out_data_lst$index <- index())
 
 
-    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst),
-                     doSpatial = doSpatial())
+    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
+                     #doSpatial = doSpatial())
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")

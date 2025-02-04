@@ -6,7 +6,7 @@ test_that("Species Fills in previous data", {
   app <- AppDriver$new(shiny_app)
 
   #app$set_window_size(width = 1304, height = 718)
-  #app$expect_values(screenshot_args = FALSE)
+  app$expect_values(screenshot_args = FALSE)
   vals <- app$get_values()
   app$stop()
 

@@ -6,12 +6,14 @@
 #' mod_species_test()
 
 mod_species_test <- function(df_loaded = TRUE) {
+
   ui <- ui_setup(mod_species_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 
+    volumes <- server_setup()
     if(df_loaded) {
-      df_loaded <- parse_path(server_setup(), test_files("test_files/test_final.csv")) %>%
+      df_loaded <- parse_path(volumes, test_files("test_files/test_final.csv")) %>%
         load_previous() %>%
         reactive()
     } else df_loaded <- reactive(NULL)
