@@ -4,7 +4,7 @@
 #' @noRd
 #' @examples
 #' mod_spatial_test()
-#' mod_spatial_test(df_loaded = FALSE)
+#' mod_spatial_test(df_loaded = TRUE)
 
 mod_spatial_test <- function(df_loaded = FALSE, input_files = test_files()) {
 
@@ -14,7 +14,7 @@ mod_spatial_test <- function(df_loaded = FALSE, input_files = test_files()) {
 
     volumes <- server_setup()
     if(df_loaded) {
-      df_loaded <- test_files()$saved_final %>%
+      df_loaded <- test_files()$saved$final %>%
         load_previous() %>%
         reactive()
     } else df_loaded <- reactive(NULL)

@@ -1,3 +1,4 @@
+
 mod_results_ui <- function(id) {
 
   ns <- NS(id)
@@ -130,6 +131,7 @@ mod_results_server <- function(id, species_data, spatial_details, index_res,
     output$species_name <- renderText(species_data()$species_name)
 
 
+    # Scenario Dials -------------------
     # insert index dials for each scenario
     scenarios <- reactive({
       req(index_res())
@@ -153,6 +155,9 @@ mod_results_server <- function(id, species_data, spatial_details, index_res,
     output$calcFlag <- reactive(isTruthy(index_res()))
     outputOptions(output, "calcFlag", suspendWhenHidden = FALSE)
 
+    # Output results ----------------------------------
+
+    ## Data completeness
     output$n_factors <- gt::render_gt({
       facts <- index_res() %>% distinct(across(contains("factors")))
       tibble(Section = c("Section B: Indirect Exposure to Climate Change",
@@ -185,9 +190,8 @@ mod_results_server <- function(id, species_data, spatial_details, index_res,
              "sea levels and has significant dispersal barriers")
     })
 
-    output$ind_score_plt <- renderPlot({
-      plot_score_index(index_res())
-    })
+
+    ## Plot of variation in Index
 
     #output$conf_index <- renderText(index_res()$conf_index)
     output$conf_graph <- renderPlot({
@@ -195,6 +199,12 @@ mod_results_server <- function(id, species_data, spatial_details, index_res,
 
     })
 
+    ## Plot comparison of thresholds and results
+    output$ind_score_plt <- renderPlot({
+      plot_score_index(index_res())
+    })
+
+    ## Plot of individual questions
     output$q_score_plt <- plotly::renderPlotly({
       index_res() %>%
         select("scenario_name", "vuln_df") %>%
@@ -208,7 +218,7 @@ mod_results_server <- function(id, species_data, spatial_details, index_res,
     #  shinyjs::runcodeServer()
 
 
-
+    # Report download -------------------------------------------------------
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
       filename = "report.pdf",

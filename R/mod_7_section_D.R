@@ -1,3 +1,28 @@
+#' Test the D Questions module
+#'
+#' @noRd
+#' @examples
+#' mod_D_test()
+#' mod_D_test(df_loaded = FALSE)
+
+mod_D_test <- function(df_loaded = TRUE, spatial_details = NULL) {
+
+  ui <- ui_setup(mod_D_ui(id = "test"))
+  server <- function(input, output, session) {
+    shinyOptions("file_dir" = "inst/extdata/")
+
+    if(df_loaded) {
+      df_loaded <- test_files()$saved$final %>%
+        load_previous() %>%
+        reactive()
+    } else df_loaded <- reactive(NULL)
+
+    mod_D_server(id = "test", df_loaded, spatial_details, parent_session = session)
+  }
+
+  shinyApp(ui, server)
+}
+
 mod_D_ui <- function(id) {
 
   ns <- NS(id)

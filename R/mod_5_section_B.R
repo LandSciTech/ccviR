@@ -1,3 +1,29 @@
+
+#' Test the B Questions module
+#'
+#' @noRd
+#' @examples
+#' mod_B_test()
+#' mod_B_test(df_loaded = FALSE)
+
+mod_B_test <- function(df_loaded = TRUE) {
+
+  ui <- ui_setup(mod_B_ui(id = "test"))
+  server <- function(input, output, session) {
+    shinyOptions("file_dir" = "inst/extdata/")
+
+    if(df_loaded) {
+      df_loaded <- test_files()$saved$final %>%
+        load_previous() %>%
+        reactive()
+    } else df_loaded <- reactive(NULL)
+
+    mod_B_server(id = "test", df_loaded, parent_session = session)
+  }
+
+  shinyApp(ui, server)
+}
+
 mod_B_ui <- function(id) {
 
   ns <- NS(id)
@@ -57,10 +83,6 @@ mod_B_server <- function(id, df_loaded, parent_session) {
     # Restore data ----------------
     observeEvent(df_loaded(), {
       update_restored2(df_loaded(), section = "vuln_qs", session)
-    })
-
-    output$test <- renderText({
-      input$B2b
     })
 
     # Return -------------------------------------------------

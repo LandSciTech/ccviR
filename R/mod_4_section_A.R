@@ -1,3 +1,20 @@
+
+#' Test the spatial module
+#'
+#' @noRd
+#' @examples
+#' mod_A_test()
+
+mod_A_test <- function(spatial_details) {
+
+  ui <- ui_setup(mod_A_ui(id = "test"))
+  server <- function(input, output, session) {
+    mod_A_server(id = "test", spatial_details, parent_session = session)
+  }
+
+  shinyApp(ui, server)
+}
+
 mod_A_ui <- function(id) {
 
   ns <- NS(id)
