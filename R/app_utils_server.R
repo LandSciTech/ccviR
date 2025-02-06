@@ -487,3 +487,52 @@ bind_elements <- function(questions, type) {
     purrr::list_rbind()
 }
 
+
+#' Check and load spatial vector data
+#'
+#' @noRd
+
+read_poly <- function(pth, req = FALSE) {
+
+  if(!req & !isTruthy(pth)) return(NULL) # If it can be NULL and is null, return NULL
+
+  if(req) validate(need(isTruthy(pth), "Must provide spatial data file"))
+  validate(need(fs::file_exists(pth), "File does not exist"))
+  s <- try(sf::st_read(pth, agr = "constant", quiet = TRUE), silent = TRUE)
+  validate(need(
+    !inherits(s, "try-error"),
+    "Error reading file. Are you sure this is a valid spatial file?"))
+
+  valid_or_error(s)
+}
+
+#' Check and load spatial raster data
+#'
+#' @noRd
+read_raster <- function(pth, scn_nms, req = FALSE) {
+
+  if(!req & is.null(pth)) return(NULL) # If it can be NULL and is null, return NULL
+
+  if(is.list(pth)) {
+    pth <- unlist(pth)
+    pth <- pth[sort(names(pth))]
+  }
+
+  names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
+
+  t <- try({
+    pth %>%
+      terra::rast() %>%
+      check_trim()
+  }, silent = TRUE)
+  validate(need(!inherits(t, "try-error"), "Cannot open this(these) file(s) as SpatRaster"))
+  t
+}
+
+
+is_ready <- function(reactive) {
+  tryCatch({
+    reactive
+    TRUE
+  }, error = function(cond) FALSE)
+}

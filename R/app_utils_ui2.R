@@ -7,8 +7,9 @@ get_file_ui2 <- function(id, ui_id, title, mandatory = FALSE, type = "file",
   label <- span(title2, subtitle)
 
   text_out <- verbatimTextOutput(NS(id, paste0(ui_id, "_out")), placeholder = TRUE)
+  error_out <- verbatimTextOutput(NS(id, paste0(ui_id, "_error")))
 
-  if(spinner){
+  if(spinner) {
     text_out <- shinycssloaders::withSpinner(text_out, proxy.height = "100px")
   }
 
@@ -24,7 +25,8 @@ get_file_ui2 <- function(id, ui_id, title, mandatory = FALSE, type = "file",
 
   div(label,
       button,
-      splitLayout(text_out, clear, cellWidths = c("80%", "20%"))
+      splitLayout(text_out, clear, cellWidths = c("80%", "20%")),
+      error_out
   )
 }
 

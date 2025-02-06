@@ -13,7 +13,8 @@ analyze_spatial(
   hs_rast = NULL,
   hs_rcl = NULL,
   gain_mod = 1,
-  scenario_names = "Scenario 1"
+  scenario_names = "Scenario 1",
+  quiet = FALSE
 )
 }
 \arguments{

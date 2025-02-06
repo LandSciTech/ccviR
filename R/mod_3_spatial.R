@@ -5,6 +5,7 @@
 #' @examples
 #' mod_spatial_test()
 #' mod_spatial_test(df_loaded = TRUE)
+#' mod_spatial_test(input_files = NULL)
 
 mod_spatial_test <- function(df_loaded = FALSE, input_files = test_files()) {
 
@@ -46,7 +47,6 @@ mod_spatial_ui <- function(id) {
                   in Section D. Required datasets are indicated with", labelMandatory("a")),
           get_file_ui2(id, "clim_var_dir", "Folder location of prepared climate data",
                       type = "dir", mandatory = TRUE, spinner = TRUE),
-          verbatimTextOutput(ns("clim_var_error")),
           br(),
           get_file_ui2(id, "range_poly_pth", "Range polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
@@ -57,6 +57,7 @@ mod_spatial_ui <- function(id) {
                         "Yes, one range change raster will be supplied for all scenarios" = "one",
                         "Yes, multiple range change rasters will be supplied, one for each scenario (Preferred)" = "multiple")),
           uiOutput(ns("rng_chg_sel_ui")),
+          verbatimTextOutput(ns("rng_chg_error")),
           conditionalPanel(
             condition = "input.rng_chg_used !== 'no'",
             strong("Classification of projected range change raster"),
@@ -86,7 +87,8 @@ mod_spatial_ui <- function(id) {
           br(),
           h5("Click button to begin the spatial analysis or to re-run it",
              " after changing inputs:"),
-          actionButton(ns("startSpatial"), "Run Spatial Analysis", class = "btn-primary"),
+          shinyjs::disabled(
+            actionButton(ns("startSpatial"), "Run Spatial Analysis", class = "btn-primary")),
           br(),
           conditionalPanel(
             condition = "input.startSpatial > 0",
@@ -126,20 +128,15 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     ns <- session$ns
 
     # Values
-    clim_vars <- reactiveVal()
-    range_poly_in <- reactiveVal()
     repeatSpatial <- reactiveVal(FALSE)
-    nonbreed_poly <- reactiveVal()
-    assess_poly <- reactiveVal()
-    hs_rast <- reactiveVal()
-    ptn_poly <- reactiveVal()
-    hs_rcl_mat <- reactiveVal()
 
     spat_res <- reactiveVal(FALSE)
     spat_res2 <- reactiveVal(FALSE)
     doSpatial <- reactiveVal(0)
     doSpatialRestore <- reactiveVal(FALSE)
 
+    # Catch changes to dir/file paths from either loading previous or inputs
+    # Need to be reactive because modified through several different pathways
     file_pths <- reactiveVal()
     clim_dir_pth <- reactiveVal()
 
@@ -148,18 +145,9 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Enable the Start Spatial button when all mandatory fields are filled out
     observe({
-      filled <-
-        vapply(c("range_poly_pth", "assess_poly_pth"),
-               function(x) {
-                 isTruthy(file_pths()[[x]]) & isTruthy(clim_dir_pth())
-               },
-               logical(1)) |>
-        all()
-      if (is_shiny_testing()) {
-        filled <- TRUE
-      }
-
-      shinyjs::toggleState(id = "startSpatial", condition = filled)
+      shinyjs::disable("startSpatial")
+      req(range_poly(), assess_poly(), clim_vars1(), clim_readme())
+      shinyjs::enable("startSpatial")
     })
 
     # Set paths for testing ----------------------
@@ -171,8 +159,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
           range_poly_pth = input_files$rng_poly_pth,
           assess_poly_pth = input_files$assess_poly_pth,
           ptn_poly_pth = input_files$ptn_poly_pth,
-          rng_chg_pths = c(input_files$rng_chg_pth_1,
-                           input_files$rng_chg_pth_2)
+          rng_chg_pth_1 = input_files$rng_chg_pth_1,
+          rng_chg_pth_2 = input_files$rng_chg_pth_2
         )
 
         file_pths(pths)
@@ -294,11 +282,12 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     observe({
       purrr::walk2(file_pths(), filePathIds()[names(file_pths())], ~{
         out_name <- paste0(.y, "_out")
-        output[[out_name]] <- renderText({.x})
+        output[[out_name]] <- renderText(.x)
       })
     })
 
     # Output Dir paths
+
     output$clim_var_dir_out <- renderText({
       clim_dir_pth()
     })
@@ -332,51 +321,126 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Load Spatial data -------------------
 
+    # Polygons
+    range_poly <- reactive(read_poly(file_pths()$range_poly_pth, req = TRUE))
+    assess_poly <- reactive(read_poly(file_pths()$assess_poly_pth, req = TRUE))
+    nonbreed_poly <- reactive(read_poly(file_pths()$nonbreed_poly_pth))
+    ptn_poly <- reactive(read_poly(file_pths()$ptn_poly_pth))
+
+    # Raster
+    rng_chg <- reactive({
+      file_pths()[stringr::str_subset(names(file_pths()), "rng_chg_pth")] %>%
+        read_raster()
+    })
+
+    # Climate data
     clim_readme <- reactive({
       req(clim_dir_pth())
-
-      if(!file.exists(fs::path(clim_dir_pth(), "climate_data_readme.csv"))){
-        stop("The climate folder is missing the required climate_data_readme.csv file",
-             call. = FALSE)
-      }
-      utils::read.csv(fs::path(clim_dir_pth(), "climate_data_readme.csv"),
-                      check.names = FALSE)
+      pth <- fs::path(clim_dir_pth(), "climate_data_readme.csv")
+      req(fs::file_exists(pth))
+      utils::read.csv(pth, check.names = FALSE)
     })
 
     clim_vars1 <- reactive({
       req(clim_readme())
-
       clim_vars_out <- try(
-        get_clim_vars(clim_dir_pth(), scenario_names = clim_readme()$Scenario_Name)
+        get_clim_vars(clim_dir_pth(), scenario_names = clim_readme()$Scenario_Name),
+        silent = TRUE
       )
       clim_vars_out
     })
 
+    # Matrix
+    rng_chg_mat <- reactive({
+      mat <- matrix(c(input$lost_from, input$lost_to, 1,
+                      input$maint_from, input$maint_to, 2,
+                      input$gain_from, input$gain_to, 3,
+                      input$ns_from, input$ns_to, 0),
+                    byrow = TRUE, ncol = 3)
 
-    observeEvent(doSpatial(), {
-      clim_vars(clim_vars1())
+      # if an input is blank then the value is NA but that converts raster values that
+      # are NA to that value
+      hs_rcl_mat(mat[which(!is.na(mat[, 1])), ])
+
     })
 
-    observeEvent(doSpatial(), {
-      range_poly_in(sf::st_read(file_pths()$range_poly_pth, agr = "constant", quiet = TRUE))
-    }, ignoreInit = TRUE)
+    # Catch Loading Errors ---------------------------------------------
 
+    # Create error text boxes for dir input
+    output$clim_var_dir_error <- renderText({
+      pth <- fs::path(clim_dir_pth(), "climate_data_readme.csv")
+      validate(need(
+        fs::file_exists(pth),
+        "The climate folder is missing the required 'climate_data_readme.csv' file"))
 
-    observeEvent(doSpatial(), {
-      pth <- file_pths()$nonbreed_poly_pth
+      validate(need(!inherits(clim_vars1(), "try-error"), "Could not load climatic variables"))
 
-      if(!isTruthy(pth)){
-        return(NULL)
+      if(inherits(clim_vars1(), "try-error")){
+        stop(conditionMessage(attr(clim_vars1(), "condition")))
       }
-      nonbreed_poly(sf::st_read(pth, agr = "constant", quiet = TRUE))
-    }, ignoreInit = TRUE)
+    })
+
+    # Create error text boxes for all file inputs
+    output$range_poly_pth_error <- renderText({
+      req(range_poly())
+      # TODO CHECK FOR VALID POLY Vs. point
+      invisible()
+    })
+
+    output$assess_poly_pth_error <- renderText({
+      req(assess_poly())
+      # TODO CHECK FOR VALID POLY Vs. point
+      invisible()
+    })
+
+    output$ptn_poly_pth_error <- renderText({
+      req(ptn_poly())
+      # TODO CHECK FOR VALID POLY Vs. point
+      invisible()
+    })
+
+    output$nonbreed_poly_pth_error <- renderText({
+      req(nonbreed_poly())
+      # TODO CHECK FOR VALID POLY Vs. point
+      invisible()
+    })
+
+    output$rng_chg_error <- renderText({
+      req(rng_chg())
+      invisible()
+      # TODO CHECK FOR VALID POLY Vs. point
+    })
+
+    # output$range_poly_pth_error <- renderText({
+    #  req(range_poly())
+    # })
 
 
-    observeEvent(doSpatial(), {
-      pol <- file_pths()$assess_poly_pth %>%
-        sf::st_read(agr = "constant", quiet = TRUE) %>%
-        valid_or_error("assessment area polygon")
-      assess_poly(pol)
+    # Run Spatial Analysis --------------------------------------------------
+
+    # run spatial calculations
+    spat_res1 <- eventReactive(doSpatial(), {
+      req(doSpatial())
+      req(clim_vars1())
+      out <- tryCatch({
+        analyze_spatial(range_poly = range_poly(),
+                        non_breed_poly = nonbreed_poly(),
+                        scale_poly = assess_poly(),
+                        hs_rast = rng_chg(),
+                        ptn_poly = ptn_poly(),
+                        clim_vars_lst = clim_vars1(),
+                        hs_rcl = rng_chg_mat(),
+                        gain_mod = input$gain_mod,
+                        scenario_names = clim_readme()$Scenario_Name)
+      },
+      error = function(cnd) conditionMessage(cnd))
+
+      # force these to invalidate when re-run
+      spat_res(FALSE)
+
+      removeNotification(ns("spat_restore_note"))
+      return(out)
+
     }, ignoreInit = TRUE)
 
     # use readme to render scenario names for rng chg rasters
@@ -390,8 +454,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
           strong("Select a projected range change raster for each scenario"),
           purrr::map2(clim_readme()$Scenario_Name,
                       1:length(clim_readme()$Scenario_Name),
-                      ~get_file_ui2(id, paste0("rng_chg_pth", "_", .y), .x)),
-          br(), br()
+                      ~get_file_ui2(id, paste0("rng_chg_pth", "_", .y), .x))
         )
 
       }
@@ -413,45 +476,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # if shinyalert is not called
 
 
-    observeEvent(doSpatial(), {
-      pth <- file_pths()[stringr::str_subset(names(file_pths()), "rng_chg_pth")]
-      pth <- unlist(pth)
-      pth <- pth[sort(names(pth))]
-
-      if(!isTruthy(pth) || length(pth) == 0){
-        hs_rast(NULL)
-      } else {
-        names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
-        message("loading rng_chg_rasts")
-        out <- check_trim(terra::rast(pth))
-        terra::set.names(out, clim_readme()$Scenario_Name)
-        hs_rast(out)
-      }
-    }, ignoreInit = TRUE)
-
-    observeEvent(doSpatial(), {
-      pth <- file_pths()$ptn_poly_pth
-
-      if(!isTruthy(pth)){
-        ptn_poly(NULL)
-      } else {
-        ptn_poly(sf::st_read(pth, agr = "constant", quiet = TRUE))
-      }
-    }, ignoreInit = TRUE)
-
-    # assemble hs_rcl matrix
-
-    observeEvent(doSpatial(), {
-      mat <- matrix(c(input$lost_from, input$lost_to, 1,
-                      input$maint_from, input$maint_to, 2,
-                      input$gain_from, input$gain_to, 3,
-                      input$ns_from, input$ns_to, 0),
-                    byrow = TRUE, ncol = 3)
-
-      # if an input is blank then the value is NA but that converts raster values that
-      # are NA to that value
-      hs_rcl_mat(mat[which(!is.na(mat[, 1])), ])
-    }, ignoreInit = TRUE)
 
     observeEvent(input$startSpatial, {
       showModal(modalDialog(
@@ -479,33 +503,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
 
-    # run spatial calculations
-    spat_res1 <- eventReactive(doSpatial(), {
-      req(doSpatial())
-      req(clim_vars())
-      out <- tryCatch({
-        analyze_spatial(range_poly = range_poly_in(),
-                        non_breed_poly = nonbreed_poly(),
-                        scale_poly = assess_poly(),
-                        hs_rast = hs_rast(),
-                        ptn_poly = ptn_poly(),
-                        clim_vars_lst = clim_vars(),
-                        hs_rcl = hs_rcl_mat(),
-                        gain_mod = input$gain_mod,
-                        scenario_names = clim_readme()$Scenario_Name)
-      },
-      error = function(cnd) conditionMessage(cnd))
-
-      # force these to invalidate when re-run
-      spat_res(FALSE)
-
-      removeNotification(ns("spat_restore_note"))
-      return(out)
-
-    }, ignoreInit = TRUE)
-
-    range_poly <- reactive({
-      req(range_poly_in())
+    range_poly_clip <- reactive({
+      req(range_poly())
       req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_assess
@@ -523,16 +522,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       spat_res(spat_res1()$spat_table)
     })
 
-    output$clim_var_error <- renderText({
-      if(inherits(clim_vars1(), "try-error")){
-        stop(conditionMessage(attr(clim_vars1(), "condition")))
-      }
-    })
 
     output$spat_error <- renderText({
-      if(inherits(hs_rast(), "try-error")){
+      if(inherits(rng_chg(), "try-error")){
         stop("Error in range change raster",
-             conditionMessage(attr(hs_rast(), "condition")))
+             conditionMessage(attr(rng_chg(), "condition")))
       }
       if(is.character(spat_res1())){
         stop(spat_res1(), call. = FALSE)
@@ -584,29 +578,29 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     #   "spatial_data" = spatial_data(),
     #   "spatial_details" = list(
     #     "spat_res" = spat_res2(),
-    #     "clim_vars" = clim_vars(),
+    #     "clim_vars" = clim_vars1(),
     #     "clim_readme" = clim_readme(),
-    #     "range_poly" = range_poly(),
+    #     "range_poly" = range_poly_clip(),
     #     "range_poly_clim" = range_poly_clim(),
     #     "ptn_poly" = ptn_poly(),
     #     "nonbreed_poly" = nonbreed_poly(),
     #     "assess_poly" = assess_poly(),
-    #     "hs_rast" = hs_rast(),
-    #     "hs_rcl_mat" = hs_rcl_mat()
+    #     "hs_rast" = rng_chg(),
+    #     "hs_rcl_mat" = rng_chg_mat()
     #   ))
 
     list("spatial_data" = spatial_data,
          "spatial_details" = list(
            "spat_res" = spat_res2,
-           "clim_vars" = clim_vars,
+           "clim_vars" = clim_vars1,
            "clim_readme" = clim_readme,
-           "range_poly" = range_poly,
+           "range_poly" = range_poly_clip,
            "range_poly_clim" = range_poly_clim,
            "ptn_poly" = ptn_poly,
            "nonbreed_poly" = nonbreed_poly,
            "assess_poly" = assess_poly,
-           "hs_rast" = hs_rast,
-           "hs_rcl_mat" = hs_rcl_mat
+           "hs_rast" = rng_chg,
+           "hs_rcl_mat" = rng_chg_mat
          ))
   })
 
