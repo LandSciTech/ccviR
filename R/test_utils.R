@@ -89,12 +89,12 @@ test_data <- function(d = test_files()) {
   ptn <- sf::st_read(d$ptn_poly_pth, agr = "constant", quiet = TRUE)
 
   # HS
-  hs <- raster::raster(d$rng_chg_pths[1])
-  hs_terra <- terra::rast(d$rng_chg_pths[1])
+  hs <- raster::raster(d$rng_chg_pth_1)
+  hs_terra <- terra::rast(d$rng_chg_pth_2)
 
   # hs2 less CC in same area
   #hs1 <- raster::raster(d$rng_chg_pths[1])
-  hs2 <- raster::raster(d$rng_chg_pths[2])
+  hs2 <- raster::raster(d$rng_chg_pth_2)
 
   range_points <- range %>% sf::st_make_grid(what = "centers")
 
@@ -120,3 +120,4 @@ mock_files <- function(file) {
     files = list(`0` = list("", fs::path(file))),
     root = "wd")
 }
+
