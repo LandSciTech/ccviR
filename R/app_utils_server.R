@@ -504,6 +504,7 @@ read_poly <- function(pth, req = FALSE) {
     "Error reading file. Are you sure this is a valid spatial file?"))
 
   valid_or_error(s)
+
 }
 
 #' Check and load spatial raster data
@@ -520,13 +521,17 @@ read_raster <- function(pth, scn_nms, req = FALSE) {
 
   names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
-  t <- try({
-    pth %>%
+  r <- try({
+    t <- pth %>%
       terra::rast() %>%
       check_trim()
+    terra::set.names(t, scn_nms)
+    t
   }, silent = TRUE)
-  validate(need(!inherits(t, "try-error"), "Cannot open this(these) file(s) as SpatRaster"))
-  t
+
+  validate(need(!inherits(r, "try-error"), "Cannot open this(these) file(s) as SpatRaster"))
+
+  r
 }
 
 

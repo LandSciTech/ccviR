@@ -55,13 +55,21 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 - `NS()` (or `ns`) is *not* required for shinyjs
   - e.g., `spat_vuln_hide2()`
 
-### Passing variables
+### Passing variables among modules
 - We return reactives from a module like returning outputs from a function,
   put them in a list calling them by name (i.e. `spatial_data`,
   not`spatial_data()`)
 - Then pass them as arguments to other module functions
 - Remember that we want a list of reactives, not a reactive that returns a list
   (otherwise anytime any list item is updated, the whole reactive invalidates)
+
+### Checking inputs and messages
+- Cannot use shinyFeedback for shinyFiles inputs
+- But can use validate(need()) on the *text outputs* to provide messages about file paths
+- To ensure that the spatial files are loaded early and to catch specific messages
+  related to each file, we use 'error' verbatim textboxes that pass through any
+  validate(need()) failures.
+
 
 ## Notes
 - 

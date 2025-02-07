@@ -48,7 +48,7 @@ mod_spatial_ui <- function(id) {
           get_file_ui2(id, "clim_var_dir", "Folder location of prepared climate data",
                       type = "dir", mandatory = TRUE, spinner = TRUE),
           br(),
-          get_file_ui2(id, "range_poly_pth", "Range polygon shapefile", mandatory = TRUE),
+          get_file_ui2(id, "rng_poly_pth", "Range polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "ptn_poly_pth", "Physiological thermal niche file"),
           get_file_ui2(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile"),
@@ -137,7 +137,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Catch changes to dir/file paths from either loading previous or inputs
     # Need to be reactive because modified through several different pathways
-    file_pths <- reactiveVal()
+    file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     clim_dir_pth <- reactiveVal()
 
     # Continue Button
@@ -146,7 +146,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Enable the Start Spatial button when all mandatory fields are filled out
     observe({
       shinyjs::disable("startSpatial")
-      req(range_poly(), assess_poly(), clim_vars1(), clim_readme())
+      req(rng_poly(), assess_poly(), clim_vars1(), clim_readme())
       shinyjs::enable("startSpatial")
     })
 
@@ -154,16 +154,10 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     observe({
       if(!is.null(input_files)) {
         clim_dir_pth(input_files$clim_dir)
-
-        pths <- list(
-          range_poly_pth = input_files$rng_poly_pth,
-          assess_poly_pth = input_files$assess_poly_pth,
-          ptn_poly_pth = input_files$ptn_poly_pth,
-          rng_chg_pth_1 = input_files$rng_chg_pth_1,
-          rng_chg_pth_2 = input_files$rng_chg_pth_2
-        )
-
-        file_pths(pths)
+        stringr::str_subset(names(input_files), "pth") %>%
+          purrr::walk(~{
+            file_pths[[.x]] <- input_files[[.x]]
+          })
       }
     })
 
@@ -207,8 +201,9 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
           select(contains("pth"), -any_of("clim_dir_pth")) %>%
           as.list()
 
-        if(length(loaded_pths)>0){
-          file_pths(purrr::discard(loaded_pths, is.na))
+        if(length(loaded_pths)>0) {
+          # TODO: FIX!
+          file_pths <- purrr::discard(loaded_pths, is.na)
         }
 
         clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
@@ -243,9 +238,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
         filePathIds(),
         ~ observeEvent(input[[.x]], {
           if(!is.integer(input[[.x]])) {
-            pths_in <- file_pths()
-            pths_in[[.x]] <- parseFilePaths(volumes, input[[.x]])$datapath
-            file_pths(pths_in)
+            pth_in <- parseFilePaths(volumes, input[[.x]])$datapath
+            file_pths[[.x]] <- pth_in
           }
         }, ignoreInit = TRUE))
     })
@@ -265,10 +259,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
         buttonIds,
         ~ observeEvent(input[[.x]], {
           if(input[[.x]] > 0) {
-            pths_in <- file_pths()
             fl_x <- stringr::str_extract(.x, "(.*)(_clear)", group = 1)
-            pths_in[[fl_x]] <- ""
-            file_pths(pths_in)
+            file_pths[[fl_x]] <- ""
           }
         }, ignoreInit = TRUE))
     })
@@ -280,9 +272,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Output File paths
     observe({
-      purrr::walk2(file_pths(), filePathIds()[names(file_pths())], ~{
-        out_name <- paste0(.y, "_out")
-        output[[out_name]] <- renderText(.x)
+      purrr::walk(filePathIds(), ~{
+        output[[paste0(.x, "_out")]] <- renderText(file_pths[[.x]])
       })
     })
 
@@ -296,7 +287,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # update filePathIds based on selection for rng_chg
     filePathIds <- reactive({
       # File path ids to use with file choose
-      fileIds <- c("range_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth")
+      fileIds <- c("rng_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth")
       names(fileIds) <- fileIds
 
       rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth_\\d$|rng_chg_pth$")
@@ -322,15 +313,21 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Load Spatial data -------------------
 
     # Polygons
-    range_poly <- reactive(read_poly(file_pths()$range_poly_pth, req = TRUE))
-    assess_poly <- reactive(read_poly(file_pths()$assess_poly_pth, req = TRUE))
-    nonbreed_poly <- reactive(read_poly(file_pths()$nonbreed_poly_pth))
-    ptn_poly <- reactive(read_poly(file_pths()$ptn_poly_pth))
+    rng_poly <- reactive(read_poly(file_pths$rng_poly_pth, "Range Polygon", req = TRUE))
+    assess_poly <- reactive(read_poly(file_pths$assess_poly_pth, "Assessment Polygon", req = TRUE))
+    nonbreed_poly <- reactive(read_poly(file_pths$nonbreed_poly_pth, "Non-breeding Polygon"))
+    ptn_poly <- reactive(read_poly(file_pths$ptn_poly_pth, "PTN Polygon"))
 
     # Raster
     rng_chg <- reactive({
-      file_pths()[stringr::str_subset(names(file_pths()), "rng_chg_pth")] %>%
-        read_raster()
+      nms <- filePathIds() %>%
+        stringr::str_subset("rng_chg_pth")
+
+      req(length(nms) > 0)
+
+      purrr::map(nms, ~file_pths[[.x]]) %>%
+        stats::setNames(nms) %>%
+        read_raster(scn_nms = clim_readme()$Scenario_Name, "Projected Range Changes")
     })
 
     # Climate data
@@ -360,7 +357,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
       # if an input is blank then the value is NA but that converts raster values that
       # are NA to that value
-      hs_rcl_mat(mat[which(!is.na(mat[, 1])), ])
+      mat[which(!is.na(mat[, 1])), ]
 
     })
 
@@ -381,8 +378,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
     # Create error text boxes for all file inputs
-    output$range_poly_pth_error <- renderText({
-      req(range_poly())
+    output$rng_poly_pth_error <- renderText({
+      req(rng_poly())
       # TODO CHECK FOR VALID POLY Vs. point
       invisible()
     })
@@ -411,8 +408,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       # TODO CHECK FOR VALID POLY Vs. point
     })
 
-    # output$range_poly_pth_error <- renderText({
-    #  req(range_poly())
+    # output$rng_poly_pth_error <- renderText({
+    #  req(rng_poly())
     # })
 
 
@@ -423,7 +420,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       req(doSpatial())
       req(clim_vars1())
       out <- tryCatch({
-        analyze_spatial(range_poly = range_poly(),
+        analyze_spatial(range_poly = rng_poly(),
                         non_breed_poly = nonbreed_poly(),
                         scale_poly = assess_poly(),
                         hs_rast = rng_chg(),
@@ -464,10 +461,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       # check for names of old rng_chg_pths
       nms_old <- stringr::str_subset(names(input), "rng_chg_pth$|rng_chg_pth_\\d")
       if(length(nms_old) > 0){
-        purrr::walk(nms_old, \(x){
-          pths_in <- file_pths()
-          pths_in[[x]] <- ""
-          file_pths(pths_in)
+        purrr::walk(nms_old, \(x) {
+          file_pths[[x]] <- ""
         })
 
       }
@@ -504,7 +499,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
     range_poly_clip <- reactive({
-      req(range_poly())
+      req(rng_poly())
       req(doSpatial())
       req(!is.character(spat_res1()))
       spat_res1()$range_poly_assess
@@ -552,7 +547,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     spatial_data <- eventReactive(spat_res(), {
       req(spat_res())
       req(clim_readme())
-      req(!is.null(file_pths()))
 
       spat_df <- spat_res() %>%
         mutate(gain_mod = input$gain_mod,
@@ -563,7 +557,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
                ns = paste0(input$ns_from, ", ", input$ns_to),
                rng_chg_used = input$rng_chg_used)
       clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
-      spat_fnms <- lapply(file_pths(), function(x) ifelse(is.null(x),"",x)) %>%
+
+      spat_fnms <- lapply(file_pths, function(x) ifelse(is.null(x),"",x)) %>%
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())
 
