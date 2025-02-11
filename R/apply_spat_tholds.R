@@ -1,4 +1,4 @@
-# Only adds variables to spat_df, doesn't change any existing
+# Only adds variables to spat_df, AND changes C2ai, C2aii, D2 and D3
 apply_spat_tholds <-function(spat_df, cave) {
   spat_df %>% rowwise() %>%
     mutate(

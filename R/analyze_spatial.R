@@ -288,6 +288,8 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 }
 
 prep_polys <- function(poly, rast_crs, var_name) {
+  if(is.null(poly)) return(poly)
+
   poly <- check_polys(poly, var_name)
   poly <- sf::st_transform(poly, rast_crs)
   poly <- valid_or_error(poly, var_name)
@@ -298,12 +300,8 @@ prep_polys <- function(poly, rast_crs, var_name) {
 # helper function to check input polys
 check_polys <- function(poly, var_name) {
 
-  if(is.null(poly)){
-    return(poly)
-  }
-  if(!inherits(poly, "sf")){
-    poly <- sf::st_as_sf(poly)
-  }
+  if(is.null(poly)) return(poly)
+  if(!inherits(poly, "sf")) poly <- sf::st_as_sf(poly)
 
   validate(need(
     !is.na(st_crs(poly)),
