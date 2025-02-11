@@ -136,7 +136,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     doSpatialRestore <- reactiveVal(FALSE)
 
     # Catch changes to dir/file paths from either loading previous or inputs
-    # Need to be reactive because modified through several different pathways
+    # Need to be reactiveVal/ues because modified through several different pathways
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     clim_dir_pth <- reactiveVal()
 

@@ -99,4 +99,15 @@ spat_res <- analyze_spatial(
   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
   scenario_names = scn_nms
 )
+
+# With only one range change scenario (suboptimal)
+
+spat_res <- analyze_spatial(
+  range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+  scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+  clim_vars_lst = clim_vars,
+  hs_rast = terra::rast(file.path(base_pth, "rng_chg_45.tif")),
+  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  scenario_names = scn_nms
+)
 }

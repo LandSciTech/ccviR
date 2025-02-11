@@ -7,8 +7,6 @@
 #' @examples
 #'
 #' ccvi_app2()
-#'
-#' @importFrom rlang .env
 
 ccvi_app2 <- function(input_files = NULL, ...){
 
