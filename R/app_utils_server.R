@@ -493,14 +493,14 @@ bind_elements <- function(questions, type) {
 #' @noRd
 
 read_poly <- function(pth, name, req = FALSE) {
-  id <- showNotification(paste("Loading", name), duration = NULL, closeButton = FALSE)
-  on.exit(removeNotification(id), add = TRUE)
 
+  # Checks
   if(!req & !isTruthy(pth)) return(NULL) # If it can be NULL and is null, return NULL
-
-  #if(req) validate(need(isTruthy(pth), "Must provide spatial data file"))
   req(pth)
   validate(need(fs::file_exists(pth), "File does not exist"))
+
+  # Read file
+  notify(paste("Loading", name))
   s <- try(sf::st_read(pth, agr = "constant", quiet = TRUE), silent = TRUE)
   validate(need(
     !inherits(s, "try-error"),
@@ -514,10 +514,11 @@ read_poly <- function(pth, name, req = FALSE) {
 #'
 #' @noRd
 read_raster <- function(pth, scn_nms, name, req = FALSE) {
-  id <- showNotification(paste("Loading", name), duration = NULL, closeButton = FALSE)
-  on.exit(removeNotification(id), add = TRUE)
 
-  if(!req & all(vapply(pth, is.null, TRUE))) return(NULL) # If it can be NULL and is null, return NULL
+  # Checks
+
+  # If it can be NULL and is null, return NULL
+  if(!req & all(vapply(pth, is.null, TRUE))) return(NULL)
 
   if(is.list(pth)) {
     pth <- unlist(pth)
@@ -526,13 +527,15 @@ read_raster <- function(pth, scn_nms, name, req = FALSE) {
 
   names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
-  # Checks
   req(pth)
   req(scn_nms)
   if(!(length(pth) == 1 | length(pth) == length(scn_nms))) {
     stop("Unexpected mismatch between rng_chg inputs and scenario names",
          call. = FALSE)
   }
+
+  # Read file
+  notify(paste("Loading", name))
 
   r <- try({
     t <- pth %>%
@@ -555,6 +558,28 @@ read_raster <- function(pth, scn_nms, name, req = FALSE) {
 
   r
 }
+
+read_clim <- function(pth, scn_nms) {
+  notify("Loading climate data rasters")
+  get_clim_vars(pth, scenario_names = scn_nms)
+}
+
+read_clim_readme <- function(pth) {
+  notify("Loading climate data readme")
+  pth <- fs::path(pth, "climate_data_readme.csv")
+  req(fs::file_exists(pth))
+  utils::read.csv(pth, check.names = FALSE)
+}
+
+notify <- function(msg) {
+
+  id <- showNotification(msg, duration = NULL, closeButton = FALSE)
+  # Use `eval()` to apply to exiting the parent function
+  eval(on.exit(removeNotification(id), add = TRUE), envir = parent.frame())
+  if(isTruthy(getOption("ccviR.debug"))) message(msg)
+}
+
+
 
 
 is_ready <- function(reactive) {
