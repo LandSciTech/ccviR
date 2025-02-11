@@ -323,7 +323,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       nms <- filePathIds() %>%
         stringr::str_subset("rng_chg_pth")
 
+      # Catch beginning and switching between inputs
       req(length(nms) > 0)
+      nms <- case_when(input$rng_chg_used == "one" ~ nms[nms == "rng_chg_pth"],
+                       input$rng_chg_used == "multiple" ~ nms[nms != "rng_chg_pth"],
+                       input$rng_chg_used == "none" ~ "")
 
       purrr::map(nms, ~file_pths[[.x]]) %>%
         stats::setNames(nms) %>%
