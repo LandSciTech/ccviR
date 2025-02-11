@@ -3,9 +3,10 @@
 #'
 #' @noRd
 #' @examples
-#' mod_spatial_test()
-#' mod_spatial_test(df_loaded = TRUE)
-#' mod_spatial_test(input_files = NULL)
+#' mod_spatial_test(input_files = NULL) # Basic, no files
+#' mod_spatial_test()                   # With test files pre-loaded
+#' mod_spatial_test(df_loaded = TRUE)   # As if re-loading from previous run
+
 
 mod_spatial_test <- function(df_loaded = FALSE, input_files = test_files()) {
 
@@ -89,13 +90,13 @@ mod_spatial_ui <- function(id) {
              " after changing inputs:"),
           shinyjs::disabled(
             actionButton(ns("startSpatial"), "Run Spatial Analysis", class = "btn-primary")),
-          br(),
-          conditionalPanel(
-            condition = "input.startSpatial > 0",
-            shinycssloaders::withSpinner(verbatimTextOutput(ns("spat_error")),
-                                         proxy.height = "50px"),
-            ns = NS(id)
-          ),
+          #br(),
+          #conditionalPanel(
+          #  condition = "input.startSpatial > 0",
+          #  shinycssloaders::withSpinner(verbatimTextOutput(ns("spat_error")),
+          #                               proxy.height = "50px"),
+          #  ns = NS(id)
+          #),
           br(),br(),
           actionButton(ns("continue"), "Next", class = "btn-primary"),
           br(), br(),
@@ -384,18 +385,13 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Climate data
     clim_readme <- reactive({
       req(clim_dir_pth())
-      pth <- fs::path(clim_dir_pth(), "climate_data_readme.csv")
-      req(fs::file_exists(pth))
-      utils::read.csv(pth, check.names = FALSE)
+      read_clim_readme(clim_dir_pth())
+
     })
 
     clim_vars1 <- reactive({
       req(clim_readme())
-      clim_vars_out <- try(
-        get_clim_vars(clim_dir_pth(), scenario_names = clim_readme()$Scenario_Name),
-        silent = TRUE
-      )
-      clim_vars_out
+      read_clim(clim_dir_pth(), clim_readme()$Scenario_Name)
     })
 
     # Matrix
@@ -432,32 +428,27 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Create error text boxes for all file inputs
     output$rng_poly_pth_error <- renderText({
       req(rng_poly())
-      # TODO CHECK FOR VALID POLY Vs. point
       invisible()
     })
 
     output$assess_poly_pth_error <- renderText({
       req(assess_poly())
-      # TODO CHECK FOR VALID POLY Vs. point
       invisible()
     })
 
     output$ptn_poly_pth_error <- renderText({
       req(ptn_poly())
-      # TODO CHECK FOR VALID POLY Vs. point
       invisible()
     })
 
     output$nonbreed_poly_pth_error <- renderText({
       req(nonbreed_poly())
-      # TODO CHECK FOR VALID POLY Vs. point
       invisible()
     })
 
     output$rng_chg_error <- renderText({
       req(rng_chg())
       invisible()
-      # TODO CHECK FOR VALID POLY Vs. point
     })
 
     # output$rng_poly_pth_error <- renderText({
