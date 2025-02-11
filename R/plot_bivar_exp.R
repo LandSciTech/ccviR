@@ -45,7 +45,7 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                     upperright = palette["upperright"], do_plot = F)
 
   # check crs of polys is the same as rast
-  scale_poly <- check_polys(scale_poly, sf::st_crs(cmd), "assessment area polygon")
+  scale_poly <- prep_polys(scale_poly, sf::st_crs(cmd), "assessment area polygon")
 
   cmd <- terra::crop(cmd, terra::vect(scale_poly), mask = TRUE)
   mat <- terra::crop(mat, terra::vect(scale_poly), mask = TRUE)
@@ -101,7 +101,7 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
     #                            ymin = leg_bottom_y, ymax = leg_top_y)
 
   if(!is.null(rng_poly)){
-    rng_poly <- check_polys(rng_poly, sf::st_crs(bivar_ras), "assessment area polygon")
+    rng_poly <- prep_polys(rng_poly, sf::st_crs(bivar_ras), "assessment area polygon")
 
     bivar_plt <- bivar_plt+
       ggplot2::geom_sf(data = rng_poly, fill = NA, col = "black", linewidth = 1)

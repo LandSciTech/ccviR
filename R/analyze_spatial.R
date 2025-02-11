@@ -114,13 +114,13 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
-  range_poly <- check_polys(range_poly, crs_use, "range polygon")
-  scale_poly <- check_polys(scale_poly, crs_use, "assessment area polygon")
-  ptn_poly <- check_polys(ptn_poly, crs_use, "PTN polygon")
-  clim_poly <- check_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
+  range_poly <- prep_polys(range_poly, crs_use, "range polygon")
+  scale_poly <- prep_polys(scale_poly, crs_use, "assessment area polygon")
+  ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN polygon")
+  clim_poly <- prep_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
 
   if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])){
-    non_breed_poly <- check_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
+    non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
                                   "non-breeding range polygon")
   } else if (!is.null(non_breed_poly)){
     non_breed_poly <- NULL
@@ -268,9 +268,17 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   return(out)
 }
 
+prep_polys <- function(poly, rast_crs, var_name) {
+  poly <- check_polys(poly, var_name)
+  poly <- sf::st_transform(poly, rast_crs)
+  poly <- valid_or_error(poly, var_name)
+
+  return(poly)
+}
 
 # helper function to check input polys
-check_polys <- function(poly, rast_crs, var_name){
+check_polys <- function(poly, var_name) {
+
   if(is.null(poly)){
     return(poly)
   }
@@ -278,29 +286,25 @@ check_polys <- function(poly, rast_crs, var_name){
     poly <- sf::st_as_sf(poly)
   }
 
+  validate(need(
+    !is.na(st_crs(poly)),
+    paste(var_name, " does not have a CRS.",
+          " \nPlease load a file with a valid Coordinate Reference System")
+  ))
+
   geo_type <- st_geometry_type(poly)
-  if(any(!geo_type %in% c("POLYGON", "MULTIPOLYGON"))){
+  if(any(!geo_type %in% c("POLYGON", "MULTIPOLYGON"))) {
 
-    if(any(geo_type %in% c("POLYGON", "MULTIPOLYGON"))){
-      poly <- st_collection_extract(poly, "POLYGON")
-      message("Point or line geometries in the ", var_name,
-              " were dropped.")
-    } else {
-      stop(var_name, " has geometry type ", unique(geo_type),
-           " but only polygons are accepted for this input.",
-           call. = FALSE)
-    }
+    validate(need(
+      any(geo_type %in% c("POLYGON", "MULTIPOLYGON")),
+      paste0(var_name, " has geometry type ", unique(geo_type),
+             " but only polygons are accepted for this input.")
+    ))
+
+    poly <- st_collection_extract(poly, "POLYGON")
+    message("Point or line geometries in the ", var_name,
+            " were dropped.")
   }
-
-  if(is.na(st_crs(poly))){
-    stop(var_name, " does not have a CRS.",
-         " \nPlease load a file with a valid Coordinate Reference System",
-         call. = FALSE)
-  }
-
-  poly <- sf::st_transform(poly, rast_crs)
-
-  poly <- valid_or_error(poly, var_name)
 
   return(poly)
 }

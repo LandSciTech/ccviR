@@ -366,6 +366,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Create error text boxes for dir input
     output$clim_var_dir_error <- renderText({
       pth <- fs::path(clim_dir_pth(), "climate_data_readme.csv")
+      req(pth)
       validate(need(
         fs::file_exists(pth),
         "The climate folder is missing the required 'climate_data_readme.csv' file"))
@@ -447,6 +448,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       } else if(input$rng_chg_used == "one"){
         get_file_ui2(id, "rng_chg_pth", "Projected range change raster")
       } else if (input$rng_chg_used == "multiple"){
+        validate(need(
+          is_ready(clim_readme()),
+          paste0("Require climate readme to proceed: ",
+                 "Please select a valid Climate data folder above")
+        ))
         tagList(
           strong("Select a projected range change raster for each scenario"),
           purrr::map2(clim_readme()$Scenario_Name,

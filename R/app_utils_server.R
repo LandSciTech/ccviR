@@ -492,27 +492,32 @@ bind_elements <- function(questions, type) {
 #'
 #' @noRd
 
-read_poly <- function(pth, req = FALSE) {
+read_poly <- function(pth, name, req = FALSE) {
+  id <- showNotification(paste("Loading", name), duration = NULL, closeButton = FALSE)
+  on.exit(removeNotification(id), add = TRUE)
 
   if(!req & !isTruthy(pth)) return(NULL) # If it can be NULL and is null, return NULL
 
-  if(req) validate(need(isTruthy(pth), "Must provide spatial data file"))
+  #if(req) validate(need(isTruthy(pth), "Must provide spatial data file"))
+  req(pth)
   validate(need(fs::file_exists(pth), "File does not exist"))
   s <- try(sf::st_read(pth, agr = "constant", quiet = TRUE), silent = TRUE)
   validate(need(
     !inherits(s, "try-error"),
     "Error reading file. Are you sure this is a valid spatial file?"))
 
-  valid_or_error(s)
+  check_polys(s, name)
 
 }
 
 #' Check and load spatial raster data
 #'
 #' @noRd
-read_raster <- function(pth, scn_nms, req = FALSE) {
+read_raster <- function(pth, scn_nms, name, req = FALSE) {
+  id <- showNotification(paste("Loading", name), duration = NULL, closeButton = FALSE)
+  on.exit(removeNotification(id), add = TRUE)
 
-  if(!req & is.null(pth)) return(NULL) # If it can be NULL and is null, return NULL
+  if(!req & all(vapply(pth, is.null, TRUE))) return(NULL) # If it can be NULL and is null, return NULL
 
   if(is.list(pth)) {
     pth <- unlist(pth)
@@ -521,15 +526,32 @@ read_raster <- function(pth, scn_nms, req = FALSE) {
 
   names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
+  # Checks
+  req(pth)
+  req(scn_nms)
+  if(!(length(pth) == 1 | length(pth) == length(scn_nms))) {
+    stop("Unexpected mismatch between rng_chg inputs and scenario names",
+         call. = FALSE)
+  }
+
   r <- try({
     t <- pth %>%
       terra::rast() %>%
       check_trim()
-    terra::set.names(t, scn_nms)
+    if(length(scn_nms) == length(pth)) terra::set.names(t, scn_nms)
     t
   }, silent = TRUE)
 
-  validate(need(!inherits(r, "try-error"), "Cannot open this(these) file(s) as SpatRaster"))
+  n <- length(scn_nms)
+  validate(need(
+    !inherits(r, "try-error"),
+    paste("Cannot open ",
+          if(n == 1) "this" else "these",
+          if(n == 1) "file" else "files",
+          "as SpatRaster")
+  ))
+
+  check_rast(r, name)
 
   r
 }
