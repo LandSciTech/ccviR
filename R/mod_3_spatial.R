@@ -462,21 +462,21 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     spat_res1 <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars1())
-      out <- tryCatch({
-        analyze_spatial(range_poly = rng_poly(),
-                        non_breed_poly = nonbreed_poly(),
-                        scale_poly = assess_poly(),
-                        hs_rast = rng_chg(),
-                        ptn_poly = ptn_poly(),
-                        clim_vars_lst = clim_vars1(),
-                        hs_rcl = rng_chg_mat(),
-                        gain_mod = input$gain_mod,
-                        scenario_names = clim_readme()$Scenario_Name)
-      },
-      error = function(cnd) conditionMessage(cnd))
-
-      # force these to invalidate when re-run
-      spat_res(FALSE)
+      if(getOption("ccviR.debug")) message("Running Spatial Analyses")
+      withProgress(message = "Running Spatial Analyses", {
+        out <- tryCatch({
+          analyze_spatial(range_poly = rng_poly(),
+                          non_breed_poly = nonbreed_poly(),
+                          scale_poly = assess_poly(),
+                          hs_rast = rng_chg(),
+                          ptn_poly = ptn_poly(),
+                          clim_vars_lst = clim_vars1(),
+                          hs_rcl = rng_chg_mat(),
+                          gain_mod = input$gain_mod,
+                          scenario_names = clim_readme()$Scenario_Name)
+        },
+        error = function(cnd) conditionMessage(cnd))
+      })
 
       removeNotification(ns("spat_restore_note"))
       return(out)
