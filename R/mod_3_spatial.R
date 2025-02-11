@@ -139,6 +139,9 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Need to be reactiveVal/ues because modified through several different pathways
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     clim_dir_pth <- reactiveVal()
+    file_ids <- c("rng_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
+                  "ptn_poly_pth")
+    rng_ids <- reactiveVal()
 
     # Continue Button
     observeEvent(input$continue, switch_tab("Vulnerability Questions - A", parent_session))
@@ -161,6 +164,16 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       }
     })
 
+    # Setup ShinyFiles ------------------------------
+
+    # Find File/Dir paths
+    purrr::map(file_ids, shinyFileChoose, root = volumes, input = input,
+               filetypes = c("shp", "tif", "tiff", "asc", "nc", "grd", "bil"))
+    observeEvent(rng_ids(), {
+      purrr::map(rng_ids(), shinyFileChoose, root = volumes, input = input,
+                 filetypes = c("shp", "tif", "tiff", "asc", "nc", "grd", "bil"))
+    })
+    shinyDirChoose(input, "clim_var_dir", root = volumes)
 
 
     # Restore data ----------------
@@ -228,21 +241,72 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # UI -------------------------
 
+    # use readme to render scenario names for rng chg rasters
+    output$rng_chg_sel_ui <- renderUI({
+
+      # Remove any old rng_chg_pths values
+      isolate({
+        nms_old <- stringr::str_subset(names(input), "rng_chg_pth$|rng_chg_pth_\\d")
+        if(length(nms_old) > 0) {
+          purrr::walk(nms_old, ~{
+            file_pths[[.x]] <- ""
+          })
+        }
+      })
+
+      if(input$rng_chg_used == "no"){
+        rng_ids(NULL)
+        return(NULL)
+      } else if(input$rng_chg_used == "one"){
+        rng_ids("rng_chg_pth")
+        get_file_ui2(id, "rng_chg_pth", "Projected range change raster")
+      } else if (input$rng_chg_used == "multiple"){
+        validate(need(
+          is_ready(clim_readme()),
+          paste0("Require climate readme to proceed: ",
+                 "Please select a valid Climate data folder above")
+        ))
+        # Track rng_chg_pth inputs
+        rng_ids(paste0("rng_chg_pth_", seq_along(clim_readme()$Scenario_Name)))
+        # Create inputs
+        tagList(
+          strong("Select a projected range change raster for each scenario"),
+          purrr::imap(clim_readme()$Scenario_Name,
+                      ~get_file_ui2(id, paste0("rng_chg_pth_", .y), .x))
+        )
+
+      }
+    })
+
     # Dealing with files --------------
+
 
     # Parse File paths
     # - make parsing files independent for each file so cleared file names are not
     #   retrieved by parse
-    observe({
-      purrr::walk(
-        filePathIds(),
-        ~ observeEvent(input[[.x]], {
-          if(!is.integer(input[[.x]])) {
-            pth_in <- parseFilePaths(volumes, input[[.x]])$datapath
-            file_pths[[.x]] <- pth_in
-          }
-        }, ignoreInit = TRUE))
-    })
+    purrr::walk(
+      file_ids,
+      ~ observeEvent(input[[.x]], {
+        if(!is.integer(input[[.x]])) {
+          pth_in <- parseFilePaths(volumes, input[[.x]])$datapath
+          file_pths[[.x]] <- pth_in
+        }
+      }, ignoreInit = TRUE)
+    )
+
+    observeEvent(
+      rng_ids(), {
+        purrr::walk(
+          rng_ids(),
+          ~ observeEvent(input[[.x]], {
+            if(!is.integer(input[[.x]])) {
+              pth_in <- parseFilePaths(volumes, input[[.x]])$datapath
+              file_pths[[.x]] <- pth_in
+            }
+          }, ignoreInit = TRUE)
+        )
+      })
+
 
     # Parse Dir paths
     observeEvent(input$clim_var_dir, {
@@ -253,16 +317,26 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
 
     # Clear File paths when x clicked
-    observe({
-      buttonIds <- paste0(filePathIds(), "_clear")
+    purrr::walk(
+      paste0(file_ids, "_clear"), # Button ids
+      ~ observeEvent(input[[.x]], {
+        if(input[[.x]] > 0) {
+          fl_x <- stringr::str_extract(.x, "(.*)(_clear)", group = 1)
+          file_pths[[fl_x]] <- ""
+        }
+      }, ignoreInit = TRUE)
+    )
+
+    observeEvent(rng_ids(), {
       purrr::walk(
-        buttonIds,
+        paste0(rng_ids(), "_clear"), # Button ids
         ~ observeEvent(input[[.x]], {
           if(input[[.x]] > 0) {
             fl_x <- stringr::str_extract(.x, "(.*)(_clear)", group = 1)
             file_pths[[fl_x]] <- ""
           }
-        }, ignoreInit = TRUE))
+        }, ignoreInit = TRUE)
+      )
     })
 
     # Clear Dir paths when x clicked
@@ -271,44 +345,20 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
     # Output File paths
-    observe({
-      purrr::walk(filePathIds(), ~{
+    purrr::walk(file_ids, ~{
+      output[[paste0(.x, "_out")]] <- renderText(file_pths[[.x]])
+    })
+
+    observeEvent(rng_ids(), {
+      purrr::walk(rng_ids(), ~{
         output[[paste0(.x, "_out")]] <- renderText(file_pths[[.x]])
       })
     })
 
     # Output Dir paths
-
     output$clim_var_dir_out <- renderText({
       clim_dir_pth()
     })
-
-
-    # update filePathIds based on selection for rng_chg
-    filePathIds <- reactive({
-      # File path ids to use with file choose
-      fileIds <- c("rng_poly_pth", "nonbreed_poly_pth", "assess_poly_pth", "ptn_poly_pth")
-      names(fileIds) <- fileIds
-
-      rng_chg_pths <- stringr::str_subset(names(input), "rng_chg_pth_\\d$|rng_chg_pth$")
-
-      if(length(rng_chg_pths) > 0){
-        names(rng_chg_pths) <- rng_chg_pths
-
-        return(c(fileIds, rng_chg_pths))
-      } else {
-        return(fileIds)
-      }
-
-    })
-
-    # Find File/Dir paths
-    observe({
-      purrr::map(filePathIds(), shinyFileChoose, root = volumes, input = input,
-                 filetypes = c("shp", "tif", "tiff", "asc", "nc", "grd", "bil"))
-    })
-    shinyDirChoose(input, "clim_var_dir", root = volumes)
-
 
     # Load Spatial data -------------------
 
@@ -320,17 +370,14 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Raster
     rng_chg <- reactive({
-      nms <- filePathIds() %>%
-        stringr::str_subset("rng_chg_pth")
+      req(rngs <- rng_ids())
 
-      # Catch beginning and switching between inputs
-      req(length(nms) > 0)
-      nms <- case_when(input$rng_chg_used == "one" ~ nms[nms == "rng_chg_pth"],
-                       input$rng_chg_used == "multiple" ~ nms[nms != "rng_chg_pth"],
-                       input$rng_chg_used == "none" ~ "")
+      # Wait until we have all the files before loading
+      purrr::map(rngs, ~req(file_pths[[.]]))
 
-      purrr::map(nms, ~file_pths[[.x]]) %>%
-        stats::setNames(nms) %>%
+      # Load files into one raster
+      purrr::map(rngs, ~file_pths[[.x]]) %>%
+        stats::setNames(rngs) %>%
         read_raster(scn_nms = clim_readme()$Scenario_Name, "Projected Range Changes")
     })
 
@@ -445,42 +492,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     }, ignoreInit = TRUE)
 
-    # use readme to render scenario names for rng chg rasters
-    output$rng_chg_sel_ui <- renderUI({
-      if(input$rng_chg_used == "no"){
-        return(NULL)
-      } else if(input$rng_chg_used == "one"){
-        get_file_ui2(id, "rng_chg_pth", "Projected range change raster")
-      } else if (input$rng_chg_used == "multiple"){
-        validate(need(
-          is_ready(clim_readme()),
-          paste0("Require climate readme to proceed: ",
-                 "Please select a valid Climate data folder above")
-        ))
-        tagList(
-          strong("Select a projected range change raster for each scenario"),
-          purrr::map2(clim_readme()$Scenario_Name,
-                      1:length(clim_readme()$Scenario_Name),
-                      ~get_file_ui2(id, paste0("rng_chg_pth", "_", .y), .x))
-        )
-
-      }
-    })
-
-    observeEvent(input$rng_chg_used, {
-      # check for names of old rng_chg_pths
-      nms_old <- stringr::str_subset(names(input), "rng_chg_pth$|rng_chg_pth_\\d")
-      if(length(nms_old) > 0){
-        purrr::walk(nms_old, \(x) {
-          file_pths[[x]] <- ""
-        })
-
-      }
-    }, ignoreInit = TRUE)
-    # doing this rather than eventReactive so that it still has a value (NULL)
-    # if shinyalert is not called
-
-
 
     observeEvent(input$startSpatial, {
       showModal(modalDialog(
@@ -528,17 +539,17 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
 
-    output$spat_error <- renderText({
-      if(inherits(rng_chg(), "try-error")){
-        stop("Error in range change raster",
-             conditionMessage(attr(rng_chg(), "condition")))
-      }
-      if(is.character(spat_res1())){
-        stop(spat_res1(), call. = FALSE)
-      } else {
-        "Spatial analysis complete"
-      }
-    })
+    # output$spat_error <- renderText({
+    #   if(inherits(rng_chg(), "try-error")){
+    #     stop("Error in range change raster",
+    #          conditionMessage(attr(rng_chg(), "condition")))
+    #   }
+    #   if(is.character(spat_res1())){
+    #     stop(spat_res1(), call. = FALSE)
+    #   } else {
+    #     "Spatial analysis complete"
+    #   }
+    # })
 
     # calculate exp multipliers and vuln Q values for spat
     observeEvent(spat_res(), {
