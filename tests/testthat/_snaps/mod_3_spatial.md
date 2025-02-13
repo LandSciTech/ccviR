@@ -16,7 +16,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3", "gain_mod", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "clim_dir_pth"]
+          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3", "D4", "gain_mod", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "protected_rast_pth", "clim_dir_pth"]
         },
         "groups": {
           "type": "list",
@@ -212,6 +212,11 @@
         {
           "type": "double",
           "attributes": {},
+          "value": [10.655, 10.655]
+        },
+        {
+          "type": "double",
+          "attributes": {},
           "value": [1.6, 2.4]
         },
         {
@@ -268,6 +273,11 @@
           "type": "double",
           "attributes": {},
           "value": [2, 2]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1, 1]
         },
         {
           "type": "double",
@@ -351,6 +361,11 @@
         },
         {
           "type": "character",
+          "attributes": {},
+          "value": ["../../misc/protected_areas/pa_north_america.tif", "../../misc/protected_areas/pa_north_america.tif"]
+        },
+        {
+          "type": "character",
           "attributes": {
             "class": {
               "type": "character",
@@ -381,7 +396,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3"]
+          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3", "D4"]
         },
         "groups": {
           "type": "list",
@@ -577,6 +592,11 @@
         {
           "type": "double",
           "attributes": {},
+          "value": [10.655, 10.655]
+        },
+        {
+          "type": "double",
+          "attributes": {},
           "value": [1.6, 2.4]
         },
         {
@@ -633,6 +653,11 @@
           "type": "double",
           "attributes": {},
           "value": [2, 2]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1, 1]
         }
       ]
     }

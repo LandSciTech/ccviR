@@ -31,7 +31,8 @@ test_that("spatial data created", {
       expect_s3_class(assess_poly(), "sf")
       expect_s3_class(ptn_poly(), "sf")
       expect_null(nonbreed_poly())
-      expect_s4_class(rng_chg(), "SpatRaster")
+      expect_s4_class(rng_chg_rast(), "SpatRaster")
+      expect_s4_class(protected_rast(), "SpatRaster")
 
       expect_type(clim_vars(), "list")
       expect_s4_class(clim_vars()$mat, "SpatRaster")

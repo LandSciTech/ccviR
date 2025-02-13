@@ -45,6 +45,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
                        ptn_poly_pth = "PTN_poly.shp",
                        rng_chg_pth_1 = "rng_chg_45.tif",
                        rng_chg_pth_2 = "rng_chg_85.tif",
+                       protected_rast_pth = "pa_north_america.tif",
                        saved = "test_files",
                        mock = FALSE) {
 
@@ -64,10 +65,17 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
             rng_chg_pth_1 = rng_chg_pth_1,
             rng_chg_pth_2 = rng_chg_pth_2)
 
-  if(!mock) f <- purrr::map(f, ~fs::path(dir,  .x))
+  if(!mock) {
+    # Demo files
+    f <- purrr::map(f, ~fs::path(dir,  .x))
 
+    # Big files stored in misc
+    f <- c(f, list(protected_rast_pth = testthat::test_path(
+      "../../misc/protected_areas", "pa_north_america.tif")))
+  }
+
+  # Only mock the reloadable files
   if(mock) {
-    f <- purrr::map(f, mock_files)
     saved <- purrr::map(saved, mock_files)
   }
 

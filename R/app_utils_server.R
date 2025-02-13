@@ -513,7 +513,7 @@ read_poly <- function(pth, name, req = FALSE) {
 #' Check and load spatial raster data
 #'
 #' @noRd
-read_raster <- function(pth, scn_nms, name, req = FALSE) {
+read_raster <- function(pth, name, scn_nms = NULL, req = FALSE) {
 
   # Checks
 
@@ -528,10 +528,13 @@ read_raster <- function(pth, scn_nms, name, req = FALSE) {
   names(pth) <- fs::path_file(pth) %>% fs::path_ext_remove()
 
   req(pth)
-  req(scn_nms)
-  if(!(length(pth) == 1 | length(pth) == length(scn_nms))) {
-    stop("Unexpected mismatch between rng_chg inputs and scenario names",
-         call. = FALSE)
+
+  if(length(pth) > 1) {
+    req(scn_nms)
+    if(length(pth) != length(scn_nms)) {
+      stop("Unexpected mismatch between rng_chg inputs and scenario names",
+           call. = FALSE)
+    }
   }
 
   # Read file
@@ -541,7 +544,9 @@ read_raster <- function(pth, scn_nms, name, req = FALSE) {
     t <- pth %>%
       terra::rast() %>%
       check_trim()
-    if(length(scn_nms) == length(pth)) terra::set.names(t, scn_nms)
+    if(!is.null(scn_nms) && length(scn_nms) == length(pth)) {
+      terra::set.names(t, scn_nms)
+    }
     t
   }, silent = TRUE)
 

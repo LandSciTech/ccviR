@@ -54,6 +54,7 @@ mod_spatial_ui <- function(id) {
           get_file_ui2(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "ptn_poly_pth", "Physiological thermal niche file"),
           get_file_ui2(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile"),
+          get_file_ui2(id, "protected_rast_pth", "Protected Area raster"),
           selectInput(ns("rng_chg_used"), "Will a projected range change raster be supplied?",
                       c("No" = "no",
                         "Yes, one range change raster will be supplied for all scenarios" = "one",
@@ -144,7 +145,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     clim_dir_pth <- reactiveVal()
     file_ids <- c("rng_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
-                  "ptn_poly_pth")
+                  "ptn_poly_pth", "protected_rast_pth")
     rng_ids <- reactiveVal()
 
     # Continue Button
@@ -382,9 +383,15 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     nonbreed_poly <- reactive(read_poly(file_pths$nonbreed_poly_pth, "Non-breeding Polygon"))
     ptn_poly <- reactive(read_poly(file_pths$ptn_poly_pth, "PTN Polygon"))
 
-    # Raster
-    rng_chg <- reactive({
-      req(rngs <- rng_ids())
+    # Rasters
+    protected_rast <- reactive(read_raster(file_pths$protected_rast_pth,
+                                           "Protected Areas Raster"))
+
+    rng_chg_rast <- reactive({
+
+      if(is.null(rng_ids)) return(NULL)
+
+      rngs <- rng_ids()
 
       # Wait until we have all the files before loading
       purrr::map(rngs, ~req(file_pths[[.]]))
@@ -392,7 +399,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       # Load files into one raster
       purrr::map(rngs, ~file_pths[[.x]]) %>%
         stats::setNames(rngs) %>%
-        read_raster(scn_nms = clim_readme()$Scenario_Name, "Projected Range Changes")
+        read_raster("Projected Range Changes",
+                    scn_nms = clim_readme()$Scenario_Name)
     })
 
     # Climate data
@@ -459,8 +467,13 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       invisible()
     })
 
+    output$protected_rast_pth_error <- renderText({
+      req(protected_rast())
+      invisible()
+    })
+
     output$rng_chg_error <- renderText({
-      req(rng_chg())
+      req(rng_chg_rast())
       invisible()
     })
 
@@ -475,16 +488,18 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     spat_res <- eventReactive(doSpatial(), {
       req(doSpatial())
       req(clim_vars())
+
       if(isTruthy(getOption("ccviR.debug"))) message("Running Spatial Analyses")
       withProgress(message = "Running Spatial Analyses", {
         out <- tryCatch({
           analyze_spatial(range_poly = rng_poly(),
                           non_breed_poly = nonbreed_poly(),
                           scale_poly = assess_poly(),
-                          hs_rast = rng_chg(),
+                          hs_rast = rng_chg_rast(),
                           ptn_poly = ptn_poly(),
                           clim_vars_lst = clim_vars(),
                           hs_rcl = rng_chg_mat(),
+                          protected_rast = protected_rast(),
                           gain_mod = input$gain_mod,
                           scenario_names = clim_readme()$Scenario_Name)
         },
@@ -499,6 +514,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Calculate Exp Multipliers and Vulnerability Questions for spatial results
     observeEvent(spat_res(), {
+
       req(spat_res())
       # If restoring data, thresholds have already been updated
       req(doSpatial() != doSpatialRestore())
@@ -551,9 +567,9 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
 
     # output$spat_error <- renderText({
-    #   if(inherits(rng_chg(), "try-error")){
+    #   if(inherits(rng_chg_rast(), "try-error")){
     #     stop("Error in range change raster",
-    #          conditionMessage(attr(rng_chg(), "condition")))
+    #          conditionMessage(attr(rng_chg_rast(), "condition")))
     #   }
     #   if(is.character(spat_res())){
     #     stop(spat_res(), call. = FALSE)
@@ -603,7 +619,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     #     "ptn_poly" = ptn_poly(),
     #     "nonbreed_poly" = nonbreed_poly(),
     #     "assess_poly" = assess_poly(),
-    #     "hs_rast" = rng_chg(),
+    #     "protected_rast" = protected_rast(),
+    #     "hs_rast" = rng_chg_rast(),
     #     "hs_rcl_mat" = rng_chg_mat()
     #   ))
 
@@ -617,7 +634,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
            "ptn_poly" = ptn_poly,
            "nonbreed_poly" = nonbreed_poly,
            "assess_poly" = assess_poly,
-           "hs_rast" = rng_chg,
+           "protected_rast" = protected_rast,
+           "hs_rast" = rng_chg_rast,
            "hs_rcl_mat" = rng_chg_mat
          ))
   })
