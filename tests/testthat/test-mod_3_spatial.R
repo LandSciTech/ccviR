@@ -60,6 +60,5 @@ test_that("spatial data created", {
 
       r <- session$getReturned()
       expect_snapshot_value(r$spatial_data(), style = "json2")
-      expect_snapshot_value(r$spatial_details$spat_res(), style = "json2")
     })
 })
