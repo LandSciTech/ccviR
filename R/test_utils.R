@@ -90,7 +90,7 @@ test_data <- function(d = test_files()) {
 
   # HS
   hs <- raster::raster(d$rng_chg_pth_1)
-  hs_terra <- terra::rast(d$rng_chg_pth_2)
+  hs_terra <- terra::rast(d$rng_chg_pth_1)
 
   # hs2 less CC in same area
   #hs1 <- raster::raster(d$rng_chg_pths[1])
