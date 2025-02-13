@@ -13,16 +13,15 @@
 #'
 #' @noRd
 calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
-                             check_overlap = 0.99, return_overlap_as = NULL){
-  withCallingHandlers(
-    warning = function(cnd){
-      if(grepl("transformed to raster", conditionMessage(cnd))){
-        message("Polygons were transformed to have CRS matching raster")
-        invokeRestart("muffleWarning")
-      }
-    },
-    ext_out <- exactextractr::exact_extract(rast, poly, progress = FALSE, include_area = TRUE)
-  )
+                             check_overlap = 0.99, return_overlap_as = NULL) {
+  if(st_crs(poly) != st_crs(rast)) {
+    poly <- st_transform(poly, st_crs(rast))
+    message("Calculating raster overlap: Polygons transformed to match CRS of ",
+            var_name, " raster")
+  }
+
+  ext_out <- exactextractr::exact_extract(rast, poly, progress = FALSE, include_area = TRUE)
+
   poly_area <- st_area(poly)
 
   out <- ext_out[[1]] %>% select(-"area") %>%
@@ -47,9 +46,8 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
 
     prop_cov <- cov_area/units::drop_units(poly_area)
 
-    if(!is.null(return_overlap_as)){
+    if(!is.null(return_overlap_as)) {
       prop_out <- data.frame(x = prop_cov) %>% stats::setNames(return_overlap_as)
-
       out <- bind_cols(out, prop_out)
     }
 

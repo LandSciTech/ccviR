@@ -8,7 +8,7 @@ test_that("spatial runs with all data or optional data",{
                            scenario_names = d$scn_nms)
   ) |> suppressMessages()
   expect_type(res, "list")
-  expect_false(anyNA(res$spat_table %>% dplyr::select(-contains("CCEI"))))
+  expect_false(anyNA(res$spat_table %>% dplyr::select(-matches("CCEI|protected"))))
 
   # with only required data
   expect_message(
@@ -213,5 +213,27 @@ test_that("gives error for points early", {
                   scenario_names = d$scn_nms),
                  "Point")  %>%
     suppressMessages()
+
+})
+
+
+test_that("protected areas", {
+  pa <- test_path("../../misc/protected_areas/pa_north_america.tif")
+  skip_if_not(fs::file_exists(pa))
+
+  pa <- terra::rast(pa)
+
+  expect_message(
+    res <- analyze_spatial(
+      d$range, d$assess, d$clim_vars, NULL, d$ptn, d$hs_terra,
+      hs_rcl = d$rng_chg_mat, protected_rast = pa,
+      scenario_names = d$scn_nms)
+  ) |> suppressMessages()
+  expect_type(res, "list")
+  expect_false(anyNA(res$spat_table %>% dplyr::select(-contains("CCEI"))))
+  expect_true("protected" %in% names(res$spat_table))
+
+  # Cannot be run interactively
+  expect_snapshot_value(res$spat_table, "json2")
 
 })

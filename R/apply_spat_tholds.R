@@ -48,7 +48,12 @@ apply_spat_tholds <-function(spat_df, cave) {
                      .data$range_overlap < 30 ~ 2,
                      .data$range_overlap < 60 ~ 1,
                      is.na(.data$range_overlap) ~ -1,
-                     TRUE ~ 0))
+                     TRUE ~ 0),
+      D4 = case_when(.data$protected  <  5 ~ 2,
+                     .data$protected  < 30 ~ 1,
+                     is.na(.data$protected) ~ -1,
+                     TRUE ~ 0)
+    )
   # Code the vulnerability section as 3 = Greatly increase, 2 = Increase, 1 =
   # Somewhat increase, 0 = Neutral and -1 = Unknown
 }

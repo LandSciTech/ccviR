@@ -16,7 +16,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size"]
+              "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected"]
             },
             "class": {
               "type": "character",
@@ -169,6 +169,11 @@
               "type": "double",
               "attributes": {},
               "value": [25902079658.564194, 25902079658.564194]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": ["NA", "NA"]
             }
           ]
         },
@@ -927,7 +932,7 @@
             "names": {
               "type": "character",
               "attributes": {},
-              "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size"]
+              "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected"]
             },
             "class": {
               "type": "character",
@@ -1080,6 +1085,11 @@
               "type": "double",
               "attributes": {},
               "value": [25902079658.564194, 25902079658.564194]
+            },
+            {
+              "type": "double",
+              "attributes": {},
+              "value": ["NA", "NA"]
             }
           ]
         },
@@ -1816,6 +1826,176 @@
               ]
             }
           ]
+        }
+      ]
+    }
+
+# protected areas
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected"]
+        },
+        "class": {
+          "type": "character",
+          "attributes": {},
+          "value": ["data.frame"]
+        },
+        "row.names": {
+          "type": "integer",
+          "attributes": {},
+          "value": [1, 2]
+        }
+      },
+      "value": [
+        {
+          "type": "character",
+          "attributes": {},
+          "value": ["RCP 4.5", "RCP 8.5"]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [8.067, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [64.113, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [27.82, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0, 100]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [25.672, 18.581]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [20.769, 18.512]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [37.629, 29.415]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [15.465, 22.953]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0.466, 9.834]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0, 0.706]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": ["NA", "NA"]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": ["NA", "NA"]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": ["NA", "NA"]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": ["NA", "NA"]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": ["NA", "NA"]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0.185, 0.185]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [99.815, 99.815]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [0, 0]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [19.45391479, 19.45391479]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1175, 1175]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [949, 949]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [79.479, 79.479]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [19.337, 19.337]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [25902079658.564194, 25902079658.564194]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [10.655, 10.655]
         }
       ]
     }

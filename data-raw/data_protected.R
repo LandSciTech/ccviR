@@ -87,17 +87,20 @@ sf::st_geometry_type(ca) |> unique()
 ca1 <- st_transform(ca, crs = 4326)
 
 r <- raster::raster(raster::extent(ca1), res = res, crs = 4326)
-ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "min")
+#ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "min") # Keep smallest value of IUCN_Cat
+ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "any") # Keep Yes/No protected
 ca_rast <- terra::rast(ca_rast)
-terra::plot(ca_rast)
-terra::writeRaster(ca_rast, path(dir_pa, "pa_canada_raster.tif"))
+#terra::plot(ca_rast)
+terra::writeRaster(ca_rast, path(dir_pa, "pa_canada_raster.tif"), overwrite = TRUE)
 
 
 # No transformation - For checking
-r <- raster::raster(raster::extent(ca), res = 1000, crs = terra::crs(ca))
-ca_rast_check <- fasterize::fasterize(ca, r, field = "IUCN_CAT", fun = "min")
-ca_rast_check <- terra::rast(ca_rast_check)
-terra::plot(ca_rast_check)
+if(FALSE) {
+  r <- raster::raster(raster::extent(ca), res = 1000, crs = terra::crs(ca))
+  ca_rast_check <- fasterize::fasterize(ca, r, field = "IUCN_CAT", fun = "min")
+  ca_rast_check <- terra::rast(ca_rast_check)
+  terra::plot(ca_rast_check)
+}
 
 ## USA ------------------------------
 # Use st_wrap_dateline() deal with polygons near the date line
@@ -128,27 +131,33 @@ us1 <- us %>%
   st_wrap_dateline() # Required to fix (split) Polygons near date-line
 
 r <- raster::raster(raster::extent(us1), res = res, crs = 4326)
-us_rast <- fasterize(us1, r, field = "IUCN_Cat", fun = "min") # Take smallest value of IUCN_Cat
+#us_rast <- fasterize(us1, r, field = "IUCN_Cat", fun = "min") # Keep smallest value of IUCN_Cat
+us_rast <- fasterize(us1, r, field = "IUCN_Cat", fun = "any") # Keep Yes/No protected
 us_rast <- terra::rast(us_rast)
 
-terra::plot(us_rast)
-terra::writeRaster(us_rast, path(dir_pa, "pa_usa_raster.tif"))
+#terra::plot(us_rast)
+terra::writeRaster(us_rast, path(dir_pa, "pa_usa_raster.tif"), overwrite = TRUE)
 
 # No transformation - For checking
-r <- raster::raster(raster::extent(us), res = 1000, crs = raster::crs(us))
-us_rast_check <- fasterize(us, r, field = "GAP_Sts", fun = "min")
-us_rast_check <- terra::rast(us_rast_check)
-terra::plot(us_rast_check)
-
+if(FALSE) {
+  r <- raster::raster(raster::extent(us), res = 1000, crs = raster::crs(us))
+  us_rast_check <- fasterize(us, r, field = "GAP_Sts", fun = "min")
+  us_rast_check <- terra::rast(us_rast_check)
+  terra::plot(us_rast_check)
+}
 
 # Combine ---------------------------------------------------------------------
-ca_rast <- terra::rast(path(dir_pa, "pa_canada_raster.tif"))
-us_rast <- terra::rast(path(dir_pa, "pa_usa_raster.tif"))
-north_america <- terra::merge(ca_rast, us_rast)
-terra::writeRaster(north_america, path(dir_pa, "pa_north_america.tif"))
+# Use Virtual merge to avoid memory issues
+# https://github.com/rspatial/terra/issues/210#issuecomment-841723729
+north_america <- terra::vrt(c(path(dir_pa, "pa_canada_raster.tif"),
+                              path(dir_pa, "pa_usa_raster.tif")),
+                            path(dir_pa, "pa_north_america.vrt"), overwrite = TRUE)
 
-terra::plot(north_america)
-terra::plot(us_rast)
+terra::writeRaster(north_america,
+                   path(dir_pa, "pa_north_america.tif"),
+                   overwrite = TRUE)
+
+#terra::plot(north_america)
 
 
 # Citations -------------------------------------------------------------------
@@ -175,27 +184,3 @@ terra::plot(us_rast)
 # fasterize
 # https://ecohealthalliance.github.io/fasterize/
 # https://gis.stackexchange.com/questions/284018/processing-vector-to-raster-faster-with-r-on-windows
-
-
-
-
-International Union for the Conservation of Nature (IUCN) management categories assigned to protected areas for inclusion in the United Nations Environment World Conservation Monitoring Center (UNEP-WCMC) World Database for Protected Areas (WDPA), the North America Intergovernmental Committee on Cooperation for Wilderness and Protected Areas Conservation (NAWPA) Protected Area Database, and the Commission for Environmental Cooperation (CEC) North American Terrestrial Protected Areas Database. IUCN defines a protected area as, "A clearly defined geographical space, recognized, dedicated and managed, through legal or other effective means, to achieve the long-term conservation of nature with associated ecosystem services and cultural values" (includes GAP Status Code 1 and 2 only). Management categories are not hierarchical and follows as:
-
-  'IUCN Category Ia': Strict Nature Reserves are strictly protected areas set aside to protect biodiversity and possibly geological or geomorphological features, where human visitation, use and impacts are strictly controlled and limited to ensure preservation of the conservation values. Such protected areas can serve as indispensable reference areas for scientific research and monitoring.
-
-'IUCN Category Ib': Wilderness Areas protected areas are usually large unmodified or slightly modified areas, retaining their natural character and influence, without permanent or significant human habitation, which are protected and managed to preserve their natural condition.
-
-'IUCN Category II': National Park protected areas are large natural or near natural areas set aside to protect large-scale ecological processes, along with the complement of species and ecosystems characteristic of the area, which also provide a foundation for environmentally and culturally compatible spiritual, scientific, educational, recreational and visitor opportunities.
-
-'IUCN Category III': Natural Monument or Feature protected areas are set aside to protect a specific natural monument, which can be a landform, sea mount, submarine caverns, geological features such as caves, or even a living feature such as an ancient grove. They are generally quite small protected areas and often have high visitor value.
-
-'IUCN Category IV': Habitat and (or) species management protected areas aim to protect particular species or habitats and management reflects this priority. Many Category IV protected areas will need regular, active interventions to address the requirements of particular species or to maintain habitats, but this is not a requirement of this category.
-
-'IUCN Category V': Protected landscape and (or) seascape protected areas occur where the interaction of people and nature over time has produced an area of distinct character with significant ecological, biological, cultural, and scenic value.
-
-'IUCN Category VI': Protected area with sustainable use (community based, non-industrial) of natural resources are generally large, with much of the area in a more-or-less natural condition and whereas a proportion is under sustainable natural resource management and where such exploitation is seen as one of the main aims of the area.
-
-'Other Conservation Areas' are not recognized by IUCN at this time; however, they will be evaluated to determine if they meet the definition of Other Effective Area Based Conservation Measures (OECMs) for inclusion in the WDPA following recently released guidance.
-
-These areas (GAP Status Code 3 areas only) are attributed in the 'IUCN Category' Domain along with 'Unassigned' areas (GAP Status Code 4). In addition, a few areas are included as 'Not Reported', these areas meet the definition of IUCN protection (i.e. GAP Status Code 1 or 2) but 'IUCN Category' has not yet been assigned and categorical assignment is not appropriate. See the PAD-US Data Manual, Table 12, for a crosswalk from Designation Type, GAP Status Code, and size to IUCN Category.
-

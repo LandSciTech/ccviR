@@ -27,6 +27,7 @@
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 #'   lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
 #'   details on the matrix format.
+#' @param protected_rast Optional. A SpatRaster object with protected areas.
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
 #'   in the modeled range change under climate change
 #' @param scenario_names character vector with names that identify multiple
@@ -84,11 +85,24 @@
 #'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
 #'   scenario_names = scn_nms
 #' )
+#'
+#' \dontrun{
+#' # With protected areas
+#' spat_res <- analyze_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+#'   protected_rast = terra::rast("misc/protected_areas/pa_north_america.tif"),
+#'   clim_vars_lst = clim_vars,
+#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+#'   scenario_names = scn_nms
+#' )
+#' }
 
-analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
-                            non_breed_poly = NULL, ptn_poly = NULL,
-                            hs_rast = NULL, hs_rcl = NULL, gain_mod = 1,
-                            scenario_names = "Scenario 1", quiet = FALSE) {
+analyze_spatial <- function(
+    range_poly, scale_poly, clim_vars_lst,
+    non_breed_poly = NULL, ptn_poly = NULL,
+    hs_rast = NULL, hs_rcl = NULL, protected_rast = NULL,
+    gain_mod = 1, scenario_names = "Scenario 1", quiet = FALSE) {
 
   n <- 6
   inform_prog("Checking files", quiet, n, 1)
@@ -241,7 +255,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   # Section D - Modelled Response to Climate Change #====
   inform_prog("Assessing modelled response to climate change", quiet, n, 5)
 
-  if(is.null(hs_rast)){
+  if(is.null(hs_rast)) {
     mod_resp_CC <- rep(NA_real_, 2) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(c("range_change", "range_overlap"))
 
@@ -259,7 +273,16 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
     }
 
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
+  }
 
+  if(is.null(protected_rast)) {
+    protected <- data.frame(protected = NA_real_)
+  } else {
+    protected <- calc_prop_raster(
+      protected_rast,
+      range_poly,
+      var_name = "protected", val_range = c(NA, 1)) %>%
+      select(protected = protected_1)
   }
 
   inform_prog("Finalizing outputs", quiet, n, 6)
@@ -282,7 +305,8 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   out <- list(spat_table = bind_cols(scn_nm, mat_classes, cmd_classes, ccei_classes,
                                      htn_classes, ptn_perc,
-                                     range_MAP, mod_resp_CC, range_size),
+                                     range_MAP, mod_resp_CC, range_size,
+                                     protected),
               range_poly_assess = range_poly,
               range_poly_clim = range_poly_clim)
   return(out)
