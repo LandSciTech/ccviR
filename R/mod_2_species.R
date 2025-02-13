@@ -4,8 +4,9 @@
 #' @noRd
 #' @examples
 #' mod_species_test()
+#' mod_species_test(df_loaded = TRUE)   # As if re-loading from previous run
 
-mod_species_test <- function(df_loaded = TRUE) {
+mod_species_test <- function(df_loaded = FALSE) {
 
   ui <- ui_setup(mod_species_ui(id = "test"))
   server <- function(input, output, session) {
@@ -13,7 +14,7 @@ mod_species_test <- function(df_loaded = TRUE) {
 
     volumes <- server_setup()
     if(df_loaded) {
-      df_loaded <- parse_path(volumes, test_files("test_files/test_final.csv")) %>%
+      df_loaded <- test_files()$saved$final %>%
         load_previous() %>%
         reactive()
     } else df_loaded <- reactive(NULL)
