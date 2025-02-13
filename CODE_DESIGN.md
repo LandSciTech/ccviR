@@ -89,6 +89,8 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
   `update*()` family of functions (https://mastering-shiny.org/scaling-testing.html#limitations)
 - Can use `browser()` inside `testServer({...})` to interactively test and set
   up expectations.
+- Errors implying that cannot find bottom of stack usually just mean that the
+  snapshot has changed, so use `snapshot_review()`
 
 
 ### shinytest2
@@ -108,3 +110,5 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
 - Clicking on modal buttons: https://github.com/rstudio/shinytest/issues/227
 - comments about "shiny.testmode" being set are almost always red herrings and
   point out a general error in the app.
+- If snapshots keep changing by a small amount, add a Sys.sleep(1) to force the
+  test to wait until it's ready

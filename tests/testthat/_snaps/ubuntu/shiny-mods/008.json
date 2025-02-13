@@ -7,39 +7,7 @@
     "results-calcIndex": 0,
     "results-restart": 0,
     "save-downloadData": 0,
-    "section_a-cmd_map_bounds": {
-      "north": 46.58906908309185,
-      "east": -66.40136718750001,
-      "south": 46.58906908309185,
-      "west": -66.40136718750001
-    },
-    "section_a-cmd_map_center": {
-      "lng": -66.40136718750001,
-      "lat": 46.58906908309185
-    },
-    "section_a-cmd_map_groups": [
-      "CartoDB",
-      "RCP_4.5",
-      "RCP_8.5"
-    ],
-    "section_a-cmd_map_zoom": 6,
     "section_a-continue": 1,
-    "section_a-texp_map_bounds": {
-      "north": 46.58906908309185,
-      "east": -66.40136718750001,
-      "south": 46.58906908309185,
-      "west": -66.40136718750001
-    },
-    "section_a-texp_map_center": {
-      "lng": -66.40136718750001,
-      "lat": 46.58906908309185
-    },
-    "section_a-texp_map_groups": [
-      "CartoDB",
-      "RCP_4.5",
-      "RCP_8.5"
-    ],
-    "section_a-texp_map_zoom": 6,
     "section_b-B1": "2",
     "section_b-B2a": "3",
     "section_b-B2b": "0",
@@ -49,15 +17,18 @@
     "section_b-comB2b": "",
     "section_b-comB3": "",
     "section_b-continue": 0,
+    "section_b-eviB1": "",
+    "section_b-eviB2a": "",
+    "section_b-eviB2b": "",
+    "section_b-eviB3": "",
     "section_b-help_B1": 1,
     "section_b-help_B2a": 0,
     "section_b-help_B2b": 0,
     "section_b-help_B3": 0,
     "section_c": null,
     "section_c-C1": null,
-    "section_c-C2ai": "1",
-    "section_c-C2aii": "1",
-    "section_c-C2bi": "2",
+    "section_c-C2aii": null,
+    "section_c-C2bi": null,
     "section_c-C2bii": null,
     "section_c-C2c": null,
     "section_c-C2d": null,
@@ -73,7 +44,6 @@
     "section_c-C5b": null,
     "section_c-C6": null,
     "section_c-comC1": "",
-    "section_c-comC2ai": "",
     "section_c-comC2aii": "",
     "section_c-comC2bi": "",
     "section_c-comC2bii": "",
@@ -91,8 +61,24 @@
     "section_c-comC5b": "",
     "section_c-comC6": "",
     "section_c-continue": 0,
+    "section_c-eviC1": "",
+    "section_c-eviC2aii": "",
+    "section_c-eviC2bi": "",
+    "section_c-eviC2bii": "",
+    "section_c-eviC2c": "",
+    "section_c-eviC2d": "",
+    "section_c-eviC3": "",
+    "section_c-eviC4a": "",
+    "section_c-eviC4b": "",
+    "section_c-eviC4c": "",
+    "section_c-eviC4d": "",
+    "section_c-eviC4e": "",
+    "section_c-eviC4f": "",
+    "section_c-eviC4g": "",
+    "section_c-eviC5a": "",
+    "section_c-eviC5b": "",
+    "section_c-eviC6": "",
     "section_c-help_C1": 0,
-    "section_c-help_C2ai": 0,
     "section_c-help_C2aii": 0,
     "section_c-help_C2bi": 0,
     "section_c-help_C2bii": 0,
@@ -114,6 +100,8 @@
     "section_d-comD1": "",
     "section_d-comD4": "",
     "section_d-continue": 0,
+    "section_d-eviD1": "",
+    "section_d-eviD4": "",
     "section_d-help_D1": 0,
     "section_d-help_D2": 0,
     "section_d-help_D3": 0,
@@ -138,9 +126,9 @@
     "spatial-ns_to": 99,
     "spatial-ptn_poly_pth": 0,
     "spatial-ptn_poly_pth_clear": 0,
-    "spatial-range_poly_pth": 0,
-    "spatial-range_poly_pth_clear": 0,
     "spatial-rng_chg_used": "no",
+    "spatial-rng_poly_pth": 0,
+    "spatial-rng_poly_pth_clear": 0,
     "spatial-shinyalert": 1,
     "spatial-startSpatial": 1,
     "species-assessor_name": "Dr. Test",
@@ -192,14 +180,11 @@
         "C1": [
           "-1"
         ],
-        "C2ai": [
-          "1"
-        ],
         "C2aii": [
-          "1"
+          "-1"
         ],
         "C2bi": [
-          "2"
+          "-1"
         ],
         "C2bii": [
           "-1"
@@ -264,9 +249,6 @@
         "com_C1": [
           ""
         ],
-        "com_C2ai": [
-          ""
-        ],
         "com_C2aii": [
           ""
         ],
@@ -321,194 +303,81 @@
         "com_D4": [
           ""
         ],
+        "evi_B1": [
+          ""
+        ],
+        "evi_B2a": [
+          ""
+        ],
+        "evi_B2b": [
+          ""
+        ],
+        "evi_B3": [
+          ""
+        ],
+        "evi_C1": [
+          ""
+        ],
+        "evi_C2aii": [
+          ""
+        ],
+        "evi_C2bi": [
+          ""
+        ],
+        "evi_C2bii": [
+          ""
+        ],
+        "evi_C2c": [
+          ""
+        ],
+        "evi_C2d": [
+          ""
+        ],
+        "evi_C3": [
+          ""
+        ],
+        "evi_C4a": [
+          ""
+        ],
+        "evi_C4b": [
+          ""
+        ],
+        "evi_C4c": [
+          ""
+        ],
+        "evi_C4d": [
+          ""
+        ],
+        "evi_C4e": [
+          ""
+        ],
+        "evi_C4f": [
+          ""
+        ],
+        "evi_C4g": [
+          ""
+        ],
+        "evi_C5a": [
+          ""
+        ],
+        "evi_C5b": [
+          ""
+        ],
+        "evi_C6": [
+          ""
+        ],
+        "evi_D1": [
+          ""
+        ],
+        "evi_D4": [
+          ""
+        ],
         "ccviR_version": [
           [
             0,
             1,
             1
           ]
-        ]
-      },
-      "spat": {
-        "scenario_name": [
-          "RCP 4.5",
-          "RCP 8.5"
-        ],
-        "MAT_1": [
-          0,
-          0
-        ],
-        "MAT_2": [
-          0,
-          0
-        ],
-        "MAT_3": [
-          8.067,
-          0
-        ],
-        "MAT_4": [
-          64.113,
-          0
-        ],
-        "MAT_5": [
-          27.82,
-          0
-        ],
-        "MAT_6": [
-          0,
-          100
-        ],
-        "CMD_1": [
-          25.672,
-          18.581
-        ],
-        "CMD_2": [
-          20.769,
-          18.512
-        ],
-        "CMD_3": [
-          37.629,
-          29.415
-        ],
-        "CMD_4": [
-          15.465,
-          22.953
-        ],
-        "CMD_5": [
-          0.466,
-          9.834
-        ],
-        "CMD_6": [
-          0,
-          0.706
-        ],
-        "CCEI_1": [
-          null,
-          null
-        ],
-        "CCEI_2": [
-          null,
-          null
-        ],
-        "CCEI_3": [
-          null,
-          null
-        ],
-        "CCEI_4": [
-          null,
-          null
-        ],
-        "prop_non_breed_over_ccei": [
-          null,
-          null
-        ],
-        "HTN_1": [
-          0.185,
-          0.185
-        ],
-        "HTN_2": [
-          99.815,
-          99.815
-        ],
-        "HTN_3": [
-          0,
-          0
-        ],
-        "HTN_4": [
-          0,
-          0
-        ],
-        "PTN": [
-          19.45391478831063,
-          19.45391478831063
-        ],
-        "MAP_max": [
-          1175,
-          1175
-        ],
-        "MAP_min": [
-          949,
-          949
-        ],
-        "range_change": [
-          79.479,
-          98.821
-        ],
-        "range_overlap": [
-          19.337,
-          0.393
-        ],
-        "range_size": [
-          25902079658.56419,
-          25902079658.56419
-        ],
-        "gain_mod": [
-          1,
-          1
-        ],
-        "gain_mod_comm": [
-          "",
-          ""
-        ],
-        "lost": [
-          "-1, -1",
-          "-1, -1"
-        ],
-        "maint": [
-          "0, 0",
-          "0, 0"
-        ],
-        "gain": [
-          "1, 1",
-          "1, 1"
-        ],
-        "ns": [
-          "99, 99",
-          "99, 99"
-        ],
-        "rng_chg_used": [
-          "no",
-          "no"
-        ],
-        "GCM_or_Ensemble_name": [
-          "AdaptWest 15 CMIP5 AOGCM Ensemble",
-          "AdaptWest 15 CMIP5 AOGCM Ensemble"
-        ],
-        "Historical_normal_period": [
-          "1961-1990",
-          "1961-1990"
-        ],
-        "Future_period": [
-          "2050s",
-          "2050s"
-        ],
-        "Emissions_scenario": [
-          "RCP 4.5",
-          "RCP8.5"
-        ],
-        "Link_to_source": [
-          "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
-          "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
-        ],
-        "range_poly_pth": [
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp",
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp"
-        ],
-        "assess_poly_pth": [
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp",
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp"
-        ],
-        "ptn_poly_pth": [
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/PTN_poly.shp",
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/PTN_poly.shp"
-        ],
-        "rng_chg_pths": [
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_45.tif",
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_45.tif"
-        ],
-        "clim_dir_pth": [
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed",
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed"
         ]
       }
     },

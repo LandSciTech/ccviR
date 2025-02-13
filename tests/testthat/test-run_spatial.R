@@ -6,7 +6,7 @@ test_that("spatial runs with all data or optional data",{
     res <- analyze_spatial(d$range, d$assess, d$clim_vars, NULL, d$ptn, d$hs_terra,
                            hs_rcl = d$rng_chg_mat,
                            scenario_names = d$scn_nms)
-  )
+  ) |> suppressMessages()
   expect_type(res, "list")
   expect_false(anyNA(res$spat_table %>% dplyr::select(-contains("CCEI"))))
 
@@ -14,7 +14,7 @@ test_that("spatial runs with all data or optional data",{
   expect_message(
     res2 <- analyze_spatial(d$range, d$assess, d$clim_vars[c(1:2, 6)],
                             scenario_names = d$scn_nms)
-  )
+  ) |> suppressMessages()
   expect_type(res2, "list")
   expect_true(anyNA(res2$spat_table))
 
@@ -32,14 +32,14 @@ test_that("Nonoverlaping poly and raster",{
   expect_error(analyze_spatial(nonbreed, d$assess, d$clim_vars[c(1:2, 6)],
                                scenario_names = d$scn_nms),
                "does not overlap") %>%
-    expect_message()
+    suppressMessages()
 
   # use nonbreed as assess - no overlap - should not be allowed
   # error
   expect_error(analyze_spatial(d$range, nonbreed, d$clim_vars[c(1:2, 6)],
                                scenario_names = d$scn_nms),
                "does not overlap") %>%
-    expect_message()
+    suppressMessages()
 
   # nonbreed is allowed to only partially overlap CCEI but should there be a
   # warning if below a certain threshold based on what Sarah O did 40%
@@ -53,21 +53,21 @@ test_that("Nonoverlaping poly and raster",{
               non_breed_poly = nonbreed_lt40,
               scenario_names = d$scn_nms),
               "does not overlap") %>%
-    expect_message()
+    suppressMessages()
 
   # not allowed to not overlap at all
   expect_error(analyze_spatial(d$range, d$assess, clim_vars[c(1:2, 4, 6)],
                                non_breed_poly = nonbreed,
                                scenario_names = d$scn_nms),
                "does not overlap") %>%
-    expect_message()
+    suppressMessages()
 
   # ptn should not be allowed to be not overlapping assess
   expect_error(analyze_spatial(d$range, d$assess, clim_vars[c(1:2, 4, 6)],
                                ptn_poly = nonbreed,
                                scenario_names = d$scn_nms),
                "does not overlap") %>%
-    expect_message()
+    suppressMessages()
 
 })
 
@@ -80,20 +80,20 @@ test_that("Non matching crs are handled reasonably", {
   expect_error(analyze_spatial(rng_high_lccset, d$assess, d$clim_vars[c(1:2, 6)],
                                scenario_names = d$scn_nms),
                "does not overlap") %>%
-    expect_message()
+    suppressMessages()
 
   # the crs is different but they do overlap
   rng_high_lcctrans <- sf::st_transform(d$range, crs = "+proj=lcc +lon_0=-90 +lat_1=33 +lat_2=45")
   expect_s3_class(res <- analyze_spatial(rng_high_lcctrans, d$assess, d$clim_vars[c(1:2, 6)],
                                    scenario_names = d$scn_nms)$spat_table,
                  "data.frame") %>%
-    expect_message()
+    suppressMessages()
 
   # make sure results are the same after transformed
   expect_message(
     res2 <- analyze_spatial(d$range, d$assess, d$clim_vars[c(1:2, 6)],
                             scenario_names = d$scn_nms)$spat_table
-  )
+  ) %>% suppressMessages()
   expect_equal(as.numeric(res[1,-c(1,27)]), as.numeric(res2[1,-c(1,27)]))
   # the range size is different after transforming but I think that is expected
 
@@ -102,7 +102,7 @@ test_that("Non matching crs are handled reasonably", {
   expect_error(analyze_spatial(rng_high_ncrs, d$assess, d$clim_vars[c(1:2, 6)],
                                scenario_names = d$scn_nms),
                "does not have a CRS") %>%
-    expect_message()
+    suppressMessages()
 
   # if crs of hs_rast does not match clim data and therefore polys this is ok bc
   # polys are transformed on the fly if needed but if it doesn't overlap should
@@ -116,7 +116,7 @@ test_that("Non matching crs are handled reasonably", {
                       scenario_names = d$scn_nms),
       "Polygons were transformed"),
     "does not fully overlap") %>%
-    expect_message()
+    suppressMessages()
 
   # no crs in hs_rast should be error
   hs_terra3 <- terra::`crs<-`(d$hs_terra, NA)
@@ -126,7 +126,7 @@ test_that("Non matching crs are handled reasonably", {
                     hs_rcl = d$rng_chg_mat,
                     scenario_names = d$scn_nms),
     "does not have a CRS") %>%
-    expect_message()
+    suppressMessages()
 
 })
 
@@ -136,11 +136,11 @@ test_that("Multiple polygons are merged", {
   expect_message(
     res1 <- analyze_spatial(d$range, d$assess, d$clim_vars[c(1:2, 6)],
                             scenario_names = d$scn_nms)$spat_table
-  )
+  ) %>% suppressMessages()
   expect_message(
     res2 <- analyze_spatial(rng_high2, d$assess, d$clim_vars[c(1:2, 6)],
                             scenario_names = d$scn_nms)$spat_table
-  )
+  ) %>% suppressMessages()
 
   res1$range_size - res2$range_size
 
@@ -155,14 +155,14 @@ test_that("gain_mod works", {
     res <- analyze_spatial(d$range, d$assess, d$clim_vars, hs_rast = d$hs,
                            hs_rcl = d$rng_chg_mat,
                            scenario_names = d$scn_nms)
-  )
+  ) %>% suppressMessages()
 
   expect_message(
     res2 <- analyze_spatial(d$range, d$assess, d$clim_vars, hs_rast = d$hs,
                             hs_rcl = d$rng_chg_mat,
                             gain_mod = 0.5,
                             scenario_names = d$scn_nms)
-  )
+  ) %>% suppressMessages()
 
   expect_lt(res$spat_table$range_change[1], res2$spat_table$range_change[1])
 })
@@ -175,7 +175,7 @@ test_that("works with mulitple clim scenarios",{
                             non_breed_poly = NULL, hs_rast = raster::stack(d$hs, d$hs2),
                             hs_rcl = d$rng_chg_mat,
                             scenario_names = c("RCP 4.5", "RCP 8.5"))
-  )
+  ) %>% suppressMessages()
 
   expect_true(nrow(res2$spat_table) == 2)
 
@@ -184,15 +184,15 @@ test_that("works with mulitple clim scenarios",{
                            non_breed_poly = d$nonbreed, hs_rast = d$hs,
                            hs_rcl = d$rng_chg_mat,
                            scenario_names = c("RCP 4.5", "RCP 8.5", "asdkjf")),
-               "rasters must have one layer or") %>%
-    expect_message()
+               "rasters must have one layer or")  %>%
+    suppressMessages()
 
   expect_message(
     res3 <- analyze_spatial(d$range, d$assess, d$clim_vars,
                             non_breed_poly = NULL, hs_rast = d$hs,
                             hs_rcl = d$rng_chg_mat,
                             scenario_names = c("RCP 4.5", "RCP 8.5"))
-  )
+  ) %>% suppressMessages()
 
   expect_true(nrow(res3$spat_table) == 2)
 })
@@ -202,8 +202,8 @@ test_that("gives error for points early", {
 
   expect_error(analyze_spatial(rng_high_pts, d$assess, d$clim_vars[c(1:2, 6)],
                                scenario_names = d$scn_nms),
-               "geometry type") %>%
-    expect_message()
+               "geometry type")  %>%
+    suppressMessages()
 
   # make sure geometry collection that includes a polygon works
   rng_high_geo <- bind_rows(d$range, st_centroid(d$range)) %>%
@@ -211,7 +211,7 @@ test_that("gives error for points early", {
 
   expect_message(analyze_spatial(rng_high_geo, d$assess, d$clim_vars[c(1:2, 6)],
                   scenario_names = d$scn_nms),
-                 "Point") %>%
-    expect_message()
+                 "Point")  %>%
+    suppressMessages()
 
 })

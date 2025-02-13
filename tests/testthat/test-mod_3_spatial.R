@@ -20,39 +20,45 @@ test_that("spatial data created", {
     # Use Testing files
     input_files = test_files()), {
 
+      # Set the inputs
+      session$setInputs(!!!test_inputs)
+      session$setInputs(rng_chg_used = "multiple")
 
-    # Set the inputs
-    session$setInputs(!!!test_inputs)
-    session$flushReact()
+      session$flushReact()
 
-    # No spatial without button
-    expect_false(spat_res())
-    expect_null(range_poly_in())
-    expect_null(assess_poly())
-    expect_null(ptn_poly())
+      # Expect spatial files to load right away
+      expect_s3_class(rng_poly(), "sf")
+      expect_s3_class(assess_poly(), "sf")
+      expect_s3_class(ptn_poly(), "sf")
+      expect_null(nonbreed_poly())
+      expect_s4_class(rng_chg(), "SpatRaster")
 
-    # Run spatial
-    doSpatial(1)
-    session$flushReact()
+      expect_type(clim_vars(), "list")
+      expect_s4_class(clim_vars()$mat, "SpatRaster")
+      expect_null(clim_vars()$ccei)
+      expect_s3_class(clim_vars()$clim_poly, "sf")
+      expect_s3_class(clim_readme(), "data.frame")
 
-    # Have spatial
-    expect_s3_class(spat_res2(), "data.frame")
-    expect_s4_class(clim_vars()$mat, "SpatRaster")
-    expect_null(clim_vars()$ccei)
-    expect_s3_class(clim_vars()$clim_poly, "sf")
-    expect_s3_class(clim_readme(), "data.frame")
-    expect_s3_class(range_poly(), "sf")
-    expect_s3_class(range_poly_clim(), "sf")
-    expect_s3_class(ptn_poly(), "sf")
-    expect_null(nonbreed_poly())
-    expect_s3_class(assess_poly(), "sf")
-    expect_s4_class(hs_rast(), "SpatRaster")
-    expect_true(is.matrix(hs_rcl_mat()))
-    expect_s3_class(spatial_data(), "data.frame")
+      expect_true(is.matrix(rng_chg_mat()))
 
-    r <- session$getReturned()
-    expect_snapshot_value(r$spatial_data(), style = "json2")
-    expect_snapshot_value(r$index_res(), style = "json2")
-    expect_snapshot_value(r$spatial_details$spat_res(), style = "json2")
-  })
+      # No spatial without button
+      expect_error(spat_res())   # Reactive
+      expect_null(spat_thresh()) # ReactiveVal
+
+      # Run spatial
+      doSpatial(1)
+      session$flushReact() %>%
+        suppressWarnings() # TODO: Catch this warning in the app, don't suppress here
+
+      # Have spatial
+      expect_type(spat_res(), "list")
+      expect_s3_class(spat_thresh(), "data.frame")
+      expect_s3_class(range_poly_clip(), "sf")
+      expect_s3_class(range_poly_clim(), "sf")
+      expect_s3_class(spatial_data(), "data.frame")
+
+      r <- session$getReturned()
+      expect_snapshot_value(r$spatial_data(), style = "json2")
+      expect_snapshot_value(r$spatial_details$spat_res(), style = "json2")
+    })
 })

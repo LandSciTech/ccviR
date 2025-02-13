@@ -29,11 +29,13 @@ test_that("Full app", {
   app$click("spatial-startSpatial")
   #app$click("spatial-shinyalert")
   app$wait_for_idle()
+  Sys.sleep(1)
   app$expect_screenshot()
   app$click("spatial-continue")
 
   # Section A
   app$wait_for_idle()
+  Sys.sleep(1)
   app$expect_screenshot()
   app$click("section_a-continue")
 
@@ -44,6 +46,7 @@ test_that("Full app", {
   Sys.sleep(1)
   app$expect_screenshot()
   app$click(selector = "button[data-dismiss='modal']")
+  Sys.sleep(1)
   app$expect_screenshot()
   app$set_inputs(`section_b-B1` = "2")
   app$set_inputs(`section_b-B2a` = "3")

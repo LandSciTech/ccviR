@@ -17,6 +17,10 @@
     "section_b-comB2b": "",
     "section_b-comB3": "",
     "section_b-continue": 0,
+    "section_b-eviB1": "",
+    "section_b-eviB2a": "",
+    "section_b-eviB2b": "",
+    "section_b-eviB3": "",
     "section_b-help_B1": 0,
     "section_b-help_B2a": 0,
     "section_b-help_B2b": 0,
@@ -57,6 +61,23 @@
     "section_c-comC5b": "",
     "section_c-comC6": "",
     "section_c-continue": 0,
+    "section_c-eviC1": "",
+    "section_c-eviC2aii": "",
+    "section_c-eviC2bi": "",
+    "section_c-eviC2bii": "",
+    "section_c-eviC2c": "",
+    "section_c-eviC2d": "",
+    "section_c-eviC3": "",
+    "section_c-eviC4a": "",
+    "section_c-eviC4b": "",
+    "section_c-eviC4c": "",
+    "section_c-eviC4d": "",
+    "section_c-eviC4e": "",
+    "section_c-eviC4f": "",
+    "section_c-eviC4g": "",
+    "section_c-eviC5a": "",
+    "section_c-eviC5b": "",
+    "section_c-eviC6": "",
     "section_c-help_C1": 0,
     "section_c-help_C2aii": 0,
     "section_c-help_C2bi": 0,
@@ -79,6 +100,8 @@
     "section_d-comD1": "",
     "section_d-comD4": "",
     "section_d-continue": 0,
+    "section_d-eviD1": "",
+    "section_d-eviD4": "",
     "section_d-help_D1": 0,
     "section_d-help_D2": 0,
     "section_d-help_D3": 0,
@@ -103,9 +126,9 @@
     "spatial-ns_to": 99,
     "spatial-ptn_poly_pth": 0,
     "spatial-ptn_poly_pth_clear": 0,
-    "spatial-range_poly_pth": 0,
-    "spatial-range_poly_pth_clear": 0,
     "spatial-rng_chg_used": "no",
+    "spatial-rng_poly_pth": 0,
+    "spatial-rng_poly_pth_clear": 0,
     "spatial-startSpatial": 0,
     "species-assessor_name": "",
     "species-cave": false,
@@ -136,7 +159,7 @@
       ]
     },
     "section_c-box_C2aii": {
-      "html": "<div id=\"section_c-C2aiidiv\">\n  <div class=\"row\">\n    <div class=\"col-sm-9\">\n      <div id=\"section_c-C2aii\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2aii-label\">\n        <label class=\"control-label\" id=\"section_c-C2aii-label\" for=\"section_c-C2aii\">Calculated effect on vulnerability.<\/label>\n        <div class=\"shiny-options-group\">\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"3\"/>\n            <span>Greatly increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"2\"/>\n            <span>Increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"1\"/>\n            <span>Somewhat increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"0\"/>\n            <span>Neutral<\/span>\n          <\/label>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div class=\"col-sm-1\">\n      <button id=\"section_c-help_C2aii\" type=\"button\" class=\"btn btn-default action-button\">\n        <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n        \n      <\/button>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"section_c-comC2aii\" id=\"section_c-comC2aii-label\"><\/label>\n    <textarea id=\"section_c-comC2aii\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
+      "html": "<div id=\"section_c-C2aiidiv\">\n  <div class=\"row\">\n    <div class=\"col-sm-9\">\n      <div id=\"section_c-C2aii\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2aii-label\">\n        <label class=\"control-label\" id=\"section_c-C2aii-label\" for=\"section_c-C2aii\">Calculated effect on vulnerability.<\/label>\n        <div class=\"shiny-options-group\">\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"3\"/>\n            <span>Greatly increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"2\"/>\n            <span>Increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"1\"/>\n            <span>Somewhat increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"0\"/>\n            <span>Neutral<\/span>\n          <\/label>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div class=\"col-sm-1\">\n      <button id=\"section_c-help_C2aii\" type=\"button\" class=\"btn btn-default action-button\">\n        <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n        \n      <\/button>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label shiny-label-null\" for=\"section_c-eviC2aii\" id=\"section_c-eviC2aii-label\"><\/label>\n      <div>\n        <select id=\"section_c-eviC2aii\" class=\"shiny-input-select\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n        <script type=\"application/json\" data-for=\"section_c-eviC2aii\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-comC2aii\" id=\"section_c-comC2aii-label\"><\/label>\n        <textarea id=\"section_c-comC2aii\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
       "deps": [
         {
           "name": "font-awesome",
@@ -153,11 +176,27 @@
           "head": null,
           "attachment": null,
           "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
         }
       ]
     },
     "section_c-box_C2bi": {
-      "html": "<div id=\"section_c-C2bidiv\">\n  <div class=\"row\">\n    <div class=\"col-sm-9\">\n      <div id=\"section_c-C2bi\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2bi-label\">\n        <label class=\"control-label\" id=\"section_c-C2bi-label\" for=\"section_c-C2bi\">Calculated effect on vulnerability.<\/label>\n        <div class=\"shiny-options-group\">\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"3\"/>\n            <span>Greatly increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"2\"/>\n            <span>Increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"1\"/>\n            <span>Somewhat increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"0\"/>\n            <span>Neutral<\/span>\n          <\/label>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div class=\"col-sm-1\">\n      <button id=\"section_c-help_C2bi\" type=\"button\" class=\"btn btn-default action-button\">\n        <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n        \n      <\/button>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\"><\/div>\n  <div class=\"form-group shiny-input-container\">\n    <label class=\"control-label shiny-label-null\" for=\"section_c-comC2bi\" id=\"section_c-comC2bi-label\"><\/label>\n    <textarea id=\"section_c-comC2bi\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n  <\/div>\n<\/div>",
+      "html": "<div id=\"section_c-C2bidiv\">\n  <div class=\"row\">\n    <div class=\"col-sm-9\">\n      <div id=\"section_c-C2bi\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2bi-label\">\n        <label class=\"control-label\" id=\"section_c-C2bi-label\" for=\"section_c-C2bi\">Calculated effect on vulnerability.<\/label>\n        <div class=\"shiny-options-group\">\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"3\"/>\n            <span>Greatly increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"2\"/>\n            <span>Increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"1\"/>\n            <span>Somewhat increase<\/span>\n          <\/label>\n          <label class=\"checkbox-inline\">\n            <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"0\"/>\n            <span>Neutral<\/span>\n          <\/label>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div class=\"col-sm-1\">\n      <button id=\"section_c-help_C2bi\" type=\"button\" class=\"btn btn-default action-button\">\n        <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n        \n      <\/button>\n    <\/div>\n  <\/div>\n  <div style=\"margin-top: -1.5em\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label shiny-label-null\" for=\"section_c-eviC2bi\" id=\"section_c-eviC2bi-label\"><\/label>\n      <div>\n        <select id=\"section_c-eviC2bi\" class=\"shiny-input-select\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n        <script type=\"application/json\" data-for=\"section_c-eviC2bi\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-comC2bi\" id=\"section_c-comC2bi-label\"><\/label>\n        <textarea id=\"section_c-comC2bi\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
       "deps": [
         {
           "name": "font-awesome",
@@ -171,6 +210,22 @@
             "css/all.min.css",
             "css/v4-shims.min.css"
           ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
           "head": null,
           "attachment": null,
           "all_files": true
@@ -354,6 +409,75 @@
           ""
         ],
         "com_D4": [
+          ""
+        ],
+        "evi_B1": [
+          ""
+        ],
+        "evi_B2a": [
+          ""
+        ],
+        "evi_B2b": [
+          ""
+        ],
+        "evi_B3": [
+          ""
+        ],
+        "evi_C1": [
+          ""
+        ],
+        "evi_C2aii": [
+          ""
+        ],
+        "evi_C2bi": [
+          ""
+        ],
+        "evi_C2bii": [
+          ""
+        ],
+        "evi_C2c": [
+          ""
+        ],
+        "evi_C2d": [
+          ""
+        ],
+        "evi_C3": [
+          ""
+        ],
+        "evi_C4a": [
+          ""
+        ],
+        "evi_C4b": [
+          ""
+        ],
+        "evi_C4c": [
+          ""
+        ],
+        "evi_C4d": [
+          ""
+        ],
+        "evi_C4e": [
+          ""
+        ],
+        "evi_C4f": [
+          ""
+        ],
+        "evi_C4g": [
+          ""
+        ],
+        "evi_C5a": [
+          ""
+        ],
+        "evi_C5b": [
+          ""
+        ],
+        "evi_C6": [
+          ""
+        ],
+        "evi_D1": [
+          ""
+        ],
+        "evi_D4": [
           ""
         ],
         "ccviR_version": [

@@ -3,20 +3,69 @@
     {
       "type": "list",
       "attributes": {
-        "names": {
-          "type": "character",
-          "attributes": {},
-          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "gain_mod", "lost", "maint", "gain", "ns", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "range_poly_pth", "assess_poly_pth", "ptn_poly_pth", "rng_chg_pths", "clim_dir_pth"]
-        },
         "class": {
           "type": "character",
           "attributes": {},
-          "value": ["data.frame"]
+          "value": ["rowwise_df", "tbl_df", "tbl", "data.frame"]
         },
         "row.names": {
           "type": "integer",
           "attributes": {},
           "value": [1, 2]
+        },
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3", "gain_mod", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "clim_dir_pth"]
+        },
+        "groups": {
+          "type": "list",
+          "attributes": {
+            "names": {
+              "type": "character",
+              "attributes": {},
+              "value": [".rows"]
+            },
+            "row.names": {
+              "type": "integer",
+              "attributes": {},
+              "value": [1, 2]
+            },
+            "class": {
+              "type": "character",
+              "attributes": {},
+              "value": ["tbl_df", "tbl", "data.frame"]
+            }
+          },
+          "value": [
+            {
+              "type": "list",
+              "attributes": {
+                "ptype": {
+                  "type": "integer",
+                  "attributes": {},
+                  "value": []
+                },
+                "class": {
+                  "type": "character",
+                  "attributes": {},
+                  "value": ["vctrs_list_of", "vctrs_vctr", "list"]
+                }
+              },
+              "value": [
+                {
+                  "type": "integer",
+                  "attributes": {},
+                  "value": [1]
+                },
+                {
+                  "type": "integer",
+                  "attributes": {},
+                  "value": [2]
+                }
+              ]
+            }
+          ]
         }
       },
       "value": [
@@ -163,6 +212,66 @@
         {
           "type": "double",
           "attributes": {},
+          "value": [1.6, 2.4]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1.6, 2.4]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1.3, 1.7]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1.3, 1.7]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [1, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [226, 226]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [2, 2]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [2, 2]
+        },
+        {
+          "type": "double",
+          "attributes": {},
+          "value": [2, 2]
+        },
+        {
+          "type": "double",
+          "attributes": {},
           "value": [1, 1]
         },
         {
@@ -184,6 +293,11 @@
           "type": "character",
           "attributes": {},
           "value": ["99, 99", "99, 99"]
+        },
+        {
+          "type": "character",
+          "attributes": {},
+          "value": ["multiple", "multiple"]
         },
         {
           "type": "character",
@@ -213,12 +327,12 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp"]
+          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp"]
         },
         {
           "type": "character",
           "attributes": {},
-          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp"]
+          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp"]
         },
         {
           "type": "character",
@@ -232,6 +346,11 @@
         },
         {
           "type": "character",
+          "attributes": {},
+          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif"]
+        },
+        {
+          "type": "character",
           "attributes": {
             "class": {
               "type": "character",
@@ -242,14 +361,6 @@
           "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed"]
         }
       ]
-    }
-
----
-
-    {
-      "type": "logical",
-      "attributes": {},
-      "value": [false]
     }
 
 ---
