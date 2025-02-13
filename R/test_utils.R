@@ -79,7 +79,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 test_data <- function(d = test_files()) {
 
   clim_vars <- get_clim_vars(d$clim_dir, d$scn_nms)
-  rng_chg_mat <- matrix(c(-1:1,NA, 1:3,0), ncol = 2)
+  rng_chg_mat <- matrix(c(-1:1, NA, 1:3,0), ncol = 2)
 
   # make the crs's match to avoid warning it has to be verbatim the same
   # nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",

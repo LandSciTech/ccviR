@@ -4,7 +4,7 @@
 #' @noRd
 #' @examples
 #' mod_spatial_test(input_files = NULL) # Basic, no files
-#' mod_spatial_test()                   # With test files pre-loaded
+#' mod_spatial_test()                   # With test paths pre-filled
 #' mod_spatial_test(df_loaded = TRUE)   # As if re-loading from previous run
 
 

@@ -6,16 +6,10 @@
 #' @noRd
 #' @examples
 #'
-#' ccvi_app2()
+#' ccvi_app2()  # Basic, no files
+#' ccvi_app2(input_files = test_files()) # With test paths pre-filled
 
 ccvi_app2 <- function(input_files = NULL, ...){
-
-  # MOVED TO lookup_tbls.R so available to all functions
-  # Input options
-  #valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
-  #valueOpts <- c(3, 2, 1, 0)
-
-
 
   ui <- ui_setup(
     mod_home_ui(id = "home"),
