@@ -504,7 +504,7 @@ read_poly <- function(pth, name, req = FALSE) {
   s <- try(sf::st_read(pth, agr = "constant", quiet = TRUE), silent = TRUE)
   validate(need(
     !inherits(s, "try-error"),
-    "Error reading file. Are you sure this is a valid spatial file?"))
+    "Error reading file. Are you sure this is a valid polygon spatial file?"))
 
   check_polys(s, name)
 

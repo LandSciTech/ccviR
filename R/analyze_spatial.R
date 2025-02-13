@@ -91,7 +91,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
                             scenario_names = "Scenario 1", quiet = FALSE) {
 
   n <- 6
-  if(shiny::isRunning()) incProgress(1/n, detail = "Checking files")
+  inform_prog("Checking files", quiet, n, 1)
 
   clim_nms_dif <- setdiff(names(clim_vars_lst),
                           c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
@@ -144,7 +144,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   }
 
   # Clip range to climate data polygon and to scale poly
-  if(shiny::isRunning()) incProgress(2/n, detail = "Clipping ranges")
+  inform_prog("Clipping ranges", quiet, n, 2)
 
   range_poly_clim <- st_intersection(range_poly, clim_poly) %>%
     st_set_agr("constant")
@@ -167,7 +167,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   range_poly <- valid_or_error(range_poly, "range_poly assessment area intersection")
 
   # Section A - Exposure to Local Climate Change: #====
-  if(shiny::isRunning()) incProgress(3/n, detail = "Assessing local climate exposure")
+  inform_prog("Assessing local climate exposure", quiet, n, 3)
 
   # Temperature
   mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT")
@@ -200,7 +200,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
   }
 
   # Section C - Sensitivity and Adaptive Capacity: #====
-  if(shiny::isRunning()) incProgress(4/n, detail = "Assessing thermal & hydrological niches")
+  inform_prog("Assessing thermal & hydrological niches", quiet, n, 4)
 
   # Historical Thermal niche
   if(is.null(clim_vars_lst$htn)){
@@ -239,7 +239,8 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
 
   # Section D - Modelled Response to Climate Change #====
-  if(shiny::isRunning()) incProgress(5/n, detail = "Assessing modelled response to climate change")
+  inform_prog("Assessing modelled response to climate change", quiet, n, 5)
+
   if(is.null(hs_rast)){
     mod_resp_CC <- rep(NA_real_, 2) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(c("range_change", "range_overlap"))
@@ -261,7 +262,7 @@ analyze_spatial <- function(range_poly, scale_poly, clim_vars_lst,
 
   }
 
-  if(shiny::isRunning()) incProgress(6/n, detail = "Finalizing outputs")
+  inform_prog("Finalizing outputs", quiet, n, 6)
 
   # Range size
   range_size <- tibble(range_size = st_area(range_poly) %>% units::set_units(NULL))
@@ -325,6 +326,7 @@ check_polys <- function(poly, var_name) {
 
   return(poly)
 }
+
 
 check_rast <- function(ras, var_name){
   if(!is(ras, "SpatRaster")){
