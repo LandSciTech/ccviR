@@ -5,7 +5,8 @@
 #' @examples
 #' mod_spatial_test(input_files = NULL) # Basic, no files
 #' mod_spatial_test()                   # With test paths pre-filled
-#' mod_spatial_test(df_loaded = TRUE)   # As if re-loading from previous run
+#' mod_spatial_test(df_loaded = TRUE,   # As if re-loading from previous run
+#'                  input_files = NULL)
 
 
 mod_spatial_test <- function(df_loaded = FALSE, input_files = test_files()) {
@@ -128,16 +129,18 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     ns <- session$ns
 
-    # Values
+    # Run Values
     repeatSpatial <- reactiveVal(FALSE)
-
-    spat_res <- reactiveVal(FALSE)
-    spat_res2 <- reactiveVal(FALSE)
     doSpatial <- reactiveVal(0)
     doSpatialRestore <- reactiveVal(FALSE)
 
+    # Data
+    # reactiveVal, not reactive, bc modified through several pathways
+    spat_thresh <- reactiveVal()
+
+    # Paths
     # Catch changes to dir/file paths from either loading previous or inputs
-    # Need to be reactiveVal/ues because modified through several different pathways
+    # reactiveVal/ues, not reactive, bc modified through several pathways
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     clim_dir_pth <- reactiveVal()
     file_ids <- c("rng_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
@@ -150,7 +153,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Enable the Start Spatial button when all mandatory fields are filled out
     observe({
       shinyjs::disable("startSpatial")
-      req(rng_poly(), assess_poly(), clim_vars1(), clim_readme())
+      req(rng_poly(), assess_poly(), clim_vars(), clim_readme())
       shinyjs::enable("startSpatial")
     })
 
@@ -182,52 +185,62 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       update_restored2(df_loaded(), section = "spatial", session)
     })
 
-    restored_spatial <- eventReactive(
-      {
-        df_loaded()
-        # this is to make it trigger after update_restored
-        input$hidden
-      },
-      {
-        # this is to avoid running before input has been updated
-        req(input$hidden)
+    restored_spatial <- eventReactive({
+      df_loaded()
+      # this is to make it trigger after update_restored
+      input$hidden
+    }, {
+      # this is to avoid running before input has been updated
+      req(input$hidden)
 
-        df_loaded <- df_loaded()
-        if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))){
-          # need spat tholds to get exp multipliers
-          df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave)
-          # need use df_loaded for all other values to preserve changes to spat vuln qs
-          df_spat2 <- df_loaded %>%
-            left_join(df_spat %>%
-                        select("scenario_name", setdiff(names(df_spat), names(df_loaded))),
-                      by = 'scenario_name')
-          spat_res2(df_spat2)
-          repeatSpatial(TRUE)
-          doSpatial((doSpatial() +1))
-          # set to same as doSpatial so can check value and if same don't update spat_res2
-          doSpatialRestore(doSpatial())
-          showNotification("Re-running spatial analysis from loaded file.",
-                           duration = NULL, id = ns("spat_restore_note"))
-        }
+      df_loaded <- df_loaded()
+      if(!is.null(df_loaded$MAT_6) & !all(is.na(df_loaded$MAT_6))) {
 
-        loaded_pths <- df_loaded %>%
-          slice(1) %>%
-          select(contains("pth"), -any_of("clim_dir_pth")) %>%
-          as.list()
+        # In case user ran spatial analysis, but then changed spatial questions,
+        # Need to catch results of spatial analysis and thresholds, but NOT
+        # override spatial questions.
 
-        if(length(loaded_pths)>0) {
-          # TODO: FIX!
-          file_pths <- purrr::discard(loaded_pths, is.na)
-        }
+        # Get *only* spatial thresholds for exp multipliers
+        df_spat <- apply_spat_tholds(df_loaded, df_loaded$cave) %>%
+          select("scenario_name", setdiff(names(.), names(df_loaded)))
 
-        clim_pth_ldd <- df_loaded %>% slice(1) %>% pull(.data$clim_dir_pth)
-        clim_pth_ldd <- ifelse(is.na(clim_pth_ldd), "", clim_pth_ldd)
-        clim_dir_pth(clim_pth_ldd)
+        # Add to loaded data
+        df_spat <- left_join(df_loaded, df_spat, by = "scenario_name")
 
-        switch_tab("Species Information", parent_session)
+        spat_thresh(df_spat) # Save to spat_thresh reactiveVal
+        repeatSpatial(TRUE)  # Mark as a spatial repeat
+        doSpatial(doSpatial() + 1) # Mark as if spatial analysis run
+        doSpatialRestore(doSpatial()) # Match doSpatial so can check and avoid updating spat_thresh in observer below
 
-        return(TRUE)
-      })
+        showNotification("Re-running spatial analysis from loaded file.",
+                         duration = NULL, id = ns("spat_restore_note"))
+      }
+
+      # Get previous path locations
+      loaded_pths <- df_loaded %>%
+        slice(1) %>%
+        select(contains("pth"), -any_of("clim_dir_pth")) %>%
+        as.list()
+
+      # Set file paths
+      if(length(loaded_pths) > 0) {
+        pths <- purrr::discard(loaded_pths, is.na)
+        names(pths)[names(pths) == "range_poly_pth"] <- "rng_poly_pth"
+        purrr::walk(names(pths), ~{
+          file_pths[[.x]] <- pths[[.x]]
+        })
+      }
+
+      # Set dir paths
+      clim_pth_ldd <- df_loaded$clim_dir_pth[1]
+      clim_pth_ldd <- tidyr::replace_na(clim_pth_ldd, "")
+      clim_dir_pth(clim_pth_ldd)
+
+      # Move to species tab
+      switch_tab("Species Information", parent_session)
+
+      return(TRUE)
+    })
 
 
     observeEvent(restored_spatial(), {
@@ -389,7 +402,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     })
 
-    clim_vars1 <- reactive({
+    clim_vars <- reactive({
       req(clim_readme())
       read_clim(clim_dir_pth(), clim_readme()$Scenario_Name)
     })
@@ -418,10 +431,10 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
         fs::file_exists(pth),
         "The climate folder is missing the required 'climate_data_readme.csv' file"))
 
-      validate(need(!inherits(clim_vars1(), "try-error"), "Could not load climatic variables"))
+      validate(need(!inherits(clim_vars(), "try-error"), "Could not load climatic variables"))
 
-      if(inherits(clim_vars1(), "try-error")){
-        stop(conditionMessage(attr(clim_vars1(), "condition")))
+      if(inherits(clim_vars(), "try-error")){
+        stop(conditionMessage(attr(clim_vars(), "condition")))
       }
     })
 
@@ -459,10 +472,10 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # Run Spatial Analysis --------------------------------------------------
 
     # run spatial calculations
-    spat_res1 <- eventReactive(doSpatial(), {
+    spat_res <- eventReactive(doSpatial(), {
       req(doSpatial())
-      req(clim_vars1())
-      if(getOption("ccviR.debug")) message("Running Spatial Analyses")
+      req(clim_vars())
+      if(isTruthy(getOption("ccviR.debug"))) message("Running Spatial Analyses")
       withProgress(message = "Running Spatial Analyses", {
         out <- tryCatch({
           analyze_spatial(range_poly = rng_poly(),
@@ -470,7 +483,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
                           scale_poly = assess_poly(),
                           hs_rast = rng_chg(),
                           ptn_poly = ptn_poly(),
-                          clim_vars_lst = clim_vars1(),
+                          clim_vars_lst = clim_vars(),
                           hs_rcl = rng_chg_mat(),
                           gain_mod = input$gain_mod,
                           scenario_names = clim_readme()$Scenario_Name)
@@ -483,6 +496,19 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     }, ignoreInit = TRUE)
 
+
+    # Calculate Exp Multipliers and Vulnerability Questions for spatial results
+    observeEvent(spat_res(), {
+      req(spat_res())
+      # If restoring data, thresholds have already been updated
+      req(doSpatial() != doSpatialRestore())
+      message("Applying thresholds variables")
+      t <- apply_spat_tholds(spat_res()$spat_table, cave())
+
+      # Assign to reactiveVal
+      spat_thresh(t)
+
+    })
 
     observeEvent(input$startSpatial, {
       showModal(modalDialog(
@@ -513,20 +539,14 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     range_poly_clip <- reactive({
       req(rng_poly())
       req(doSpatial())
-      req(!is.character(spat_res1()))
-      spat_res1()$range_poly_assess
+      req(!is.character(spat_res()))
+      spat_res()$range_poly_assess
     })
 
     range_poly_clim <- reactive({
       req(doSpatial())
-      req(!is.character(spat_res1()))
-      spat_res1()$range_poly_clim
-    })
-
-    observe({
-      req(doSpatial())
-      req(!is.character(spat_res1()))
-      spat_res(spat_res1()$spat_table)
+      req(!is.character(spat_res()))
+      spat_res()$range_poly_clim
     })
 
 
@@ -535,32 +555,22 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     #     stop("Error in range change raster",
     #          conditionMessage(attr(rng_chg(), "condition")))
     #   }
-    #   if(is.character(spat_res1())){
-    #     stop(spat_res1(), call. = FALSE)
+    #   if(is.character(spat_res())){
+    #     stop(spat_res(), call. = FALSE)
     #   } else {
     #     "Spatial analysis complete"
     #   }
     # })
 
-    # calculate exp multipliers and vuln Q values for spat
-    observeEvent(spat_res(), {
-      req(!is.character(spat_res()))
-      req(spat_res())
-      req(!doSpatial() == doSpatialRestore())
-      message("updateing spat_res2")
-      spat_res2(apply_spat_tholds(spat_res(), cave()))
-
-    })
-
     # Prepare Spatial outputs ----------------------------------------------
 
     # TODO: Original was an observeEvent which linked to the out_data_lst reactiveValue
     # Check that this is good
-    spatial_data <- eventReactive(spat_res(), {
-      req(spat_res())
+    spatial_data <- eventReactive(spat_thresh(), {
+      req(spat_thresh())
       req(clim_readme())
 
-      spat_df <- spat_res() %>%
+      spat_df <- spat_thresh() %>%
         mutate(gain_mod = input$gain_mod,
                gain_mod_comm = input$gain_mod_comm,
                lost = paste0(input$lost_from, ", ", input$lost_to),
@@ -570,7 +580,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
                rng_chg_used = input$rng_chg_used)
       clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
 
-      spat_fnms <- lapply(file_pths, function(x) ifelse(is.null(x),"",x)) %>%
+      spat_fnms <- reactiveValuesToList(file_pths) %>%
+        purrr::map(~ifelse(is.null(.x), "", .x)) %>%
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())
 
@@ -584,8 +595,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     # exportTestValues(
     #   "spatial_data" = spatial_data(),
     #   "spatial_details" = list(
-    #     "spat_res" = spat_res2(),
-    #     "clim_vars" = clim_vars1(),
+    #     "spat_res" = spat_thresh(),
+    #     "clim_vars" = clim_vars(),
     #     "clim_readme" = clim_readme(),
     #     "range_poly" = range_poly_clip(),
     #     "range_poly_clim" = range_poly_clim(),
@@ -598,8 +609,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     list("spatial_data" = spatial_data,
          "spatial_details" = list(
-           "spat_res" = spat_res2,
-           "clim_vars" = clim_vars1,
+           "spat_res" = spat_thresh,
+           "clim_vars" = clim_vars,
            "clim_readme" = clim_readme,
            "range_poly" = range_poly_clip,
            "range_poly_clim" = range_poly_clim,
