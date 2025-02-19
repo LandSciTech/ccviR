@@ -275,14 +275,20 @@ analyze_spatial <- function(
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
   }
 
-  if(is.null(protected_rast)) {
+  if(is.null(protected_rast) | is.null(hs_rast)) {
     protected <- data.frame(protected = NA_real_)
+    protected_rast_assess <- NULL
   } else {
-    protected <- calc_prop_raster(
+
+    # Only keep actual range i.e. set 0 (not suitable) and 1 (lost) to NA
+    range_future <- terra::subst(hs_rast, c(0, 1), NA)
+
+    # Crop to assessment area
+    protected_rast_assess <- terra::crop(
       protected_rast,
-      range_poly,
-      var_name = "protected", val_range = c(NA, 1)) %>%
-      select(protected = protected_1)
+      st_transform(scale_poly, terra::crs(protected_rast)))
+
+    protected <- calc_overlap_raster(protected_rast_assess, range_future)
   }
 
   inform_prog("Finalizing outputs", quiet, n, 6)
