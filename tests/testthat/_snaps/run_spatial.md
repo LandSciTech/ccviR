@@ -6,7 +6,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["spat_table", "range_poly_assess", "range_poly_clim"]
+          "value": ["spat_table", "range_poly_assess", "range_poly_clim", "protected_rast_assess"]
         }
       },
       "value": [
@@ -910,6 +910,9 @@
               ]
             }
           ]
+        },
+        {
+          "type": "NULL"
         }
       ]
     }
@@ -922,7 +925,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["spat_table", "range_poly_assess", "range_poly_clim"]
+          "value": ["spat_table", "range_poly_assess", "range_poly_clim", "protected_rast_assess"]
         }
       },
       "value": [
@@ -1826,6 +1829,9 @@
               ]
             }
           ]
+        },
+        {
+          "type": "NULL"
         }
       ]
     }
@@ -1995,7 +2001,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [10.655, 10.655]
+          "value": [4.27028524, 4.27028524]
         }
       ]
     }
