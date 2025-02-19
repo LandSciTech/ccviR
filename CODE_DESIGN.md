@@ -4,6 +4,12 @@ Here are details regarding code design choices/decisions,
 particularly where things are bit convoluted, as well as style decisions or 
 naming conventions.
 
+## Interactive testing
+- Most functions have an examples section in the roxygen2 docs which can be
+  used for interactive testing.
+- Most Shiny App functions have multiple settings for using pre-filled 
+  spatial file paths, or simulating loading data, or a vanilla run.
+
 ## Data storage
 
 Data used for preparing data sets for the package. 

@@ -96,16 +96,12 @@
     "section_c-help_C5b": 0,
     "section_c-help_C6": 0,
     "section_d-D1": null,
-    "section_d-D4": null,
     "section_d-comD1": "",
-    "section_d-comD4": "",
     "section_d-continue": 0,
     "section_d-eviD1": "",
-    "section_d-eviD4": "",
     "section_d-help_D1": 0,
     "section_d-help_D2": 0,
     "section_d-help_D3": 0,
-    "section_d-help_D4": 0,
     "spatial-assess_poly_pth": 0,
     "spatial-assess_poly_pth_clear": 0,
     "spatial-clim_var_dir": 0,
@@ -124,6 +120,8 @@
     "spatial-nonbreed_poly_pth_clear": 0,
     "spatial-ns_from": 99,
     "spatial-ns_to": 99,
+    "spatial-protected_rast_pth": 0,
+    "spatial-protected_rast_pth_clear": 0,
     "spatial-ptn_poly_pth": 0,
     "spatial-ptn_poly_pth_clear": 0,
     "spatial-rng_chg_used": "no",
@@ -247,6 +245,14 @@
         "shiny.silent.error",
         "validation"
       ]
+    },
+    "section_d-box_D4": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
     }
   },
   "export": {
@@ -339,9 +345,6 @@
         "D1": [
           "-1"
         ],
-        "D4": [
-          "-1"
-        ],
         "com_B1": [
           ""
         ],
@@ -408,9 +411,6 @@
         "com_D1": [
           ""
         ],
-        "com_D4": [
-          ""
-        ],
         "evi_B1": [
           ""
         ],
@@ -475,9 +475,6 @@
           ""
         ],
         "evi_D1": [
-          ""
-        ],
-        "evi_D4": [
           ""
         ],
         "ccviR_version": [

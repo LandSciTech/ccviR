@@ -212,7 +212,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [10.655, 10.655]
+          "value": [4.27028524, 0.78442981]
         },
         {
           "type": "double",
@@ -277,7 +277,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [1, 1]
+          "value": [2, 2]
         },
         {
           "type": "double",
@@ -362,7 +362,7 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["../../misc/protected_areas/pa_north_america.tif", "../../misc/protected_areas/pa_north_america.tif"]
+          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.tif", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.tif"]
         },
         {
           "type": "character",
