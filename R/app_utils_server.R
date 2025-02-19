@@ -8,8 +8,9 @@ getMultValues <- function(x, nm){
 
   df <- data.frame(Code = nm, Value1 = x[1], Value2 = x[2], Value3 = x[3],
                    Value4 = x[4], stringsAsFactors = FALSE)
-
 }
+
+
 
 
 # function to make maps (Uses some external objects, could be improved)
@@ -147,7 +148,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   } else {
     for(l in 1:terra::nlyr(rast)){
       out <- leaflet::addRasterImage(out, x = rast[[l]], method = "ngb",
-                                   group = rast_grp[l], opacity = 1)
+                                     group = rast_grp[l], opacity = 1)
     }
     out <- out %>%
       leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red") %>%
@@ -163,6 +164,28 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
   }
   return(out)
 }
+
+
+
+prep_raster_map <- function(r, r_nm, max_cell) {
+  if(!is.null(r)){
+    rast_ncell <- terra::ncell(r)
+
+    if(rast_ncell > max_cell) {
+      fct <- sqrt(rast_ncell/max_cell) %>% ceiling()
+      r <- terra::aggregate(r, fact = fct, fun = "modal", na.rm = TRUE)
+      message("aggregating raster", r_nm, "for faster plotting")
+    }
+
+    if(!terra::same.crs(r, "EPSG:3857")){
+      r <- terra::project(r, "EPSG:3857", method = "near")
+      message("projecting raster '", r_nm , "' for plotting")
+    }
+  }
+
+  return(r)
+}
+
 
 # create html text for index result for multi scenario
 index_res_text <- function(ind_freq){

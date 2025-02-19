@@ -108,8 +108,8 @@ mod_A_server <- function(id, spatial_details, parent_session) {
       req(clim_vars())
       req(range_poly())
 
-      make_map(range_poly(), clim_vars()$mat, rast_nm = "mat",
-               rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+      make_map2(range_poly(), clim_vars()$mat, rast1_nm = "mat",
+                rast1_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
     output$texp_tbl <- gt::render_gt({
@@ -124,8 +124,8 @@ mod_A_server <- function(id, spatial_details, parent_session) {
       req(clim_vars())
       req(range_poly())
 
-      make_map(range_poly(), clim_vars()$cmd, rast_nm = "cmd",
-               rast_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
+      make_map2(range_poly(), clim_vars()$cmd, rast1_nm = "cmd",
+                rast1_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
 
     })
 
@@ -155,8 +155,8 @@ mod_A_server <- function(id, spatial_details, parent_session) {
       req(clim_vars()$ccei)
       req(isolate(nonbreed_poly()))
 
-      make_map(nonbreed_poly(), clim_vars()$ccei, rast_nm = "ccei",
-               rast_lbl = c("1 Low", "2", "3", "4 High"))
+      make_map2(nonbreed_poly(), clim_vars()$ccei, rast1_nm = "ccei",
+                rast1_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
     output$tbl_ccei <- gt::render_gt({

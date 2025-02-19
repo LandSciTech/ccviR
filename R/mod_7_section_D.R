@@ -119,12 +119,12 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
 
     output$map_D2_3 <- leaflet::renderLeaflet({
       req(hs_rast2())
-      make_map(
-        poly1 = range_poly(), rast = hs_rast2(),
+      make_map2(
+        poly1 = range_poly(), rast1 = hs_rast2(),
         poly2 = assess_poly(), poly2_nm = "assess_poly",
-        rast_nm = "hs_rast",
-        rast_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
-                              value = c(0, 1, 2, 3)))
+        rast1_nm = "hs_rast",
+        rast1_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
+                               value = c(0, 1, 2, 3)))
     })
 
     output$tbl_D2_3 <- gt::render_gt({
