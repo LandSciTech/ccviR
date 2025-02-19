@@ -93,6 +93,8 @@
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   protected_rast = terra::rast("misc/protected_areas/pa_north_america.tif"),
 #'   clim_vars_lst = clim_vars,
+#'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+#'                           file.path(base_pth, "rng_chg_85.tif"))),
 #'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
 #'   scenario_names = scn_nms
 #' )
@@ -314,7 +316,8 @@ analyze_spatial <- function(
                                      range_MAP, mod_resp_CC, range_size,
                                      protected),
               range_poly_assess = range_poly,
-              range_poly_clim = range_poly_clim)
+              range_poly_clim = range_poly_clim,
+              protected_rast_assess = protected_rast_assess)
   return(out)
 }
 

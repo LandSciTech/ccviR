@@ -276,8 +276,8 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
 
     output$map_C2bi <- leaflet::renderLeaflet({
       req(clim_vars()$map)
-      make_map2(poly1 = range_poly_clim(), rast = clim_vars()$map,
-                rast_nm = "map")
+      make_map2(poly1 = range_poly_clim(), rast1 = clim_vars()$map,
+                rast1_nm = "map")
     })
 
     output$tbl_C2bi <- gt::render_gt({

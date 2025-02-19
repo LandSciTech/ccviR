@@ -552,6 +552,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
 
+    # Prepare outputs ------------------------
     range_poly_clip <- reactive({
       req(rng_poly())
       req(doSpatial())
@@ -563,6 +564,13 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       req(doSpatial())
       req(!is.character(spat_res()))
       spat_res()$range_poly_clim
+    })
+
+    protected_rast_clip <- reactive({
+      req(protected_rast())
+      req(doSpatial())
+      req(!is.character(spat_res()))
+      spat_res()$protected_rast_assess
     })
 
 
@@ -634,7 +642,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
            "ptn_poly" = ptn_poly,
            "nonbreed_poly" = nonbreed_poly,
            "assess_poly" = assess_poly,
-           "protected_rast" = protected_rast,
+           "protected_rast_assess" = protected_rast_clip,
            "hs_rast" = rng_chg_rast,
            "hs_rcl_mat" = rng_chg_mat
          ))

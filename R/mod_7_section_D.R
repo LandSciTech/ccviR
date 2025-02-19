@@ -67,10 +67,10 @@ mod_D_ui <- function(id) {
           fluidRow(column(9, strong("D3) Overlap of modeled future (2050) range with current range"),),
                    column(1, actionButton(ns(paste0("help_", "D3")), label = "", icon = icon("info")))),
           uiOutput(ns("box_D3")),
+          br(),
 
-          check_comment_ui2(id, "D4", "D4) Occurrence of protected areas in modeled future distribution.",
-                           choiceNames = valueNms[2:4],
-                           choiceValues = valueOpts[2:4]),
+          spat_vuln_ui2(id, "D4", vuln_q_nm = "D4) Occurrence of protected areas in modeled future distribution."),
+
           actionButton(ns("continue"), "Next", class = "btn-primary"),
           br(), br()
         )
@@ -89,6 +89,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
   clim_readme <- spatial_details$clim_readme
   range_poly <- spatial_details$range_poly
   assess_poly <- spatial_details$assess_poly
+  protected_rast <- spatial_details$protected_rast
   hs_rcl_mat <- spatial_details$hs_rcl_mat
 
   moduleServer(id, function(input, output, session) {
@@ -104,17 +105,17 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
       update_restored2(df_loaded(), section = "vuln_qs", session)
     })
 
-    # Spatial data ---------------------
-
-    # D2 and D3 ------
-    observe({
-      spat_vuln_hide2("D2_3", spatial = hs_rast(), values = spat_res()["range_change"])
-    })
-
     # reclassify raster
     hs_rast2 <- reactive({
       req(hs_rast())
       rast <- terra::classify(hs_rast(), rcl = hs_rcl_mat(), right = NA)
+    })
+
+    # Spatial data ---------------------
+
+    ## D2 and D3 ------
+    observe({
+      spat_vuln_hide2("D2_3", spatial = hs_rast(), values = spat_res()["range_change"])
     })
 
     output$map_D2_3 <- leaflet::renderLeaflet({
@@ -197,6 +198,65 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
 
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "box_D3", suspendWhenHidden = FALSE)
+
+
+    ## D4 -----------
+
+    # UI Inputs
+    observe({
+      spat_vuln_hide2("D4", spatial = protected_rast(), values = spat_res()["protected"])
+    })
+    output$box_D4 <- renderUI({
+      req(spat_res())
+      # get previous comment
+      prevCom <- isolate(input$comD4)
+      prevCom <- ifelse(is.null(prevCom), "", prevCom)
+      box_val <- pull(spat_res(), .data$D4)
+
+      if(nrow(spat_res()) > 1 & isTruthy(spat_res()$range_change)) {
+        valueNm <- valueNms[4 - box_val]
+        div(strong("Calculated effect on vulnerability:"),
+            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
+            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
+
+      } else {
+        check_comment_ui2(id, "D4", HTML("Calculated effect on vulnerability:"),
+                          choiceNames = valueNms,
+                          choiceValues = valueOpts,
+                          selected = box_val,
+                          com = prevCom,
+                          guide = FALSE)
+      }
+    })
+    # This makes sure that the value is updated even if the tab isn't reopened
+    outputOptions(output, "box_D4", suspendWhenHidden = FALSE)
+
+
+    output$map_D4 <- leaflet::renderLeaflet({
+      req(protected_rast())
+      make_map2(
+        poly1 = range_poly(), rast1 = protected_rast(),
+        poly2 = assess_poly(), rast2 = hs_rast2(),
+        poly2_nm = "assess_poly",
+        rast1_nm = "protected_rast",
+        rast2_nm = "hs_rast")
+    })
+
+    output$tbl_D4 <- gt::render_gt({
+      req(spat_res())
+      exp_df <-  spat_res() %>%
+        select(`Scenario Name` = .data$scenario_name,
+               `% Protected` = .data$protected) %>%
+        mutate_if(is.numeric, round, digits = 2) %>%
+        gt::gt() %>%
+        gt::tab_options(table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style(style = gt::cell_text(weight = "bold", v_align = "middle"),
+                      location = gt::cells_column_labels(columns = everything()))
+    })
 
     # Return -------------------------------------------------
     list("d" = reactive(collect_questions(input)))

@@ -10,7 +10,7 @@
 #' @param poly2_nm Character. Identifier.
 #' @param rast1_nm Character. Identifier.
 #' @param rast2_nm Character. Identifier.
-#' @param rast1_lbl Character. Raster layer labels.
+#' @param rast1_lbl Character. Raster layer labels. Only for primary raster.
 #' @param rast_grp Character. Raster layer groups.
 #' @param max_cell Numeric. Maximum number of cells in a raster before
 #'   aggregating for plotting.
@@ -38,10 +38,10 @@
 #'   rast2_nm = "hs_rast")
 
 make_map2 <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
-                     poly1_nm = "Current Range", poly2_nm = NULL,
-                     rast1_nm = NULL, rast2_nm = NULL,
-                     rast1_lbl = NULL, rast_grp = NULL,
-                     max_cell = 5000000){
+                      poly1_nm = "Current Range", poly2_nm = NULL,
+                      rast1_nm = NULL, rast2_nm = NULL,
+                      rast1_lbl = NULL,
+                      rast_grp = NULL, max_cell = 5000000) {
 
   # Name of input data layers for mapping
   rast_nms <- list(`Temperature exposure class` = "mat",
@@ -151,6 +151,7 @@ make_map2 <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
     if(is.character(pal1)) { # If character palette (categorical)
       # If just one colour add to existing legend
       if(length(pal1) == 1) {
+        if(is.null(rast1_lbl)) rast1_lbl <- rast1_nm
         extra_pal <- c(extra_pal, pal1)
         extra_labs <- c(extra_labs, rast1_lbl)
       } else {
