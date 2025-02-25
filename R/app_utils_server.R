@@ -489,15 +489,18 @@ show_guidelines <- function(input) {
 }
 
 collect_questions <- function(input) {
-  q <- stringr::str_subset(names(input), "^[B,C,D]\\d.*") %>%
+
+  i <- isolate(names(input))
+
+  q <- stringr::str_subset(i, "^[B,C,D]\\d.*") %>%
     purrr::map_df(~getMultValues(input[[.x]], .x)) %>%
     as_tibble()
 
-  c <- stringr::str_subset(names(input), "^com[B,C,D]\\d.*") %>%
+  c <- stringr::str_subset(i, "^com[B,C,D]\\d.*") %>%
     purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "com"),
                               com = input[[.x]]))
 
-  e <- stringr::str_subset(names(input), "^evi[B,C,D]\\d.*") %>%
+  e <- stringr::str_subset(i, "^evi[B,C,D]\\d.*") %>%
     purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "evi"),
                               evi = input[[.x]]))
 
