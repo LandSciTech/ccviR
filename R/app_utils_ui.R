@@ -130,3 +130,7 @@ updateFrom_to_ui <- function(inputId, value, session){
   updateNumericInput(session = session, paste0(inputId, "_from"), value = vals[1])
   updateNumericInput(session = session, paste0(inputId, "_to"), value = vals[2])
 }
+
+q5 <- function(...) {
+ h5(..., class = "question")
+}

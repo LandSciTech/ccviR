@@ -94,6 +94,8 @@ ui_setup <- function(...) {
    body { background: #fcfcfc; }
    #header { background: #fff; border-bottom: 1px solid #ddd; margin: -20px -15px 0; padding: 15px 15px 10px; }
    .shiny-output-error-validation {color: #d9534f; font-weight: bold;}
+   h5 {font-weight: bold; font-size: 100%;}
+   .question {font-size: 120%; margin-top: 1.5em;}
   "
 
   fluidPage(
