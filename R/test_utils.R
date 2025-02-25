@@ -89,6 +89,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 
 test_data <- function(f = test_files()) {
 
+  clim_readme <- read.csv(fs::path(f$clim_dir, "climate_data_readme.csv"))
   clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms)
   rng_chg_mat <- matrix(c(-1:1, NA, 1:3,0), ncol = 2)
 
@@ -97,20 +98,19 @@ test_data <- function(f = test_files()) {
   #                     quiet = TRUE)
   assess <- sf::st_read(f$assess_poly_pth, agr = "constant", quiet = TRUE)
   range <- sf::st_read(f$rng_poly_pth, agr = "constant", quiet = TRUE)
-  ptn <- sf::st_read(f$ptn_poly_pth, agr = "constant", quiet = TRUE)
+
+  ptn <- if(fs::file_exists(f$ptn_poly_pth)) {
+    sf::st_read(f$ptn_poly_pth, agr = "constant", quiet = TRUE)
+  } else NULL
 
   # HS
-  #hs <- raster::raster(f$rng_chg_pth_1)
-  hs <- terra::rast(f$rng_chg_pth_1)
-
-  # hs2 less CC in same area
-  #hs1 <- raster::raster(f$rng_chg_pths[1])
-  hs2 <- terra::rast(f$rng_chg_pth_2)
+  hs <- if(fs::file_exists(f$rng_chg_pth_1)) terra::rast(f$rng_chg_pth_1) else NULL
+  hs2 <- if(fs::file_exists(f$rng_chg_pth_2)) terra::rast(f$rng_chg_pth_2) else NULL
 
   # Protected Areas
-  if(fs::file_exists(f$protected_rast_pth)) {
-    protected_rast <- terra::rast(f$protected_rast_pth)
-  } else protected_rast <- NULL
+  protected_rast <- if(fs::file_exists(f$protected_rast_pth)) {
+    terra::rast(f$protected_rast_pth)
+  } else NULL
 
   range_points <- range %>% sf::st_make_grid(what = "centers")
 
@@ -119,6 +119,7 @@ test_data <- function(f = test_files()) {
   range_clim <- valid_or_error(range_clim, "range clim intersection")
 
   list(clim_vars = clim_vars,
+       clim_readme = clim_readme,
        rng_chg_mat = rng_chg_mat,
        assess_poly = assess,
        rng_poly = range,
@@ -132,9 +133,60 @@ test_data <- function(f = test_files()) {
        scn_nms = f$scn_nms)
 }
 
+#' Create Shiny-ready test spatial data
+#'
+#' Specifically for testing modules
+#'
+#' @param d List of test data output from `test_data()`.
+#'
+#' @returns List of Shiny reactives.
+#' @noRd
+#'
+#' @examples
+#' sp <- test_spatial()
+#' isolate(sp$spat_res())
+
+test_spatial <- function(d = test_data()) {
+  # To run interactively
+  if(shiny::isRunning()) with_p <- withProgress else with_p <- function(x) x
+  with_p({
+    spat_res <- analyze_spatial(range_poly = d$rng_poly,
+                                non_breed_poly = NULL,
+                                scale_poly = d$assess_poly,
+                                hs_rast = d$rng_chg_rast,
+                                ptn_poly = d$ptn_poly,
+                                clim_vars_lst = d$clim_vars,
+                                hs_rcl = d$rng_chg_mat,
+                                protected_rast = d$protected_rast,
+                                scenario_names = d$clim_readme$Scenario_Name)
+  })
+
+  spat_tbl <- apply_spat_tholds(spat_res$spat_table, cave = FALSE)
+
+  list(
+    "spat_res" = reactive(spat_tbl),
+    "clim_vars" = reactive(d$clim_vars),
+    "clim_readme" = reactive(d$clim_readme),
+    "range_poly" = reactive(spat_res$range_poly_assess),
+    "range_poly_clim" = reactive(spat_res$range_poly_clim),
+    "ptn_poly" = reactive(d$ptn_poly),
+    "nonbreed_poly" = reactive(NULL),
+    "assess_poly" = reactive(d$assess_poly),
+    "protected_rast_assess" = reactive(spat_res$protected_rast_assess),
+    "hs_rast" = reactive(d$rng_chg_rast),
+    "hs_rcl_mat" = reactive(d$rng_chg_mat)
+  )
+}
+
+
+
 mock_files <- function(file) {
   list(
     files = list(`0` = list("", fs::path(file))),
     root = "wd")
 }
 
+expect_no_log_warnings <- function(app) {
+  l <- as.character(app$get_logs())
+  expect_false(any(stringr::str_detect(l, "Warning\\: ")))
+}
