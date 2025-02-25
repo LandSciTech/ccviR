@@ -3,9 +3,9 @@
 #' @noRd
 #' @examples
 #' mod_D_test()
-#' mod_D_test(df_loaded = FALSE)
+#' mod_D_test(df_loaded = TRUE)
 
-mod_D_test <- function(df_loaded = TRUE, spatial_details = NULL) {
+mod_D_test <- function(df_loaded = FALSE, spatial_details = test_spatial()) {
 
   ui <- ui_setup(mod_D_ui(id = "test"))
   server <- function(input, output, session) {
@@ -33,43 +33,44 @@ mod_D_ui <- function(id) {
       column(
         12,
         h2("Section D: Documented or Modeled Response to Climate Change"),
-        p("This section scores factors associated with the species' modeled or documented responses to
-                climate change"),
+        p("This section scores factors associated with the species' modeled or",
+          "documented responses to climate change"),
         p("Questions with a spatial component are also included. ",
-          "The spatial data analysis evaluates these factors and pre-selects a response accordingly. ",
-          "The data used to pre-select a response is
-                shown in a map and table accompanying each question. The pre-selected
-                response can be changed if needed and multiple responses can be
-                selected to reflect uncertainty."),
-        p("Questions that only apply to certain taxa are
-                only displayed if applicable. As a result, the question numbering
-                is not sequential but will match the NatureServe version."),
-        p("The NatureServe Guidelines for scoring each question can be accessed
-                by clicking the info button next to the question. Use published studies,
-                empirical data or expert opinion to support your responses. Provide
-                detailed information about how the answer was reached in the comment boxes.
-                To reflect uncertainty you may select more than one response to each question"),
+          "The spatial data analysis evaluates these factors and pre-selects a ",
+          "response accordingly. ",
+          "The data used to pre-select a response is shown in a map and table ",
+          "accompanying each question. The pre-selected response can be changed",
+          "if needed and multiple responses can be selected to reflect uncertainty."),
+        p("Questions that only apply to certain taxa are only displayed if ",
+          "applicable. As a result, the question numbering is not sequential ",
+          "but will match the NatureServe version."),
+        p("The NatureServe Guidelines for scoring each question can be accessed",
+          "by clicking the info button next to the question. Use published studies,",
+          "empirical data or expert opinion to support your responses. Provide",
+          "detailed information about how the answer was reached in the comment boxes.",
+          "To reflect uncertainty you may select more than one response to each question"),
+
         div(
           id = ns("secD"),
+
           h3("Questions"),
           h5("(Optional - May apply across the range of a species)"),
 
-          check_comment_ui2(id, "D1", "D1) Documented response to recent climate change. ",
+          check_comment_ui2(id, "D1", "D1) Documented response to recent climate change",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
-          h4("Modeled future range change"),
-          spat_vuln_ui2(id, "D2_3", chk_box = FALSE),
-          fluidRow(column(9, strong("D2) Modeled future (2050) change in population or range size")),
-                   column(1, actionButton(ns(paste0("help_", "D2")), label = "", icon = icon("info")))),
-          uiOutput(ns("box_D2")),
-          br(),
-          fluidRow(column(9, strong("D3) Overlap of modeled future (2050) range with current range"),),
-                   column(1, actionButton(ns(paste0("help_", "D3")), label = "", icon = icon("info")))),
-          uiOutput(ns("box_D3")),
-          br(),
+          q5("Modeled future range change"),
+          uiOutput(ns("ui_D2D3")),
 
-          spat_vuln_ui2(id, "D4", vuln_q_nm = "D4) Occurrence of protected areas in modeled future distribution."),
+          q5("D2) Modeled future (2050) change in population or range size"),
+          uiOutput(ns("ui_D2")),
+
+          q5("D3) Overlap of modeled future (2050) range with current range"),
+          uiOutput(ns("ui_D3")),
+
+          q5("D4) Occurrence of protected areas in modeled future distribution"),
+          uiOutput(ns("ui_D4")),
 
           actionButton(ns("continue"), "Next", class = "btn-primary"),
           br(), br()
@@ -114,12 +115,17 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
     # Spatial data ---------------------
 
     ## D2 and D3 ------
-    observe({
-      spat_vuln_hide2("D2_3", spatial = hs_rast(), values = spat_res()["range_change"])
+    output$ui_D2D3 <- renderUI({
+      spat_vuln_ui2(
+        range_poly(), hs_rast2(), assess_poly(),
+        id = id, ui_id = "D2D3",
+        desc = "\"Range Polygon\", \"Assessment Area \", and \"Projected Range Changes\"",
+        spat_df = spat_res(), input = input)
     })
+    outputOptions(output, "ui_D2D3", suspendWhenHidden = FALSE) # After creation
 
-    output$map_D2_3 <- leaflet::renderLeaflet({
-      req(hs_rast2())
+
+    output$D2D3_map <- leaflet::renderLeaflet({
       make_map2(
         poly1 = range_poly(), rast1 = hs_rast2(),
         poly2 = assess_poly(), poly2_nm = "assess_poly",
@@ -128,8 +134,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
                                value = c(0, 1, 2, 3)))
     })
 
-    output$tbl_D2_3 <- gt::render_gt({
-      req(spat_res())
+    output$D2D3_tbl <- gt::render_gt({
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Range Lost` = .data$range_change,
@@ -145,95 +150,40 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
                       location = gt::cells_column_labels(columns = everything()))
     })
 
-    output$box_D2 <- renderUI({
-      req(spat_res())
-      # get previous comment
-      prevCom <- isolate(input$comD2)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- pull(spat_res(), .data$D2)
-
-      if(nrow(spat_res()) > 1 & isTruthy(spat_res()$range_change)) {
-        valueNm <- valueNms[4 - box_val]
-        div(strong("Calculated effect on vulnerability:"),
-            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
-
-      } else {
-        check_comment_ui2(id, "D2", HTML("Calculated effect on vulnerability:"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val,
-                         com = prevCom,
-                         guide = FALSE)
-      }
-
+    ## D2 ------
+    output$ui_D2 <- renderUI({
+      spat_vuln_ui2(
+        range_poly(), hs_rast2(), assess_poly(),
+        id = id, ui_id = "D2",
+        spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
+        multi_stop = TRUE)
     })
+    outputOptions(output, "ui_D2", suspendWhenHidden = FALSE) # After creation
 
-    # This makes sure that the value is updated even if the tab isn't reopened
-    outputOptions(output, "box_D2", suspendWhenHidden = FALSE)
-
-    output$box_D3 <- renderUI({
-      req(spat_res())
-      # get previous comment
-      prevCom <- isolate(input$comD3)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- pull(spat_res(), .data$D3)
-
-      if(nrow(spat_res()) > 1 & isTruthy(spat_res()$range_overlap)){
-        valueNm <- valueNms[4 - box_val]
-        div(strong("Calculated effect on vulnerability:"),
-            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
-
-      } else {
-        check_comment_ui2(id, "D3", HTML("Calculated effect on vulnerability:"),
-                         choiceNames = valueNms,
-                         choiceValues = valueOpts,
-                         selected = box_val,
-                         com = prevCom,
-                         guide = FALSE)
-      }
-
+    ## D3 ------
+    output$ui_D3 <- renderUI({
+      spat_vuln_ui2(
+        range_poly(), hs_rast2(), assess_poly(),
+        id = id, ui_id = "D3",
+        spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
+        multi_stop = TRUE)
     })
+    outputOptions(output, "ui_D3", suspendWhenHidden = FALSE) # After creation
 
-    # This makes sure that the value is updated even if the tab isn't reopened
-    outputOptions(output, "box_D3", suspendWhenHidden = FALSE)
-
-
-    ## D4 -----------
+    ## D4 --------------------------
 
     # UI Inputs
-    observe({
-      spat_vuln_hide2("D4", spatial = protected_rast(), values = spat_res()["protected"])
-    })
-    output$box_D4 <- renderUI({
-      req(spat_res())
-      # get previous comment
-      prevCom <- isolate(input$comD4)
-      prevCom <- ifelse(is.null(prevCom), "", prevCom)
-      box_val <- pull(spat_res(), .data$D4)
-
-      if(nrow(spat_res()) > 1 & isTruthy(spat_res()$range_change)) {
-        valueNm <- valueNms[4 - box_val]
-        div(strong("Calculated effect on vulnerability:"),
-            HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-            HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
-
-      } else {
-        check_comment_ui2(id, "D4", HTML("Calculated effect on vulnerability:"),
-                          choiceNames = valueNms,
-                          choiceValues = valueOpts,
-                          selected = box_val,
-                          com = prevCom,
-                          guide = FALSE)
-      }
+    output$ui_D4 <- renderUI({
+      spat_vuln_ui2(
+        range_poly(), hs_rast2(), protected_rast(), assess_poly(),
+        id = id, ui_id = "D4",
+        desc = "\"Range Polygon\", \"Assessment Area \", \"Projected Range Changes\", and \"Protected Areas\"",
+        spat_df = spat_res(), input = input, q = TRUE, multi_stop = TRUE)
     })
     # This makes sure that the value is updated even if the tab isn't reopened
-    outputOptions(output, "box_D4", suspendWhenHidden = FALSE)
+    outputOptions(output, "ui_D4", suspendWhenHidden = FALSE)
 
-
-    output$map_D4 <- leaflet::renderLeaflet({
-      req(protected_rast())
+    output$D4_map <- leaflet::renderLeaflet({
       make_map2(
         poly1 = range_poly(), rast1 = protected_rast(),
         poly2 = assess_poly(), rast2 = hs_rast2(),
@@ -242,8 +192,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
         rast2_nm = "hs_rast")
     })
 
-    output$tbl_D4 <- gt::render_gt({
-      req(spat_res())
+    output$D4_tbl <- gt::render_gt({
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Protected` = .data$protected) %>%
