@@ -393,7 +393,7 @@ widen_vuln_coms2 <- function(questions) {
     filter(!.data$Code %in% c("Z2", "Z3")) %>%
     arrange(.data$Code) %>%
     mutate_all(as.character) %>%
-    tidyr::unite("Value", .data$Value1:.data$Value4, na.rm = TRUE, sep = ", ") %>%
+    tidyr::unite("Value", "Value1":"Value4", na.rm = TRUE, sep = ", ") %>%
     left_join(comments, by = "Code") %>%
     left_join(evidence, by = "Code") %>%
     tidyr::pivot_wider(names_from = "Code",
@@ -433,7 +433,7 @@ combine_outdata2 <- function(out_data_lst){
         paste0(stringr::str_remove(.data$Column.Name, "max/min"), c("max", "min"), collapse = ","),
       TRUE ~ .data$Column.Name
     )) %>%
-    tidyr::separate_rows(.data$names_exp, sep = ",") %>%
+    tidyr::separate_rows("names_exp", sep = ",") %>%
     pull(.data$names_exp)
 
   out_dat <- bind_cols(out_data_lst) %>%
