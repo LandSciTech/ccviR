@@ -4,8 +4,17 @@
 #' @noRd
 #' @examples
 #' mod_A_test()
+#'
+#' # Test minimum spatial required
+#' sp <- test_files(protected_rast_pth = NA,
+#'                  ptn_poly_pth = NA,
+#'                  rng_chg_pth_1 = NA,
+#'                  rng_chg_pth_2 = NA) %>%
+#'   test_data() %>%
+#'   test_spatial()
+#' mod_A_test(spatial_details = sp)
 
-mod_A_test <- function(spatial_details) {
+mod_A_test <- function(spatial_details = test_spatial()) {
 
   ui <- ui_setup(mod_A_ui(id = "test"))
   server <- function(input, output, session) {
