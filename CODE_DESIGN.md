@@ -105,7 +105,7 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
 ### shinytest2
 - see `?shinytest2::AppDriver` for some of what you can access form the `AppDriver`
 - shinytest2 can be a bit finicky, but once you get the details right it works well
-- You MUST rebuild the package before running shinytests!
+- **You MUST rebuild the package before running Shiny tests!**
 - Errors in the test pane that imply the app is working (not that specific tests 
   are failing) are best troubleshooted by using `record_test()` (don't actually 
   record it, but the errors messages are much better in this mode, and may be 

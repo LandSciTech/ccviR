@@ -277,13 +277,6 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
                       location = gt::cells_column_labels(columns = everything()))
     })
 
-    output$box_C2aii <- renderUI({
-      render_spat_vuln_box2(id, "C2aii", spat_res(), input)
-    })
-
-    # This makes sure that the value is updated even if the tab isn't reopened
-    outputOptions(output, "box_C2aii", suspendWhenHidden = FALSE)
-
     ## C2 bi ---------
     output$ui_C2bi <- renderUI({
       spat_vuln_ui2(range_poly(), ptn_poly(),

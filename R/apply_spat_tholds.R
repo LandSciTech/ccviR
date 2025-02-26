@@ -1,4 +1,16 @@
-# Only adds variables to spat_df, AND changes C2ai, C2aii, D2 and D3
+#' Calculate spatial thresholds
+#'
+#' Adds variables to spat_df, AND changes C2ai, C2aii, D2, D3, D4
+#'
+#' Use `setNames(valueOpts, valueNms)` for levels
+#'
+#' @param spat_df
+#' @param cave
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 apply_spat_tholds <-function(spat_df, cave) {
   spat_df %>% rowwise() %>%
     mutate(

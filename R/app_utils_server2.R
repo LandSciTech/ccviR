@@ -398,8 +398,10 @@ combine_outdata2 <- function(out_data_lst){
       select(-any_of(colnames(out_data_lst$index)), -any_of(colnames(out_data_lst$start)))
   }
 
-  exp_cols <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
-                                          package = "ccviR"))
+  exp_cols <- fs::path_package("extdata", "column_definitions_results.csv",
+                               package = "ccviR") %>%
+    utils::read.csv()
+
   exp_nms <- exp_cols %>% filter(.data$Column.Name != "") %>%
     rowwise() %>%
     mutate(names_exp = case_when(
