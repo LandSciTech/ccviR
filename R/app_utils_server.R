@@ -496,12 +496,12 @@ collect_questions <- function(input) {
     purrr::map_df(~getMultValues(input[[.x]], .x)) %>%
     as_tibble()
 
-  c <- stringr::str_subset(i, "^com[B,C,D]\\d.*") %>%
-    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "com"),
+  c <- stringr::str_subset(i, "^com_[B,C,D]\\d.*") %>%
+    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "com_"),
                               com = input[[.x]]))
 
-  e <- stringr::str_subset(i, "^evi[B,C,D]\\d.*") %>%
-    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "evi"),
+  e <- stringr::str_subset(i, "^evi_[B,C,D]\\d.*") %>%
+    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "evi_"),
                               evi = input[[.x]]))
 
   list("questions" = q, "comments" = c, "evidence" = e)

@@ -96,13 +96,13 @@ mod_A_server <- function(id, spatial_details, parent_session) {
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"")
     })
 
-    output$texp_map <- leaflet::renderLeaflet({
+    output$map_texp <- leaflet::renderLeaflet({
       # Don't require checks because UI not present if no spatial
       make_map2(range_poly(), clim_vars()$mat, rast1_nm = "mat",
                 rast1_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
-    output$texp_tbl <- gt::render_gt({
+    output$tbl_texp <- gt::render_gt({
       get_exposure_table(spat_res(), "MAT", clim_readme(), clim_readme()$brks_mat)
     })
 
@@ -112,12 +112,12 @@ mod_A_server <- function(id, spatial_details, parent_session) {
                     id = id, ui_id = "cmd",
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"")
     })
-    output$cmd_map <- leaflet::renderLeaflet({
+    output$map_cmd <- leaflet::renderLeaflet({
       make_map2(range_poly(), clim_vars()$cmd, rast1_nm = "cmd",
                 rast1_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
-    output$cmd_tbl <- gt::render_gt({
+    output$tbl_cmd <- gt::render_gt({
       get_exposure_table(spat_res(), "CMD", clim_readme(), clim_readme()$brks_cmd)
     })
 
@@ -129,12 +129,12 @@ mod_A_server <- function(id, spatial_details, parent_session) {
                     desc = "\"CCEI\" and \"Non-Breeding Range\"")
     })
 
-    output$ccei_map <- leaflet::renderLeaflet({
+    output$map_ccei <- leaflet::renderLeaflet({
       make_map2(nonbreed_poly(), clim_vars()$ccei, rast1_nm = "ccei",
                 rast1_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
-    output$ccei_tbl <- gt::render_gt({
+    output$tbl_ccei <- gt::render_gt({
       if(is.null(clim_readme()$brks_ccei)){
         class_brks <- "4: (> 7);3: (6 - 7);2: (4 - 5);1: (< 4)"
       } else {

@@ -89,12 +89,12 @@ check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi 
         #decrease whitespace b/w elements
         div(style = "margin-top: -1.5em",
             # TODO: Finalize evidence types
-            selectInput(NS(id, paste0("evi", ui_id)), label = NULL,
+            selectInput(NS(id, paste0("evi_", ui_id)), label = NULL,
                         choices = c("Type of Evidence" = "", valueEvi),
                         selected = evi),
             div(style = "margin-top: -1em",
-                textAreaInput(NS(id, paste0("com", ui_id)), label = NULL, placeholder = "Comments",
-                              value = com))
+                textAreaInput(NS(id, paste0("com_", ui_id)), label = NULL,
+                              placeholder = "Comments", value = com))
         )
     )
   )
@@ -103,9 +103,9 @@ check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi 
 updateCheck_comment_ui2 <- function(inputId, value, com, evi, session) {
   updateCheckboxGroupInput(session = session, inputId = inputId,
                            selected = as.integer(unlist(strsplit(value,","))))
-  updateSelectInput(session = session, inputId = paste0("evi", inputId),
+  updateSelectInput(session = session, inputId = paste0("evi_", inputId),
                     selected = if_else(is.na(evi), "", evi))
-  updateTextAreaInput(session = session, inputId = paste0("com", inputId),
+  updateTextAreaInput(session = session, inputId = paste0("com_", inputId),
                       value = if_else(is.na(com), "", com))
 }
 
@@ -171,8 +171,8 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
   if(map_table) {
     if(ready) {
       t <- tagList(
-        shinycssloaders::withSpinner(leaflet::leafletOutput(paste0(NS(id, ui_id), "_map"))),
-        gt::gt_output(paste0(NS(id, ui_id), "_tbl"))
+        shinycssloaders::withSpinner(leaflet::leafletOutput(NS(id, paste0("map_", ui_id)))),
+        gt::gt_output(NS(id, paste0("tbl_", ui_id)))
       )
     } else {
       # No spatial - Let them know

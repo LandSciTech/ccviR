@@ -215,12 +215,12 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
     })
     outputOptions(output, "ui_C2ai", suspendWhenHidden = FALSE) # After creation
 
-    output$C2ai_map <- leaflet::renderLeaflet({
+    output$map_C2ai <- leaflet::renderLeaflet({
       make_map2(range_poly_clim(), rast1 = clim_vars()$htn, rast1_nm = "htn",
                 rast1_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
-    output$C2ai_tbl <- gt::render_gt({
+    output$tbl_C2ai <- gt::render_gt({
       exp_tbl <- spat_res() %>%
         select(matches("HTN_\\d")) %>%
         rename_at(vars(contains("HTN")),
@@ -256,11 +256,11 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
     })
     outputOptions(output, "ui_C2aii", suspendWhenHidden = FALSE) # After creation
 
-    output$C2aii_map <- leaflet::renderLeaflet({
+    output$map_C2aii <- leaflet::renderLeaflet({
       make_map2(poly1 = range_poly(), poly2 = ptn_poly(), poly2_nm = "ptn")
     })
 
-    output$C2aii_tbl <- gt::render_gt({
+    output$tbl_C2aii <- gt::render_gt({
       exp_df <-  spat_res() %>%
         select(contains("PTN", ignore.case = FALSE)) %>%
         tidyr::pivot_longer(cols = contains("PTN", ignore.case = FALSE),
@@ -293,12 +293,12 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
     })
     outputOptions(output, "ui_C2bi", suspendWhenHidden = FALSE)
 
-    output$C2bi_map <- leaflet::renderLeaflet({
+    output$map_C2bi <- leaflet::renderLeaflet({
       make_map2(poly1 = range_poly_clim(), rast1 = clim_vars()$map,
                 rast1_nm = "map")
     })
 
-    output$C2bi_tbl <- gt::render_gt({
+    output$tbl_C2bi <- gt::render_gt({
       exp_df <-  spat_res() %>%
         select("MAP_max", "MAP_min") %>%
         rename(`Min MAP` = .data$MAP_min, `Max MAP` = .data$MAP_max) %>%

@@ -125,7 +125,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
     outputOptions(output, "ui_D2D3", suspendWhenHidden = FALSE) # After creation
 
 
-    output$D2D3_map <- leaflet::renderLeaflet({
+    output$map_D2D3 <- leaflet::renderLeaflet({
       make_map2(
         poly1 = range_poly(), rast1 = hs_rast2(),
         poly2 = assess_poly(), poly2_nm = "assess_poly",
@@ -134,7 +134,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
                                value = c(0, 1, 2, 3)))
     })
 
-    output$D2D3_tbl <- gt::render_gt({
+    output$tbl_D2D3 <- gt::render_gt({
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Range Lost` = .data$range_change,
@@ -183,7 +183,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "ui_D4", suspendWhenHidden = FALSE)
 
-    output$D4_map <- leaflet::renderLeaflet({
+    output$map_D4 <- leaflet::renderLeaflet({
       make_map2(
         poly1 = range_poly(), rast1 = protected_rast(),
         poly2 = assess_poly(), rast2 = hs_rast2(),
@@ -192,7 +192,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
         rast2_nm = "hs_rast")
     })
 
-    output$D4_tbl <- gt::render_gt({
+    output$tbl_D4 <- gt::render_gt({
       exp_df <-  spat_res() %>%
         select(`Scenario Name` = .data$scenario_name,
                `% Protected` = .data$protected) %>%
