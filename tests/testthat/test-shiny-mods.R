@@ -9,7 +9,7 @@ test_that("Full app", {
   app$set_window_size(width = 1619, height = 993)
 
   # Home
-  app$expect_values(name = "01-home-values")
+  app$expect_values(name = "01-home-values") # Expect no spatial outputs
   app$click("home-continue")
 
   # Species

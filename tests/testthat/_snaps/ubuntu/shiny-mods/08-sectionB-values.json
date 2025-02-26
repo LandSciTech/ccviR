@@ -1,58 +1,58 @@
 {
   "input": {
-    "comsection_c": "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown).",
+    "comsection_c": "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown)",
     "help_section_c": 0,
     "home-continue": 1,
     "home-loadcsv": 0,
     "results-calcIndex": 0,
     "results-restart": 0,
     "save-downloadData": 0,
-    "section_a-cmd_map_bounds": {
-      "north": 46.58906908309185,
-      "east": -66.40136718750001,
-      "south": 46.58906908309185,
-      "west": -66.40136718750001
-    },
-    "section_a-cmd_map_center": {
-      "lng": -66.40136718750001,
-      "lat": 46.58906908309185
-    },
-    "section_a-cmd_map_groups": [
-      "CartoDB",
-      "RCP_4.5",
-      "RCP_8.5"
-    ],
-    "section_a-cmd_map_zoom": 6,
     "section_a-continue": 1,
-    "section_a-texp_map_bounds": {
+    "section_a-map_cmd_bounds": {
       "north": 46.58906908309185,
       "east": -66.40136718750001,
       "south": 46.58906908309185,
       "west": -66.40136718750001
     },
-    "section_a-texp_map_center": {
+    "section_a-map_cmd_center": {
       "lng": -66.40136718750001,
       "lat": 46.58906908309185
     },
-    "section_a-texp_map_groups": [
+    "section_a-map_cmd_groups": [
       "CartoDB",
       "RCP_4.5",
       "RCP_8.5"
     ],
-    "section_a-texp_map_zoom": 6,
+    "section_a-map_cmd_zoom": 6,
+    "section_a-map_texp_bounds": {
+      "north": 46.58906908309185,
+      "east": -66.40136718750001,
+      "south": 46.58906908309185,
+      "west": -66.40136718750001
+    },
+    "section_a-map_texp_center": {
+      "lng": -66.40136718750001,
+      "lat": 46.58906908309185
+    },
+    "section_a-map_texp_groups": [
+      "CartoDB",
+      "RCP_4.5",
+      "RCP_8.5"
+    ],
+    "section_a-map_texp_zoom": 6,
     "section_b-B1": "0",
     "section_b-B2a": "0",
     "section_b-B2b": "0",
     "section_b-B3": "0",
-    "section_b-comB1": "",
-    "section_b-comB2a": "",
-    "section_b-comB2b": "",
-    "section_b-comB3": "",
+    "section_b-com_B1": "",
+    "section_b-com_B2a": "",
+    "section_b-com_B2b": "",
+    "section_b-com_B3": "",
     "section_b-continue": 0,
-    "section_b-eviB1": "",
-    "section_b-eviB2a": "",
-    "section_b-eviB2b": "",
-    "section_b-eviB3": "",
+    "section_b-evi_B1": "",
+    "section_b-evi_B2a": "",
+    "section_b-evi_B2b": "",
+    "section_b-evi_B3": "",
     "section_b-help_B1": 1,
     "section_b-help_B2a": 0,
     "section_b-help_B2b": 0,
@@ -76,43 +76,43 @@
     "section_c-C5a": null,
     "section_c-C5b": null,
     "section_c-C6": null,
-    "section_c-comC1": "",
-    "section_c-comC2ai": "",
-    "section_c-comC2aii": "",
-    "section_c-comC2bi": "",
-    "section_c-comC2bii": "",
-    "section_c-comC2c": "",
-    "section_c-comC2d": "",
-    "section_c-comC3": "",
-    "section_c-comC4a": "",
-    "section_c-comC4b": "",
-    "section_c-comC4c": "",
-    "section_c-comC4d": "",
-    "section_c-comC4e": "",
-    "section_c-comC4f": "",
-    "section_c-comC4g": "",
-    "section_c-comC5a": "",
-    "section_c-comC5b": "",
-    "section_c-comC6": "",
+    "section_c-com_C1": "",
+    "section_c-com_C2ai": "",
+    "section_c-com_C2aii": "",
+    "section_c-com_C2bi": "",
+    "section_c-com_C2bii": "",
+    "section_c-com_C2c": "",
+    "section_c-com_C2d": "",
+    "section_c-com_C3": "",
+    "section_c-com_C4a": "",
+    "section_c-com_C4b": "",
+    "section_c-com_C4c": "",
+    "section_c-com_C4d": "",
+    "section_c-com_C4e": "",
+    "section_c-com_C4f": "",
+    "section_c-com_C4g": "",
+    "section_c-com_C5a": "",
+    "section_c-com_C5b": "",
+    "section_c-com_C6": "",
     "section_c-continue": 0,
-    "section_c-eviC1": "",
-    "section_c-eviC2ai": "Spatial Analysis - ccviR",
-    "section_c-eviC2aii": "Spatial Analysis - ccviR",
-    "section_c-eviC2bi": "Spatial Analysis - ccviR",
-    "section_c-eviC2bii": "",
-    "section_c-eviC2c": "",
-    "section_c-eviC2d": "",
-    "section_c-eviC3": "",
-    "section_c-eviC4a": "",
-    "section_c-eviC4b": "",
-    "section_c-eviC4c": "",
-    "section_c-eviC4d": "",
-    "section_c-eviC4e": "",
-    "section_c-eviC4f": "",
-    "section_c-eviC4g": "",
-    "section_c-eviC5a": "",
-    "section_c-eviC5b": "",
-    "section_c-eviC6": "",
+    "section_c-evi_C1": "",
+    "section_c-evi_C2ai": "Spatial Analysis - ccviR",
+    "section_c-evi_C2aii": "Spatial Analysis - ccviR",
+    "section_c-evi_C2bi": "Spatial Analysis - ccviR",
+    "section_c-evi_C2bii": "",
+    "section_c-evi_C2c": "",
+    "section_c-evi_C2d": "",
+    "section_c-evi_C3": "",
+    "section_c-evi_C4a": "",
+    "section_c-evi_C4b": "",
+    "section_c-evi_C4c": "",
+    "section_c-evi_C4d": "",
+    "section_c-evi_C4e": "",
+    "section_c-evi_C4f": "",
+    "section_c-evi_C4g": "",
+    "section_c-evi_C5a": "",
+    "section_c-evi_C5b": "",
+    "section_c-evi_C6": "",
     "section_c-help_C1": 0,
     "section_c-help_C2ai": 0,
     "section_c-help_C2aii": 0,
@@ -132,12 +132,22 @@
     "section_c-help_C5b": 0,
     "section_c-help_C6": 0,
     "section_d-D1": null,
-    "section_d-comD1": "",
+    "section_d-D2": null,
+    "section_d-D3": null,
+    "section_d-D4": null,
+    "section_d-com_D1": "",
+    "section_d-com_D2": "",
+    "section_d-com_D3": "",
+    "section_d-com_D4": "",
     "section_d-continue": 0,
-    "section_d-eviD1": "",
+    "section_d-evi_D1": "",
+    "section_d-evi_D2": "",
+    "section_d-evi_D3": "",
+    "section_d-evi_D4": "",
     "section_d-help_D1": 0,
     "section_d-help_D2": 0,
     "section_d-help_D3": 0,
+    "section_d-help_D4": 0,
     "spatial-assess_poly_pth": 0,
     "spatial-assess_poly_pth_clear": 0,
     "spatial-clim_var_dir": 0,
@@ -218,15 +228,6 @@
         "C1": [
           "-1"
         ],
-        "C2ai": [
-          "1"
-        ],
-        "C2aii": [
-          "1"
-        ],
-        "C2bi": [
-          "2"
-        ],
         "C2bii": [
           "-1"
         ],
@@ -285,15 +286,6 @@
           ""
         ],
         "com_C1": [
-          ""
-        ],
-        "com_C2ai": [
-          ""
-        ],
-        "com_C2aii": [
-          ""
-        ],
-        "com_C2bi": [
           ""
         ],
         "com_C2bii": [
@@ -355,15 +347,6 @@
         ],
         "evi_C1": [
           ""
-        ],
-        "evi_C2ai": [
-          "Spatial Analysis - ccviR"
-        ],
-        "evi_C2aii": [
-          "Spatial Analysis - ccviR"
-        ],
-        "evi_C2bi": [
-          "Spatial Analysis - ccviR"
         ],
         "evi_C2bii": [
           ""
