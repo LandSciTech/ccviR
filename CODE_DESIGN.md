@@ -86,6 +86,9 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
   functions which can be tested individually, as well as used to create inputs
   for other parts of tests.
 - `server_setup()` checks `is_testing()` to set the relative path correctly when running tests.
+- Consider running `devtools::test(filter = "test-FILE")` to test a single
+  file in a 'clean' session. Helps find out why getting warnings which are
+  once per session, for example, without have to re-run the entire set of tests.
 
 ### testServer()
 - Where possible, testing is performed with the `testServer()` (Rather than 

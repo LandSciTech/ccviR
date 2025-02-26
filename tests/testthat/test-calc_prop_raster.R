@@ -3,9 +3,9 @@ d <- test_data()
 
 test_that("calc_prop_raster()", {
 
-  expect_silent(m <- calc_prop_raster(d$clim_vars$mat, d$range, "MAT"))
-  expect_silent(c <- calc_prop_raster(d$clim_vars$cmd, d$range, "CMD"))
-  expect_silent(h <- calc_prop_raster(d$clim_vars$htn, d$range_clim, "HTN",
+  expect_silent(m <- calc_prop_raster(d$clim_vars$mat, d$rng_poly, "MAT"))
+  expect_silent(c <- calc_prop_raster(d$clim_vars$cmd, d$rng_poly, "CMD"))
+  expect_silent(h <- calc_prop_raster(d$clim_vars$htn, d$rng_clim, "HTN",
                                       val_range = 1:4))
 
   # TODO: Add CCEI tests
