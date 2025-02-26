@@ -343,21 +343,6 @@ spat_vuln_hide2 <- function(id, spatial, values) {
 render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
                                   multi_stop = FALSE) {
 
-  if(multi_stop) {
-    r <- tagList(
-      chk_label,
-      p(HTML(paste0(spat_df$scenario_name, ": ", valueNms[4 - spat_df[[ui_id]]]) %>%
-               paste0(collapse = "<br>")),
-        class = "shiny-output-error-validation")
-    )
-    return(r)
-  }
-
-    #     valueNm <- valueNms[4 - box_val]
-    #     div(strong("Calculated effect on vulnerability:"),
-    #         HTML("<font color=\"#FF0000\"><b> Spatial results can not be edited when multiple scenarios are provided.</b></font>"),
-    #         HTML(paste0("<p>", clim_readme()$Scenario_Name, ": ", valueNm, "</p>")))
-
   com_id <- NS(id, paste0("com", ui_id))
   evi_id <- NS(id, paste0("evi", ui_id))
 
@@ -379,7 +364,7 @@ render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
                     choiceValues = valueOpts,
                     selected = box_val,
                     com = prevCom, evi = prevEvi,
-                    spatial = TRUE)
+                    spatial = TRUE, multi_stop = multi_stop)
 }
 
 

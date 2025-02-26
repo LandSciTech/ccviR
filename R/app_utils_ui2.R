@@ -66,7 +66,7 @@ updateFrom_to_ui2 <- function(inputId, value, session){
 #' @noRd
 
 check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi = "",
-                              spatial = FALSE, guide = TRUE, ...){
+                              spatial = FALSE, guide = TRUE, multi_stop = FALSE, ...){
 
   chkbxIn <- checkboxGroupInput(
     NS(id, ui_id),
@@ -85,7 +85,8 @@ check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi 
     if(!is.null(label)) q5(label),
     div(id = NS(id, paste0(ui_id, "div")),
         style = "margin-left: 1em; margin-top: -1.5em",
-        chkbxIn,
+        if(!multi_stop) chkbxIn,
+        if(multi_stop) chk_label,
         #decrease whitespace b/w elements
         div(style = "margin-top: -1.5em",
             # TODO: Finalize evidence types
@@ -203,9 +204,13 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
                style = "font-size: 90%",
                class = "shiny-output-error-validation"))
       } else {
-        chk_label <- span(
-          strong("These results cannot be edited when multiple ",
-                 "scenarios are provided"))
+        chk_label <- div(
+          span("These Vulnerability Responses cannot be edited when multiple scenarios are provided",
+               class = "shiny-output-error-validation"),
+          p(HTML(paste0(spat_df$scenario_name, ": ", valueNms[4 - spat_df[[ui_id]]]) %>%
+                   paste0(collapse = "<br>"))),
+          style = "margin-top: 1.75em; margin-bottom: 2.5em;`"
+        )
       }
     } else {
       chk_label <- span("Answer spatial question based on expert knowledge or ",
