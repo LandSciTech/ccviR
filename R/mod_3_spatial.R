@@ -90,18 +90,14 @@ mod_spatial_ui <- function(id) {
           br(),
           h5("Click button to begin the spatial analysis or to re-run it",
              " after changing inputs:"),
+
           shinyjs::disabled(
             actionButton(ns("startSpatial"), "Run Spatial Analysis", class = "btn-primary")),
-          #br(),
-          #conditionalPanel(
-          #  condition = "input.startSpatial > 0",
-          #  shinycssloaders::withSpinner(verbatimTextOutput(ns("spat_error")),
-          #                               proxy.height = "50px"),
-          #  ns = NS(id)
-          #),
-          br(),br(),
+
+          br(), br(),
           actionButton(ns("continue"), "Next", class = "btn-primary"),
           br(), br(),
+
           # this hidden input will allow us to stop processing until returning
           # to the UI so that values from the saved file are updated in input
           # before using
@@ -572,19 +568,6 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       req(!is.character(spat_res()))
       spat_res()$protected_rast_assess
     })
-
-
-    # output$spat_error <- renderText({
-    #   if(inherits(rng_chg_rast(), "try-error")){
-    #     stop("Error in range change raster",
-    #          conditionMessage(attr(rng_chg_rast(), "condition")))
-    #   }
-    #   if(is.character(spat_res())){
-    #     stop(spat_res(), call. = FALSE)
-    #   } else {
-    #     "Spatial analysis complete"
-    #   }
-    # })
 
     # Prepare Spatial outputs ----------------------------------------------
 

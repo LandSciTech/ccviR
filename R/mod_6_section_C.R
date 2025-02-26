@@ -58,17 +58,16 @@ mod_C_ui <- function(id) {
 
           q5("C2 a) Predicted sensitivity to temperature and moisture changes"),
           div(style = "margin-left:1em;",
-              q5("i) Historical thermal niche"),
+              q5("C2 ai) Historical thermal niche"),
               uiOutput(ns("ui_C2ai")),
-              #uiOutput(ns("box_C2ai")),
 
-              q5("ii) Physiological thermal niche"),
+              q5("C2 aii) Physiological thermal niche"),
               uiOutput(ns("ui_C2aii"))
           ),
 
           q5("C2 b) Predicted sensitivity to changes in precipitation, hydrology, or moisture regime"),
           div(style = "margin-left:1em;",
-              q5("i) Historical hydrological niche"),
+              q5("C2 bi) Historical hydrological niche"),
               uiOutput(ns("ui_C2bi")),
 
               check_comment_ui2(id, "C2bii", "ii) Physiological hydrological niche",

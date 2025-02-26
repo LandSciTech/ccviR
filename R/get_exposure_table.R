@@ -1,4 +1,6 @@
-get_exposure_table <- function(spattbl, varname, clim_readme, brks){
+get_exposure_table <- function(spattbl, varname, clim_readme, brks) {
+
+  validate(need(!is.null(spattbl), "Need to load spatial data"))
 
   if(varname == "MAT"){
     exp_val <- "temp_exp_cave"

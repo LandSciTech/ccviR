@@ -39,6 +39,7 @@
 #' # vulnerability factor table with score 1 (somewhat increase vulnerability)
 #' # for all factors
 #' vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+#' vuln$Value1[vuln$Code == "D4"] <- 1
 #'
 #' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 #'
