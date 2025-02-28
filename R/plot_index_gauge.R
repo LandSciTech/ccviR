@@ -12,7 +12,7 @@
 #'
 #' @noRd
 
-plt_index_gauge <- function(ind, type, codes, nms, cols, ttl){
+plot_index_gauge <- function(ind, type, codes, nms, cols, ttl){
 
   if(type == "index"){
     codes <- c("IE","LV", "MV", "HV", "EV")

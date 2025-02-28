@@ -41,11 +41,11 @@ indexOutServer <- function(id, ind_df) {
     })
 
     output$ind_gauge <- plotly::renderPlotly({
-      plt_index_gauge(ind_df()$index, type = "index")
+      plot_index_gauge(ind_df()$index, type = "index")
     })
 
     output$mig_exp_gauge <- plotly::renderPlotly({
-      plt_index_gauge(ind_df()$mig_exp, type = "mig_exp")
+      plot_index_gauge(ind_df()$mig_exp, type = "mig_exp")
     })
 
   })

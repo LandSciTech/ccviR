@@ -139,7 +139,7 @@ if (identical(rmarkdown::metadata$runtime, "shiny")){
 ```{r bivar_exp,fig.height= 3, fig.width=7, results='hide', fig.cap="Map of exposure based on both change in temperature and change in moisture regime."}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
 # walk2(index_res$index, index_res$scenario_name, 
-#       ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
+#       ~ccviR:::plot_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
 #     nms = c("Insufficient Evidence",
 #                "Less Vulnerable",
 #                "Moderately Vulnerable",
