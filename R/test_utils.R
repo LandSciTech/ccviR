@@ -138,6 +138,8 @@ test_data <- function(f = test_files()) {
 #' Specifically for testing modules
 #'
 #' @param d List of test data output from `test_data()`.
+#' @param min_req Logical. Use only minimum required for spatial analysis.
+#' @param reactive Logical. Return as reactive values to emulate modules.
 #'
 #' @returns List of Shiny reactives.
 #' @noRd
@@ -145,36 +147,58 @@ test_data <- function(f = test_files()) {
 #' @examples
 #' sp <- test_spatial()
 #' isolate(sp$spat_res())
+#' isolate(sp$protected_rast_assess())
+#'
+#' # Only include minimum required spatial files
+#' sp_min <- test_spatial(min_req = TRUE)
+#' isolate(sp_min$spat_res())
+#' isolate(sp_min$protected_rast_assess())
+#'
+#' # Not for shiny
+#' sp <- test_spatial(reactive = FALSE)
+#' sp$spat_res
 
-test_spatial <- function(d = test_data()) {
+test_spatial <- function(d = test_data(), min_req = FALSE, reactive = TRUE) {
   # To run interactively
-  if(shiny::isRunning()) with_p <- withProgress else with_p <- function(x) x
-  with_p({
-    spat_res <- analyze_spatial(range_poly = d$rng_poly,
-                                non_breed_poly = NULL,
-                                scale_poly = d$assess_poly,
-                                hs_rast = d$rng_chg_rast,
-                                ptn_poly = d$ptn_poly,
-                                clim_vars_lst = d$clim_vars,
-                                hs_rcl = d$rng_chg_mat,
-                                protected_rast = d$protected_rast,
-                                scenario_names = d$clim_readme$Scenario_Name)
+  if(shiny::isRunning()) with_prog <- withProgress else with_prog <- function(x) x
+
+  if(min_req) {
+    d$rng_chg_rast <- NULL
+    d$protected_rast <- NULL
+    d$ptn_poly <- NULL
+    d$rng_chg_mat <- NULL
+  }
+
+  with_prog({
+    spat_res <- analyze_spatial(
+      range_poly = d$rng_poly,
+      non_breed_poly = NULL,
+      scale_poly = d$assess_poly,
+      hs_rast = d$rng_chg_rast,
+      ptn_poly = d$ptn_poly,
+      clim_vars_lst = d$clim_vars,
+      hs_rcl = d$rng_chg_mat,
+      protected_rast = d$protected_rast,
+      scenario_names = d$clim_readme$Scenario_Name)
   })
 
   spat_tbl <- apply_spat_tholds(spat_res$spat_table, cave = FALSE)
 
+  # If reactive == TRUE, return reactive, else return same
+  if(reactive) trans <- reactive else trans <- function(x) x
+
   list(
-    "spat_res" = reactive(spat_tbl),
-    "clim_vars" = reactive(d$clim_vars),
-    "clim_readme" = reactive(d$clim_readme),
-    "range_poly" = reactive(spat_res$range_poly_assess),
-    "range_poly_clim" = reactive(spat_res$range_poly_clim),
-    "ptn_poly" = reactive(d$ptn_poly),
-    "nonbreed_poly" = reactive(NULL),
-    "assess_poly" = reactive(d$assess_poly),
-    "protected_rast_assess" = reactive(spat_res$protected_rast_assess),
-    "hs_rast" = reactive(d$rng_chg_rast),
-    "hs_rcl_mat" = reactive(d$rng_chg_mat)
+    "spat_res" = trans(spat_tbl),
+    "clim_vars" = trans(d$clim_vars),
+    "clim_readme" = trans(d$clim_readme),
+    "range_poly" = trans(spat_res$range_poly_assess),
+    "range_poly_clim" = trans(spat_res$range_poly_clim),
+    "ptn_poly" = trans(d$ptn_poly),
+    "nonbreed_poly" = trans(NULL),
+    "assess_poly" = trans(d$assess_poly),
+    "protected_rast_assess" = trans(spat_res$protected_rast_assess),
+    "hs_rast" = trans(d$rng_chg_rast),
+    "hs_rcl_mat" = trans(d$rng_chg_mat)
   )
 }
 
