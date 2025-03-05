@@ -1,0 +1,67 @@
+/*-- scss:defaults --*/
+$headings-font-weight:  500 !default;
+$spacer: 0.5rem;
+
+/*-- scss:rules --*/
+h3 {
+  margin-top: 0.5rem;
+}
+
+
+h4 {
+  margin-top: 0;  /* Applies to card headings and titles */
+}
+
+/* Classes */
+
+.card-ie {
+  background-color: #808080;
+  color: black;
+}
+.card-lv {
+  background-color: #008000;
+  color: white;
+}
+.card-mv {
+  background-color: #FFC125;
+  color: black;
+}
+.card-hv {
+  background-color: #FF8C00;
+  color: black;
+}
+.card-ev {
+  background-color: #FF0000;
+  color: white;
+}
+.card-na {
+  background-color: #f8f9fa;
+  color: black;
+}
+
+.card-title {
+  font-weight: bold;
+}
+
+/*.card-header { background-color: rgba(0, 0, 0, 0.03); }*/
+
+@media print {
+  /* Print background colours */
+  body{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+}
+
+@page {
+  size: letter;
+  margin: 0.75cm;
+
+  @bottom-right {
+    content: counter(page);
+  }
+}
+
+.card { break-inside: avoid; break-after: auto }
+
+

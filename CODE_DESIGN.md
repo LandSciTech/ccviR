@@ -41,6 +41,13 @@ use sections (# Header -------) to create the TOC used in RStudio.
   from the common docs. If you include your own documentation for that parameter
   it will take precedence.
   
+## Random code bits
+- `!!!` Triple bang (or bang-bang-bang) - https://adv-r.hadley.nz/quasiquotation.html?q=!!!#unquoting-many-arguments
+  When you have a list, but you need the items to be arguments in a function one at a time.
+  i.e., `tagList()` takes ... so you need to do `tagList(div1, div2, div3)`
+  So if you programatically create the divs, you have a list, then you can use
+  `tagList(!!!list_of_divs)` to 'explode' them out (this is used a lot in the report).
+  
 ## Shiny Modules
 
 ### Namespacing
