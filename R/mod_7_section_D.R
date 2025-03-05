@@ -60,7 +60,7 @@ mod_D_ui <- function(id) {
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
-          q5("Modeled future range change"),
+          q5(span("Modeled future range change (for D2 and D3)", class = "bigger")),
           uiOutput(ns("ui_D2D3")),
 
           q5("D2) Modeled future (2050) change in population or range size"),
@@ -158,6 +158,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
         spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
         multi_stop = TRUE)
     })
+
     outputOptions(output, "ui_D2", suspendWhenHidden = FALSE) # After creation
 
     ## D3 ------

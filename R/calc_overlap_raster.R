@@ -1,7 +1,6 @@
 
 #' Calculate the proportion of a raster that overlaps another raster
 #'
-#' @returns
 #' @noRd
 #'
 #' @examples

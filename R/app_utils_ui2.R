@@ -66,7 +66,8 @@ updateFrom_to_ui2 <- function(inputId, value, session){
 #' @noRd
 
 check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi = "",
-                              spatial = FALSE, guide = TRUE, multi_stop = FALSE, ...){
+                              spatial = FALSE, guide = TRUE, multi_stop = FALSE,
+                              ...){
 
   chkbxIn <- checkboxGroupInput(
     NS(id, ui_id),
@@ -81,21 +82,24 @@ check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi 
     )
   }
 
+
+  e_id <- NS(id, paste0("evi_", ui_id))
+  e_ui <- selectInput(e_id, label = NULL,
+                      choices = c("Type of Evidence" = "", valueEvi),
+                      selected = evi)
+  c_id <- NS(id, paste0("com_", ui_id))
+  c_ui <- textAreaInput(c_id, label = NULL,
+                        placeholder = "Comments", value = com)
+
   div(
     if(!is.null(label)) q5(label),
     div(id = NS(id, paste0(ui_id, "div")),
         style = "margin-left: 1em; margin-top: -1.5em",
         if(!multi_stop) chkbxIn,
         if(multi_stop) chk_label,
-        #decrease whitespace b/w elements
-        div(style = "margin-top: -1.5em",
-            # TODO: Finalize evidence types
-            selectInput(NS(id, paste0("evi_", ui_id)), label = NULL,
-                        choices = c("Type of Evidence" = "", valueEvi),
-                        selected = evi),
-            div(style = "margin-top: -1em",
-                textAreaInput(NS(id, paste0("com_", ui_id)), label = NULL,
-                              placeholder = "Comments", value = com))
+        # decrease whitespace b/w elements
+        div(style = "margin-top: -1.5em", e_ui,
+            div(style = "margin-top: -1em", c_ui)
         )
     )
   )

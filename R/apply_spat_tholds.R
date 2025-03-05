@@ -4,13 +4,12 @@
 #'
 #' Use `setNames(valueOpts, valueNms)` for levels
 #'
-#' @param spat_df
-#' @param cave
+#' @param spat_df Data frame.
+#' @param cave Logical.
 #'
-#' @returns
-#' @export
-#'
-#' @examples
+#' @returns Data frame.
+#' @noRd
+
 apply_spat_tholds <-function(spat_df, cave) {
   spat_df %>% rowwise() %>%
     mutate(

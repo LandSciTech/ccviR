@@ -127,7 +127,8 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
     observeEvent(input$calcIndex,{
       if(!isTruthy(spat_res())){
         showNotification(
-          p(strong("Error: "), "Please run the spatial data analysis before trying to calculate the index."),
+          p(strong("Error: "),
+            "Please run the spatial data analysis before trying to calculate the index."),
           type = "error",
           duration = 10)
         req(FALSE)
@@ -149,9 +150,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
         split(index_res()$scenario_name)
     })
 
-
-    # Create UIs and Outputs - Looping over nested modules -------------------
-
+    # Create UIs and Outputs - Looping over nested modules
     # NOTE: Require ns() in UI (I think) because UIs inside another UI.
     output$all_index_results <- renderUI({
       purrr::map(seq_along(scenarios()), ~indexOutUI2(ns(.x)))
@@ -206,11 +205,12 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
     #output$conf_index <- renderText(index_res()$conf_index)
     output$conf_graph <- renderPlot({
       plot_conf_score(index_res())
-
     })
 
     ## Plot comparison of thresholds and results
     output$ind_score_plt <- renderPlot({
+      validate(need(any(index_res()$index != "IE"),
+                    "Insufficient Evidence: No Index Value"))
       plot_score_index(index_res())
     })
 

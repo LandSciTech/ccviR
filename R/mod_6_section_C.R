@@ -225,17 +225,24 @@ mod_C_server <- function(id, df_loaded, spatial_details, parent_session) {
         select(matches("HTN_\\d")) %>%
         rename_at(vars(contains("HTN")),
                   ~stringr::str_replace(.x, "HTN_", "Class ")) %>%
-        tidyr::pivot_longer(cols = contains("Class"),
-                            names_to = "Sensitivity Class", values_to = "Proportion of Range") %>%
-        transmute(`Sensitivity Class` = stringr::str_replace(.data$`Sensitivity Class`, "Class 1", "1 - Low") %>%
-                    stringr::str_replace("Class 4", "4 - High") %>%
-                    stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
+        tidyr::pivot_longer(
+          cols = contains("Class"),
+          names_to = "Sensitivity Class", values_to = "Proportion of Range") %>%
+        transmute(
+          `Sensitivity Class` =
+            stringr::str_replace(.data$`Sensitivity Class`, "Class 1", "1 - Low") %>%
+            stringr::str_replace("Class 4", "4 - High") %>%
+            stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
         distinct() %>%
-        mutate(`Historical Temperature Variation` = c("> 43.0", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
+        mutate(`Historical Temperature Variation` =
+                 c("> 43.0", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
         mutate_if(is.numeric, round, digits = 2) %>%
-        select("Sensitivity Class", "Historical Temperature Variation", "Proportion of Range") %>%
+        select("Sensitivity Class", "Historical Temperature Variation",
+               "Proportion of Range") %>%
         gt::gt() %>%
-        gt::cols_label(`Historical Temperature Variation` = gt::html("Historical Temperature Variation (&deg;C)")) %>%
+        gt::cols_label(
+          `Historical Temperature Variation` =
+            gt::html("Historical Temperature Variation (&deg;C)")) %>%
         gt::tab_options(table.width = 600,
                         table.font.size = 14,
                         column_labels.padding.horizontal = 10,

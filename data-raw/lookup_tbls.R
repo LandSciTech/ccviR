@@ -50,7 +50,7 @@ valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
 valueOpts <- c(3, 2, 1, 0)
 
 # Evidence Options
-# TODO: Finalize which ones to use
+# TODO: Finalize evidence types
 valueEvi <- c("Literature", "Expert Opinion", "Spatial Analysis",
               "Spatial Analysis - ccviR", "Other")
 

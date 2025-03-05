@@ -98,6 +98,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
   if(is.null(pth)){
     return(NULL)
   }
+
   out <- tryCatch({
     if(fs::path_ext(pth) == "shp"){
       out <- st_read(pth, agr = "constant", quiet = TRUE)
