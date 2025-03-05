@@ -71,4 +71,5 @@ nonbreed_poly_pth,Path to nonbreeding range polygon shapefile
 ptn_poly_pth,Path to physiological thermal niche polygon shapefile
 clim_dir_pth,Path to folder of climate data
 rng_chg_pth,Path to range change raster (for each scenario if multiple provided)
+protected_rast_pth,Path to protected areas raster
 ccviR_version,The version number of the ccviR package used to complete the assessment
