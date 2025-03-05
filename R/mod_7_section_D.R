@@ -209,7 +209,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
     })
 
     # Return -------------------------------------------------
-    list("d" = reactive(collect_questions(input)))
+    list("d" = reactive(collect_questions(input, "D")))
 
   })
 

@@ -93,7 +93,7 @@ mod_B_server <- function(id, df_loaded, parent_session) {
     })
 
     # Return -------------------------------------------------
-    list("b" = reactive(collect_questions(input)))
+    list("b" = reactive(collect_questions(input, "B")))
 
   })
 

@@ -488,21 +488,27 @@ show_guidelines <- function(input) {
              }, ignoreInit = TRUE))
 }
 
-collect_questions <- function(input) {
+collect_questions <- function(input, section) {
 
-  i <- isolate(names(input))
+  # Use a predefined list so we update as changes added
+  # - if we use names(input) - invalidates constantly
+  # - if we use names(isolate(input)) - doesn't update when dynamic UIs added
 
-  q <- stringr::str_subset(i, "^[B,C,D]\\d.*") %>%
-    purrr::map_df(~getMultValues(input[[.x]], .x)) %>%
+  qs <- vulnq_code_lu_tbl$Code %>%
+    stringr::str_subset(paste0("^", section))
+
+  q <- purrr::map_df(qs, ~getMultValues(input[[.x]], .x)) %>%
     as_tibble()
 
-  c <- stringr::str_subset(i, "^com_[B,C,D]\\d.*") %>%
-    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "com_"),
-                              com = input[[.x]]))
+  c <- purrr::map_df(paste0("com_", qs), ~{
+    data.frame(Code = stringr::str_remove(.x, "com_"),
+               com = if(!is.null(input[[.x]])) input[[.x]] else NA)
+  })
 
-  e <- stringr::str_subset(i, "^evi_[B,C,D]\\d.*") %>%
-    purrr::map_df(~data.frame(Code = stringr::str_remove(.x, "evi_"),
-                              evi = input[[.x]]))
+  e <- purrr::map_df(paste0("evi_", qs), ~{
+    data.frame(Code = stringr::str_remove(.x, "evi_"),
+               evi = if(!is.null(input[[.x]])) input[[.x]] else NA)
+  })
 
   list("questions" = q, "comments" = c, "evidence" = e)
 }

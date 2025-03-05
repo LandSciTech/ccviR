@@ -222,11 +222,12 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
         plot_q_score()
     })
 
-    ## Summary of data evidence
+    ## Plot of summary of data evidence
     output$plot_evidence <- renderPlot({
       evidence <- bind_elements(questions, type = "evidence")
       plot_evidence(evidence)
-    })
+    }) %>%
+      bindEvent(index_res()) # Only update when index_res() updates
 
 
 
