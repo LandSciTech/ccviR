@@ -139,7 +139,7 @@ test_data <- function(f = test_files()) {
 #'
 #' @param d List of test data output from `test_data()`.
 #' @param min_req Logical. Use only minimum required for spatial analysis.
-#' @param reactive Logical. Return as reactive values to emulate modules.
+#' @param as_reactive Logical. Return as reactive values to emulate modules.
 #'
 #' @returns List of Shiny reactives.
 #' @noRd
@@ -155,10 +155,10 @@ test_data <- function(f = test_files()) {
 #' isolate(sp_min$protected_rast_assess())
 #'
 #' # Not for shiny
-#' sp <- test_spatial(reactive = FALSE)
+#' sp <- test_spatial(as_reactive = FALSE)
 #' sp$spat_res
 
-test_spatial <- function(d = test_data(), min_req = FALSE, reactive = TRUE) {
+test_spatial <- function(d = test_data(), min_req = FALSE, as_reactive = TRUE) {
   # To run interactively
   if(shiny::isRunning()) with_prog <- withProgress else with_prog <- function(x) x
 
@@ -184,8 +184,8 @@ test_spatial <- function(d = test_data(), min_req = FALSE, reactive = TRUE) {
 
   spat_tbl <- apply_spat_tholds(spat_res$spat_table, cave = FALSE)
 
-  # If reactive == TRUE, return reactive, else return same
-  if(reactive) trans <- reactive else trans <- function(x) x
+  # If as_reactive == TRUE, return `reactive(x)`, else return `x`
+  if(as_reactive) trans <- reactive else trans <- function(x) x
 
   list(
     "spat_res" = trans(spat_tbl),

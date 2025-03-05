@@ -224,6 +224,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details, que
 
     ## Plot of summary of data evidence
     output$plot_evidence <- renderPlot({
+      # TODO: Omit non-relevant questions
       evidence <- bind_elements(questions, type = "evidence")
       plot_evidence(evidence)
     }) %>%

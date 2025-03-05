@@ -177,9 +177,9 @@
     "section_d-com_D4": "",
     "section_d-continue": 0,
     "section_d-evi_D1": "",
-    "section_d-evi_D2": "",
-    "section_d-evi_D3": "",
-    "section_d-evi_D4": "",
+    "section_d-evi_D2": "Spatial Analysis - ccviR",
+    "section_d-evi_D3": "Spatial Analysis - ccviR",
+    "section_d-evi_D4": "Spatial Analysis - ccviR",
     "section_d-help_D1": 0,
     "section_d-help_D2": 0,
     "section_d-help_D3": 0,
@@ -344,6 +344,9 @@
         "C5b": [
           "-1"
         ],
+        "C5c": [
+          "-1"
+        ],
         "C6": [
           "0"
         ],
@@ -421,6 +424,9 @@
         ],
         "com_C5b": [
           ""
+        ],
+        "com_C5c": [
+          null
         ],
         "com_C6": [
           ""
@@ -500,6 +506,9 @@
         "evi_C5b": [
           ""
         ],
+        "evi_C5c": [
+          null
+        ],
         "evi_C6": [
           ""
         ],
@@ -507,13 +516,13 @@
           ""
         ],
         "evi_D2": [
-          ""
+          "Spatial Analysis - ccviR"
         ],
         "evi_D3": [
-          ""
+          "Spatial Analysis - ccviR"
         ],
         "evi_D4": [
-          ""
+          "Spatial Analysis - ccviR"
         ],
         "ccviR_version": [
           [

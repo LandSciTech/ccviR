@@ -3,16 +3,16 @@ test_that("A overall", {
     spatial_details = suppressMessages(test_spatial())), {
 
       # Maps
-      expect_message(output$texp_map, "projecting raster") %>%
+      expect_message(output$map_texp, "projecting raster") %>%
         expect_message("projecting raster") # Message triggered by output (?)
-      expect_s3_class(output$texp_map, "json")
-      expect_s3_class(output$cmd_map, "json")
-      expect_error(output$ccei_map)
+      expect_s3_class(output$map_texp, "json")
+      expect_s3_class(output$map_cmd, "json")
+      expect_error(output$map_ccei)
 
       # Tables
-      expect_type(output$texp_tbl, "list")
-      expect_type(output$cmd_tbl, "list")
-      expect_error(output$ccei_tbl)
+      expect_type(output$tbl_texp, "list")
+      expect_type(output$tbl_cmd, "list")
+      expect_error(output$tbl_ccei)
     })
 })
 
@@ -28,14 +28,14 @@ test_that("A min spatial", {
 
   testServer(mod_A_server, args = list(
     spatial_details = suppressMessages(test_spatial())), {
-      expect_message(output$texp_map, "projecting raster") %>%
+      expect_message(output$map_texp, "projecting raster") %>%
         expect_message("projecting raster") # Message triggered by output (?)
-      expect_s3_class(output$texp_map, "json")
-      expect_s3_class(output$cmd_map, "json")
-      expect_error(output$ccei_map)
+      expect_s3_class(output$map_texp, "json")
+      expect_s3_class(output$map_cmd, "json")
+      expect_error(output$map_ccei)
 
-      expect_type(output$texp_tbl, "list")
-      expect_type(output$cmd_tbl, "list")
-      expect_error(output$ccei_tbl)
+      expect_type(output$tbl_texp, "list")
+      expect_type(output$tbl_cmd, "list")
+      expect_error(output$tbl_ccei)
     })
 })
