@@ -29,7 +29,6 @@ library(dplyr)
 library(ggplot2)
 library(ccviR)
 library(sf)
-library(here)
 library(htmltools)
 
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FALSE)
@@ -110,10 +109,10 @@ if(length(params$saved) == 1 && params$saved == "none") {
   writeLines(capture.output(saved), "test.txt")
 }
 
-range_poly <- read_sf(here(saved$range_poly_pth[1]))
-assess_poly <- read_sf(here(saved$assess_poly_pth[1]))
-clim_vars <- get_clim_vars(here(saved$clim_dir_pth[1]), scenario_names = saved$scenario_name)
-clim_readme <- fs::path(here(saved$clim_dir_pth[1], "climate_data_readme.csv")) %>%
+range_poly <- read_sf(saved$rng_poly_pth[1])
+assess_poly <- read_sf(saved$assess_poly_pth[1])
+clim_vars <- get_clim_vars(saved$clim_dir_pth[1], scenario_names = saved$scenario_name)
+clim_readme <- fs::path(saved$clim_dir_pth[1], "climate_data_readme.csv") %>%
   utils::read.csv(check.names = FALSE)
 spat_tbl <- ccviR:::apply_spat_tholds(saved, saved$cave)
 ```

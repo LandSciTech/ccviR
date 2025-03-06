@@ -12,25 +12,24 @@
 #' @export
 #'
 #' @examples
-#' saved <- test_files()$saved$final2 %>%
-#'   load_previous()
 #'
-#' build_report(saved)
+#' build_report(test_df_loaded(), ".")
 
-build_report <- function(saved) {
+build_report <- function(saved, file_loc, qmd_dir = NULL) {
 
-  # Set up parameters to pass to Rmd document
-  params <- list(saved = saved)
+  if(is.null(qmd_dir)) qmd_dir <- fs::path_package("qmd", package = "ccviR")
 
-  # Knit the document, passing in the `params` list, and eval it in a
-  # child of the global environment (this isolates the code in the document
-  # from the code in this app).
+  t <- fs::dir_copy(qmd_dir, fs::path_temp("qmd"))
 
   quarto::quarto_render(
-    fs::path_package("qmd", "results_report.qmd", package = "ccviR"),
-    execute_params = params)
+    fs::path(t, "results_report.qmd"),
+    execute_params = list(saved = saved))
 
-  pagedown::chrome_print(fs::path_package("qmd", "results_report.html", package = "ccviR"))
+  pagedown::chrome_print(fs::path(t, "results_report.html"))
 #  file.copy(file.path(tempdir(), 'report.pdf'), file)
 
+  fs::file_copy(fs::path(t, "results_report.pdf"), file_loc)
+
+  # Clean up
+  fs::dir_delete(t)
 }

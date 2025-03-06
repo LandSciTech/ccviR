@@ -91,5 +91,12 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
       stopApp()
     })
 
+    # Return --------------------------------------
+    list("saved" = reactive({
+      if(is_ready(out_data_lst)) {
+        combine_outdata2(out_data_lst)
+      } else NULL
+    })
+    )
   })
 }

@@ -20,7 +20,11 @@ ccvi_app2 <- function(input_files = NULL, ...){
     mod_C_ui(id = "section_c"),
     mod_D_ui(id = "section_d"),
     mod_results_ui(id = "results"),
-  ) # Note: mod_save_ui() is inside ui_setup()
+  )
+  # Note:
+  #   mod_save_ui() is inside ui_setup()
+  #   mod_report_ui() is inside mod_results_ui()
+
 
   server <- function(input, output, session) {
     volumes <- server_setup()
@@ -66,15 +70,18 @@ ccvi_app2 <- function(input_files = NULL, ...){
       df_loaded = restore$df_loaded,
       species_data = sp$species_data,
       spatial_details = spatial$spatial_details,
-      questions = c(b, c, d)
-    )
+      questions = c(b, c, d))
 
-    mod_save_server(
+    saved <- mod_save_server(
       id = "save", volumes,
       sp$species_data,
       spatial$spatial_data,
       questions = c(b, c, d),
       index = index$index)
+
+    mod_report_server(
+      id = "report",
+      saved = saved)
   }
 
 
