@@ -3,21 +3,15 @@
 #' @noRd
 #' @examples
 #' mod_C_test()
-#' mod_C_test(df_loaded = TRUE)
+#' mod_C_test(df_loaded = test_df_loaded())
 
-mod_C_test <- function(df_loaded = FALSE, spatial_details = test_spatial()) {
+mod_C_test <- function(df_loaded = NULL, spatial_details = test_spatial()) {
 
   ui <- ui_setup(mod_C_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 
-    if(df_loaded) {
-      df_loaded <- test_files()$saved$final %>%
-        load_previous() %>%
-        reactive()
-    } else df_loaded <- reactive(NULL)
-
-    mod_C_server(id = "test", df_loaded, spatial_details, parent_session = session)
+    mod_C_server(id = "test", reactive(df_loaded), spatial_details, parent_session = session)
   }
 
   shinyApp(ui, server)

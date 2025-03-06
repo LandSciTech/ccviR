@@ -5,24 +5,21 @@
 #' @examples
 #' mod_spatial_test(input_files = NULL) # Basic, no files
 #' mod_spatial_test()                   # With test paths pre-filled
-#' mod_spatial_test(df_loaded = TRUE,   # As if re-loading from previous run
+#' mod_spatial_test(df_loaded = test_df_loaded(), # As if re-loading from previous run
 #'                  input_files = NULL)
 
 
-mod_spatial_test <- function(df_loaded = FALSE, input_files = test_files()) {
+mod_spatial_test <- function(df_loaded = NULL, input_files = test_files()) {
 
   ui <- ui_setup(mod_spatial_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 
     volumes <- server_setup()
-    if(df_loaded) {
-      df_loaded <- test_files()$saved$final %>%
-        load_previous() %>%
-        reactive()
-    } else df_loaded <- reactive(NULL)
 
-    mod_spatial_server(id = "test", volumes, df_loaded, cave = reactive(FALSE),
+    mod_spatial_server(id = "test", volumes,
+                       reactive(df_loaded),
+                       cave = reactive(FALSE),
                        parent_session = session, input_files)
   }
 

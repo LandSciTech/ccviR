@@ -133,6 +133,117 @@ test_data <- function(f = test_files()) {
        scn_nms = f$scn_nms)
 }
 
+
+#' Load saved data for testing in Shiny modules
+#'
+#' Fixes the absolute paths stored in the saved data to use the current
+#' working directly.
+#'
+#' - These paths need to be absolute for the reports (because executing in temp)
+#' - But we want these paths to work on all systems
+#'
+#' @param file Character. Name of the saved previous results file to get the
+#'   questions from. See `test_files()`.
+#'
+#' @returns Data frame to mimic `df_loaded`.
+#' @noRd
+#'
+#' @examples
+test_df_loaded <- function(file = "final2") {
+  load_previous(test_files()$saved[[file]]) %>%
+    mutate(across(contains("pth"), fix_path))
+}
+
+fix_path <- function(p) {
+
+  # Reframe the paths as absolute paths but relative to the current wd
+  # This is assumed to be the location of ccviR because we ONLY use this during
+  # testing or examples within the package.
+
+  # We need absolute paths for testing with reports as they need to be accessible
+  # even when rendering reports in temp locations.
+  if(all(!is.na(p))) {
+    fs::path(
+      fs::path_wd(),
+      fs::path_rel(p, start = "ccviR/.."))
+  } else NA
+}
+
+
+#' Create test species data for use in Results Shiny module
+#'
+#' Doesn't need to return a reactive as it is simple to use `reactive(x)` in
+#' the test module itself.
+#'
+#' @param file Character. Name of the saved previous results file to get the
+#'   questions from. See `test_files()`.
+#'
+#' @returns Data frame of values emulating the `species_data` returned by
+#' `mod_species_server()`.
+#'
+#' @noRd
+#'
+#' @examples
+#' test_species()
+test_species <- function(file = "final2") {
+  load_previous(test_files()$saved[[file]]) %>%
+    select("species_name", "common_name", "assessor_name", "geo_location",
+           "tax_grp", "mig", "cave") %>%
+    distinct()
+}
+
+#' Create test questions for use in Results Shiny module
+#'
+#' Imitates the behaviour of `ccvir_app2()` which takes the reactive questions
+#' returned by each module and sends a list of question reactives to the final
+#' results module.
+#'
+#' @param file Character. Name of the saved previous results file to get the
+#'   questions from. See `test_files()`.
+#' @param as_reactive Logical. Return as list of reactive values to emulate the
+#'   input argument `questions` for `mod_results_server()`.
+#'
+#' @returns List of (optionally) Shiny reactive lists with questions, comments
+#'   and evidence.
+#' @noRd
+#'
+#' @examples
+#' test_questions(as_reactive = FALSE)
+#' test_questions() # Reactive values
+#' isolate(test_questions()$b()) # Look at reactive values
+
+test_questions <- function(file = "final2", as_reactive = TRUE) {
+
+  q <- load_previous(test_files()$saved[[file]]) %>%
+    select(matches("^(com_|evi_)?(B|C|D)\\d+")) %>%
+    distinct() %>%
+    rename_with(.cols = matches("^(B|C|D)\\d+"), ~paste0("que_", .x)) %>%
+    tidyr::pivot_longer(
+      everything(), names_to = c("type", "Code"),
+      names_pattern = "(com|evi|que)_(.+)",
+      values_to = "value",
+      values_transform = as.character)
+
+  qs <- filter(q, type == "que") %>%
+    select("Code", "value") %>%
+    tidyr::separate(value, into = c("Value1", "Value2", "Value3", "Value4"),
+                    fill = "right", sep = ", ?", convert = TRUE) %>%
+    split(tolower(stringr::str_extract(.$Code, "^\\w")))
+  coms <- filter(q, type == "com") %>%
+    select("Code", "com" = "value") %>%
+    split(tolower(stringr::str_extract(.$Code, "^\\w")))
+  evi <- filter(q, type == "evi") %>%
+    select("Code", "evi" = "value") %>%
+    split(f = tolower(stringr::str_extract(.$Code, "^\\w")))
+
+  # If as_reactive == TRUE, return `reactive(x)`, else return `x`
+  if(as_reactive) trans <- reactive else trans <- function(x) x
+
+  purrr::pmap(
+    list(qs, coms, evi),
+    ~ trans(list("questions" = ..1, "comments" = ..2, "evidence" = ..3)))
+}
+
 #' Create Shiny-ready test spatial data
 #'
 #' Specifically for testing modules
@@ -141,7 +252,7 @@ test_data <- function(f = test_files()) {
 #' @param min_req Logical. Use only minimum required for spatial analysis.
 #' @param as_reactive Logical. Return as reactive values to emulate modules.
 #'
-#' @returns List of Shiny reactives.
+#' @returns List of (optionally) Shiny reactives.
 #' @noRd
 #'
 #' @examples
