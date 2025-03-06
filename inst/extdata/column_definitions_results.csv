@@ -65,7 +65,7 @@ Historical_normal_period, Time period for the historical data
 Future_period, Time period for the future climate projections
 Emissions_scenario, Emissions scenario used for climate projections
 Link_to_source, Url for where the climate data was downloaded from
-range_poly_pth,Path to range polygon shapefile
+rng_poly_pth,Path to range polygon shapefile
 assess_poly_pth,Path to assessment area polygon shapefile
 nonbreed_poly_pth,Path to nonbreeding range polygon shapefile
 ptn_poly_pth,Path to physiological thermal niche polygon shapefile
