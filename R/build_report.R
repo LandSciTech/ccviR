@@ -19,14 +19,16 @@
 
 build_report <- function(saved, file_loc = ".", overwrite = TRUE, quiet = FALSE) {
 
-
   inform_prog("Preparing report template", quiet, 4)
 
-  if(fs::is_file(file_loc)) {
+  # If we're building directly with only a location, no file path
+  if(fs::path_ext(file_loc) != "pdf") {
     nm <- tolower(saved$common_name[1]) |>
       stringr::str_extract_all("\\w+", simplify = TRUE) |>
       paste0(collapse = "_")
     out <- fs::path(file_loc, paste0("report_", nm, "_", Sys.Date(), ".pdf"))
+
+  # Otherwise if we're given a full file path
   } else out <- file_loc
 
   qmd_dir <- fs::path_package("qmd", package = "ccviR")
