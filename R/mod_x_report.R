@@ -25,6 +25,8 @@ mod_report_ui <- function(id) {
     id = "footer",
     style = "float:left",
     br(), br(),
+    radioButtons(ns("include_about"), label = "Include Interpretation Guide",
+                 choices = c("Yes" = TRUE, "No" = FALSE), inline = TRUE),
     downloadButton(ns("report"), "Generate report", class = "btn-primary")
   )
 }
@@ -47,8 +49,9 @@ mod_report_server <- function(id, saved) {
           paste0("_", Sys.Date(), ".pdf")
       },
       content = function(file) {
+        req(input$include_about)
         withProgress(message = 'Creating report...', {
-          build_report(saved(), file)
+          build_report(saved(), file, include_about = input$include_about)
         })
       }
     )

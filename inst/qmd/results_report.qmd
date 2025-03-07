@@ -4,6 +4,7 @@ params:
   species: Test Species Name
   assessor_name: Dr. Curious
   geo_location: Earth
+  include_about: true
 title: "`r params$species`"
 subtitle: Climate Change Vulnerability Index Report
 abstract: "`r params$geo_location`"
@@ -23,6 +24,9 @@ fig-responsive: false
 <!-- Notes 
 fig-responsive: false (above) is required to keep the spacing around the 
 plotly dials appropriate.
+
+For debugging, `keep-md: true` and compile this script directly (don't use `build_report()`)
+Then check inst/qmd/results_report.html.md for intermediate problems
 -->
 
 
@@ -42,6 +46,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FA
 
 saved <- params$saved
 species <- params$species
+include_about <- as.logical(params$include_about)
 
 # defined as latex colors below
 #cols <- c("gray", "green", "yellow", "orange", "red")
@@ -330,4 +335,30 @@ tagList(!!!d)
 
 
 ## Version Note
-This report was generated with version `r utils::packageVersion("ccviR")` of the ccviR package.
+This report was generated `r Sys.Date()` using version `r utils::packageVersion("ccviR")` of the ccviR package.
+
+
+
+<!-- 
+https://quarto.org/docs/authoring/includes.html#computations
+Cannot create the {{< include _about.qmd >}} short code through an R block, 
+because then the _about.qmd won't itself be executed (just copy/pasted, which is
+fine if md, but not if qmd.
+
+Fix from: https://stackoverflow.com/a/74301258 
+-->
+`r if (!include_about) "::: {.content-hidden}"`
+
+:::{style="page-break-before: always"}
+<!-- Add page break -->
+:::
+  
+{{< include _about.qmd >}}
+
+`r if (!include_about) ":::"`
+
+
+
+
+
+

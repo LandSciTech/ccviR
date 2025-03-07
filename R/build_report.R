@@ -7,6 +7,8 @@
 #' @param saved Data frame. Data saved from the Shiny app.
 #' @param file_loc Character. Directory to save file, or if a file name,
 #'  name of file to create.
+#' @param include_about Logical. Whether to include page explaining report
+#'   interpretation.
 #' @param overwrite Logical. Whether to overwrite previous reports with the same
 #'   name.
 #' @param quiet Logical. Whether to suppress progress messages.
@@ -17,7 +19,8 @@
 #' @examples
 #' build_report(test_df_loaded())
 
-build_report <- function(saved, file_loc = ".", overwrite = TRUE, quiet = FALSE) {
+build_report <- function(saved, file_loc = ".", include_about = TRUE,
+                         overwrite = TRUE, quiet = FALSE) {
 
   inform_prog("Preparing report template", quiet, 4)
 
@@ -44,7 +47,8 @@ build_report <- function(saved, file_loc = ".", overwrite = TRUE, quiet = FALSE)
       # Pass these in as separate variables so they can be used in the header
       species = saved$common_name[1],
       assessor_name = saved$assessor_name[1],
-      geo_location = saved$geo_location[1])
+      geo_location = saved$geo_location[1],
+      include_about = include_about),
     )
 
   # Print to PDF via Chrome
