@@ -4,14 +4,14 @@ $spacer: 0.5rem;
 
 /*-- scss:rules --*/
 h3 {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   break-inside: avoid;
   break-after: avoid;
 }
 
 
 h4 {
-  margin-top: 0;  /* Applies to card headings and titles */
+  margin-top: 0.5rem;  /* Applies to card headings and titles */
   break-inside: avoid;
   break-after: avoid;
 }
@@ -59,9 +59,9 @@ h4 {
 
 @page {
   size: letter;
-  margin: 0.75cm;
+  margin: 5%;
 
-  @bottom-right {
+  @bottom-right-corner {
     content: counter(page);
   }
 }

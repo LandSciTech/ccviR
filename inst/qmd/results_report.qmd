@@ -51,17 +51,17 @@ include_about <- as.logical(params$include_about)
 # defined as latex colors below
 #cols <- c("gray", "green", "yellow", "orange", "red")
 index_labs <- tribble(
-  ~code, ~label, ~col,
-  "IE", "Insufficient Evidence", "#808080",
-  "LV",  "Less Vulnerable", "#008000",
-  "MV",  "Moderately Vulnerable", "#FFC125",
-  "HV",  "Highly Vulnerable", "#FF8C00",
-  "EV",  "Extremely Vulnerable", "#FF0000",
-  "NA",  "Not Applicable", "white")
+  ~code, ~label,                 ~col,      ~text_col,
+  "IE", "Insufficient Evidence", "#808080", "black",
+  "LV", "Less Vulnerable",       "#008000", "white",
+  "MV", "Moderately Vulnerable", "#FFC125", "black",
+  "HV", "Highly Vulnerable",     "#FF8C00", "black",
+  "EV", "Extremely Vulnerable",  "#FF0000", "white",
+  "NA", "Not Applicable",        "white",   "black")
 
 value_labs <- index_labs |>
   filter(code != "NA") |>
-  select(col) |>
+  select(col, text_col) |>
   mutate(value = c("Unknown", ccviR:::valueNms),
          opts = c(-1, ccviR:::valueOpts))
 
@@ -73,6 +73,7 @@ value_labs <- index_labs |>
 # Quarto uses new grid system https://getbootstrap.com/docs/5.3/layout/css-grid/
 # mb-3 - https://getbootstrap.com/docs/5.3/utilities/spacing/#margin-and-padding
 # 
+# TODO: Not currently used
 results_box <- function(s, column) {
   map(seq_len(nrow(s)), ~ {
     div(
@@ -222,9 +223,7 @@ ggplot() +
 ```{r bivar_exp}
 #| fig-height: 3
 #| fig-width: 7
-#| results: 'hide'
 #| fig-cap: "Map of exposure based on both change in temperature and change in moisture regime."
-
 
 bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess_poly, range_poly)
 
@@ -295,9 +294,11 @@ writeLines(capture.output(vuln_qs), "test_vuln_intermediate.txt")
 
 vuln_qs <- vuln_qs %>%
   mutate(
-    Value = map2(
-      value, col,
-      ~span(.x, style = paste("padding: 2px; font-size: 90%; background-color:", .y)))) %>%
+    Value = pmap(
+      list(value, col, text_col),
+      ~span(..1, style = paste("padding: 2px; font-size: 90%; ",
+                               "background-color:", ..2, "; ",
+                               "color:", ..3)))) %>%
   summarize(Value = tagList(Value), .by = c("scenario_name", "Code"))
 #mutate(Value = stringr::str_replace_all(
 #  Value, setNames(value_labs$value, as.character(value_labs$opts))))
@@ -314,21 +315,21 @@ writeLines(capture.output(vuln_tbl), "test_vuln.txt")
 
 ### Section B. Indirect Exposure to Climate Change
 ```{r section_b}
-#| results: asis
+#| output: asis
 b <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^B")))
 tagList(!!!b)
 ```
 
 ### Section C. Sensitivity and Adaptive Capacity
 ```{r section_c}
-#| results: asis
+#| output: asis
 c <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^C")))
 tagList(!!!c)
 ```
 
 ### Section D. Documented or Modeled Response to Climate Change
 ```{r section_d}
-#| results: asis
+#| output: asis
 d <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^D")))
 tagList(!!!d)
 ```
