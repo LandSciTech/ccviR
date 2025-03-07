@@ -127,53 +127,63 @@ spat_tbl <- ccviR:::apply_spat_tholds(saved, saved$cave)
 
 
 
-::::{.grid}
+<!-- ::::{.grid} -->
 
-:::{.g-col-6}
+<!-- :::{.g-col-6} -->
+
+<!-- #### Climate Change Vulnerability Index -->
+
+<!-- ```{r} -->
+<!-- #| output: asis -->
+<!-- # TODO: Keep these? Or just the dials? -->
+<!-- b <- results_box(saved, "CCVI_index") -->
+<!-- tagList(!!!b) -->
+<!-- ``` -->
+<!-- ::: -->
+
+<!-- :::{.g-col-6} -->
+
+<!-- #### Migratory Exposure Index -->
+
+<!-- ```{r} -->
+<!-- #| output: asis -->
+<!-- b <- results_box(saved, "mig_exposure") -->
+<!-- tagList(!!!b) -->
+<!-- ``` -->
+<!-- ::: -->
+
+<!-- :::: -->
+
 
 #### Climate Change Vulnerability Index
-
 ```{r}
-#| output: asis
-b <- results_box(saved, "CCVI_index")
-tagList(!!!b)
-```
-:::
-
-:::{.g-col-6}
-
-#### Migratory Exposure Index
-
-```{r}
-#| output: asis
-b <- results_box(saved, "mig_exposure")
-tagList(!!!b)
-```
-:::
-
-::::
-
-
-
-```{r}
-dials <- map2(saved$CCVI_index, saved$scenario_name, ~ {
-  ccviR:::plot_index_gauge(
-    .x, type = "", 
-    codes = index_labs$code[-nrow(index_labs)],
-    nms = index_labs$label[-nrow(index_labs)], 
-    cols = index_labs$col[-nrow(index_labs)],
-    ttl = .y)
+dials_index <- purrr::map2(saved$CCVI_index, saved$scenario_name, ~ {
+  ccviR:::plot_index_gauge(.x, type = "index", ttl = .y)
 })
-
 # break-inside etc. forces page breaks around the figures
 # margin: auto centres the figures
 div(style = "break-inside: avoid; break-after: auto",
     div(class = "grid", 
-        !!!map(dials, ~div(class = "g-col-6", .x, style = "margin: auto"))
+        !!!purrr::map(dials_index,
+                      ~div(class = "g-col-6", .x, style = "margin: auto"))
     )
 )
 ```
 
+#### Migratory Exposure Index
+```{r}
+dials_mig_exp <- purrr::map2(saved$mig_exposure, saved$scenario_name, ~ {
+  ccviR:::plot_index_gauge(.x, type = "mig_exp", ttl = .y)
+})
+# break-inside etc. forces page breaks around the figures
+# margin: auto centres the figures
+div(style = "break-inside: avoid; break-after: auto",
+    div(class = "grid", 
+        !!!purrr::map(dials_mig_exp, 
+                      ~div(class = "g-col-6", .x, style = "margin: auto"))
+    )
+)
+```
 
 ### Species range
 ```{r range_map}

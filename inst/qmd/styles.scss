@@ -5,11 +5,15 @@ $spacer: 0.5rem;
 /*-- scss:rules --*/
 h3 {
   margin-top: 0.5rem;
+  break-inside: avoid;
+  break-after: avoid;
 }
 
 
 h4 {
   margin-top: 0;  /* Applies to card headings and titles */
+  break-inside: avoid;
+  break-after: avoid;
 }
 
 /* Classes */

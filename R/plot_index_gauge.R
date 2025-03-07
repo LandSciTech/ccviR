@@ -12,27 +12,26 @@
 #'
 #' @noRd
 
-plot_index_gauge <- function(ind, type, codes, nms, cols, ttl){
+plot_index_gauge <- function(ind, type, codes = NULL, nms = NULL, cols = NULL, ttl = NULL){
 
   if(type == "index"){
-    codes <- c("IE","LV", "MV", "HV", "EV")
-    nms <- c("Insufficient Evidence",
-               "Less Vulnerable",
-               "Moderately Vulnerable",
-               "Highly Vulnerable",
-               "Extremely Vulnerable")
-    cols <- c("#808080", "#008000", "#FFC125", "#FF8C00",
-              "#FF0000")
-    ttl <- "Climate Change Vulnerability Index"
+    if(is.null(codes)) codes <- c("IE","LV", "MV", "HV", "EV")
+    if(is.null(nms)) nms <- c("Insufficient Evidence",
+                               "Less Vulnerable",
+                               "Moderately Vulnerable",
+                               "Highly Vulnerable",
+                               "Extremely Vulnerable")
+    if(is.null(cols)) cols <- c("#808080", "#008000", "#FFC125", "#FF8C00",
+                                 "#FF0000")
+    if(is.null(ttl)) ttl <- "Climate Change Vulnerability Index"
   } else if(type == "mig_exp") {
-    codes <- c("N/A", "L", "M", "H")
-    nms <- c("N/A", "Low", "Moderate", "High")
-    cols <- c("#808080", "#008000", "#FFC125",
-              "#FF0000")
+    if(is.null(codes)) codes <- c("N/A", "L", "M", "H")
+    if(is.null(nms)) nms <- c("N/A", "Low", "Moderate", "High")
+    if(is.null(cols)) cols <- c("#808080", "#008000", "#FFC125", "#FF0000")
     if(ind %in% nms){
       ind <- codes[which(ind == nms)]
     }
-    ttl <- "Migratory Exposure Index"
+    if(is.null(ttl)) ttl <- "Migratory Exposure Index"
   }
   # parameters related to annotation placement
   # inner circle radius
