@@ -2,8 +2,15 @@
 params: 
   saved: none
   species: Test Species Name
+  assessor_name: Dr. Curious
+  geo_location: Earth
 title: "`r params$species`"
 subtitle: Climate Change Vulnerability Index Report
+abstract: "`r params$geo_location`"
+abstract-title: "Geographic Location"
+date: today
+published-title: "Date"
+author: "`r params$assessor_name`"
 format: 
   html:
     page-layout: full

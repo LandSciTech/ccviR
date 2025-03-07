@@ -39,8 +39,12 @@ build_report <- function(saved, file_loc = ".", overwrite = TRUE, quiet = FALSE)
 
   quarto::quarto_render(
     fs::path(t, "results_report.qmd"),
-    execute_params = list(saved = saved,
-                          species = saved$common_name[1])
+    execute_params = list(
+      saved = saved,
+      # Pass these in as separate variables so they can be used in the header
+      species = saved$common_name[1],
+      assessor_name = saved$assessor_name[1],
+      geo_location = saved$geo_location[1])
     )
 
   # Print to PDF via Chrome
