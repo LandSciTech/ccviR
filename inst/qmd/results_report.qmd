@@ -2,7 +2,7 @@
 params: 
   saved: none
   species: Test Species Name
-title: '{{< meta params.species >}}'
+title: "`r params$species`"
 subtitle: Climate Change Vulnerability Index Report
 format: 
   html:
@@ -33,8 +33,8 @@ library(htmltools)
 
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FALSE)
 
-#saved <- params$saved
-#spatial_details <- params$spatial_details
+saved <- params$saved
+species <- params$species
 
 # defined as latex colors below
 #cols <- c("gray", "green", "yellow", "orange", "red")
@@ -96,13 +96,13 @@ vuln_box <- function(tbl) {
 
 ```{r}
 # If testing use test saved data
-if(length(params$saved) == 1 && params$saved == "none") {
+if(length(saved) == 1 && saved == "none") {
   saved <- ccviR:::test_files()$saved$final2 %>%
     ccviR:::load_previous()
 } else {
   # Otherwise remember that Quarto isn't R! So can handle lists, but not data.frames
   # So convert lists back to df.
-  saved <- as.data.frame(params$saved) %>%
+  saved <- as.data.frame(saved) %>%
     readr::type_convert(na = ".na")
   
   # Debugging: 
@@ -192,16 +192,6 @@ ggplot() +
   scale_x_continuous(expand = c(0, 0)) +
   scale_colour_manual(name = NULL, values = c("Assessment Area" = "black", "Range" = "red"))
 ```
-
-  
-```{r}
-#| eval: false
-if (identical(rmarkdown::metadata$runtime, "shiny")){
-    shiny::setProgress(0.7)
-}
-```
-
-
 
 ## Vulnerability Factors
 
@@ -321,12 +311,6 @@ d <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^D")))
 tagList(!!!d)
 ```
 
-
-```{r progress}
-if (identical(rmarkdown::metadata$runtime, "shiny")){
-    shiny::setProgress(0.9)
-}
-```
 
 ## Version Note
 This report was generated with version `r utils::packageVersion("ccviR")` of the ccviR package.

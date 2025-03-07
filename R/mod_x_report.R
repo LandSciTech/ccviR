@@ -40,13 +40,14 @@ mod_report_server <- function(id, saved) {
     # Report download -------------------------------------------------------
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
-      filename = "results_report.pdf",
+      filename = {
+        tolower(saved()$common_name[1]) %>%
+          stringr::str_extract_all("\\w+", simplify = TRUE) %>%
+          paste0(collapse = "_") %>%
+          paste0("_", Sys.Date(), ".pdf")
+      },
       content = function(file) {
-        withProgress(message = 'Report rendering in progress...', {
-          # Copy the `qmd` folder to a temp directory before processing it, in
-          # case we don't have write permissions to the current working dir
-          # (which can happen when deployed).
-          #t <- fs::dir_copy(fs::path_package("qmd", package = "ccviR"), fs::path_temp())
+        withProgress(message = 'Creating report...', {
           build_report(saved(), file)
         })
       }
