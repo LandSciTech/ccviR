@@ -107,7 +107,7 @@ analyze_spatial <- function(
     gain_mod = 1, scenario_names = "Scenario 1", quiet = FALSE) {
 
   n <- 6
-  inform_prog("Checking files", quiet, n, 1)
+  inform_prog("Checking files", quiet, n)
 
   clim_nms_dif <- setdiff(names(clim_vars_lst),
                           c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
@@ -160,7 +160,7 @@ analyze_spatial <- function(
   }
 
   # Clip range to climate data polygon and to scale poly
-  inform_prog("Clipping ranges", quiet, n, 2)
+  inform_prog("Clipping ranges", quiet, n)
 
   range_poly_clim <- st_intersection(range_poly, clim_poly) %>%
     st_set_agr("constant")
@@ -183,7 +183,7 @@ analyze_spatial <- function(
   range_poly <- valid_or_error(range_poly, "range_poly assessment area intersection")
 
   # Section A - Exposure to Local Climate Change: #====
-  inform_prog("Assessing local climate exposure", quiet, n, 3)
+  inform_prog("Assessing local climate exposure", quiet, n)
 
   # Temperature
   mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT")
@@ -216,7 +216,7 @@ analyze_spatial <- function(
   }
 
   # Section C - Sensitivity and Adaptive Capacity: #====
-  inform_prog("Assessing thermal & hydrological niches", quiet, n, 4)
+  inform_prog("Assessing thermal & hydrological niches", quiet, n)
 
   # Historical Thermal niche
   if(is.null(clim_vars_lst$htn)){
@@ -255,7 +255,7 @@ analyze_spatial <- function(
 
 
   # Section D - Modelled Response to Climate Change #====
-  inform_prog("Assessing modelled response to climate change", quiet, n, 5)
+  inform_prog("Assessing modelled response to climate change", quiet, n)
 
   if(is.null(hs_rast)) {
     mod_resp_CC <- rep(NA_real_, 2) %>% as.list() %>% as.data.frame() %>%
@@ -293,7 +293,7 @@ analyze_spatial <- function(
     protected <- calc_overlap_raster(protected_rast_assess, range_future)
   }
 
-  inform_prog("Finalizing outputs", quiet, n, 6)
+  inform_prog("Finalizing outputs", quiet, n)
 
   # Range size
   range_size <- tibble(range_size = st_area(range_poly) %>% units::set_units(NULL))

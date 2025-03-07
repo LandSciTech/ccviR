@@ -1,8 +1,8 @@
-inform_prog <- function(detail, quiet, n = NULL, i = NULL) {
+inform_prog <- function(detail, quiet, n = NULL) {
   if(quiet) return(invisible())
 
   if(shiny::isRunning()) {
-    incProgress(i/n, detail = detail)
+    incProgress(1/(n + 1), detail = detail)
   } else {
     message(detail)
   }
