@@ -50,6 +50,7 @@ mod_report_server <- function(id, saved) {
       },
       content = function(file) {
         req(input$include_about)
+        check_chrome()
         withProgress(message = 'Creating report...', {
           build_report(saved(), file, include_about = input$include_about)
         })

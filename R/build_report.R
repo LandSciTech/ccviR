@@ -65,3 +65,66 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
   # Return link to file
   out
 }
+
+
+check_chrome <- function() {
+
+  chrome <- have_chrome()
+
+  if(chrome != TRUE) {
+    if(stringr::str_detect(chrome, "Cannot find")) {
+      msg <- tagList(
+        p("Problem locating Chrome, Chromium or Edge",
+          "Do you need to install it?"),
+        p("Full error message from ", code("pagedown", .noWS = "after"), ":",
+          tags$blockquote(chrome))
+      )
+    } else if (stringr::str_detect(chrome, "platform is not supported")) {
+      msg <- p("Unfortunately your platform is not supported for generating reports")
+    }
+
+    mod <- modalDialog(
+      msg,
+      footer = modalButton("Cancel"),
+      title = "Need Chrome, Chromium, or Edge to generate report")
+
+    if(shiny::isRunning()) showModal(mod) else return(mod) # for testing
+  }
+
+  req(chrome == TRUE)
+}
+
+
+
+#' Test whether Chrome is installed
+#'
+#' This is a wrapper around `pagedown::find_chrome()` for several reasons.
+#'
+#' 1. It turns errors into messages which we can process
+#' 2. Allows us to 'mock' this in our testthat tests without modifying
+#'  `pagedown::find_chrome()` directly (safer:
+#'  https://testthat.r-lib.org/reference/local_mocked_bindings.html#namespaced-calls).
+#'  BUT NOTE: We can't currently mock shinytest2 tests
+#'  (https://github.com/rstudio/shinytest2/issues/371), so we artificially mock
+#'  with options.#'
+#'
+#' @returns TRUE or the error message from `pagedown::find_chrome()` as a string
+#' @noRd
+#'
+#' @examples
+#' have_chrome()
+have_chrome <- function() {
+
+  # For testing only, these messages come from `pagedown::find_chrome`
+  if(shiny::isTruthy(getOption("ccviR.test_no_chrome"))) {
+    return("Cannot find Chromium or Google Chrome")
+  } else if(shiny::isTruthy(getOption("ccviR.test_no_chrome_platform"))) {
+    return("Your platform is not supported")
+  }
+
+  tryCatch({
+    is.character(pagedown::find_chrome())
+  }, error = function(e) e$message
+  )
+}
+
