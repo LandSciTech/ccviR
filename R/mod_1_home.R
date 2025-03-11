@@ -10,8 +10,8 @@ mod_home_test <- function() {
   server <- function(input, output, session) {
     shinyOptions("file_dir" = system.file("extdata/", package = "ccviR"))
     volumes <- server_setup()
-    cat(volumes)
-    cat(getwd())
+    #cat(volumes)
+    #cat(getwd())
     mod_home_server(id = "test", volumes = volumes)
   }
 

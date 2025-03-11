@@ -18,7 +18,7 @@ format:
     theme: 
       - default
       - styles.scss
-keep-md: true
+keep-md: false
 fig-responsive: false
 ---
 <!-- Notes 

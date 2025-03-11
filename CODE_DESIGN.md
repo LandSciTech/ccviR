@@ -56,7 +56,7 @@ to use the `NS()` function in the UI or the `ns` variable in the server (if
 using `renderUI()`, not required for anything going to/from `output` or `input`)
 
 - UI: Use `ns <- NS(id)` at the start, wrap all UI ids in `ns(my_id)`
-- Server: Use `ns <- serssion$ns` at the start, then wrap ids in `ns(my_id)`. 
+- Server: Use `ns <- session$ns` at the start, then wrap ids in `ns(my_id)`. 
 
 **Notes**
 
@@ -128,3 +128,12 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
   point out a general error in the app.
 - If snapshots keep changing by a small amount, add a Sys.sleep(1) to force the
   test to wait until it's ready
+
+## Random Notes
+
+### shinytest2 error: "Target position can only be set for new windows"
+- This happened after a Google Chrome update (https://stackoverflow.com/questions/79488849/target-position-can-only-be-set-for-new-windows-in-chromote-in-r/79489622#79489622)
+- On linux, we can use chromium instead (also on windows). 
+- Use `Sys.setenv(CHROMOTE_CHROME = "chromium")` until Chrome not broken?
+- On windows might need to set full path to chromium (but try without this fix 
+  first).

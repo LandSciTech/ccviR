@@ -86,6 +86,7 @@ sf::st_geometry_type(ca) |> unique()
 
 ca1 <- st_transform(ca, crs = 4326)
 
+# Fasterize doesn't work with terra yet
 r <- raster::raster(raster::extent(ca1), res = res, crs = 4326)
 #ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "min") # Keep smallest value of IUCN_Cat
 ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "any") # Keep Yes/No protected

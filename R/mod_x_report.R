@@ -4,10 +4,14 @@
 #' @examples
 #' mod_report_test()
 #' mod_report_test(saved = NULL)
+#'
+
 
 mod_report_test <- function(saved = test_df_loaded()) {
 
-  ui <- ui_setup(mod_report_ui(id = "test"))
+  ui <- ui_setup(
+    tabPanel("Index Results",
+             fluidPage(div(mod_report_ui(id = "test")))))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 

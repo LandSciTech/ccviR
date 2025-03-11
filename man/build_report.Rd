@@ -2,19 +2,36 @@
 % Please edit documentation in R/build_report.R
 \name{build_report}
 \alias{build_report}
-\title{Title}
+\title{Build the report from saved data}
 \usage{
-build_report(saved)
+build_report(
+  saved,
+  file_loc = ".",
+  include_about = TRUE,
+  overwrite = TRUE,
+  quiet = FALSE
+)
 }
 \arguments{
-\item{index}{}
+\item{saved}{Data frame. Data saved from the Shiny app.}
+
+\item{file_loc}{Character. Directory to save file, or if a file name,
+name of file to create.}
+
+\item{include_about}{Logical. Whether to include page explaining report
+interpretation.}
+
+\item{overwrite}{Logical. Whether to overwrite previous reports with the same
+name.}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
+}
+\value{
+File location for the pdf report
 }
 \description{
-Title
+Build the report from saved data
 }
 \examples{
-saved <- test_files()$saved$final2 \%>\%
-  load_previous()
-
-build_report(saved)
+build_report(test_df_loaded())
 }

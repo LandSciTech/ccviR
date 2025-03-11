@@ -149,6 +149,7 @@ test_data <- function(f = test_files()) {
 #' @noRd
 #'
 #' @examples
+#' test_df_loaded()
 test_df_loaded <- function(file = "final2") {
   load_previous(test_files()$saved[[file]]) %>%
     mutate(across(contains("pth"), fix_path))

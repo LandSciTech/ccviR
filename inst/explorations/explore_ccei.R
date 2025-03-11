@@ -29,10 +29,10 @@ r1 <- terra::rast("misc/ccei/ccei_ssp245.tif")
 r2 <- terra::rast("misc/ccei/ccei_ssp585.tif")
 t <- terra::rast("misc/ccei/ccei_ssp245_test.tif")
 
-raster::plot(r0)
-raster::plot(r1)
-raster::plot(r2)
-raster::plot(t)
+terra::plot(r0)
+terra::plot(r1)
+terra::plot(r2)
+terra::plot(t)
 
 ext <- terra::ext(-67.68503693181682, -45.94485241375469,
                   -22.813051124621953, 0.49423033772188435)
@@ -45,38 +45,38 @@ raster::plot(p, ext = ext2)
 
 c <- terra::rast("misc/ccei/intermediate/hist_groups_cmd.tif")
 t <- terra::rast("misc/ccei/intermediate/hist_groups_tmean.tif")
-raster::plot(c)
-raster::plot(c, ext = ext2)
-raster::plot(t)
-raster::plot(t[[1]])
+terra::plot(c)
+terra::plot(c, ext = ext2)
+terra::plot(t)
+terra::plot(t[[1]])
 
 vars <- terra::rast("misc/ccei/intermediate/hist_all_vars.tif")
-raster::plot(vars, ext = ext2)
+terra::plot(vars, ext = ext2)
 
-raster::plot(vars[["cmd_sd"]], ext = ext2)
+terra::plot(vars[["cmd_sd"]], ext = ext2)
 sd <- vars[["cmd_sd"]]
 sd[sd[["cmd_sd"]] > 1] <- NA
-raster::plot(sd, add = TRUE, col = "red")  # Really low standard deviations
+terra::plot(sd, add = TRUE, col = "red")  # Really low standard deviations
 
 
 ccei <- terra::rast("misc/ccei/ccei_ssp245.tif")
-raster::plot(ccei)
-raster::plot(ccei, ext = ext2)
+terra::plot(ccei)
+terra::plot(ccei, ext = ext2)
 
 ccei2 <- ccei
 ccei2[ccei == Inf] <- NA
-raster::plot(ccei2, ext = ext2)
+terra::plot(ccei2, ext = ext2)
 
 brks_ccei <- c(0, 4, 5, 7, Inf)
 rcl_tbl_ccei <- matrix(c(brks_ccei[1:4], brks_ccei[2:5], 1:4), ncol = 3)
 ccei3 <- terra::classify(ccei, rcl_tbl_ccei, right = NA)
-raster::plot(ccei3)
-raster::plot(ccei3, ext = ext2)
+terra::plot(ccei3)
+terra::plot(ccei3, ext = ext2)
 
 # Orig NatureServe
 brks_ccei <- c(0, 4, 5, 7, 25)
 rcl_tbl_ccei <- matrix(c(brks_ccei[1:4], brks_ccei[2:5], 1:4), ncol = 3)
 ccei0 <- terra::rast("misc/ccei/ccei.img") %>%
   terra::classify(rcl_tbl_ccei, right = NA)
-raster::plot(ccei0)
-raster::plot(ccei3, ext = ext2)
+terra::plot(ccei0)
+terra::plot(ccei3, ext = ext2)
