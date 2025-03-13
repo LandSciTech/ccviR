@@ -53,7 +53,8 @@ Suggests:
     furrr,
     readxl,
     raster,
-    shinytest2
+    shinytest2,
+    withr
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Depends: 

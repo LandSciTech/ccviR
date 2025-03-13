@@ -5,6 +5,11 @@
 #' mod_report_test()
 #' mod_report_test(saved = NULL)
 #'
+#' # Test if we don't have chrome/etc. installed
+#' withr::with_options(
+#'   list("ccviR.test_no_chrome_platform" = TRUE), {
+#'     runApp(mod_report_test())
+#'   })
 
 
 mod_report_test <- function(saved = test_df_loaded()) {
@@ -29,9 +34,11 @@ mod_report_ui <- function(id) {
     id = "footer",
     style = "float:left",
     br(), br(),
+
     radioButtons(ns("include_about"), label = "Include Interpretation Guide",
                  choices = c("Yes" = TRUE, "No" = FALSE), inline = TRUE),
-    downloadButton(ns("report"), "Generate report", class = "btn-primary")
+    downloadButton(ns("report"), "Generate report", class = "btn-primary"),
+    div(textOutput(ns("validate")), style = "margin-top: 0.5em")
   )
 }
 
@@ -41,11 +48,20 @@ mod_report_server <- function(id, saved) {
 
   moduleServer(id, function(input, output, session) {
 
-    ns <- session$ns
+    # Check if download valid
+    output$validate <- renderText(check_chrome())
+
+    observe({
+      shinyjs::toggleState(
+        id = "report",
+        condition = have_chrome() == TRUE & isTruthy(input$include_about))
+      })
 
     # Report download -------------------------------------------------------
+
+    # NOTE: downloadHandler will always try to download, even if things error,
+    #  so disable the button until we're sure it will work.
     output$report <- downloadHandler(
-      # For PDF output, change this to "report.pdf"
       filename = {
         tolower(saved()$common_name[1]) %>%
           stringr::str_extract_all("\\w+", simplify = TRUE) %>%
@@ -53,8 +69,6 @@ mod_report_server <- function(id, saved) {
           paste0("_", Sys.Date(), ".pdf")
       },
       content = function(file) {
-        req(input$include_about)
-        check_chrome()
         withProgress(message = 'Creating report...', {
           build_report(saved(), file, include_about = input$include_about)
         })

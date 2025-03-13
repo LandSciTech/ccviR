@@ -73,25 +73,14 @@ check_chrome <- function() {
 
   if(chrome != TRUE) {
     if(stringr::str_detect(chrome, "Cannot find")) {
-      msg <- tagList(
-        p("Problem locating Chrome, Chromium or Edge",
-          "Do you need to install it?"),
-        p("Full error message from ", code("pagedown", .noWS = "after"), ":",
-          tags$blockquote(chrome))
-      )
+      msg <- paste0("Chrome, Chromium, or Edge is required to build reports ",
+                    "but cannot be found. Do you need to install it?")
     } else if (stringr::str_detect(chrome, "platform is not supported")) {
-      msg <- p("Unfortunately your platform is not supported for generating reports")
+      msg <- "Unfortunately your platform is not supported for generating reports"
     }
 
-    mod <- modalDialog(
-      msg,
-      footer = modalButton("Cancel"),
-      title = "Need Chrome, Chromium, or Edge to generate report")
-
-    if(shiny::isRunning()) showModal(mod) else return(mod) # for testing
+    validate(need(FALSE, msg))
   }
-
-  req(chrome == TRUE)
 }
 
 
