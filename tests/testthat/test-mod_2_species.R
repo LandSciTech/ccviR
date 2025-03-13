@@ -9,7 +9,7 @@ test_that("Species Fills in previous data", {
   Sys.setenv(CHROMOTE_CHROME = "chromium")
 
   shiny_app <- mod_species_test()
-  app <- AppDriver$new(shiny_app, variant = "ubuntu")
+  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 
   #app$set_window_size(width = 1304, height = 718)
