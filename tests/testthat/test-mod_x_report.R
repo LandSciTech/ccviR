@@ -37,13 +37,13 @@ test_that("Chrome check", {
   # - shinytest2 doesn't work with runApp()
   # - withr::with_options doesn't work with shinyApp()
 
-  app <- AppDriver$new(shiny_app, variant = "ubuntu",
+  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE),
                        options = list("ccviR.test_no_chrome_platform" = TRUE))
   app$set_window_size(width = 1619, height = 993)
   app$expect_screenshot(name = "02-report-chrome-platform")
   app$stop()
 
-  app <- AppDriver$new(shiny_app, variant = "ubuntu",
+  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE),
                        options = list("ccviR.test_no_chrome" = TRUE))
   app$set_window_size(width = 1619, height = 993)
   app$expect_screenshot(name = "03-report-chrome")
