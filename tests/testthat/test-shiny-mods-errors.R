@@ -9,7 +9,7 @@
 test_that("Full app - No errors", {
 
   shiny_app <- ccvi_app2(input_files = test_files())
-  app <- shinytest2::AppDriver$new(shiny_app, variant = "ubuntu")
+  app <- shinytest2::AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 
   # Home
@@ -50,7 +50,7 @@ test_that("Full app - No errors with missing spatial", {
                   rng_chg_pth_2 = NA)
 
   shiny_app <- ccvi_app2(input_files = f)
-  app <- shinytest2::AppDriver$new(shiny_app, variant = "ubuntu")
+  app <- shinytest2::AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 
   app$click("home-continue")

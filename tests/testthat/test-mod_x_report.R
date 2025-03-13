@@ -10,7 +10,7 @@ test_that("Report downloads", {
   Sys.setenv(CHROMOTE_CHROME = "chromium")
 
   shiny_app <- mod_report_test()
-  app <- AppDriver$new(shiny_app, variant = "ubuntu")
+  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 
   app$wait_for_idle()
