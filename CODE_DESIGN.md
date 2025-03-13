@@ -4,12 +4,6 @@ Here are details regarding code design choices/decisions,
 particularly where things are bit convoluted, as well as style decisions or 
 naming conventions.
 
-## Interactive testing
-- Most functions have an examples section in the roxygen2 docs which can be
-  used for interactive testing.
-- Most Shiny App functions have multiple settings for using pre-filled 
-  spatial file paths, or simulating loading data, or a vanilla run.
-
 ## Data storage
 
 Data used for preparing data sets for the package. 
@@ -110,11 +104,15 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
 
 
 ### shinytest2
+- **You MUST rebuild the package before running Shiny tests!**
 - see `?shinytest2::AppDriver` for some of what you can access form the `AppDriver`
 - shinytest2 can be a bit finicky, but once you get the details right it works well
-- **You MUST rebuild the package before running Shiny tests!**
+- Careful: if you have a general error that won't allow the app to work, running
+  that tests can delete the snapshots. If that happens, revert that change in git, 
+  fix the app problem then retry.
 - Errors in the test pane that imply the app is working (not that specific tests 
-  are failing) are best troubleshooted by using `record_test()` (don't actually 
+  are failing) are best troubleshooted by calling the app interactively, 
+  or by using `record_test()` (don't actually 
   record it, but the errors messages are much better in this mode, and may be 
   something as simple as misspelling a function name, for example)
 - Because the app is running from a function, `record_test()` can be used to 
