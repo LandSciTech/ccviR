@@ -5,6 +5,7 @@
     "home-continue": 1,
     "home-loadcsv": 0,
     "results-calcIndex": 0,
+    "results-report-include_about": "TRUE",
     "results-restart": 0,
     "save-downloadData": 0,
     "section_a-continue": 1,

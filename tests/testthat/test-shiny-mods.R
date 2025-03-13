@@ -1,11 +1,17 @@
 library(shinytest2)
 
 # Remember to re-build/install package before running tests! Ctrl-Shift-B
+
+# devtools::test(filter = "shiny-mods") # Run just the shiny apps test programatically
+
 test_that("Full app", {
+
+  # TODO: After Chrome update, shinytests2 fail, use chromium instead and DON'T
+  #       update (temp?)
+  Sys.setenv(CHROMOTE_CHROME = "chromium")
 
   shiny_app <- ccvi_app2(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = "ubuntu")
-
   app$set_window_size(width = 1619, height = 993)
 
   # Home

@@ -18,23 +18,17 @@ test_that("check_chrome()", {
 
   withr::with_options(
     list("ccviR.test_no_chrome" = TRUE), {
-      expect_silent(m <- check_chrome())
-      expect_s3_class(m, "shiny.tag")
-      expect_true(stringr::str_detect(as.character(m), "Problem locating"))
-      expect_true(stringr::str_detect(as.character(m), "modal-body"))
+      expect_error(check_chrome(), "required to build reports")
     }
   )
 
   withr::with_options(
     list("ccviR.test_no_chrome_platform" = TRUE), {
-      expect_silent(m <- check_chrome())
-      expect_s3_class(m, "shiny.tag")
-      expect_true(stringr::str_detect(as.character(m), "Unfortunately your platform"))
-      expect_true(stringr::str_detect(as.character(m), "modal-body"))
+      expect_error(check_chrome(), "Unfortunately your platform is not supported")
     }
   )
 
-  expect_true(check_chrome())
+  expect_null(check_chrome())
 
 })
 
