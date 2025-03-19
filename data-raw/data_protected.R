@@ -150,7 +150,16 @@ us <- st_read(
     "AND (Category != 'Marine')")) %>%
   st_cast("MULTIPOLYGON") %>%
   mutate(IUCN_Cat = as.numeric(factor(
-    IUCN_Cat, levels = c("Ia", "Ib", "II", "III", "IV", "V", "VI"))))
+    IUCN_Cat, levels = c("Ia", "Ib", "II", "III", "IV", "V", "VI")))) %>%
+  # Also omit "fee" Features which are identified as Marine by lame
+  filter(!stringr::str_detect(tolower(Unit_Nm), "marine"))
+
+# Note:
+# - What about "Alaska Maritime National Wildlife Refuge" -> Marine?
+# filter(us, State_Nm %in% c("AK", "HI")) %>%
+#   sf::st_drop_geometry() %>%
+#   select(State_Nm, Unit_Nm, Loc_Nm) %>%
+#   filter(stringr::str_detect(tolower(Unit_Nm), "mari"))
 
 # Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
 sf::st_geometry_type(us) |> unique()
