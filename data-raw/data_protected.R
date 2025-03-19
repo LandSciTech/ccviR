@@ -10,6 +10,7 @@ library(glue)
 library(sf)
 library(dplyr)
 library(fasterize) # For quick rasterization (see references at the bottom)
+# Note that fasterize doesn't work with terra yet so we use raster
 
 # Setup file paths
 dir_pa <- path("misc", "protected_areas")
@@ -22,6 +23,10 @@ dir_create(c(dir_pa, dir_CAN, dir_USA))
 # 2.5 min = ~21 km2 at Equator
 # 30 s = ~1 km2 at Equator
 res <- 0.01   # ~ 1.11 km2
+
+# Coordinate reference systems
+crs_int <- 4326 # Intermediate
+crs_out <- 3857 # Output
 
 # Download data ----------------------------------------------------------------
 
@@ -68,31 +73,50 @@ if(FALSE) {
 ## Canada ---------------------------
 # Data manual: https://data-donnees.az.ec.gc.ca/api/file?path=%2Fspecies%2Fprotectrestore%2Fcanadian-protected-conserved-areas-database%2FUserManuals%2FProtectedConservedArea_UserManual_2023.pdf
 
+### Setup ----
+
 f_CAN <- path(dir_CAN, "ProtectedConservedArea_2023", "ProtectedConservedArea_2023.gdb")
 st_layers(f_CAN)
 ca <- st_read(f_CAN, layer = "ProtectedConservedArea_2023") %>%
   st_cast("MULTIPOLYGON") %>% # Convert "MULTISURFACE" geometries into MULTIPOLYGONS
-  select("ZONE_ID",     # ID
-         "STATUS",      # 0 - Delisted
-         "PA_OECM_DF",  # 1 Protected Area; 2 OECM; 3 Interim PA; 4 Interim OECM; 5 NA
-         "IUCN_CAT",    # 1-7 are IUCN Recognized Protected areas, 8 & 9 are unreported or other
-         "TYPE_E",      # Description of the type of protected area
-         "ZONEDESC_E",  # Description of the zone
-         "OWNER_E") %>% # Owner
-  filter(IUCN_CAT <= 7)  # Using only IUCN recognized (i.e. I - VI, 1-7)
+  select(
+    "ZONE_ID",     # ID
+    "IUCN_CAT",    # 1-7 are IUCN Recognized Protected areas, 8 & 9 are unreported or other
+    "BIOME",       # Type of protected area (M - Fully or partially marine; T - Terrestrial or Freshwater"
+    #"STATUS",      # 0 - Delisted
+    #"PA_OECM_DF",  # 1 Protected Area; 2 OECM; 3 Interim PA; 4 Interim OECM; 5 NA
 
-# Verify that they are all 'standard'
+    #"TYPE_E",      # Description of the type of protected area
+    #"ZONEDESC_E",  # Description of the zone
+    #"OWNER_E"      # Owner
+    ) %>%
+  filter(IUCN_CAT <= 7, # Using only IUCN recognized (i.e. I - VI, 1-7)
+         BIOME != "M")  # Omit Marine Biomes
+
+# Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
 sf::st_geometry_type(ca) |> unique()
 
-ca1 <- st_transform(ca, crs = 4326)
+### Convert to raster -----
 
-# Fasterize doesn't work with terra yet
-r <- raster::raster(raster::extent(ca1), res = res, crs = 4326)
-#ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "min") # Keep smallest value of IUCN_Cat
-ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "any") # Keep Yes/No protected
+# Transform to unprojected first
+#   Otherwise get "Error in fasterize_cpp(sf1, raster, field, fun, background, by) :
+#    vector is too large"
+ca1 <- st_transform(ca, crs = crs_int)
+
+# Get raster template (need raster, fasterize can't use terra), using final CRS
+r <- raster::raster(raster::extent(ca1), res = res, crs = crs_out)
+
+# Rasterize
+ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "any")
+
+# Revert and save
 ca_rast <- terra::rast(ca_rast)
-#terra::plot(ca_rast)
 terra::writeRaster(ca_rast, path(dir_pa, "pa_canada_raster.tif"), overwrite = TRUE)
+
+#terra::plot(ca_rast) # For checking
+
+# Note: `fun = "any"` to keep binary of TRUE/FALSE protected
+#  Could also use `fun = "min"` to keep the value of the smallest IUCN_CAT
 
 
 # No transformation - For checking
@@ -108,36 +132,51 @@ if(FALSE) {
 # https://stackoverflow.com/a/55164190
 # OGR SQL - https://gdal.org/en/stable/user/ogr_sql_dialect.html
 
+### Setup ----
+
 f_USA <- path(dir_USA, "PADUS4_0_Geodatabase.gdb")
 st_layers(f_USA)
 
 # This can take a couple of minutes
 us <- st_read(
   f_USA,
-  query = paste("SELECT *",
-                "FROM PADUS4_0Combined_Proclamation_Marine_Fee_Designation_Easement",
-                #"FROM PADUS4_0Marine", # For a quick look
-                # Using only IUCN recognized
-                "WHERE IUCN_Cat IN ('Ia','Ib', 'II', 'III', 'IV', 'V', 'VI')")) %>%
+  query = paste(
+    "SELECT *",
+    "FROM PADUS4_0Combined_Proclamation_Marine_Fee_Designation_Easement",
+    #"FROM PADUS4_0Marine", # For a quick look
+    # Using only IUCN recognized
+    "WHERE IUCN_Cat IN ('Ia','Ib', 'II', 'III', 'IV', 'V', 'VI')",
+    # Omitting Marine areas
+    "AND (Category != 'Marine')")) %>%
   st_cast("MULTIPOLYGON") %>%
   mutate(IUCN_Cat = as.numeric(factor(
     IUCN_Cat, levels = c("Ia", "Ib", "II", "III", "IV", "V", "VI"))))
 
-# Verify that they are all 'standard'
+# Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
 sf::st_geometry_type(us) |> unique()
 
-# Transform to 4326 before rasterizing
+
+### Convert to raster ----
+
+# Transform to unprojected CRS first
 us1 <- us %>%
-  st_transform(crs = 4326) %>%
+  st_transform(crs = crs_int) %>%
   st_wrap_dateline() # Required to fix (split) Polygons near date-line
 
-r <- raster::raster(raster::extent(us1), res = res, crs = 4326)
-#us_rast <- fasterize(us1, r, field = "IUCN_Cat", fun = "min") # Keep smallest value of IUCN_Cat
+# Get raster template (fasterize can't use terra, so use raster)
+r <- raster::raster(raster::extent(us1), res = res, crs = crs_out)
+
+# Rasterize
 us_rast <- fasterize(us1, r, field = "IUCN_Cat", fun = "any") # Keep Yes/No protected
+
+# Revert and save
 us_rast <- terra::rast(us_rast)
+terra::writeRaster(us_rast, path(dir_pa, "pa_usa_raster.tif"), overwrite = TRUE)
 
 #terra::plot(us_rast)
-terra::writeRaster(us_rast, path(dir_pa, "pa_usa_raster.tif"), overwrite = TRUE)
+
+# Note: `fun = "any"` to keep binary of TRUE/FALSE protected
+#  Could also use `fun = "min"` to keep the value of the smallest IUCN_Cat
 
 # No transformation - For checking
 if(FALSE) {
@@ -158,7 +197,13 @@ terra::writeRaster(north_america,
                    path(dir_pa, "pa_north_america.tif"),
                    overwrite = TRUE)
 
+file_delete(path(dir_pa, "pa_north_america.vrt"))
+
 #terra::plot(north_america)
+
+# README ---------------------------------------------------------
+file_copy("data-raw/readme_protected.md", path(dir_pa, "README.md"),
+          overwrite = TRUE)
 
 
 # Citations -------------------------------------------------------------------
