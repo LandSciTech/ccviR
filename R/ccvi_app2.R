@@ -92,6 +92,24 @@ ccvi_app2 <- function(input_files = NULL, ...){
 }
 
 ui_setup <- function(...) {
+
+  fluidPage(
+    title = "ccviR app",
+    ui_fmt(),
+    tagList(
+      navlistPanel(
+        id = "tabset",
+        well = FALSE,
+        widths = c(3, 9),
+        ...
+      ),
+      mod_save_ui("save")
+    )
+  )
+
+}
+
+ui_fmt <- function(title, type = "main") {
   # CSS to use in the app
   appCSS <-
     ".mandatory_star { color: red; }
@@ -100,16 +118,36 @@ ui_setup <- function(...) {
    #error { color: red; }
    body { background: #fcfcfc; }
    #header { background: #fff; border-bottom: 1px solid #ddd; margin: -20px -15px 0; padding: 15px 15px 10px; }
+   .shinyDirectories {margin-bottom: 5px;}
+   .shinyFiles {margin-bottom: 5px;}
+
    .shiny-output-error-validation {color: #d9534f; font-weight: bold;}
    h5 {font-weight: bold; font-size: 100%;}
    .question {font-size: 120%; margin-top: 1.5em;}
    .bigger {font-size: 1.3em;}
-  "
+   "
+  # Special formating for the data UI
+  if(type == "data-ui") {
+    appCSS <- paste0(
+      appCSS,
+      "/* Data UI */
+      .tab-content {
+         padding-left: 1rem;
+         border-left: 1px solid #ddd;
+         border-right: 1px solid #ddd;
+         border-bottom: 1px solid #ddd;
+      }
 
-  fluidPage(
+     .tab-content .shiny-input-container { margin-top: 0px; padding-top: 15px;}
+
+     .nav .active {font-weight: bold;}
+     .nav-tabs li.active a {color: #337ab7 !important;}
+  ")
+  }
+
+  tagList(
     shinyjs::useShinyjs(),
     shinyjs::inlineCSS(appCSS),
-    title = "ccviR app",
     tags$head(tags$style(type = "text/css",
                          ".container-fluid {  max-width: 1050px; /* or 1050px */}")),
     div(id = "header",
@@ -123,28 +161,16 @@ ui_setup <- function(...) {
           a("ccviR website", href = "https://landscitech.github.io/ccviR/articles/app_vignette.html", target="_blank"),
           HTML("&bull;"),
           a("NatureServe website", href = "https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index", target="_blank"))
-    ),
-    navlistPanel(
-      id = "tabset",
-      well = FALSE,
-      widths = c(3, 9),
-      ...
-    ),
-    mod_save_ui("save")
+    )
   )
 }
-
 
 server_setup <- function() {
   file_pths <- NULL
 
-  #TODO: Remove development mode
-  shinyOptions("file_dir" = "inst/extdata")
-
   if(is_testing()) {
-    shinyOptions("file_dir" = system.file("extdata/", package = "ccviR"))
+    shinyOptions("file_dir" = fs::path_package("extdata/", package = "ccviR"))
   }
-
 
   # start up Note this time out is because when I disconnected from VPN it
   # made the getVolumes function hang forever because it was looking for

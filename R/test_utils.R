@@ -14,6 +14,19 @@ compare_io <- function(i, o) {
 }
 
 
+
+
+mock_files <- function(file) {
+  list(
+    files = list(`0` = list("", fs::path(file))),
+    root = "wd")
+}
+
+expect_no_log_warnings <- function(app) {
+  l <- as.character(app$get_logs())
+  expect_false(any(stringr::str_detect(l, "Warning\\: ")))
+}
+
 #' Load test data
 #'
 #' Helper function for keeping track of local test data. Paths for files stored
@@ -333,17 +346,37 @@ test_exp_tbl <- function(exp_lev) {
   )
 }
 
+test_data_prep <- function(dir = fs::path_package("extdata", package = "ccviR")) {
 
+  dir_clim <- fs::path(dir, "clim_files", "raw")
 
-
-
-mock_files <- function(file) {
+  # Inputs
   list(
-    files = list(`0` = list("", fs::path(file))),
-    root = "wd")
-}
 
-expect_no_log_warnings <- function(app) {
-  l <- as.character(app$get_logs())
-  expect_false(any(stringr::str_detect(l, "Warning\\: ")))
+    # Hist inputs
+    clim_norm_period = "1961-1990",
+    clim_norm_url = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
+
+    # Hist/standard File/dir paths
+    mat_norm_pth = fs::path(dir_clim, "NB_norm_MAT.tif"),
+    cmd_norm_pth = fs::path(dir_clim, "NB_norm_CMD.tif"),
+    map_norm_pth = fs::path(dir_clim, "NB_norm_MAP.tif"),
+    mwmt_norm_pth = fs::path(dir_clim, "NB_norm_MWMT.tif"),
+    mcmt_norm_pth = fs::path(dir_clim, "NB_norm_MCMT.tif"),
+    assess_pth = fs::path(dir, "assess_poly.shp"),
+    ceei_pth = NULL,
+
+    # Scenario inputs
+    clim_scn_nm = c("RCP 4.5", "RCP 8.5"),
+    clim_scn_gcm = c("AdaptWest 15 CMIP5 AOGCM Ensemble", "AdaptWest 15 CMIP5 AOGCM Ensemble"),
+    clim_scn_period = c("2050s", "2050s"),
+    clim_scn_em = c("RCP 4.5", "RCP 8.5"),
+    clim_scn_url = c("https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
+                     "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
+
+    # Scenario paths
+    mat_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
+    cmd_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif"))
+  ) |>
+    unlist() # To get name1, name2, etc. for multiple scenario information
 }
