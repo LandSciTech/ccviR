@@ -388,8 +388,8 @@
           25902079658.56419
         ],
         "protected": [
-          4.270285239545832,
-          0.7844298083327166
+          8.816000000000001,
+          0.198
         ],
         "temp_exp": [
           1.6,
@@ -440,7 +440,7 @@
           2
         ],
         "D4": [
-          2,
+          1,
           2
         ],
         "gain_mod": [
@@ -511,9 +511,9 @@
           "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif",
           "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif"
         ],
-        "protected_rast_pth": [
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.tif",
-          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.tif"
+        "protected_poly_pth": [
+          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg",
+          "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg"
         ],
         "clim_dir_pth": [
           "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed",
@@ -538,7 +538,7 @@
           40
         ],
         "d_score": [
-          9,
+          8,
           9
         ],
         "MC_freq_EV": [
@@ -666,7 +666,7 @@
           "2"
         ],
         "D4": [
-          "2",
+          "1",
           "2"
         ],
         "com_B1": [

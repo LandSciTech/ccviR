@@ -6,9 +6,6 @@ library(shinytest2)
 
 test_that("Report downloads", {
 
-  # TODO: After Chrome update, shinytests2 fail, use chromium instead (temp?)
-  Sys.setenv(CHROMOTE_CHROME = "chromium")
-
   shiny_app <- mod_report_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
@@ -27,9 +24,6 @@ test_that("Report downloads", {
 })
 
 test_that("Chrome check", {
-
-  # TODO: After Chrome update, shinytests2 fail, use chromium instead (temp?)
-  Sys.setenv(CHROMOTE_CHROME = "chromium")
 
   shiny_app <- mod_report_test()
 

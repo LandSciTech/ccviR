@@ -16,7 +16,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3", "D4", "gain_mod", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "protected_rast_pth", "clim_dir_pth"]
+          "value": ["scenario_name", "MAT_1", "MAT_2", "MAT_3", "MAT_4", "MAT_5", "MAT_6", "CMD_1", "CMD_2", "CMD_3", "CMD_4", "CMD_5", "CMD_6", "CCEI_1", "CCEI_2", "CCEI_3", "CCEI_4", "prop_non_breed_over_ccei", "HTN_1", "HTN_2", "HTN_3", "HTN_4", "PTN", "MAP_max", "MAP_min", "range_change", "range_overlap", "range_size", "protected", "temp_exp", "temp_exp_cave", "moist_exp", "moist_exp_cave", "comb_exp", "comb_exp_cave", "C2ai", "C2aii", "range_MAP", "C2bi", "D2", "D3", "D4", "gain_mod", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "protected_poly_pth", "clim_dir_pth"]
         },
         "groups": {
           "type": "list",
@@ -212,7 +212,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [4.27028524, 0.78442981]
+          "value": [8.816, 0.198]
         },
         {
           "type": "double",
@@ -277,7 +277,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [2, 2]
+          "value": [1, 2]
         },
         {
           "type": "double",
@@ -362,7 +362,7 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.tif", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.tif"]
+          "value": ["/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg", "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg"]
         },
         {
           "type": "character",

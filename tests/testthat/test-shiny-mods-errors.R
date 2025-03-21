@@ -44,7 +44,7 @@ test_that("Full app - No errors", {
 # Remember to re-build/install package before running tests! Ctrl-Shift-B
 test_that("Full app - No errors with missing spatial", {
 
-  f <- test_files(protected_rast_pth = NA,
+  f <- test_files(protected_poly_pth = NA,
                   ptn_poly_pth = NA,
                   rng_chg_pth_1 = NA,
                   rng_chg_pth_2 = NA)

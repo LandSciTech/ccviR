@@ -1,11 +1,12 @@
 
-d <- test_data()
+expect_silent(d <- test_data())
 
 test_that("spatial runs with all data or optional data",{
   expect_message(
-    res <- analyze_spatial(d$rng_poly, d$assess_poly, d$clim_vars, NULL, d$ptn_poly, d$rng_chg_rast_1,
-                           hs_rcl = d$rng_chg_mat,
-                           scenario_names = d$scn_nms)
+    res <- analyze_spatial(
+      d$rng_poly, d$assess_poly, d$clim_vars, NULL, d$ptn_poly, d$rng_chg_rast_1,
+      hs_rcl = d$rng_chg_mat,
+      scenario_names = d$scn_nms)
   ) |> suppressMessages()
   expect_type(res, "list")
   expect_false(anyNA(res$spat_table %>% dplyr::select(-matches("CCEI|protected"))))
@@ -220,12 +221,17 @@ test_that("gives error for points early", {
 
 
 test_that("protected areas", {
-  skip_if_not(!is.null(d$protected_rast))
+  skip_if_not(!is.null(d$protected_poly))
 
   expect_message(
     res <- analyze_spatial(
-      d$rng_poly, d$assess_poly, d$clim_vars, NULL, d$ptn_poly, d$rng_chg_rast_1,
-      hs_rcl = d$rng_chg_mat, protected_rast = d$protected_rast,
+      range_poly = d$rng_poly, scale_poly = d$assess_poly,
+      clim_vars_lst = d$clim_vars,
+      non_breed_poly = NULL,
+      ptn_poly = d$ptn_poly,
+      hs_rast = d$rng_chg_rast,
+      hs_rcl = d$rng_chg_mat,
+      protected_poly = d$protected_poly,
       scenario_names = d$scn_nms)
   ) |> suppressMessages()
   expect_type(res, "list")

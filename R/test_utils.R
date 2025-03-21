@@ -60,7 +60,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
                        ptn_poly_pth = "PTN_poly.shp",
                        rng_chg_pth_1 = "rng_chg_45.tif",
                        rng_chg_pth_2 = "rng_chg_85.tif",
-                       protected_rast_pth = "pa_north_america.tif",
+                       protected_poly_pth = "pa_north_america.gpkg",
                        saved = "test_files",
                        mock = FALSE) {
 
@@ -85,9 +85,9 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
     f <- purrr::map(f, ~fs::path(dir,  .x))
 
     # Big files stored in misc
-    f <- c(f, list(protected_rast_pth = fs::path(dir,
+    f <- c(f, list(protected_poly_pth = fs::path(dir,
                                                  "../../misc/protected_areas",
-                                                 protected_rast_pth)))
+                                                 protected_poly_pth)))
   }
 
   # Only mock the reloadable files
@@ -121,8 +121,8 @@ test_data <- function(f = test_files()) {
   hs2 <- if(fs::file_exists(f$rng_chg_pth_2)) terra::rast(f$rng_chg_pth_2) else NULL
 
   # Protected Areas
-  protected_rast <- if(fs::file_exists(f$protected_rast_pth)) {
-    terra::rast(f$protected_rast_pth)
+  protected_poly <- if(fs::file_exists(f$protected_poly_pth)) {
+    sf::st_read(f$protected_poly_pth, agr = "constant", quiet = TRUE)
   } else NULL
 
   range_points <- range %>% sf::st_make_grid(what = "centers")
@@ -140,7 +140,7 @@ test_data <- function(f = test_files()) {
        rng_chg_rast_1 = hs,
        rng_chg_rast_2 = hs2,
        rng_chg_rast = c(hs, hs2),
-       protected_rast = protected_rast,
+       protected_poly = protected_poly,
        rng_pnts = range_points,  # For error checking
        rng_clim = range_clim,
        scn_nms = f$scn_nms)
@@ -272,12 +272,12 @@ test_questions <- function(file = "final2", as_reactive = TRUE) {
 #' @examples
 #' sp <- test_spatial()
 #' isolate(sp$spat_res())
-#' isolate(sp$protected_rast_assess())
+#' isolate(sp$protected_poly())
 #'
 #' # Only include minimum required spatial files
 #' sp_min <- test_spatial(min_req = TRUE)
 #' isolate(sp_min$spat_res())
-#' isolate(sp_min$protected_rast_assess())
+#' isolate(sp_min$protected_poly())
 #'
 #' # Not for shiny
 #' sp <- test_spatial(as_reactive = FALSE)
@@ -289,7 +289,7 @@ test_spatial <- function(d = test_data(), min_req = FALSE, as_reactive = TRUE) {
 
   if(min_req) {
     d$rng_chg_rast <- NULL
-    d$protected_rast <- NULL
+    d$protected_poly <- NULL
     d$ptn_poly <- NULL
     d$rng_chg_mat <- NULL
   }
@@ -303,7 +303,7 @@ test_spatial <- function(d = test_data(), min_req = FALSE, as_reactive = TRUE) {
       ptn_poly = d$ptn_poly,
       clim_vars_lst = d$clim_vars,
       hs_rcl = d$rng_chg_mat,
-      protected_rast = d$protected_rast,
+      protected_poly = d$protected_poly,
       scenario_names = d$clim_readme$Scenario_Name)
   })
 
@@ -321,7 +321,7 @@ test_spatial <- function(d = test_data(), min_req = FALSE, as_reactive = TRUE) {
     "ptn_poly" = trans(d$ptn_poly),
     "nonbreed_poly" = trans(NULL),
     "assess_poly" = trans(d$assess_poly),
-    "protected_rast_assess" = trans(spat_res$protected_rast_assess),
+    "protected_poly" = trans(spat_res$protected_poly),
     "hs_rast" = trans(d$rng_chg_rast),
     "hs_rcl_mat" = trans(d$rng_chg_mat)
   )

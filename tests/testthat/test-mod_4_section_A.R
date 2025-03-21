@@ -18,7 +18,7 @@ test_that("A overall", {
 
 test_that("A min spatial", {
 
-  sp <- test_files(protected_rast_pth = NA,
+  sp <- test_files(protected_poly_pth = NA,
                    ptn_poly_pth = NA,
                    rng_chg_pth_1 = NA,
                    rng_chg_pth_2 = NA) %>%

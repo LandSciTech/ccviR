@@ -4,10 +4,6 @@ library(shinytest2)
 
 test_that("Species Fills in previous data", {
 
-  # TODO: After Chrome update, shinytests2 fail, use chromium instead and DON'T
-  #       update (temp?)
-  Sys.setenv(CHROMOTE_CHROME = "chromium")
-
   shiny_app <- mod_species_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
