@@ -106,51 +106,32 @@ analyze_spatial <- function(
     hs_rast = NULL, hs_rcl = NULL, protected_rast = NULL,
     gain_mod = 1, scenario_names = "Scenario 1", quiet = FALSE) {
 
+  # Setup Progress messages
   n <- 6
   inform_prog("Checking files", quiet, n)
 
-  clim_nms_dif <- setdiff(names(clim_vars_lst),
-                          c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
+  # Check Climate variables
+  check_clim_vars(clim_vars_lst)
 
-  if(length(clim_nms_dif) > 0){
-    stop("clim_vars_lst has unexpected names: ", clim_nms_dif, call. = FALSE)
-  }
-
-  clim_nms_mis <- setdiff(c("mat", "cmd", "clim_poly"), names(clim_vars_lst))
-
-  if(length(clim_nms_mis) > 0){
-    stop("clim_vars_lst has missing required elements: ", clim_nms_mis,
-         call. = FALSE)
-  }
-
-  # check all rasts are SpatRaster and convert if not
-  clim_vars_lst <- purrr::map2(clim_vars_lst, names(clim_vars_lst), check_rast)
+  # Check Rasters
+  clim_vars_lst <- check_rast(clim_vars_lst)
   hs_rast <- check_rast(hs_rast, var_name = "hs_rast")
 
-  # Check scenario names match raster layers
-  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "SpatRaster")) %>%
-    c(hs_rast = hs_rast) %>%
-    purrr::compact() %>%
-    purrr::map_dbl(terra::nlyr)
-
-  if(!all(rast_lyrs %in% c(1, length(scenario_names)))){
-    stop("rasters must have one layer or length(scenario_names) layers. ",
-         "The rasters ",
-         paste0(names(rast_lyrs)[which(!rast_lyrs %in% c(1, length(scenario_names)))],
-                collapse = ", "),
-         " do not have the correct number of layers.", call. = FALSE)
-  }
+  # Check Scenario names
+  check_scn(clim_vars_lst, hs_rast, scenario_names)
 
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
-  range_poly <- prep_polys(range_poly, crs_use, "range polygon")
-  scale_poly <- prep_polys(scale_poly, crs_use, "assessment area polygon")
-  ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN polygon")
-  clim_poly <- prep_polys(clim_vars_lst$clim_poly, crs_use, "climate data extext polygon")
 
-  if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])){
+  clim_poly <- prep_polys(clim_vars_lst$clim_poly, crs_use, "Climate Data Extext", quiet)
+  scale_poly <- prep_polys(scale_poly, crs_use, "Assessment Area", quiet)
+  range_poly <- prep_polys(range_poly, crs_use, "Range", quiet)
+
+  # Optional inputs
+  ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet)
+  if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])) {
     non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
-                                  "non-breeding range polygon")
+                                  "non-breeding range")
   } else if (!is.null(non_breed_poly)){
     non_breed_poly <- NULL
     message("non_breed_poly was supplied but ccei was not included in clim_vars_lst, ",
@@ -160,27 +141,8 @@ analyze_spatial <- function(
   }
 
   # Clip range to climate data polygon and to scale poly
-  inform_prog("Clipping ranges", quiet, n)
-
-  range_poly_clim <- st_intersection(range_poly, clim_poly) %>%
-    st_set_agr("constant")
-  if(nrow(range_poly_clim) == 0){
-    stop("The range polygon does not overlap with the climate data extent polygon.",
-         call. = FALSE)
-  }
-
-  # sometimes intersection makes it invalid
-  range_poly_clim <- valid_or_error(range_poly_clim, "range_poly clim_poly intersection")
-
-  range_poly <- st_intersection(range_poly, scale_poly) %>% st_set_agr("constant")
-  if(nrow(range_poly) == 0 ||
-     st_geometry_type(range_poly) %in% c("LINESTRING", "MULTILINESTRING")){
-    stop("The range polygon does not overlap with the assessment area polygon.",
-         call. = FALSE)
-  }
-
-  # sometimes intersection makes it invalid
-  range_poly <- valid_or_error(range_poly, "range_poly assessment area intersection")
+  range_poly_clim <- clip_poly(range_poly, clim_poly, "Range", "Climate Data Extent", quiet)
+  range_poly <- clip_poly(range_poly, scale_poly, "Range", "Assessment Area", quiet)
 
   # Section A - Exposure to Local Climate Change: #====
   inform_prog("Assessing local climate exposure", quiet, n)
@@ -321,61 +283,31 @@ analyze_spatial <- function(
   return(out)
 }
 
-prep_polys <- function(poly, rast_crs, var_name) {
+prep_polys <- function(poly, crs, var_name, quiet = FALSE, poly_clip = NULL, clip_name = NULL) {
   if(is.null(poly)) return(poly)
 
+  inform_prog(paste("Preparing polygon", var_name), quiet)
   poly <- check_polys(poly, var_name)
-  poly <- sf::st_transform(poly, rast_crs)
-  poly <- valid_or_error(poly, var_name)
+  if(!is.null(poly_clip)) poly <- clip_poly(poly, poly_clip, var_name, clip_name, quiet)
+  poly <- check_crs(poly, crs, var_name)
+  poly <- valid_or_error(poly, var_name, quiet)
 
   return(poly)
 }
 
-# helper function to check input polys
-check_polys <- function(poly, var_name) {
+clip_poly <- function(poly, poly_clip, var1, var2, quiet) {
 
-  if(is.null(poly)) return(poly)
-  if(!inherits(poly, "sf")) poly <- sf::st_as_sf(poly)
+  inform_prog(paste("Clipping", var1, "to", var2), quiet, n)
 
-  validate(need(
-    !is.na(st_crs(poly)),
-    paste(var_name, " does not have a CRS.",
-          " \nPlease load a file with a valid Coordinate Reference System")
-  ))
-
-  geo_type <- st_geometry_type(poly)
-  if(any(!geo_type %in% c("POLYGON", "MULTIPOLYGON"))) {
-
-    validate(need(
-      any(geo_type %in% c("POLYGON", "MULTIPOLYGON")),
-      paste0(var_name, " has geometry type ", unique(geo_type),
-             " but only polygons are accepted for this input.")
-    ))
-
-    poly <- st_collection_extract(poly, "POLYGON")
-    message("Point or line geometries in the ", var_name,
-            " were dropped.")
-  }
-
-  return(poly)
-}
-
-
-check_rast <- function(ras, var_name){
-  if(!is(ras, "SpatRaster")){
-    if(is(ras, "Raster")){
-      ras <- as(ras, "SpatRaster")
-    }else {
-      return(ras)
-    }
-  }
-
-  if(is.na(terra::crs(ras))||terra::crs(ras) == ""){
-    stop("The raster ", var_name, " does not have a CRS.",
-         " \nPlease load a file with a valid Coordinate Reference System",
+  clipped <- st_intersection(poly, sf::st_transform(poly_clip, sf::st_crs(poly))) %>%
+    st_set_agr("constant")
+  if(nrow(clipped) == 0 ||
+     st_geometry_type(clipped) %in% c("LINESTRING", "MULTILINESTRING")) {
+    stop("The ", var1, "polygon does not overlap with the ", var2, "polygon",
          call. = FALSE)
   }
+  valid_or_error(clipped, var_name = paste(var1, var2, "intersection"))
 
-  return(ras)
+  return(clipped)
 }
 

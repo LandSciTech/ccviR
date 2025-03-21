@@ -1,7 +1,9 @@
 # if not valid try making it valid and produce an error if not
 
-validate_poly <- function(poly, var_name) {
-  if(!all(sf::st_is_valid(poly))){
+validate_poly <- function(poly, var_name, quiet = FALSE) {
+  if(!all(sf::st_is_valid(poly))) {
+
+    inform_prog(paste0("Validating polygon '", var_name, "'"), quiet)
     poly <- sf::st_make_valid(poly)
 
     validate(need(
@@ -14,9 +16,9 @@ validate_poly <- function(poly, var_name) {
 }
 
 
-valid_or_error <- function(poly, var_name = "Spatial data") {
+valid_or_error <- function(poly, var_name = "Spatial data", quiet = FALSE) {
 
-  poly <- validate_poly(poly, var_name)
+  poly <- validate_poly(poly, var_name, quiet)
 
   if(any(st_geometry_type(poly) == "GEOMETRYCOLLECTION")){
     poly <- sf::st_collection_extract(poly, "POLYGON")
@@ -30,9 +32,11 @@ valid_or_error <- function(poly, var_name = "Spatial data") {
               "If this is not expected please use a different shapefile.",
               call. = FALSE)
     }
+
+    inform_prog(paste0("Unionizing polygon '", var_name, "'"), quiet)
     poly <- sf::st_union(poly) %>% sf::st_as_sf()
 
-    validate_poly(poly, var_name = paste0("Unionized ", var_name))
+    validate_poly(poly, var_name = paste0("Unionized ", var_name), quiet)
   }
 
   poly

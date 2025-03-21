@@ -24,7 +24,8 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
 
   poly_area <- st_area(poly)
 
-  out <- ext_out[[1]] %>% select(-"area") %>%
+  out <- ext_out[[1]] %>%
+    select(-"area") %>%
     stats::setNames(nm = c(names(rast), "coverage_fraction")) %>%
     filter(if_any(.cols = everything(), .fns = ~!is.na(.x))) %>%
     tidyr::pivot_longer(cols = c(-"coverage_fraction"), names_to = "layer",

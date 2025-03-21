@@ -1,4 +1,4 @@
-inform_prog <- function(detail, quiet, n = NULL) {
+inform_prog <- function(detail, quiet, n = 100) {
   if(quiet) return(invisible())
 
   if(shiny::isRunning()) {

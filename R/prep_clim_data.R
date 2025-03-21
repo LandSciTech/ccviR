@@ -472,10 +472,87 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
   return(rcl_tbl)
 }
 
-check_crs <- function(rast){
-  if(is.na(terra::crs(rast))||terra::crs(rast) == ""){
-    stop("The raster ", terra::sources(rast), " does not have a CRS.",
-         " \nPlease load a file with a valid Coordinate Reference System",
-         call. = FALSE)
-  }
+#' Create the Canada Albers Equal Area projection
+#'
+#' For area calculations it's best to use a projection which preserves area.
+#' The Equal Areas Conic Projection is good for this, and can be customized to
+#' Canada.
+#'
+#' This definition is from https://epsg.io/102001. But note that this is also
+#' the defniition used by the protected areas shapefiles from Canadian Gov.
+#'
+#' @returns CRS
+#' @export
+#'
+#' @examples
+#' crs_albers_canada()
+
+crs_albers_canada <- function() {
+  sf::st_crs(
+    'PROJCS["Canada Albers Equal Area Conic",
+    GEOGCS["NAD83",
+        DATUM["North_American_Datum_1983",
+            SPHEROID["GRS 1980",6378137,298.257222101,
+                AUTHORITY["EPSG","7019"]],
+            AUTHORITY["EPSG","6269"]],
+        PRIMEM["Greenwich",0,
+            AUTHORITY["EPSG","8901"]],
+        UNIT["degree",0.0174532925199433,
+            AUTHORITY["EPSG","9122"]],
+        AUTHORITY["EPSG","4269"]],
+    PROJECTION["Albers_Conic_Equal_Area"],
+    PARAMETER["latitude_of_center",40],
+    PARAMETER["longitude_of_center",-96],
+    PARAMETER["standard_parallel_1",50],
+    PARAMETER["standard_parallel_2",70],
+    PARAMETER["false_easting",0],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]],
+    AXIS["Easting",EAST],
+    AXIS["Northing",NORTH],
+    AUTHORITY["ESRI","102001"]]')
+}
+
+
+#' Create the North America Albers Equal Area projection
+#'
+#' For area calculations it's best to use a projection which preserves area.
+#' The Equal Areas Conic Projection is good for this, and can be customized to
+#' North America
+#'
+#' This definition is the OGC WKT from https://epsg.io/102008.
+#'
+#' @returns CRS definition
+#' @export
+#'
+#' @examples
+#' crs_albers_na()
+
+crs_albers_na <- function() {
+  # OGC WKT from
+  sf::st_crs(
+    'PROJCS["North America Albers Equal Area Conic",
+    GEOGCS["NAD83",
+        DATUM["North_American_Datum_1983",
+            SPHEROID["GRS 1980",6378137,298.257222101,
+                AUTHORITY["EPSG","7019"]],
+            AUTHORITY["EPSG","6269"]],
+        PRIMEM["Greenwich",0,
+            AUTHORITY["EPSG","8901"]],
+        UNIT["degree",0.0174532925199433,
+            AUTHORITY["EPSG","9122"]],
+        AUTHORITY["EPSG","4269"]],
+    PROJECTION["Albers_Conic_Equal_Area"],
+    PARAMETER["latitude_of_center",40],
+    PARAMETER["longitude_of_center",-96],
+    PARAMETER["standard_parallel_1",20],
+    PARAMETER["standard_parallel_2",60],
+    PARAMETER["false_easting",0],
+    PARAMETER["false_northing",0],
+    UNIT["metre",1,
+        AUTHORITY["EPSG","9001"]],
+    AXIS["Easting",EAST],
+    AXIS["Northing",NORTH],
+    AUTHORITY["ESRI","102008"]]')
 }
