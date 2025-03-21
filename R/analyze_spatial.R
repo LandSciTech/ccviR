@@ -27,7 +27,7 @@
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
 #'   lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
 #'   details on the matrix format.
-#' @param protected_rast Optional. A SpatRaster object with protected areas.
+#' @param protected_poly Optional. A sf polygon object with protected areas.
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
 #'   in the modeled range change under climate change
 #' @param scenario_names character vector with names that identify multiple
@@ -91,7 +91,7 @@
 #' spat_res <- analyze_spatial(
 #'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
-#'   protected_rast = terra::rast("misc/protected_areas/pa_north_america.tif"),
+#'   protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
 #'                           file.path(base_pth, "rng_chg_85.tif"))),
@@ -103,7 +103,7 @@
 analyze_spatial <- function(
     range_poly, scale_poly, clim_vars_lst,
     non_breed_poly = NULL, ptn_poly = NULL,
-    hs_rast = NULL, hs_rcl = NULL, protected_rast = NULL,
+    hs_rast = NULL, hs_rcl = NULL, protected_poly = NULL,
     gain_mod = 1, scenario_names = "Scenario 1", quiet = FALSE) {
 
   # Setup Progress messages
@@ -129,6 +129,12 @@ analyze_spatial <- function(
 
   # Optional inputs
   ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet)
+  protected_poly <- prep_polys(
+    protected_poly, var_name = "Protected Areas",
+    crs = st_crs(hs_rast),
+    poly_clip = scale_poly, clip_name = "Assessment Area",
+    quiet)
+
   if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])) {
     non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
                                   "non-breeding range")
@@ -239,20 +245,20 @@ analyze_spatial <- function(
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
   }
 
-  if(is.null(protected_rast) | is.null(hs_rast)) {
+  if(is.null(protected_poly) | is.null(hs_rast)) {
     protected <- data.frame(protected = NA_real_)
-    protected_rast_assess <- NULL
   } else {
 
-    # Only keep actual range i.e. set 0 (not suitable) and 1 (lost) to NA
-    range_future <- terra::subst(hs_rast, c(0, 1), NA)
+    # Only keep actual range
+    # set 0 (not suitable) and 1 (lost) to NA,
+    # set 2 (maint) and 3 (gained) to 1
+    range_future <- terra::subst(hs_rast, c(0, 1), NA) %>%
+      terra::subst(c(2,3), 1)
 
-    # Crop to assessment area
-    protected_rast_assess <- terra::crop(
-      protected_rast,
-      st_transform(scale_poly, terra::crs(protected_rast)))
-
-    protected <- calc_overlap_raster(protected_rast_assess, range_future)
+    protected <- calc_prop_raster(
+      range_future, protected_poly, var_name = "protected",
+      val_range = 1) %>%
+      select("protected" = "protected_1")
   }
 
   inform_prog("Finalizing outputs", quiet, n)
@@ -279,7 +285,8 @@ analyze_spatial <- function(
                                      protected),
               range_poly_assess = range_poly,
               range_poly_clim = range_poly_clim,
-              protected_rast_assess = protected_rast_assess)
+              protected_poly = protected_poly)
+
   return(out)
 }
 
