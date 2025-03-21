@@ -59,8 +59,8 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 - In functions which dynamically create UIs, use `NS(id, ui_id)` *inside* the 
   function, cf `get_file_ui2()`
 - `conditionalPanel()` has a `ns` argument we should use (https://stackoverflow.com/a/76905697)
-- `NS()` (or `ns`) is *not* required for shinyjs
-  - e.g., `spat_vuln_hide2()`
+- `NS()` (or `ns`) is *not* required for shinyjs (mainly because always called 
+  within an observer, I believe)
 
 ### Passing variables among modules
 - We return reactives from a module like returning outputs from a function,
@@ -77,11 +77,6 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
   related to each file, we use 'error' verbatim textboxes that pass through any
   validate(need()) failures.
 
-
-## Notes
-- 
-- `spat_vuln_hide2()` gets no `req()` because depends on present/absence to hide
-
 ## Testing
 - It makes testing easier if, as much as possible, all code is moved into 
   functions which can be tested individually, as well as used to create inputs
@@ -90,6 +85,17 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 - Consider running `devtools::test(filter = "test-FILE")` to test a single
   file in a 'clean' session. Helps find out why getting warnings which are
   once per session, for example, without have to re-run the entire set of tests.
+
+
+### Interactive testing
+- Most functions have an examples section in the roxygen2 docs which can be
+  used for interactive testing.
+- Most Shiny modules have an explicit test function that can be used interactively
+    - These generally have multiple settings for using pre-filled spatial file 
+      paths, or simulating loading data, or a vanilla run.
+- Some examples use `withr::with_options()` to simulate certain conditions 
+  (e.g., `mod_report_test()`). In these cases the example must use `runApp()` 
+  or it doesn't work (https://stackoverflow.com/a/78200567).
 
 ### testServer()
 - Where possible, testing is performed with the `testServer()` (Rather than 
@@ -131,7 +137,4 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
 
 ### shinytest2 error: "Target position can only be set for new windows"
 - This happened after a Google Chrome update (https://stackoverflow.com/questions/79488849/target-position-can-only-be-set-for-new-windows-in-chromote-in-r/79489622#79489622)
-- On linux, we can use chromium instead (also on windows). 
-- Use `Sys.setenv(CHROMOTE_CHROME = "chromium")` until Chrome not broken?
-- On windows might need to set full path to chromium (but try without this fix 
-  first).
+- Solution is to update chromote package to >v0.5.0

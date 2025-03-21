@@ -10,6 +10,11 @@
 #'   list("ccviR.test_no_chrome_platform" = TRUE), {
 #'     runApp(mod_report_test())
 #'   })
+#'
+#' withr::with_options(
+#'   list("ccviR.test_no_chrome" = TRUE), {
+#'     runApp(mod_report_test())
+#'   })
 
 
 mod_report_test <- function(saved = test_df_loaded()) {

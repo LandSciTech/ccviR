@@ -1,5 +1,5 @@
 
-#' Test the spatial module
+#' Test the Section A module
 #'
 #' @noRd
 #' @examples

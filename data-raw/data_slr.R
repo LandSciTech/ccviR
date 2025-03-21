@@ -162,7 +162,7 @@ t <- stars::st_as_stars(t)
 longitude <- t$var[[1]]$vals
 latitude <- t$dim[[3]]$vals
 
-image(
+
 
 # Citation ---------------------------------------
 # Manson, G.K., Couture, N.J., and James, T.S., 2019. CanCoast Version 2.0: data and indices to describe the sensitivity of Canada's marine coasts to changing climate; Geological Survey of Canada, Open File 8551, 1 .zip file. https://doi.org/10.4095/314669
