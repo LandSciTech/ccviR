@@ -1,4 +1,8 @@
 
+# NOTE: This is the raster based workflow which is **not used** in favour of the
+#  newer vector-based workflow found in `data-raw/data_protected.R`
+
+
 # Setup -----------------------------------------------------
 
 library(httr2)
@@ -6,12 +10,8 @@ library(fs)
 library(glue)
 library(sf)
 library(dplyr)
-library(rmapshaper) # For fast, topologically-aware simplifications
-
-# Check that you have the system mapshaper installed
-# (if not: https://andyteucher.ca/rmapshaper/articles/rmapshaper.html#using-the-system-mapshaper)
-# Need to use system mapshaper because R can't handle these large files
-check_sys_mapshaper()
+library(fasterize) # For quick rasterization (see references at the bottom)
+# Note that fasterize doesn't work with terra yet so we use raster
 
 # Setup file paths
 dir_pa <- path("misc", "protected_areas")
@@ -19,8 +19,15 @@ dir_CAN <- path(dir_pa, "Canada")
 dir_USA <- path(dir_pa, "USA")
 dir_create(c(dir_pa, dir_CAN, dir_USA))
 
-# Coordinate reference systems - Preserve area
-crs_out <- ccviR::crs_albers_na()
+# Resolution (for lat/lon rasters)
+# 1 degree = 60 arc-minutes
+# 2.5 min = ~21 km2 at Equator
+# 30 s = ~1 km2 at Equator
+res <- 0.01   # ~ 1.11 km2
+
+# Coordinate reference systems
+crs_int <- 4326 # Intermediate
+crs_out <- 3857 # Output
 
 # Download data ----------------------------------------------------------------
 
@@ -58,7 +65,7 @@ if(FALSE) {
 }
 
 
-# Simplify ----------------------------------
+# Rasterize ----------------------------------
 #
 # In both cases there are "MUTLISURFACE" Geometries which seeme to be collections
 # of MULTIPOLYGONS and POLYGONS. These need to be converted to a standard format
@@ -70,8 +77,7 @@ if(FALSE) {
 ### Setup ----
 
 f_CAN <- path(dir_CAN, "ProtectedConservedArea_2023", "ProtectedConservedArea_2023.gdb")
-#st_layers(f_CAN)
-
+st_layers(f_CAN)
 ca <- st_read(f_CAN, layer = "ProtectedConservedArea_2023") %>%
   st_cast("MULTIPOLYGON") %>% # Convert "MULTISURFACE" geometries into MULTIPOLYGONS
   select(
@@ -89,62 +95,37 @@ ca <- st_read(f_CAN, layer = "ProtectedConservedArea_2023") %>%
          BIOME != "M")  # Omit Marine Biomes
 
 # Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
-sf::st_geometry_type(ca) %>% unique()
+sf::st_geometry_type(ca) |> unique()
 
-### Simplify and union -----------------------------
-# - Use snap_interval of 50m to snap polygons to each other if within 50m
-# - Transform CRS after simplification because starting CRS is appropriate
+### Convert to raster -----
 
-ca1 <- ca %>%
-  ms_simplify(keep = 0.05, sys = TRUE, snap_interval = 50) %>%
-  st_buffer(0) %>% # Magic Fairy dust: https://github.com/r-spatial/sf/issues/518
-  st_union() %>%
-  st_transform(crs = crs_out)
+# Transform to unprojected first
+#   Otherwise get "Error in fasterize_cpp(sf1, raster, field, fun, background, by) :
+#    vector is too large"
+ca1 <- st_transform(ca, crs = crs_int)
 
-st_write(ca1, path(dir_pa, "pa_canada.gpkg"), overwrite = TRUE, append = FALSE)
+# Get raster template (need raster, fasterize can't use terra), using final CRS
+r <- raster::raster(raster::extent(ca1), res = res, crs = crs_out)
+
+# Rasterize
+ca_rast <- fasterize::fasterize(ca1, r, field = "IUCN_CAT", fun = "any")
+
+# Revert and save
+ca_rast <- terra::rast(ca_rast)
+terra::writeRaster(ca_rast, path(dir_pa, "pa_canada_raster.tif"), overwrite = TRUE)
+
+#terra::plot(ca_rast) # For checking
+
+# Note: `fun = "any"` to keep binary of TRUE/FALSE protected
+#  Could also use `fun = "min"` to keep the value of the smallest IUCN_CAT
 
 
-
-### Exploration of simplification ------------------------------
+# No transformation - For checking
 if(FALSE) {
-
-  library(ggplot2)
-  library(rnaturalearth)
-  library(patchwork)
-  library(ggspatial)
-
-  # Plot full set of polygons
-  ggplot() +
-    geom_sf(data = ca1)
-
-  # How do areas compare before and after simplification?
-  # - Union original data to make it comparable
-  # - 98% of area preserved
-  sum(st_area(ca1)) / sum(st_area(st_union(ca))) * 100
-
-  sm <- st_bbox(c(xmin = -67.65, xmax = -67.6,
-                  ymin = 47.95, ymax = 48.05),
-                crs = 4326)
-
-  ca_test <- st_crop(ca, st_transform(sm, st_crs(ca)))
-  ca_test_simp <- ca_test %>%
-    ms_simplify(keep = 0.05, sys = TRUE, snap_interval = 50) %>%
-    st_union()
-
-  # 92% of original area in simplified
-  st_area(ca_test_simp) / sum(st_area(ca_test)) * 100
-
-  g0 <- ggplot() +
-    geom_sf(data = ca_test, fill = "yellow") +
-    labs(title = "No simplification") +
-    annotation_scale()
-
-  g1 <- ggplot() +
-    geom_sf(data = ca_test_simp, fill = "red") +
-    labs(title = "Simplified") +
-    annotation_scale()
-
-  g0 + g1
+  r <- raster::raster(raster::extent(ca), res = 1000, crs = terra::crs(ca))
+  ca_rast_check <- fasterize::fasterize(ca, r, field = "IUCN_CAT", fun = "min")
+  ca_rast_check <- terra::rast(ca_rast_check)
+  terra::plot(ca_rast_check)
 }
 
 ## USA ------------------------------
@@ -155,7 +136,7 @@ if(FALSE) {
 ### Setup ----
 
 f_USA <- path(dir_USA, "PADUS4_0_Geodatabase.gdb")
-#st_layers(f_USA)
+st_layers(f_USA)
 
 # This can take a couple of minutes
 us <- st_read(
@@ -168,10 +149,10 @@ us <- st_read(
     "WHERE IUCN_Cat IN ('Ia','Ib', 'II', 'III', 'IV', 'V', 'VI')",
     # Omitting Marine areas
     "AND (Category != 'Marine')")) %>%
-  st_cast("MULTIPOLYGON") %>% # Deal with warnings about collections
+  st_cast("MULTIPOLYGON") %>%
   mutate(IUCN_Cat = as.numeric(factor(
     IUCN_Cat, levels = c("Ia", "Ib", "II", "III", "IV", "V", "VI")))) %>%
-  # Also omit "fee" Features which are identified as Marine by name
+  # Also omit "fee" Features which are identified as Marine by lame
   filter(!stringr::str_detect(tolower(Unit_Nm), "marine"))
 
 # Note:
@@ -182,87 +163,57 @@ us <- st_read(
 #   filter(stringr::str_detect(tolower(Unit_Nm), "mari"))
 
 # Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
-sf::st_geometry_type(us) %>% unique()
+sf::st_geometry_type(us) |> unique()
 
-### Simplify and union -----------------------------
-# - Use snap_interval of 50m to snap polygons to each other if within 50m
-# - Transform CRS after simplification because starting CRS is appropriate
+
+### Convert to raster ----
+
+# Transform to unprojected CRS first
 us1 <- us %>%
-  ms_simplify(keep = 0.05, sys = TRUE, snap_interval = 50) %>%
-  st_buffer(0) %>% # Magic Fairy dust: https://github.com/r-spatial/sf/issues/518
-  st_union() %>%
-  st_transform(crs = crs_out)
+  st_transform(crs = crs_int) %>%
+  st_wrap_dateline() # Required to fix (split) Polygons near date-line
 
-st_write(us1, path(dir_pa, "pa_usa.gpkg"), overwrite = TRUE, append = FALSE)
+# Get raster template (fasterize can't use terra, so use raster)
+r <- raster::raster(raster::extent(us1), res = res, crs = crs_out)
 
+# Rasterize
+us_rast <- fasterize(us1, r, field = "IUCN_Cat", fun = "any") # Keep Yes/No protected
 
-### Exploration of simplification ------------------------------
+# Revert and save
+us_rast <- terra::rast(us_rast)
+terra::writeRaster(us_rast, path(dir_pa, "pa_usa_raster.tif"), overwrite = TRUE)
+
+#terra::plot(us_rast)
+
+# Note: `fun = "any"` to keep binary of TRUE/FALSE protected
+#  Could also use `fun = "min"` to keep the value of the smallest IUCN_Cat
+
+# No transformation - For checking
 if(FALSE) {
-
-  library(ggplot2)
-  library(rnaturalearth)
-  library(patchwork)
-  library(ggspatial)
-
-  # Plot full set of polygons
-  ggplot() +
-    geom_sf(data = us1)
-
-  # How do areas compare before and after simplification?
-  # - Union original data to make it comparable
-  # - This takes a long time, so use a smaller region
-  # - 97% of area preserved
-  med <- st_bbox(c(xmin = -100.75, xmax = -80.5,
-                   ymin = 30, ymax = 40),
-                 crs = 4326)
-  us0 <- us %>%
-    st_crop(st_transform(med, st_crs(us))) %>%
-    st_buffer(0) %>%
-    st_union()
-  sum(st_area(st_crop(us1, st_transform(med, st_crs(us1))))) / sum(st_area(us0)) * 100
-
-
-  # How do the shapes compare before and after?
-  # Look at a small area
-  sm <- st_bbox(c(xmin = -90.75, xmax = -90.5,
-                  ymin = 35, ymax = 35.2),
-                crs = 4326)
-
-  us_test <- st_crop(us, st_transform(sm, st_crs(us)))
-  us_test_simp <- us_test %>%
-    ms_simplify(keep = 0.05, sys = TRUE, snap_interval = 50) %>%
-    st_union()
-
-  g0 <- ggplot() +
-    geom_sf(data = us_test, fill = "yellow") +
-    labs(title = "No simplification") +
-    annotation_scale()
-
-  g1 <- ggplot() +
-    geom_sf(data = us_test_simp, fill = "red") +
-    labs(title = "Simplified") +
-    annotation_scale()
-
-  g0 + g1
+  r <- raster::raster(raster::extent(us), res = 1000, crs = raster::crs(us))
+  us_rast_check <- fasterize(us, r, field = "GAP_Sts", fun = "min")
+  us_rast_check <- terra::rast(us_rast_check)
+  terra::plot(us_rast_check)
 }
 
-
 # Combine ---------------------------------------------------------------------
-# Much faster to reload (?)
-ca1 <- st_read(path(dir_pa, "pa_canada.gpkg"))
-us1 <- st_read(path(dir_pa, "pa_usa.gpkg"))
+# Use Virtual merge to avoid memory issues
+# https://github.com/rspatial/terra/issues/210#issuecomment-841723729
+north_america <- terra::vrt(c(path(dir_pa, "pa_canada_raster.tif"),
+                              path(dir_pa, "pa_usa_raster.tif")),
+                            path(dir_pa, "pa_north_america.vrt"), overwrite = TRUE)
 
-north_america <- rbind(ca1, us1) %>%
-  ccviR:::valid_or_error()
+terra::writeRaster(north_america,
+                   path(dir_pa, "pa_north_america.tif"),
+                   overwrite = TRUE)
 
-st_write(north_america,
-         path(dir_pa, "pa_north_america.gpkg"),
-         overwrite = TRUE, append = FALSE)
+file_delete(path(dir_pa, "pa_north_america.vrt"))
 
-#plot(north_america)
+#terra::plot(north_america)
 
 # README ---------------------------------------------------------
-# see data-raw/README_protected.md
+file_copy("data-raw/readme_protected.md", path(dir_pa, "README.md"),
+          overwrite = TRUE)
 
 
 # Citations -------------------------------------------------------------------
@@ -283,3 +234,9 @@ st_write(north_america,
 # 'GAP Status Code 3': An area having permanent protection from conversion of natural land cover for most of the area, but subject to extractive uses of either a broad, low-intensity type (e.g., logging, Off Highway Vehicle recreation) or localized intense type (e.g., mining). It also confers protection to Federally listed endangered and threatened species throughout the area.
 #
 # 'GAP Status Code 4': There are no known public or private institutional mandates or legally recognized easements or deed restrictions held by the managing entity to prevent conversion of natural habitat types to anthropogenic habitat types. The area generally allows conversion to unnatural land cover throughout or management intent is unknown. See the PAD-US Standards Manual GAP Status Code Assignment reference document for a summary of assumptions, criteria, and methods or the geodatabase 'GAP_Status' lookup table for short descriptions.
+
+
+
+# fasterize
+# https://ecohealthalliance.github.io/fasterize/
+# https://gis.stackexchange.com/questions/284018/processing-vector-to-raster-faster-with-r-on-windows
