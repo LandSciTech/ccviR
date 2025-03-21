@@ -285,7 +285,7 @@ analyze_spatial <- function(
                                      protected),
               range_poly_assess = range_poly,
               range_poly_clim = range_poly_clim,
-              protected_poly = protected_poly)
+              protected_poly_assess = protected_poly)
 
   return(out)
 }
@@ -304,7 +304,7 @@ prep_polys <- function(poly, crs, var_name, quiet = FALSE, poly_clip = NULL, cli
 
 clip_poly <- function(poly, poly_clip, var1, var2, quiet) {
 
-  inform_prog(paste("Clipping", var1, "to", var2), quiet, n)
+  inform_prog(paste("Clipping", var1, "to", var2), quiet)
 
   clipped <- st_intersection(poly, sf::st_transform(poly_clip, sf::st_crs(poly))) %>%
     st_set_agr("constant")

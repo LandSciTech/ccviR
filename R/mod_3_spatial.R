@@ -51,7 +51,7 @@ mod_spatial_ui <- function(id) {
           get_file_ui2(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "ptn_poly_pth", "Physiological thermal niche file"),
           get_file_ui2(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile"),
-          get_file_ui2(id, "protected_rast_pth", "Protected Area raster"),
+          get_file_ui2(id, "protected_poly_pth", "Protected Area polygon shapefile"),
           selectInput(ns("rng_chg_used"), "Will a projected range change raster be supplied?",
                       c("No" = "no",
                         "Yes, one range change raster will be supplied for all scenarios" = "one",
@@ -138,7 +138,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     clim_dir_pth <- reactiveVal()
     file_ids <- c("rng_poly_pth", "nonbreed_poly_pth", "assess_poly_pth",
-                  "ptn_poly_pth", "protected_rast_pth")
+                  "ptn_poly_pth", "protected_poly_pth")
     rng_ids <- reactiveVal()
 
     # Continue Button
@@ -375,11 +375,10 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     assess_poly <- reactive(read_poly(file_pths$assess_poly_pth, "Assessment Polygon", req = TRUE))
     nonbreed_poly <- reactive(read_poly(file_pths$nonbreed_poly_pth, "Non-breeding Polygon"))
     ptn_poly <- reactive(read_poly(file_pths$ptn_poly_pth, "PTN Polygon"))
+    protected_poly <- reactive(read_poly(file_pths$protected_poly_pth,
+                                           "Protected Areas Polygon"))
 
     # Rasters
-    protected_rast <- reactive(read_raster(file_pths$protected_rast_pth,
-                                           "Protected Areas Raster"))
-
     rng_chg_rast <- reactive({
 
       if(is.null(rng_ids)) return(NULL)
@@ -440,6 +439,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
     # Create error text boxes for all file inputs
+    # (will return validate() messages)
     output$rng_poly_pth_error <- renderText({
       req(rng_poly())
       invisible()
@@ -460,8 +460,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       invisible()
     })
 
-    output$protected_rast_pth_error <- renderText({
-      req(protected_rast())
+    output$protected_poly_pth_error <- renderText({
+      req(protected_poly())
       invisible()
     })
 
@@ -492,7 +492,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
                           ptn_poly = ptn_poly(),
                           clim_vars_lst = clim_vars(),
                           hs_rcl = rng_chg_mat(),
-                          protected_rast = protected_rast(),
+                          protected_poly = protected_poly(),
                           gain_mod = input$gain_mod,
                           scenario_names = clim_readme()$Scenario_Name)
         },
@@ -559,11 +559,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       spat_res()$range_poly_clim
     })
 
-    protected_rast_clip <- reactive({
-      req(protected_rast())
+    protected_poly_clip <- reactive({
+      req(protected_poly())
       req(doSpatial())
       req(!is.character(spat_res()))
-      spat_res()$protected_rast_assess
+      spat_res()$protected_poly_assess
     })
 
     # Prepare Spatial outputs ----------------------------------------------
@@ -607,7 +607,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     #     "ptn_poly" = ptn_poly(),
     #     "nonbreed_poly" = nonbreed_poly(),
     #     "assess_poly" = assess_poly(),
-    #     "protected_rast" = protected_rast(),
+    #     "protected_poly" = protected_poly(),
     #     "hs_rast" = rng_chg_rast(),
     #     "hs_rcl_mat" = rng_chg_mat()
     #   ))
@@ -622,7 +622,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
            "ptn_poly" = ptn_poly,
            "nonbreed_poly" = nonbreed_poly,
            "assess_poly" = assess_poly,
-           "protected_rast_assess" = protected_rast_clip,
+           "protected_poly" = protected_poly_clip,
            "hs_rast" = rng_chg_rast,
            "hs_rcl_mat" = rng_chg_mat
          ))

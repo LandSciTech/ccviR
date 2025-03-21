@@ -85,7 +85,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
   clim_readme <- spatial_details$clim_readme
   range_poly <- spatial_details$range_poly
   assess_poly <- spatial_details$assess_poly
-  protected_rast <- spatial_details$protected_rast
+  protected_poly <- spatial_details$protected_poly
   hs_rcl_mat <- spatial_details$hs_rcl_mat
 
   moduleServer(id, function(input, output, session) {
@@ -171,7 +171,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
     # UI Inputs
     output$ui_D4 <- renderUI({
       spat_vuln_ui2(
-        range_poly(), hs_rast2(), protected_rast(), assess_poly(),
+        range_poly(), hs_rast2(), protected_poly(), assess_poly(),
         id = id, ui_id = "D4",
         desc = "\"Range Polygon\", \"Assessment Area \", \"Projected Range Changes\", and \"Protected Areas\"",
         spat_df = spat_res(), input = input, q = TRUE, multi_stop = TRUE)
@@ -181,11 +181,10 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
 
     output$map_D4 <- leaflet::renderLeaflet({
       make_map2(
-        poly1 = range_poly(), rast1 = protected_rast(),
-        poly2 = assess_poly(), rast2 = hs_rast2(),
-        poly2_nm = "assess_poly",
-        rast1_nm = "protected_rast",
-        rast2_nm = "hs_rast")
+        poly1 = range_poly(),
+        poly2 = protected_poly(), rast1 = hs_rast2(),
+        poly2_nm = "protected_poly",
+        rast1_nm = "hs_rast")
     })
 
     output$tbl_D4 <- gt::render_gt({
