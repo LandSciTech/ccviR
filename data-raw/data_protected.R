@@ -388,7 +388,7 @@ if(FALSE) {
 
 
 # Combine ---------------------------------------------------------------------
-# Much faster to reload (?)
+# Be PATIENT!
 ca1 <- st_read(path(dir_pa, "pa_canada.gpkg"))
 us1 <- st_read(path(dir_pa, "pa_usa.gpkg"))
 

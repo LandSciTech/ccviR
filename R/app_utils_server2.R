@@ -17,25 +17,6 @@
 #'
 #' @returns Leaflet map
 #' @noRd
-#'
-#' @examples
-#' d <- test_data()
-#'
-#' p1 <- d$rng_poly
-#' p2 <- d$assess_poly
-#' r1 <- d$protected_rast
-#' r1 <- terra::crop(r1, st_transform(p2, terra::crs(r1)))
-#' r2 <- d$rng_chg_rast
-#' r2 <- terra::classify(r2, rcl = d$rng_chg_mat, right = NA)
-#'
-#' make_map2(
-#'   poly1 = p1,
-#'   rast1 = r1,
-#'   poly2 = p2,
-#'   rast2 = r2,
-#'   poly2_nm = "assess_poly",
-#'   rast1_nm = "protected_rast",
-#'   rast2_nm = "hs_rast")
 
 make_map2 <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
                       poly1_nm = "Current Range", poly2_nm = NULL,

@@ -4,16 +4,6 @@
 #' @noRd
 #'
 #' @examples
-#' # Get and prepare example data
-#' d <- test_data()
-#'
-#' r1 <- terra::crop(d$protected_rast,
-#'                   st_transform(d$assess_poly, terra::crs(d$protected_rast)))
-#'
-#' r2 <- terra::subst(d$rng_chg_rast, -1, NA)
-#'
-#' # Calculate overlap
-#' calc_overlap_raster(r1, r2)
 
 calc_overlap_raster <- function(rast1, rast2) {
 
