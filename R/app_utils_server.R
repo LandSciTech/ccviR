@@ -181,8 +181,9 @@ prep_raster_map <- function(r, r_nm, max_cell) {
       r <- terra::project(r, "EPSG:3857", method = "near")
       message("projecting raster '", r_nm , "' for plotting")
     }
-  }
 
+    names(r) <- stringr::str_replace_all(names(r), "_", " ")
+  }
   return(r)
 }
 
