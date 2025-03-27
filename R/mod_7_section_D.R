@@ -5,7 +5,8 @@
 #' mod_D_test()
 #' mod_D_test(df_loaded = test_df_loaded())
 
-mod_D_test <- function(df_loaded = NULL, spatial_details = test_spatial()) {
+mod_D_test <- function(df_loaded = NULL,
+                       spatial_details = test_spatial(test_data(protected = TRUE))) {
 
   ui <- ui_setup(mod_D_ui(id = "test"))
   server <- function(input, output, session) {

@@ -1,5 +1,5 @@
 
-d <- test_data()
+d <- test_data(protected = FALSE)
 
 test_that("calc_prop_raster()", {
 

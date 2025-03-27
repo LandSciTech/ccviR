@@ -100,7 +100,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 }
 
 
-test_data <- function(f = test_files()) {
+test_data <- function(f = test_files(), protected = FALSE) {
 
   clim_readme <- read.csv(fs::path(f$clim_dir, "climate_data_readme.csv"))
   clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms)
@@ -121,9 +121,13 @@ test_data <- function(f = test_files()) {
   hs2 <- if(fs::file_exists(f$rng_chg_pth_2)) terra::rast(f$rng_chg_pth_2) else NULL
 
   # Protected Areas
-  protected_poly <- if(fs::file_exists(f$protected_poly_pth)) {
-    sf::st_read(f$protected_poly_pth, agr = "constant", quiet = TRUE)
-  } else NULL
+  if(protected && fs::file_exists(f$protected_poly_pth)) {
+    protected_poly <- sf::st_read(f$protected_poly_pth, agr = "constant", quiet = TRUE)
+    crp <- sf::st_buffer(assess, dist = 2000) %>%
+      sf::st_bbox() %>%
+      sf::st_transform(crs = sf::st_crs(protected_poly))
+    protected_poly <- sf::st_crop(protected_poly, crp)
+  } else protected_poly <- NULL
 
   range_points <- range %>% sf::st_make_grid(what = "centers")
 
