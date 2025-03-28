@@ -180,11 +180,7 @@ mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
     outputOptions(output, "ui_D4", suspendWhenHidden = FALSE)
 
     output$map_D4 <- leaflet::renderLeaflet({
-      make_map2(
-        poly1 = range_poly(),
-        poly2 = protected_poly(), rast1 = hs_rast2(),
-        poly2_nm = "protected_poly",
-        rast1_nm = "hs_rast")
+      map_protected(assess_poly(), protected_poly(), hs_rast2())
     })
 
     output$tbl_D4 <- gt::render_gt({
