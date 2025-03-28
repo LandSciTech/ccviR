@@ -42,6 +42,14 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
   # Create HTML report
   inform_prog("Rendering HTML report", quiet, 4)
 
+  # Force all NAs to ".na" before sending
+  # Otherwise:
+  #  - In future my error: https://github.com/quarto-dev/quarto-r/issues/168#issuecomment-2024805212
+  #  - If we let quarto_render() convert, they use more than one 'na' type
+  #     which is harder to recover from (.na.real .na.character, etc.)
+  saved <- as.list(saved) %>%
+    purrr::map(~if_else(is.na(.x), ".na", as.character(.x)))
+
   quarto::quarto_render(
     fs::path(t, "results_report.qmd"),
     execute_params = list(
