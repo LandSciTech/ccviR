@@ -18,6 +18,7 @@
 #'
 #' @examples
 #' build_report(test_df_loaded())
+#' build_report(test_df_loaded(), debug = TRUE)
 
 build_report <- function(saved, file_loc = ".", include_about = TRUE,
                          overwrite = TRUE, quiet = FALSE, debug = FALSE) {

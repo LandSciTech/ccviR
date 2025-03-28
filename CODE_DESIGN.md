@@ -112,8 +112,8 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
   `update*()` family of functions (https://mastering-shiny.org/scaling-testing.html#limitations)
 - Can use `browser()` inside `testServer({...})` to interactively test and set
   up expectations.
-- Errors implying that cannot find bottom of stack usually just mean that the
-  snapshot has changed, so use `snapshot_review()`
+- Errors implying that cannot find bottom of stack ("Can't find `bottom` on the call tree")
+  usually just mean that the snapshot has changed, so use `snapshot_review()`
 
 
 ### shinytest2
