@@ -22,7 +22,7 @@ test_that("A min spatial", {
                    ptn_poly_pth = NA,
                    rng_chg_pth_1 = NA,
                    rng_chg_pth_2 = NA) %>%
-    test_data(protected = FALSE) %>%
+    test_data() %>%
     test_spatial() %>%
     suppressMessages()
 

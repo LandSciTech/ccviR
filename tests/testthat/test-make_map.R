@@ -1,7 +1,7 @@
 
 # Test Data
 expect_silent({
-  d <- test_data(protected = FALSE)
+  d <- test_data()
 
   rng_chg_cls <- d$rng_chg_rast %>%
     terra::classify(rcl = d$rng_chg_mat, right = NA)

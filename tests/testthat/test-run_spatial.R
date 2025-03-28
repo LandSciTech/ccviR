@@ -1,5 +1,5 @@
 
-expect_silent(d <- test_data(protected = TRUE))
+expect_silent(d <- test_data())
 
 test_that("spatial runs with all data or optional data",{
   expect_message(
