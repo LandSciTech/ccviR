@@ -8,7 +8,6 @@
 #' mod_spatial_test(df_loaded = test_df_loaded(), # As if re-loading from previous run
 #'                  input_files = NULL)
 
-
 mod_spatial_test <- function(df_loaded = NULL, input_files = test_files()) {
 
   ui <- ui_setup(mod_spatial_ui(id = "test"))
@@ -88,8 +87,11 @@ mod_spatial_ui <- function(id) {
           h5("Click button to begin the spatial analysis or to re-run it",
              " after changing inputs:"),
 
-          shinyjs::disabled(
-            actionButton(ns("startSpatial"), "Run Spatial Analysis", class = "btn-primary")),
+          div(style = "display:inline-block",
+              shinyjs::disabled(
+                actionButton(ns("startSpatial"), "Run Spatial Analysis", class = "btn-primary")),
+              uiOutput(ns("spatial_done"), class = "button-status")
+          ),
 
           br(), br(),
           actionButton(ns("continue"), "Next", class = "btn-primary"),
@@ -504,11 +506,18 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     }, ignoreInit = TRUE)
 
+    output$spatial_done <- renderUI({ # Use UI when rendering HTML
+      req(spat_res())
+      validate(need(!is.character(spat_res()), spat_res()))
+      tagList(icon("check", style="color:green"),
+              "Completed at", format(Sys.time(), "%I:%M %p"))
+    })
+
 
     # Calculate Exp Multipliers and Vulnerability Questions for spatial results
     observeEvent(spat_res(), {
 
-      req(spat_res())
+      req(!is.character(spat_res()))
       # If restoring data, thresholds have already been updated
       req(doSpatial() != doSpatialRestore())
       message("Applying thresholds variables")

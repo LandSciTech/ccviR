@@ -125,6 +125,11 @@ ui_fmt <- function(title, type = "main") {
    h5 {font-weight: bold; font-size: 100%;}
    .question {font-size: 120%; margin-top: 1.5em;}
    .bigger {font-size: 1.3em;}
+   .button-status {
+      display: inline-block;
+      vertical-align: middle;
+      padding-left: 1rem;
+   }
    "
   # Special formating for the data UI
   if(type == "data-ui") {
