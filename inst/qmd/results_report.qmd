@@ -249,15 +249,14 @@ ccviR:::get_exposure_table(spat_tbl, "MAT", clim_readme, clim_readme$brks_mat)
 #### Moisture
 ```{r moist_tbl}
 #| output: "asis"
-ccviR:::get_exposure_table(spat_tbl, "CMD", clim_readme, clim_readme$brks_mat)
+ccviR:::get_exposure_table(spat_tbl, "CMD", clim_readme, clim_readme$brks_cmd)
 ```
 
 #### CCEI
 ```{r ccei_tbl}
 #| output: "asis"
-#| 
 if(any(!is.na(select(saved, contains("CCEI_"))))) {
-  ccviR:::get_exposure_table(spat_tbl, "CCEI", clim_readme, clim_readme$brks_mat)
+  ccviR:::get_exposure_table(spat_tbl, "CCEI", clim_readme, clim_readme$brks_ccei)
 } else {
   div("No Migratory Exposure based on the Climate Change Exposure Index availble")
 }
