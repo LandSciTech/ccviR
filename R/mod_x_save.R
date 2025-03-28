@@ -4,8 +4,7 @@ mod_save_ui <- function(id, title) {
 
   div(
     id = "footer",
-    style = "float:right",
-    br(), br(), br(), br(),
+    style = "float:right; margin-top: 2rem;padding-right: 15px;",
     shinySaveButton(ns("downloadData"), "Save progress", "Save app data as a csv file",
                     class = "btn-primary", icon = shiny::icon("save")),
     br(),
@@ -14,31 +13,25 @@ mod_save_ui <- function(id, title) {
   )
 }
 
-mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
+mod_save_server <- function(id, volumes, species_data, spatial, questions,
                             index) {
 
   stopifnot(is.reactive(species_data))
-  stopifnot(is.reactive(spatial_data))
+  purrr::map(spatial, ~stopifnot(is.reactive(.x)))
+  # Because when first loading these modules, we load the save module first,
+  # `index doesn't actually exist yet (so don't test it).
+  #stopifnot(is.reactive(index))
   purrr::map(questions, ~stopifnot(is.reactive(.x)))
 
   moduleServer(id, function(input, output, session) {
 
     # Make out_data #========================================================
-    out_data_lst <- reactiveValues()
 
-    observe({
-      out_data_lst$start <- bind_cols(
-        species_data(),
-        widen_vuln_coms2(questions)) %>%
-        mutate(ccviR_version = utils::packageVersion("ccviR"))
+    out_data <- reactive({
+      combine_outdata2(species_data(), questions, spatial$spat_run(), spatial$spat_res(), index())
     })
 
-    observe(out_data_lst$spat <- spatial_data())
-    observe(out_data_lst$index <- index())
-
-
-    exportTestValues(out_data = shiny::reactiveValuesToList(out_data_lst))
-                     #doSpatial = doSpatial())
+    exportTestValues(out_data = out_data)
 
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
@@ -50,8 +43,7 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
           filename <- paste0(filename, ".csv")
         }
         saveAttempt <- tryCatch({
-          write.csv(combine_outdata2(reactiveValuesToList(out_data_lst)), filename,
-                    row.names = FALSE)},
+          write.csv(out_data(), filename, row.names = FALSE)},
           error = function(e){
             showModal(modalDialog(
               p("File could not be saved. Is it open?"),
@@ -82,20 +74,18 @@ mod_save_server <- function(id, volumes, species_data, spatial_data, questions,
                           stringr::str_replace_all("\\W", "_"),
                         "_")
       file_nm <- tempfile(pattern = file_nm, fileext = ".csv")
-      isolate(
-        write.csv(combine_outdata2(reactiveValuesToList(out_data_lst)),
-                  file_nm,
-                  row.names = FALSE)
-      )
+      isolate(write.csv(out_data(), file_nm, row.names = FALSE))
       message("Temporary file saved to:\n ", file_nm, "\n This will be deleted after R is closed")
       stopApp()
     })
 
     # Return --------------------------------------
     reactive({
-      if(is_ready(out_data_lst)) {
+      if(is_ready(out_data())) {
         combine_outdata2(out_data_lst)
       } else NULL
     })
+
+    out_data
   })
 }

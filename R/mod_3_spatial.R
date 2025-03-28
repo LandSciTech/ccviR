@@ -579,62 +579,73 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # TODO: Original was an observeEvent which linked to the out_data_lst reactiveValue
     # Check that this is good
-    spatial_data <- eventReactive(spat_thresh(), {
+    # spatial_data <- eventReactive(spat_thresh(), {
+    #   req(spat_thresh())
+    #   req(clim_readme())
+    #
+    #   spat_df <- spat_thresh() %>%
+    #     mutate(gain_mod = input$gain_mod,
+    #            gain_mod_comm = input$gain_mod_comm,
+    #            lost = paste0(input$lost_from, ", ", input$lost_to),
+    #            maint = paste0(input$maint_from, ", ", input$maint_to),
+    #            gain = paste0(input$gain_from, ", ", input$gain_to),
+    #            ns = paste0(input$ns_from, ", ", input$ns_to),
+    #            rng_chg_used = input$rng_chg_used)
+    #   clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
+    #
+    #   spat_fnms <- reactiveValuesToList(file_pths) %>%
+    #     purrr::map(~ifelse(is.null(.x), "", .x)) %>%
+    #     as.data.frame() %>%
+    #     mutate(clim_dir_pth = clim_dir_pth())
+    #
+    #   bind_cols(
+    #     spat_df %>% select(-any_of(c(colnames(clim_rdme),
+    #                                  colnames(spat_fnms)))),
+    #     clim_rdme, spat_fnms)
+    # })
+
+    spat_run <- eventReactive(spat_thresh(), {
       req(spat_thresh())
       req(clim_readme())
 
-      spat_df <- spat_thresh() %>%
-        mutate(gain_mod = input$gain_mod,
-               gain_mod_comm = input$gain_mod_comm,
-               lost = paste0(input$lost_from, ", ", input$lost_to),
-               maint = paste0(input$maint_from, ", ", input$maint_to),
-               gain = paste0(input$gain_from, ", ", input$gain_to),
-               ns = paste0(input$ns_from, ", ", input$ns_to),
-               rng_chg_used = input$rng_chg_used)
-      clim_rdme <- clim_readme() %>% select(-"Scenario_Name", -contains("brks"))
+      clim_rdme <- clim_readme() %>%
+        select(-"Scenario_Name", -contains("brks"))
 
       spat_fnms <- reactiveValuesToList(file_pths) %>%
         purrr::map(~ifelse(is.null(.x), "", .x)) %>%
         as.data.frame() %>%
         mutate(clim_dir_pth = clim_dir_pth())
 
-      bind_cols(
-        spat_df %>% select(-any_of(c(colnames(clim_rdme),
-                                     colnames(spat_fnms)))),
-        clim_rdme, spat_fnms)
+      spat_df <- data.frame(
+        gain_mod = input$gain_mod,
+        gain_mod_comm = input$gain_mod_comm,
+        lost = paste0(input$lost_from, ", ", input$lost_to),
+        maint = paste0(input$maint_from, ", ", input$maint_to),
+        gain = paste0(input$gain_from, ", ", input$gain_to),
+        ns = paste0(input$ns_from, ", ", input$ns_to),
+        rng_chg_used = input$rng_chg_used) %>%
+        select(-any_of(c(colnames(clim_rdme),
+                         colnames(spat_fnms))))
+
+      bind_cols(spat_df, clim_rdme, spat_fnms)
     })
 
     # # Return -------------------------------------------------
-    # exportTestValues(
-    #   "spatial_data" = spatial_data(),
-    #   "spatial_details" = list(
-    #     "spat_res" = spat_thresh(),
-    #     "clim_vars" = clim_vars(),
-    #     "clim_readme" = clim_readme(),
-    #     "range_poly" = range_poly_clip(),
-    #     "range_poly_clim" = range_poly_clim(),
-    #     "ptn_poly" = ptn_poly(),
-    #     "nonbreed_poly" = nonbreed_poly(),
-    #     "assess_poly" = assess_poly(),
-    #     "protected_poly" = protected_poly(),
-    #     "hs_rast" = rng_chg_rast(),
-    #     "hs_rcl_mat" = rng_chg_mat()
-    #   ))
 
-    list("spatial_data" = spatial_data,
-         "spatial_details" = list(
-           "spat_res" = spat_thresh,
-           "clim_vars" = clim_vars,
-           "clim_readme" = clim_readme,
-           "range_poly" = range_poly_clip,
-           "range_poly_clim" = range_poly_clim,
-           "ptn_poly" = ptn_poly,
-           "nonbreed_poly" = nonbreed_poly,
-           "assess_poly" = assess_poly,
-           "protected_poly" = protected_poly_clip,
-           "hs_rast" = rng_chg_rast,
-           "hs_rcl_mat" = rng_chg_mat
-         ))
+    list(
+      "spat_run" = spat_run,
+      "spat_res" = spat_thresh,
+      "clim_vars" = clim_vars,
+      "clim_readme" = clim_readme,
+      "range_poly" = range_poly_clip,
+      "range_poly_clim" = range_poly_clim,
+      "ptn_poly" = ptn_poly,
+      "nonbreed_poly" = nonbreed_poly,
+      "assess_poly" = assess_poly,
+      "protected_poly" = protected_poly_clip,
+      "hs_rast" = rng_chg_rast,
+      "hs_rcl_mat" = rng_chg_mat
+    )
   })
 
 }

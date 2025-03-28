@@ -372,19 +372,25 @@ widen_vuln_coms2 <- function(questions) {
 
 
 
-combine_outdata2 <- function(out_data_lst){
-  if(!is.null(out_data_lst$index)){
-    out_data_lst$start <- out_data_lst$start %>%
-      select(-any_of(colnames(out_data_lst$index)))
-    out_data_lst$spat <- out_data_lst$spat %>%
-      select(-any_of(colnames(out_data_lst$index)), -any_of(colnames(out_data_lst$start)))
+
+
+
+combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index) {
+
+  out_dat <- bind_cols(species_data, widen_vuln_coms2(questions), spat_run, spat_res) %>%
+      mutate(ccviR_version = utils::packageVersion("ccviR"))
+
+  if(!is.null(index)) {
+    out_dat <- select(out_dat, -any_of(colnames(index))) %>%
+      bind_cols(index)
   }
 
   exp_cols <- fs::path_package("extdata", "column_definitions_results.csv",
                                package = "ccviR") %>%
     utils::read.csv()
 
-  exp_nms <- exp_cols %>% filter(.data$Column.Name != "") %>%
+  exp_nms <- exp_cols %>%
+    filter(.data$Column.Name != "") %>%
     rowwise() %>%
     mutate(names_exp = case_when(
       stringr::str_detect(.data$Column.Name, "HTN|CCEI") ~
@@ -405,8 +411,7 @@ combine_outdata2 <- function(out_data_lst){
     tidyr::separate_rows("names_exp", sep = ",") %>%
     pull(.data$names_exp)
 
-  out_dat <- bind_cols(out_data_lst) %>%
-    select(any_of(exp_nms), contains("rng_chg_pth"))
+  out_dat <- select(out_dat, any_of(exp_nms), contains("rng_chg_pth"))
 
   # add in missing column names
   add_nms <- setdiff(exp_nms, colnames(out_dat))

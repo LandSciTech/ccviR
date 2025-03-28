@@ -5,6 +5,8 @@
 #' mod_report_test()
 #' mod_report_test(saved = NULL)
 #'
+#' # mod_report_test(test_df_loaded("spatial")) # Test a specific saved output in extdata/test_files
+#'
 #' # Test if we don't have chrome/etc. installed
 #' withr::with_options(
 #'   list("ccviR.test_no_chrome_platform" = TRUE), {
@@ -15,7 +17,7 @@
 #'   list("ccviR.test_no_chrome" = TRUE), {
 #'     runApp(mod_report_test())
 #'   })
-
+#'
 
 mod_report_test <- function(saved = test_df_loaded()) {
 
@@ -36,14 +38,16 @@ mod_report_ui <- function(id) {
   ns <- NS(id)
 
   div(
-    id = "footer",
-    style = "float:left",
     br(), br(),
 
-    radioButtons(ns("include_about"), label = "Include Interpretation Guide",
+    radioButtons(ns("include_about"), label = "Report: Include Interpretation Guide",
                  choices = c("Yes" = TRUE, "No" = FALSE), inline = TRUE),
-    downloadButton(ns("report"), "Generate report", class = "btn-primary"),
-    div(textOutput(ns("validate")), style = "margin-top: 0.5em")
+    div(style = "display:flex; align-items: center",
+      div(style = "flex: 1",
+          downloadButton(ns("report"), "Generate report", class = "btn-primary")),
+      uiOutput(ns("validate"), class = "button-status g-col-10",
+               style = "flex: 12")
+    )
   )
 }
 
@@ -54,13 +58,16 @@ mod_report_server <- function(id, saved) {
   moduleServer(id, function(input, output, session) {
 
     # Check if download valid
-    output$validate <- renderText(check_chrome())
-
     observe({
       shinyjs::toggleState(
         id = "report",
         condition = have_chrome() == TRUE & isTruthy(input$include_about))
-      })
+    })
+
+    output$validate <- renderUI({
+      req(saved())
+      check_chrome()
+    })
 
     # Report download -------------------------------------------------------
 

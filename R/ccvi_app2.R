@@ -45,7 +45,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
 
     mod_A_server(
       id = "section_a",
-      spatial_details = spatial$spatial_details,
+      spatial = spatial,
       parent_session = session)
 
     b <- mod_B_server(
@@ -56,32 +56,35 @@ ccvi_app2 <- function(input_files = NULL, ...){
     c <- mod_C_server(
       id = "section_c",
       df_loaded = restore$df_loaded,
-      spatial_details = spatial$spatial_details,
+      spatial = spatial,
       parent_session = session)
 
     d <- mod_D_server(
       id = "section_d",
       df_loaded = restore$df_loaded,
-      spatial_details = spatial$spatial_details,
+      spatial = spatial,
       parent_session = session)
+
+    # Note that save and results modules are a bit circular as they each
+    # depend on the outputs of the other. `index` defaults to NULL as a result,
+    # so saved can be loaded before
+    saved <- mod_save_server(
+      id = "save", volumes,
+      species_data = sp$species_data,
+      spatial = spatial,
+      questions = c(b, c, d),
+      index = index)
 
     index <- mod_results_server(
       id = "results",
       df_loaded = restore$df_loaded,
       species_data = sp$species_data,
-      spatial_details = spatial$spatial_details,
-      questions = c(b, c, d))
-
-    saved <- mod_save_server(
-      id = "save", volumes,
-      sp$species_data,
-      spatial$spatial_data,
+      spatial = spatial,
       questions = c(b, c, d),
-      index = index$index)
-
-    mod_report_server(
-      id = "report",
       saved = saved)
+
+    # Note:
+    #   mod_report_server() is inside mod_results_server()
   }
 
 

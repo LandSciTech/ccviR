@@ -1,31 +1,38 @@
 #' Test the Results module
 #'
+#' Includes the report module. Requires the save module for testing.
+#'
 #' @noRd
 #' @examples
 #' mod_results_test()
-#' mod_results_test(df_loaded = test_df_loaded())
+#' mod_results_test(df_loaded = test_df_loaded(),
+#'                  NULL, NULL, NULL)
 
 mod_results_test <- function(df_loaded = NULL,
                              species_data = test_species(),
-                             spatial_details = test_spatial(),
+                             spatial = test_spatial(),
                              questions = test_questions()) {
 
   ui <- ui_setup(mod_results_ui(id = "test"))
 
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
+    volumes <- server_setup()
+
+    saved <- mod_save_server(
+      id = "test_save", volumes,
+      reactive(species_data),
+      spatial = spatial,
+      questions = questions,
+      index = index)
 
     index <- mod_results_server(
       id = "test",
       reactive(df_loaded),
       reactive(species_data),
-      spatial_details,
-      questions)
-
-    mod_report_server(
-      id = "test-report",
-      saved = reactive(df_loaded)
-    )
+      spatial = spatial,
+      questions = questions,
+      saved = saved)
   }
 
   shinyApp(ui, server)
@@ -36,6 +43,7 @@ mod_results_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
+    id = ns("results"),
     "Index Results",
     fluidPage(
       div(
@@ -105,33 +113,34 @@ mod_results_ui <- function(id) {
         h3("Types of evidence used"),
         plotOutput(ns("plot_evidence"), width = 600, height = 300),
         br(),
-        # NOTE! Wouldn't normally use `ns()` here
-        # But this report module is nested in results *here*, but the server
-        # module is not nested, so we use `ns()` to get the two ids to line up.
-        mod_report_ui(id = ns("report")),
-        br(), br(), br(),
-        actionButton(ns("restart"), "Assess another species",
-                     class = "btn-primary"),
+        br(), br(),
+        mod_report_ui(ns("report")),
+        br(),
+        div(
+          id = "footer",
+          style = "float:right",
+          actionButton(ns("restart"), "Assess another species",
+                       class = "btn-primary")),
         ns = NS(id)
       )
     )
   )
 }
 
-mod_results_server <- function(id, df_loaded, species_data, spatial_details,
-                               questions) {
+mod_results_server <- function(id, df_loaded, species_data, spatial,
+                               questions, saved) {
 
   stopifnot(is.reactive(df_loaded))
   stopifnot(is.reactive(species_data))
-  purrr::map(spatial_details, ~stopifnot(is.reactive(.x)))
+  purrr::map(spatial, ~stopifnot(is.reactive(.x)))
   purrr::map(questions, ~stopifnot(is.reactive(.x)))
 
   # Split up reactives
-  spat_res <- spatial_details$spat_res
-  hs_rast <- spatial_details$hs_rast
-  clim_readme <- spatial_details$clim_readme
-  range_poly <- spatial_details$range_poly
-  hs_rcl_mat <- spatial_details$hs_rcl_mat
+  spat_res <- spatial$spat_res
+  hs_rast <- spatial$hs_rast
+  clim_readme <- spatial$clim_readme
+  range_poly <- spatial$range_poly
+  hs_rcl_mat <- spatial$hs_rcl_mat
 
   moduleServer(id, function(input, output, session) {
 
@@ -312,8 +321,16 @@ mod_results_server <- function(id, df_loaded, species_data, spatial_details,
        bind_cols(ind_df, conf_df, vuln_df)
      })
 
+    # Reports -----------------------------------
+
+    # Report module
+    mod_report_server(
+      id = "report",
+      saved = saved)
+
+
     # Return ------------------------------------
-    list("index" = index)
+    reactive(if(is_ready(index())) index() else NULL)
   })
 
 }

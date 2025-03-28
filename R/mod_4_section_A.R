@@ -7,13 +7,13 @@
 #' mod_A_test()
 #'
 #' # Test with minimum spatial required
-#' mod_A_test(spatial_details = test_spatial(min_req = TRUE))
+#' mod_A_test(spatial = test_spatial(min_req = TRUE))
 
-mod_A_test <- function(spatial_details = test_spatial()) {
+mod_A_test <- function(spatial = test_spatial()) {
 
   ui <- ui_setup(mod_A_ui(id = "test"))
   server <- function(input, output, session) {
-    mod_A_server(id = "test", spatial_details, parent_session = session)
+    mod_A_server(id = "test", spatial, parent_session = session)
   }
 
   shinyApp(ui, server)
@@ -63,16 +63,16 @@ mod_A_ui <- function(id) {
   )
 }
 
-mod_A_server <- function(id, spatial_details, parent_session) {
+mod_A_server <- function(id, spatial, parent_session) {
 
-  purrr::map(spatial_details, ~stopifnot(is.reactive(.x)))
+  purrr::map(spatial, ~stopifnot(is.reactive(.x)))
 
   # Split up reactives
-  spat_res <- spatial_details$spat_res
-  clim_vars <- spatial_details$clim_vars
-  clim_readme <- spatial_details$clim_readme
-  range_poly <- spatial_details$range_poly
-  nonbreed_poly <- spatial_details$nonbreed_poly
+  spat_res <- spatial$spat_res
+  clim_vars <- spatial$clim_vars
+  clim_readme <- spatial$clim_readme
+  range_poly <- spatial$range_poly
+  nonbreed_poly <- spatial$nonbreed_poly
 
   moduleServer(id, function(input, output, session) {
 

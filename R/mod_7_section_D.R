@@ -5,14 +5,14 @@
 #' mod_D_test()
 #' mod_D_test(df_loaded = test_df_loaded())
 
-mod_D_test <- function(df_loaded = NULL, spatial_details = test_spatial()) {
+mod_D_test <- function(df_loaded = NULL, spatial = test_spatial()) {
 
   ui <- ui_setup(mod_D_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 
     mod_D_server(id = "test", reactive(df_loaded),
-                 spatial_details, parent_session = session)
+                 spatial, parent_session = session)
   }
 
   shinyApp(ui, server)
@@ -75,18 +75,18 @@ mod_D_ui <- function(id) {
   )
 }
 
-mod_D_server <- function(id, df_loaded, spatial_details, parent_session) {
+mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
-  purrr::map(spatial_details, ~stopifnot(is.reactive(.x)))
+  purrr::map(spatial, ~stopifnot(is.reactive(.x)))
 
   # Split up reactives
-  spat_res <- spatial_details$spat_res
-  hs_rast <- spatial_details$hs_rast
-  clim_readme <- spatial_details$clim_readme
-  range_poly <- spatial_details$range_poly
-  assess_poly <- spatial_details$assess_poly
-  protected_poly <- spatial_details$protected_poly
-  hs_rcl_mat <- spatial_details$hs_rcl_mat
+  spat_res <- spatial$spat_res
+  hs_rast <- spatial$hs_rast
+  clim_readme <- spatial$clim_readme
+  range_poly <- spatial$range_poly
+  assess_poly <- spatial$assess_poly
+  protected_poly <- spatial$protected_poly
+  hs_rcl_mat <- spatial$hs_rcl_mat
 
   moduleServer(id, function(input, output, session) {
 

@@ -62,14 +62,14 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
                        rng_chg_pth_2 = "rng_chg_85.tif",
                        protected_poly_pth = "pa_north_america.gpkg",
                        saved = "test_files",
-                       mock = FALSE) {
+                       mock = FALSE, paths_only = FALSE) {
 
   # Fetch all previously saved test files
   saved <- fs::path(dir, saved) %>%
     fs::dir_ls()
   if(mock) saved <- fs::path_rel(saved, dir)
   saved <- saved %>%
-    stats::setNames(nm = stringr::str_extract(., "(?<=test_)[^/]+(?=\\.csv)")) %>%
+    stats::setNames(nm = stringr::str_remove_all(fs::path_file(.), "(test_)|(\\.csv)")) %>%
     as.list()
 
   # Fetch spatial data files
@@ -96,7 +96,11 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
   }
 
   # Add all together
-  c(f, list("scn_nms" = scn_nms), list("saved" = saved))
+  if(paths_only) {
+    return(f)
+  } else {
+    return(c(f, list("scn_nms" = scn_nms), list("saved" = saved)))
+  }
 }
 
 
@@ -283,7 +287,8 @@ test_questions <- function(file = "final2", as_reactive = TRUE) {
 #' sp <- test_spatial(as_reactive = FALSE)
 #' sp$spat_res
 
-test_spatial <- function(d = test_data(), min_req = FALSE, as_reactive = TRUE) {
+test_spatial <- function(d = test_data(), d_paths = test_files(paths_only = TRUE),
+                         min_req = FALSE, as_reactive = TRUE) {
   # To run interactively
   if(shiny::isRunning()) with_prog <- withProgress else with_prog <- function(x) x
 
@@ -309,11 +314,28 @@ test_spatial <- function(d = test_data(), min_req = FALSE, as_reactive = TRUE) {
 
   spat_tbl <- apply_spat_tholds(spat_res$spat_table, cave = FALSE)
 
+  spat_run <- data.frame(
+    GCM_or_Ensemble_name = "Testing",
+    Historical_normal_period = "1961-1990",
+    Future_period = "2050s",
+    Emissions_scenario = c("RCP 4.5", "RCP8.5"),
+    link = "https://test.org",
+    gain_mod = 1,
+    gain_mod_comm = "",
+    lost = "-1, -1",
+    main = "0, 0",
+    gain = "1, 1",
+    ns = "99, 99",
+    rng_chg_used = "multiple") %>%
+    bind_cols(as.data.frame(d_paths)) %>%
+    rename(clim_dir_pth = clim_dir)
+
   # If as_reactive == TRUE, return `reactive(x)`, else return `x`
   if(as_reactive) trans <- reactive else trans <- function(x) x
 
   list(
     "spat_res" = trans(spat_tbl),
+    "spat_run" = trans(spat_run),
     "clim_vars" = trans(d$clim_vars),
     "clim_readme" = trans(d$clim_readme),
     "range_poly" = trans(spat_res$range_poly_assess),

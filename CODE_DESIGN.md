@@ -65,10 +65,17 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 ### Passing variables among modules
 - We return reactives from a module like returning outputs from a function,
   put them in a list calling them by name (i.e. `spatial_data`,
-  not`spatial_data()`)
+  not `spatial_data()`)
 - Then pass them as arguments to other module functions
 - Remember that we want a list of reactives, not a reactive that returns a list
   (otherwise anytime any list item is updated, the whole reactive invalidates)
+  
+### Circular modules
+- The results and the save module are somewhat circular in that the index from
+ results is passed to save and the output of save is used by results to create 
+ the report. This isn't ideal, but allows us to keep both ui and server
+ of the report module fully contained in the results moduel.
+ 
 
 ### Checking inputs and messages
 - Cannot use shinyFeedback for shinyFiles inputs
