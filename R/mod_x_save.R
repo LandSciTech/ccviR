@@ -28,7 +28,10 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
     # Make out_data #========================================================
 
     out_data <- reactive({
-      combine_outdata2(species_data(), questions, spatial$spat_run(), spatial$spat_res(), index())
+      ind <- if(is_ready(index())) index() else NULL
+      spat1 <- if(is_ready(spatial$spat_run())) spatial$spat_run() else NULL
+      spat2 <- if(is_ready(spatial$spat_res())) spatial$spat_res() else NULL
+      combine_outdata2(species_data(), questions, spat1, spat2, ind)
     })
 
     exportTestValues(out_data = out_data)
