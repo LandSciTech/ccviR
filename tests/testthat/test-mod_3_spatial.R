@@ -11,7 +11,8 @@ test_that("spatial data created", {
     "gain_to" = 1,
     "ns_from" = 99,
     "ns_to" = 99,
-    "gain_mod" = 1)
+    "gain_mod" = 1,
+    "gain_mod_comm" = "")
 
   testServer(mod_spatial_server, args = list(
     volumes,
@@ -56,9 +57,9 @@ test_that("spatial data created", {
       expect_s3_class(spat_thresh(), "data.frame")
       expect_s3_class(range_poly_clip(), "sf")
       expect_s3_class(range_poly_clim(), "sf")
-      expect_s3_class(spatial_data(), "data.frame")
+      expect_s3_class(spat_run(), "data.frame")
 
       r <- session$getReturned()
-      expect_snapshot_value(r$spatial_data(), style = "json2")
+      expect_snapshot_value(r$spat_run(), style = "json2")
     })
 })

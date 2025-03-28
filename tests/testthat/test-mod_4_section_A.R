@@ -1,6 +1,6 @@
 test_that("A overall", {
   testServer(mod_A_server, args = list(
-    spatial_details = suppressMessages(test_spatial())), {
+    spatial = suppressMessages(test_spatial())), {
 
       # Maps
       expect_message(output$map_texp, "projecting raster") %>%
@@ -27,7 +27,7 @@ test_that("A min spatial", {
     suppressMessages()
 
   testServer(mod_A_server, args = list(
-    spatial_details = suppressMessages(test_spatial())), {
+    spatial = suppressMessages(test_spatial())), {
       expect_message(output$map_texp, "projecting raster") %>%
         expect_message("projecting raster") # Message triggered by output (?)
       expect_s3_class(output$map_texp, "json")
