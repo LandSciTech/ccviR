@@ -129,11 +129,13 @@ analyze_spatial <- function(
 
   # Optional inputs
   ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet)
-  protected_poly <- prep_polys(
-    protected_poly, var_name = "Protected Areas",
-    crs = st_crs(hs_rast),
-    poly_clip = scale_poly, clip_name = "Assessment Area",
-    quiet)
+  if(!is.null(hs_rast)) {
+    protected_poly <- prep_polys(
+      protected_poly, var_name = "Protected Areas",
+      crs = st_crs(hs_rast),
+      poly_clip = scale_poly, clip_name = "Assessment Area",
+      quiet)
+  }
 
   if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])) {
     non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
