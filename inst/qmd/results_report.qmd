@@ -5,6 +5,7 @@ params:
   assessor_name: Dr. Curious
   geo_location: Earth
   include_about: true
+  debug: true
 title: "`r params$species`"
 subtitle: Climate Change Vulnerability Index Report
 abstract: "`r params$geo_location`"
@@ -47,6 +48,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FA
 saved <- params$saved
 species <- params$species
 include_about <- as.logical(params$include_about)
+debug <- params$debug
 
 # defined as latex colors below
 #cols <- c("gray", "green", "yellow", "orange", "red")
@@ -107,7 +109,8 @@ vuln_box <- function(tbl) {
 ```
 
 
-```{r}
+```{r set_saved}
+#| include: false
 # If testing use test saved data
 if(length(saved) == 1 && saved == "none") {
   saved <- ccviR:::test_files()$saved$final2 %>%
@@ -119,9 +122,12 @@ if(length(saved) == 1 && saved == "none") {
     readr::type_convert(na = ".na")
   
   # Debugging: 
-  writeLines(capture.output(saved), "test.txt")
+  if(debug) writeLines(capture.output(saved), "test.txt")
 }
+```
 
+```{r load_spatial}
+#| include: false
 range_poly <- read_sf(saved$rng_poly_pth[1])
 assess_poly <- read_sf(saved$assess_poly_pth[1])
 clim_vars <- get_clim_vars(saved$clim_dir_pth[1], scenario_names = saved$scenario_name)
@@ -290,7 +296,7 @@ vuln_qs <- vuln_qs %>%
   filter(!is.na(score))
 
 # Debugging
-writeLines(capture.output(vuln_qs), "test_vuln_intermediate.txt")
+if(debug) writeLines(capture.output(vuln_qs), "test_vuln_intermediate.txt")
 
 vuln_qs <- vuln_qs %>%
   mutate(
@@ -310,7 +316,7 @@ vuln_tbl <- left_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>%
   #left_join(select(value_labs, -"opts"), by = c("Value" = "value"))
 
 # Debugging
-writeLines(capture.output(vuln_tbl), "test_vuln.txt")
+if(debug) writeLines(capture.output(vuln_tbl), "test_vuln.txt")
 ```
 
 ### Section B. Indirect Exposure to Climate Change

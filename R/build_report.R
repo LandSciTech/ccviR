@@ -20,7 +20,7 @@
 #' build_report(test_df_loaded())
 
 build_report <- function(saved, file_loc = ".", include_about = TRUE,
-                         overwrite = TRUE, quiet = FALSE) {
+                         overwrite = TRUE, quiet = FALSE, debug = FALSE) {
 
   inform_prog("Preparing report template", quiet, 4)
 
@@ -37,6 +37,8 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
   qmd_dir <- fs::path_package("qmd", package = "ccviR")
   t <- fs::dir_copy(qmd_dir, fs::path_temp("qmd"), overwrite = TRUE)
 
+  if(debug) cat(t)
+
   # Create HTML report
   inform_prog("Rendering HTML report", quiet, 4)
 
@@ -48,8 +50,10 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
       species = saved$common_name[1],
       assessor_name = saved$assessor_name[1],
       geo_location = saved$geo_location[1],
-      include_about = include_about),
-    )
+      include_about = include_about,
+      debug = debug
+    ),
+  )
 
   # Print to PDF via Chrome
   inform_prog("Converting to PDF", quiet, 4)
