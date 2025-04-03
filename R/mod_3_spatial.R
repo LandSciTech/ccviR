@@ -497,6 +497,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
                           protected_poly = protected_poly(),
                           gain_mod = input$gain_mod,
                           scenario_names = clim_readme()$Scenario_Name)
+          # Testing messages:
+          # stop("Example error message")  # Uncomment when interactive testing
         },
         error = function(cnd) conditionMessage(cnd))
       })
