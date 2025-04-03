@@ -1,3 +1,94 @@
+prep_clim_data_multi <- function(
+    mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
+    map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
+    in_folder = NULL, out_folder,
+    reproject = FALSE, overwrite = FALSE,
+    scenario_name = "", brks = NULL, brks_mat = NULL,
+    brks_cmd = NULL, brks_ccei = NULL) {
+
+  # TODO: Checks that we have the same multiples of all required inputs
+
+  n <- length(scenario_name)
+  i <- 1
+  if(is.null(brks)) {
+    brks_out <- list("brks_cmd" = brks_cmd,
+                     "brks_mat" = brks_mat,
+                     "brks_ccei" = brks_ccei)
+  } else brks_out <- brks
+
+  while(i <= n) {
+    brks_out <- prep_clim_data(
+      mat_norm,
+      mat_fut[i],
+      cmd_norm,
+      cmd_fut[i],
+      ccei,
+      map,
+      mwmt,
+      mcmt,
+      clim_poly,
+      out_folder = out_folder,
+      overwrite = overwrite,
+      scenario_name = scenario_name[i],
+      brks = brks_out
+    )
+    i <- i + 1
+  }
+  brks_out
+}
+
+
+prep_clim_readme <- function(
+    scenario_name, gcm_ensemble, hist_period,
+    fut_period, emissions_scenario, url,
+    out_dir, brks = NULL,
+    brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL) {
+
+  if(is.null(brks)) {
+    brks <- list("brks_mat" = brks_mat,
+                 "brks_cmd" = brks_cmd,
+                 "brks_ccei" = brks_ccei)
+  }
+  brks <- purrr::map(brks, brks_to_txt)
+
+  clim_readme <- tibble(Scenario_Name = scenario_name,
+                        GCM_or_Ensemble_name = gcm_ensemble,
+                        Historical_normal_period = hist_period,
+                        Future_period = fut_period,
+                        Emissions_scenario = emissions_scenario,
+                        Link_to_source = url,
+                        !!!brks)
+
+  # if(fs::file_exists(fs::path(out_dir, "climate_data_readme.csv"))) {
+  #   clim_readme_cur <- utils::read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
+  #     mutate(across(everything(), as.character))
+  #
+  #   clim_readme <- bind_rows(clim_readme_cur, clim_readme) %>%
+  #     distinct(.data$Scenario_Name, .keep_all = TRUE)
+  #
+  #   # set lower and upper bounds based on min and max across all scenarios
+  #   clim_readme <- clim_readme %>%
+  #     mutate(across(contains("brks_") & where(~!all(is.na(.x)|.x == "")), \(b){
+  #       list(b %>% unique() %>% stringr::str_split(";") %>% unlist() %>%
+  #              as_tibble() %>%
+  #              tidyr::separate(.data$value, into = c("class", "min", "max"),
+  #                              sep = ": | - ", ) %>%
+  #              mutate(across(everything(),
+  #                            \(x) stringr::str_remove(x, "\\(|\\)") %>%
+  #                              as.numeric())) %>%
+  #              group_by(class) %>%
+  #              summarise(min = min(min), max = max(max)) %>%
+  #              select(min, max, class) %>% as.matrix() %>% brks_to_txt())
+  #     }))
+  # }
+
+  write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
+            row.names = FALSE)
+}
+
+
+
+
 #' Prepare climate data
 #'
 #' Prepare data from raw to form needed for calculating the index. See the
@@ -79,11 +170,18 @@
 #'                brks_ccei = brks_out$brks_ccei)
 
 prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
-                          map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
-                          in_folder = NULL, out_folder,
-                          reproject = FALSE, overwrite = FALSE,
-                          scenario_name = "", brks_mat = NULL,
-                          brks_cmd = NULL, brks_ccei = NULL){
+                           map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
+                           in_folder = NULL, out_folder,
+                           reproject = FALSE, overwrite = FALSE,
+                           scenario_name = "", brks = NULL,
+                           brks_mat = NULL,
+                           brks_cmd = NULL, brks_ccei = NULL) {
+
+  if(!is.null(brks)) {
+    brks_mat <- brks$brks_mat
+    brks_cmd <- brks$cmd
+    brks_ccei <- brks$ccei
+  }
 
   # remove spaces from scenario_name
   scenario_name <- stringr::str_replace_all(scenario_name, "\\s", "_")
@@ -470,89 +568,4 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
                      overwrite = overwrite, datatype = "INT2U")
 
   return(rcl_tbl)
-}
-
-#' Create the Canada Albers Equal Area projection
-#'
-#' For area calculations it's best to use a projection which preserves area.
-#' The Equal Areas Conic Projection is good for this, and can be customized to
-#' Canada.
-#'
-#' This definition is from https://epsg.io/102001. But note that this is also
-#' the defniition used by the protected areas shapefiles from Canadian Gov.
-#'
-#' @returns CRS
-#' @export
-#'
-#' @examples
-#' crs_albers_canada()
-
-crs_albers_canada <- function() {
-  sf::st_crs(
-    'PROJCS["Canada Albers Equal Area Conic",
-    GEOGCS["NAD83",
-        DATUM["North_American_Datum_1983",
-            SPHEROID["GRS 1980",6378137,298.257222101,
-                AUTHORITY["EPSG","7019"]],
-            AUTHORITY["EPSG","6269"]],
-        PRIMEM["Greenwich",0,
-            AUTHORITY["EPSG","8901"]],
-        UNIT["degree",0.0174532925199433,
-            AUTHORITY["EPSG","9122"]],
-        AUTHORITY["EPSG","4269"]],
-    PROJECTION["Albers_Conic_Equal_Area"],
-    PARAMETER["latitude_of_center",40],
-    PARAMETER["longitude_of_center",-96],
-    PARAMETER["standard_parallel_1",50],
-    PARAMETER["standard_parallel_2",70],
-    PARAMETER["false_easting",0],
-    PARAMETER["false_northing",0],
-    UNIT["metre",1,
-        AUTHORITY["EPSG","9001"]],
-    AXIS["Easting",EAST],
-    AXIS["Northing",NORTH],
-    AUTHORITY["ESRI","102001"]]')
-}
-
-
-#' Create the North America Albers Equal Area projection
-#'
-#' For area calculations it's best to use a projection which preserves area.
-#' The Equal Areas Conic Projection is good for this, and can be customized to
-#' North America
-#'
-#' This definition is the OGC WKT from https://epsg.io/102008.
-#'
-#' @returns CRS definition
-#' @export
-#'
-#' @examples
-#' crs_albers_na()
-
-crs_albers_na <- function() {
-  # OGC WKT from
-  sf::st_crs(
-    'PROJCS["North America Albers Equal Area Conic",
-    GEOGCS["NAD83",
-        DATUM["North_American_Datum_1983",
-            SPHEROID["GRS 1980",6378137,298.257222101,
-                AUTHORITY["EPSG","7019"]],
-            AUTHORITY["EPSG","6269"]],
-        PRIMEM["Greenwich",0,
-            AUTHORITY["EPSG","8901"]],
-        UNIT["degree",0.0174532925199433,
-            AUTHORITY["EPSG","9122"]],
-        AUTHORITY["EPSG","4269"]],
-    PROJECTION["Albers_Conic_Equal_Area"],
-    PARAMETER["latitude_of_center",40],
-    PARAMETER["longitude_of_center",-96],
-    PARAMETER["standard_parallel_1",20],
-    PARAMETER["standard_parallel_2",60],
-    PARAMETER["false_easting",0],
-    PARAMETER["false_northing",0],
-    UNIT["metre",1,
-        AUTHORITY["EPSG","9001"]],
-    AXIS["Easting",EAST],
-    AXIS["Northing",NORTH],
-    AUTHORITY["ESRI","102008"]]')
 }

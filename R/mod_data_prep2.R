@@ -136,13 +136,13 @@ mod_data_prep_ui <- function(id) {
     uiOutput(ns("ui_scenarios")),
 
     br(),
-    actionButton(ns("submit"), "Process", class = "btn-primary"),
+    div(style = "display:inline-block",
+        shinyjs::disabled(
+          actionButton(ns("submit"), "Process", class = "btn-primary")),
+        uiOutput(ns("submit_error"), class = "button-status"),
+        uiOutput(ns("prep_data_done"), class = "button-status")
+    ),
     br(),
-    p(verbatimTextOutput(ns("submit_error"))),
-    br(),
-    shinycssloaders::withSpinner(verbatimTextOutput("data_prep_msg",
-                                                    placeholder = TRUE)),
-    #actionButton("data_reset", "Add Another Scenario"),
     br(),
     actionButton("data_done", "Close", class = "btn-primary")
   )
@@ -220,7 +220,8 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     output$ui_scenarios <- renderUI({
 
       # Get file name ids for each scenario
-      file_scn_ids(paste0(c("mat_fut_pth", "cmd_fut_pth"), input$scn_n))
+      file_scn_ids(c(paste0("mat_fut_pth", seq_len(input$scn_n)),
+                     paste0("cmd_fut_pth", seq_len(input$scn_n))))
 
       # Create inputs
       tabsetPanel(!!!purrr::map(seq_len(input$scn_n), ~ui_scn(id, .x)))
@@ -250,7 +251,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
           ~ observeEvent(input[[.x]], {
             if(!is.integer(input[[.x]])) {
               pth_in <- parseFilePaths(volumes, input[[.x]])$datapath
-              file_pths[[.x]] <- pth_in
+              file_pths[[.x]] <- stats::setNames(pth_in, nm = .x)
             }
           }, ignoreInit = TRUE)
         )
@@ -323,9 +324,13 @@ mod_data_prep_server <- function(id, input_files = NULL) {
         stats::setNames(nm = c("allow_over", "clim_norm_period", "clim_norm_url")),
         ~input[[.x]])
 
+      scn <- paste0(c("clim_scn_nm", "clim_scn_gcm", "clim_scn_period",
+                      "clim_scn_em", "clim_scn_url"), rep(sort(input$scn_n), 5))
+      req_scn <- purrr::map(stats::setNames(nm = scn), ~input[[.x]])
+
       req_dir <- c("out_dir" = out_dir())
 
-      c(req_pths, req_static, req_dir)
+      c(req_pths, req_static, req_dir, req_scn)
     })
 
     # NOTE:
@@ -339,7 +344,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 
       shinyjs::disable("submit")
 
-      have_inputs <- purrr::map_lgl(required_inputs(), ~!is.null(.x) & .x != "")
+      have_inputs <- purrr::map_lgl(required_inputs(), ~!is.null(.x) && .x != "")
       validate(need(all(have_inputs), "Missing required inputs"))
 
       shinyjs::enable("submit")
@@ -348,76 +353,64 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 
     # Prepare Climate Data --------------------------
 
-    observeEvent(input$submit, {
- browser()
-      brks <- list(brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL)
+    prep_values <- reactive({
 
-      message("Processing data")
-      brks_out <- prep_clim_data(
-        file_pths$mat_norm_pth,
-        file_pths$mat_fut_pth,
-        file_pths$cmd_norm_pth,
-        file_pths$cmd_fut_pth,
-        file_pths$ccei_pth,
-        file_pths$map_norm_pth,
-        file_pths$mwmt_norm_pth,
-        file_pths$mcmt_norm_pth,
-        file_pths$assess_pth,
-        out_folder = out_dir(),
-        overwrite = input$allow_over,
-        scenario_name = input$clim_scn_nm,
-        brks_mat = brks$brks_mat,
-        brks_cmd = brks$brks_cmd,
-        brks_ccei = brks$brks_ccei
+      list("prep_data" =
+             list("mat_norm" = file_pths$mat_norm_pth,
+                  "mat_fut" = collect_inputs(file_pths, "mat_fut_pth"),
+                  "cmd_norm" = file_pths$cmd_norm_pth,
+                  "cmd_fut" = collect_inputs(file_pths, "cmd_fut_pth"),
+                  "ccei" = file_pths$ccei_pth,
+                  "map" = file_pths$map_norm_pth,
+                  "mwmt" = file_pths$mwmt_norm_pth,
+                  "mcmt" = file_pths$mcmt_norm_pth,
+                  "clim_poly" = file_pths$assess_pth,
+                  "in_folder" = NULL,
+                  "out_folder" = out_dir(),
+                  "reproject" = FALSE,
+                  "overwrite" = input$allow_over,
+                  "scenario_name" = collect_inputs(input, "clim_scn_nm")
+             ),
+           "prep_readme" = list(
+             "scenario_name" = collect_inputs(input, "clim_scn_nm"),
+             "gcm_ensemble" = collect_inputs(input, "clim_scn_gcm"),
+             "hist_period" = input$clim_norm_period,
+             "fut_period" = collect_inputs(input, "clim_scn_period"),
+             "emissions_scenario" = collect_inputs(input, "clim_scn_em"),
+             "url" = collect_inputs(input, "clim_scn_url"),
+             "out_dir" = out_dir()
+           )
       )
-
-      clim_readme <- tibble(Scenario_Name = input$clim_scn_nm,
-                            GCM_or_Ensemble_name = input$clim_gcm,
-                            Historical_normal_period = input$clim_norm_period,
-                            Future_period = input$clim_fut_period,
-                            Emissions_scenario = input$clim_em_scenario,
-                            Link_to_source = input$clim_dat_url,
-                            brks_mat = brks_out$brks_mat %>% brks_to_txt(),
-                            brks_cmd = brks_out$brks_cmd %>% brks_to_txt(),
-                            brks_ccei = brks_out$brks_ccei %>% brks_to_txt())
-
-      if(file.exists(fs::path(out_dir, "climate_data_readme.csv"))){
-        clim_readme_cur <- utils::read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
-          mutate(across(everything(), as.character))
-
-        clim_readme <- bind_rows(clim_readme_cur, clim_readme) %>%
-          distinct(.data$Scenario_Name, .keep_all = TRUE)
-
-        # set lower and upper bounds based on min and max across all scenarios
-        clim_readme <- clim_readme %>%
-          mutate(across(contains("brks_") & where(~!all(is.na(.x)|.x == "")), \(b){
-            list(b %>% unique() %>% stringr::str_split(";") %>% unlist() %>%
-                   as_tibble() %>%
-                   tidyr::separate(.data$value, into = c("class", "min", "max"),
-                                   sep = ": | - ", ) %>%
-                   mutate(across(everything(),
-                                 \(x) stringr::str_remove(x, "\\(|\\)") %>%
-                                   as.numeric())) %>%
-                   group_by(class) %>%
-                   summarise(min = min(min), max = max(max)) %>%
-                   select(min, max, class) %>% as.matrix() %>% brks_to_txt())
-          }))
-      }
-
-      write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
-                row.names = FALSE)
-
-      return(brks_out)
     })
 
-    done <- reactive({
-      if(is.list(prep_done())){
-        brks(prep_done())
-        "Processing Complete"
-      }
+    prep_values_last_run <- eventReactive(input$submit, prep_values())
+
+    prep_data_done <- eventReactive(input$submit, {
+
+      #brks <- list(brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL)
+
+      message("Processing data for ", input$scn_n, " scenario(s)")
+
+      brks <- do.call(prep_clim_data_multi, prep_values()$prep_data)
+      do.call(prep_clim_readme, append(prep_values()$prep_readme, brks))
+
+      return(Sys.time())
     })
 
-    output$data_prep_msg <- renderText(done())
+    # Signal finish --------------------
+    output$prep_data_done <- renderUI({ # Use UI when rendering HTML
+      req(prep_data_done())
+
+      if(!list_equal(prep_values(), prep_values_last_run())) {
+        tagList(icon("check", style = "color:grey"),
+                span("Last completed at", format(prep_data_done(), "%I:%M %p"),
+                     style = "color:grey"))
+      } else {
+        tagList(icon("check", style = "color:green"),
+                "Completed at", format(prep_data_done(), "%I:%M %p"))
+      }
+
+    })
 
     observeEvent(input$data_done, {
       stopApp()
@@ -446,4 +439,12 @@ ui_scn <- function(id, ui_id) {
       id, paste0("cmd_fut_pth", ui_id), mandatory = TRUE,
       title = paste0("Future climatic mositure deficit (Scenario ", ui_id, ")"))
   )
+}
+
+collect_inputs <- function(input, name) {
+  purrr::map_chr(stringr::str_subset(names(isolate(input)), name), ~input[[.x]])
+}
+
+list_equal <- function(l1, l2) {
+  if(is.logical(all.equal(l1, l2))) return(TRUE) else return(FALSE)
 }
