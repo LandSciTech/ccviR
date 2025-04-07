@@ -1,137 +1,88 @@
 # test loading climate variables
-library("sf", quietly = TRUE)
 
-# load the demo data
-file_dir <- system.file("extdata", package = "ccviR")
-# scenario names
-scn_nms <- c("RCP 4.5", "RCP 8.5")
-clim_vars <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
-                           scn_nms)
+expect_silent({
+  f <- test_files()
+  clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms)
 
-# nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",
-#                     quiet = TRUE)
-assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
-                  quiet = TRUE)
-rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
-                    quiet = TRUE)
-hs <- raster::raster(file.path(file_dir, "rng_chg_45.tif"))
+  # nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",
+  #                     quiet = TRUE)
+  # assess <- st_read(file.path(file_dir, "assess_poly.shp"), agr = "constant",
+  #                   quiet = TRUE)
+  # rng_high <- st_read(file.path(file_dir, "rng_poly.shp"), agr = "constant",
+  #                     quiet = TRUE)
+  # hs <- raster::raster(file.path(file_dir, "rng_chg_45.tif"))
+})
 
-
-test_that("basic version works",{
+test_that("basic version works", {
   expect_type(clim_vars, "list")
 })
 
 test_that("error if no crs",{
+
+  t <- fs::dir_copy(f$clim_dir, fs::path_temp("clim_files"))
+
+  # Create MAT reclass without CRS
   clim_vars_ncrs <- clim_vars
   terra::crs(clim_vars_ncrs[[1]]) <- ""
+  terra::writeRaster(
+    clim_vars_ncrs[[1]],
+    fs::path(t, paste0("MAT_reclass", names(clim_vars_ncrs[[1]]), ".tif")),
+    overwrite = TRUE)
 
-  terra::writeRaster(clim_vars_ncrs[[1]],
-                      paste0(file.path(file_dir, "clim_files/processed/MAT_reclass"),
-                             "_", names(clim_vars_ncrs[[1]]), ".tif"))
+  expect_message(expect_error(get_clim_vars(t, f$scn_nms), "does not have a CRS"))
 
-  # copy MAT
-  dir.create(file.path(file_dir, "temp"))
-  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"),
-            file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"))
-  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"),
-            file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"))
-
-  # remove MAT
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
-
-  expect_message(expect_error(get_clim_vars(file.path(file_dir, "clim_files/processed"),
-                             scn_nms),
-               "does not have a CRS"))
-
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif")))
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
-
-  #remove MAT na_rast from previous test
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclass_RCP_4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclass_RCP_8.5.tif"))
+  # Clean up
+  fs::dir_delete(t)
 })
 
 test_that("trimming happens", {
-  na_rast <- raster::extend(clim_vars[[1]], 20)
 
-  # copy MAT
-  unlink(file.path(file_dir, "temp"), recursive = TRUE)
-  dir.create(file.path(file_dir, "temp"))
-  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"),
-            file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"))
-  file.copy(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"),
-            file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"))
+  t <- fs::dir_copy(f$clim_dir, fs::path_temp("clim_files"))
 
-  # remove MAT
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
+  # Replace MAT
+  raster::extend(clim_vars[[1]], 20) %>%
+    terra::writeRaster(fs::dir_ls(t, regexp = "MAT_reclass"), overwrite = TRUE)
 
-  # replace MAT
-  terra::writeRaster(na_rast,
-                     file.path(file_dir,
-                               paste0("clim_files/processed/MAT_rast_na",
-                                      stringr::str_replace_all(scn_nms, "\\s", "_"),
-                                      ".tif")))
+  # Expect trimming
+  expect_message(clim_vars2 <- get_clim_vars(t, f$scn_nms), "doing trim")
 
-  expect_message({
-    clim_vars2 <- get_clim_vars(file.path(file_dir, "clim_files/processed"),
-                                scn_nms)
-  }, "doing trim" )
-
-  # return MAT
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif")))
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
-
+  # But no effect on results
   expect_equal(terra::values(clim_vars[[1]][[1]]),
                terra::values(clim_vars2[[1]][[1]]))
 
+  # Clean up
+  fs::dir_delete(t)
 })
 
 test_that("error when two files or missing files",{
-  expect_error(get_clim_vars(file.path(file_dir, "clim_files/processed")),
-               "number of files matching")
+  t <- fs::dir_copy(f$clim_dir, fs::path_temp("clim_files"))
 
-  #remove MAT na_rast from previous test
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_naRCP_4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_rast_naRCP_8.5.tif"))
+  # Two files (when there should be one)
+  mat_files <- fs::dir_ls(t, regexp = "MAT")
+  mat_files2 <- stringr::str_replace(mat_files, "reclass", "reclass2")
+  fs::file_copy(mat_files, mat_files2)
+  expect_error(get_clim_vars(t), "number of files matching")
+  fs::file_delete(mat_files2)
 
-  # missing MAT
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif"))
-  expect_error(get_clim_vars(file.path(file_dir, "clim_files/processed")),
-               "There is no file in")
-
-  # return MAT
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_4.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_4.5.tif")))
-  expect_true(file.copy(file.path(file_dir, "temp/MAT_reclassRCP_8.5.tif"),
-                        file.path(file_dir, "clim_files/processed/MAT_reclassRCP_8.5.tif")))
+  # Missing required files (MAT)
+  fs::file_delete(mat_files)
+  expect_error(get_clim_vars(t), "There is no file in")
 
   # other files are allowed to be missing
-  file.copy(file.path(file_dir, "clim_files/processed/MWMT_MCMT_reclass.tif"),
-            file.path(file_dir, "temp/MWMT_MCMT_reclass.tif"))
-  file.remove(file.path(file_dir, "clim_files/processed/MWMT_MCMT_reclass.tif"))
+  fs::dir_delete(t)
+  t <- fs::dir_copy(f$clim_dir, fs::path_temp("clim_files"))
+  fs::file_delete(fs::dir_ls(t, regexp = "MWMT"))
+  expect_null(get_clim_vars(t, f$scn_nms)$htn)
 
-  expect_null(get_clim_vars(file.path(file_dir, "clim_files/processed"), scn_nms)$htn)
-
-  expect_true(file.copy(file.path(file_dir, "temp/MWMT_MCMT_reclass.tif"),
-            file.path(file_dir, "clim_files/processed/MWMT_MCMT_reclass.tif")))
-
-  })
-
-test_that("multi_scenario works as expected", {
-  expect_error(get_clim_vars(file.path(file_dir,
-                                       "clim_files/processed"),
-                             scenario_names = c("RCP2.6", "RCP4.5", "RCP85")),
-               "does not match")
-
-
+  # Clean up
+  fs::dir_delete(t)
 })
 
-# remove the temp directory
-unlink(file.path(file_dir, "temp"), recursive = TRUE)
+test_that("multi_scenario works as expected", {
+  expect_error(
+    get_clim_vars(f$clim_dir, scenario_names = c("RCP2.6", "RCP4.5", "RCP85")),
+    "does not match")
+})
+
+# remove the temp directory (just in case)
+fs::dir_delete(fs::path_temp())
