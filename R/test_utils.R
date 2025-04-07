@@ -402,3 +402,36 @@ test_data_prep <- function(dir = fs::path_package("extdata", package = "ccviR"))
   ) |>
     unlist() # To get name1, name2, etc. for multiple scenario information
 }
+
+
+
+#' Simplified CMD and Tmean calculations
+#'
+#' For comparing with ccei_values()
+#'
+#' @param r Data.frame of rasters created with `combine_XXX()`
+#'
+#' @returns vector with CMD and Tmean values for a single cell
+#' @noRd
+
+ccei_by_hand <- function(r, row = 1, col = 1) {
+  # By-hand calculations for first cell
+  r_prec <- terra::rast(r$file[r$var == "prec"])[row,col]
+  r_tmax <- terra::rast(r$file[r$var == "tmax"])[row,col]
+  r_tmin <- terra::rast(r$file[r$var == "tmin"])[row,col]
+  lat <- setNames(terra::init(terra::rast(r$file[1]), "y")[row,col],
+                  "latitude")[[1]]
+
+  cmd <- NULL
+  tmean <- NULL
+  for(m in 1:12) {
+    eref <- climr:::calc_Eref(m,
+                              tmmin = r_tmin[[m]],
+                              tmmax = r_tmax[[m]],
+                              latitude = lat)
+    cmd <- c(cmd, climr:::calc_CMD(eref, r_prec[[m]]))
+    tmean <- c(tmean, (r_tmax[[m]] + r_tmin[[m]]) / 2)
+  }
+
+  return(c("cmd" = sum(cmd), "tmean" = mean(tmean)))
+}
