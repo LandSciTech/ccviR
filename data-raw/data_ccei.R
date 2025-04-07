@@ -101,7 +101,7 @@ purrr::walk(f_hist, ~unzip(.x, exdir = dir_hist, overwrite = TRUE))
 
 if(FALSE) unlink(f_hist)
 
-# Calculate CCEI
+# Calculate CCEI -------------------------------------------------------------
 
 # Run all at once
 #prep_ccei()
@@ -109,8 +109,8 @@ if(FALSE) unlink(f_hist)
 # Or run piece by piece
 prep_ccei_historical()
 prep_ccei_future()
-calc_ccei(scenario = "ssp245")
-calc_ccei(scenario = "ssp585")
+calc_ccei(scenario = "ssp245", overwrite = TRUE)
+calc_ccei(scenario = "ssp585", overwrite = TRUE)
 
 
 # Citations -----------------------------------
