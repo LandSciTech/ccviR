@@ -59,10 +59,17 @@ prep_ccei <- function(path_ccei = "misc/ccei",
 prep_ccei_historical <- function(path_ccei = "misc/ccei",
                                  overwrite = TRUE, quiet = FALSE) {
 
-  # Output files
-  out_dir <- fs::path(path_ccei, "intermediate")
-  fs::dir_create(out_dir)
-  out <- fs::path(out_dir, "hist")
+  out <- prep_out(path_ccei, "intermediate", "hist")
+  rasts <- combine_historical(path_ccei)
+
+  # Calculate annual CMD and Tmean for historical data
+  # - Calculate overall mean CMD and mean TMean, and then sd as well
+  # - Took ~ 10 min to run all 40 years (down from 30min!)
+
+  ccei_values(rasts, out, aggregate = TRUE, overwrite = overwrite, quiet = quiet)
+}
+
+combine_historical <- function(path_ccei = "misc/ccei") {
 
   rasts <- fs::path(path_ccei, "historical") %>%
     fs::dir_ls(regexp = "\\.tiff?$") %>%
@@ -73,15 +80,9 @@ prep_ccei_historical <- function(path_ccei = "misc/ccei",
       var = stringr::str_extract(file, "prec|tmin|tmax"),
       group = year)
 
-  if(!is.null(getOption("ccvir.testing")) && getOption("ccvir.testing")) {
-    rasts <- dplyr::filter(rasts, year %in% c(1960:1961))
-  }
-
-  # Calculate annual CMD and Tmean for historical data
-  # - Calculate overall mean CMD and mean TMean, and then sd as well
-  # - Took ~ 10 min to run all 40 years (down from 30min!)
-  ccei_values(rasts, out, aggregate = TRUE, overwrite = overwrite, quiet = quiet)
+  return(rasts)
 }
+
 
 #' Prepare Future Data for Climate Change Exposure Index
 #'
@@ -100,10 +101,16 @@ prep_ccei_historical <- function(path_ccei = "misc/ccei",
 
 prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE) {
 
-  # Output files
-  out_dir <- fs::path(path_ccei, "intermediate")
-  fs::dir_create(out_dir)
-  out <- fs::path(out_dir, "future")
+  out <- prep_out(path_ccei, "intermediate", "future")
+  rasts <- combine_future(path_ccei, quiet)
+
+  # Calculate annual CMD and Tmean for future data
+  # - Calculate overall mean CMD and mean TMean, but do not require SD
+  # - Took ~ 10 min to run all 40 years (down from 30min!)
+  ccei_values(rasts, out, overwrite = overwrite, quiet = quiet)
+}
+
+combine_future <- function(path_ccei = "misc/ccei", quiet = FALSE) {
 
   # Get raster files and combine layers by model and scenario
   rasts <- fs::path(path_ccei, "future") %>%
@@ -116,15 +123,13 @@ prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = 
       group = paste0(model, "-", ssp)) %>%
     arrange(model, ssp)
 
-  if(!is.null(getOption("ccvir.testing")) && getOption("ccvir.testing")) {
-    rasts <- dplyr::filter(rasts, model == "ACCESS-ESM1-5")
-  }
-
   # Report models and scenarios used
-  rlang::inform(c(
-    paste0("Using models (n = ", dplyr::n_distinct(rasts$model), ") for ",
-           paste0(unique(rasts$ssp), collapse = " and "), ":"),
-    unique(rasts$model)))
+  if(!quiet) {
+    rlang::inform(c(
+      paste0("Using models (n = ", dplyr::n_distinct(rasts$model), ") for ",
+             paste0(unique(rasts$ssp), collapse = " and "), ":"),
+      unique(rasts$model)))
+  }
 
   # Check potential missing data
   should_have <- dplyr::n_distinct(rasts$model) * dplyr::n_distinct(rasts$ssp) * 3
@@ -138,10 +143,7 @@ prep_ccei_future <- function(path_ccei = "misc/ccei", overwrite = TRUE, quiet = 
       call = NULL)
   }
 
-  # Calculate annual CMD and Tmean for future data
-  # - Calculate overall mean CMD and mean TMean, but do not require SD
-  # - Took ~ 10 min to run all 40 years (down from 30min!)
-  ccei_values(rasts, out, overwrite = overwrite, quiet = quiet)
+  return(rasts)
 }
 
 
@@ -181,8 +183,8 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
   groups <- unique(rasts$group)
 
   all <- purrr::walk(groups, function(g) {
-    rlang::inform(paste0(g, " - ", round(Sys.time())))
-    rlang::inform(capture.output(lobstr::mem_used()))
+    if(!quiet) rlang::inform(paste0(g, " - ", round(Sys.time())))
+    if(!quiet) rlang::inform(capture.output(lobstr::mem_used()))
     r <- filter(rasts, group == g)
     v <- ccei_vars(prec_files = r$file[r$var == "prec"],
                    tmax_files = r$file[r$var == "tmax"],
@@ -191,11 +193,11 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
     terra::writeRaster(v, paste0(out, "_", g, ".tif"), overwrite = overwrite)
   }, .progress = !quiet)
 
-  rlang::inform(capture.output(lobstr::mem_used()))
+  #rlang::inform(capture.output(lobstr::mem_used()))
 
   f <- fs::dir_ls(fs::path_dir(out), regexp = paste0(groups, collapse = "|"))
 
-  rlang::inform("Combining and Saving rasters with annual data")
+  if(!quiet) rlang::inform("Combining and Saving rasters with annual data")
 
   # Combine all cmd layers
   terra::rast(f, lyrs = seq(1, length.out=length(f), by = 2)) %>%
@@ -214,8 +216,8 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
     all_cmd <- terra::rast(out_cmd)
     all_tmean <- terra::rast(out_tmean)
 
-    rlang::inform("Final calculations")
-    rlang::inform(capture.output(lobstr::mem_used()))
+    if(!quiet) rlang::inform("Final calculations")
+    #rlang::inform(capture.output(lobstr::mem_used()))
     final <- c(
       stats::setNames(terra::mean(all_cmd), "cmd_mean"),
       stats::setNames(terra::stdev(all_cmd), "cmd_sd"),
@@ -225,6 +227,7 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
 
     terra::writeRaster(final, out_final, overwrite = overwrite)
   } else {
+
     c(terra::rast(out_cmd), terra::rast(out_tmean)) |>
       terra::writeRaster(out_final, overwrite = overwrite)
   }
@@ -232,7 +235,7 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
 
 #' Calculate monthly Climate Moisture Deficit and Mean Temperature
 #'
-#' Because `climr:::calc_Eref()` and and `climr:::calc_cmd()` are expected to
+#' Because `climr:::calc_Eref()` and and `climr:::calc_CMD()` are expected to
 #' work on vectors, they don't work with a raster in memory.
 #'
 #' `terra::app()` is very slow as it applies a function to every cell, where as
@@ -256,7 +259,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
   # - Crop first if layers, later if files
   if(length(prec_files) == 1) {
     get_rast <- function(x, m) x[[m]]
-    rlang::inform("  Cropping rasters first...")
+    if(!quiet) rlang::inform("  Cropping rasters first...")
     prec_files <- terra::rast(prec_files) %>% terra::crop(clip)
     tmax_files <- terra::rast(tmax_files) %>% terra::crop(clip)
     tmin_files <- terra::rast(tmin_files) %>% terra::crop(clip)
@@ -280,7 +283,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
   # TODO: Use exported climr functions when available
 
   for(m in 1:12) {
-    rlang::inform(paste0("  Month: ", m))
+    if(!quiet) rlang::inform(paste0("  Month: ", m))
 
     prec <- get_rast(prec_files, m) %>%
       terra::values(mat = FALSE)
@@ -298,7 +301,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
   }
 
   # Here, much faster to use non-na values only
-  rlang::inform("  Calculate Annual values")
+  if(!quiet) rlang::inform("  Calculate Annual values")
   r <- terra::rast(sample)
   a <- rep(NA_real_, cells)
   a[n] <- rowSums(vals_cmd[n, ])
@@ -341,7 +344,7 @@ calc_sed <- function(b, a, s) {
     stats::setNames(c(".b", ".a", ".s")) %>%
     purrr::pmap(function(.b, .a, .s) (.b - .a)^2 / .s^2)
 
-  sqrt(l[[1]] + l[[2]])
+  sqrt(purrr::reduce(l, `+`))
 }
 
 
@@ -382,6 +385,8 @@ calc_ccei <- function(path_ccei = "misc/ccei", scenario,
     terra::values()
 
   ccei <- purrr::map(m, ~{
+    # Load future models individually, rather than using future_all_vars.tif for memory and
+    # ease of calling columns
     future <- terra::rast(.x) %>%
       terra::values()
 
@@ -400,6 +405,7 @@ calc_ccei <- function(path_ccei = "misc/ccei", scenario,
   #c <- purrr::map(ccei, ~{
   #  .x[.x > 50] <- NA
   #  .x})
+  browser()
   c <- rlang::exec("cbind", !!!c) %>%
     rowMeans()
 
@@ -439,4 +445,13 @@ is_downloaded <- function(files) {
     warning = function(w) FALSE,
     error = function(e) FALSE)
   })
+}
+
+
+
+prep_out <- function(path, dir, type) {
+  out_dir <- fs::path(path_ccei, dir)
+  fs::dir_create(out_dir)
+  out <- fs::path(out_dir, type)
+  return(out)
 }

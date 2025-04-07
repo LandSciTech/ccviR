@@ -21,7 +21,7 @@ ccei_vars(prec_files, tmin_files, tmax_files, clip, quiet)
 SpatRaster with \code{tmean} and \code{cmd}
 }
 \description{
-Because \code{climr:::calc_Eref()} and and \code{climr:::calc_cmd()} are expected to
+Because \code{climr:::calc_Eref()} and and \code{climr:::calc_CMD()} are expected to
 work on vectors, they don't work with a raster in memory.
 }
 \details{
