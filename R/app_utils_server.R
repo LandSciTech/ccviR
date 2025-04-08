@@ -118,7 +118,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                                      group = rast_grp[l], opacity = 1)
     }
     out <- out %>%
-      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black")
+      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326) %>% sf::st_zm(), color = "black")
     if(is.character(pal)){
       out <- leaflet::addLegend(out, colors = pal, labels = rast_lbl,
                                 title = rast_nm, opacity = 1)
@@ -136,8 +136,8 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
       )
   } else if(is.null(rast)){
     out <- out %>%
-      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red") %>%
-      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
+      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326) %>% sf::st_zm(), color = "red") %>%
+      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326) %>% sf::st_zm(), color = "black") %>%
       leaflet::addLegend(colors = c("red", "black"), labels = c(poly2_nm, poly1_nm),
                          opacity = 1) %>%
       leaflet::addLayersControl(
@@ -150,8 +150,8 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
                                    group = rast_grp[l], opacity = 1)
     }
     out <- out %>%
-      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red") %>%
-      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
+      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326) %>% sf::st_zm(), color = "red") %>%
+      leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326) %>% sf::st_zm(), color = "black") %>%
       leaflet::addLegend(colors = pal, labels = rast_lbl, title = rast_nm, opacity = 1) %>%
       leaflet::addLegend(colors = c("red", "black"), labels = c(poly2_nm, poly1_nm),
                          opacity = 1) %>%
