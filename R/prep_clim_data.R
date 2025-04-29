@@ -22,7 +22,7 @@ prep_clim_data_multi <- function(
       mat_fut[i],
       cmd_norm,
       cmd_fut[i],
-      ccei,
+      ccei[i],
       map,
       mwmt,
       mcmt,
@@ -325,22 +325,11 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   if(!is.null(ccei)){
     # CCEI
     message("processing CCEI")
-    if(is.null(brks_ccei)){
-      brks_ccei <- c(0, 4, 5, 7, 25)
 
-      rcl_tbl_ccei <- matrix(c(brks_ccei[1:4], brks_ccei[2:5], 1:4), ncol = 3)
-    } else {
-      rcl_tbl_ccei <- brks_ccei
-    }
+    rcl_tbl_ccei <- ccei_reclassify(
+      ccei, brks_ccei, out_folder, scenario_name, overwrite)
 
-    ccei_reclass <- terra::classify(ccei, rcl_tbl_ccei, right = NA)
-
-    terra::writeRaster(ccei_reclass,
-                        file.path(out_folder,
-                                  paste0("CCEI_reclass", scenario_name, ".tif")),
-                        overwrite = overwrite, datatype = "INT2U")
-
-    rm(ccei_reclass, ccei, brks_ccei)
+    rm(ccei, brks_ccei)
   } else {
     rcl_tbl_ccei <- NULL
   }
@@ -428,6 +417,30 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   message("finished processing")
   return(invisible(lst(brks_mat, brks_cmd, brks_ccei = rcl_tbl_ccei)))
 
+}
+
+ccei_reclassify <- function(ccei, brks = NULL, out_folder, scenario_name,
+                            overwrite = TRUE) {
+
+  if(is.null(brks)) {
+    brks <- c(0, 4, 5, 7, Inf)
+    rcl_tbl <- matrix(c(brks[1:4], brks[2:5], 1:4), ncol = 3)
+  } else {
+    rcl_tbl <- brks
+  }
+
+  # 0 <= x <= 4 -> 1st  # because include.lowest = TRUE
+  # 4 < x <= 5 <- 2nd
+  # 5 < x <= 7 -> 3rd
+  # 7 < x <= Inf -> 4th
+  ccei_reclass <- terra::classify(ccei, rcl_tbl, include.lowest = TRUE)
+
+  terra::writeRaster(
+    ccei_reclass,
+    fs::path(out_folder, paste0("CCEI_reclass", scenario_name, ".tif")),
+    overwrite = overwrite, datatype = "INT2U")
+
+  return(rcl_tbl)
 }
 
 

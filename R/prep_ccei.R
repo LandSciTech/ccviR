@@ -253,7 +253,7 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
 #'
 #' @returns SpatRaster with `tmean` and `cmd`
 
-ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet) {
+ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet = FALSE) {
 
   # Months stored as layers vs. files
   # - Crop first if layers, later if files
@@ -338,6 +338,11 @@ ccei_clip <- function() {
 #'   different climate variable. Values are standard deviations of the
 #'   interannual variability for historical climate variable.
 #' @noRd
+#' @examples
+#'
+#' calc_sed(b = list("cmd" = c(400, 300, 200), "tmean" = c(31, 30, 32)),
+#'          a = list("cmd_mean" = c(45, 34, 35), "tmean_mean" = c(26, 25, 27)),
+#'          s = list("cmd_sd" = c(30, 33, 29), "tmean_sd" = c(0.25, 0.26, 0.24)))
 
 calc_sed <- function(b, a, s) {
   l <- list(b, a, s) %>%
@@ -374,6 +379,8 @@ calc_ccei <- function(path_ccei = "misc/ccei", scenario,
                   regexp = paste0("future(.+)", scenario))
   if(!is.null(models)) m <- stringr::str_subset(m, paste0(models, collapse = "|"))
 
+  if(length(m) == 0) stop("No files detected for scenario: ", scenario, call. = FALSE)
+
   # Report models and scenarios used
   if(!quiet) {
     rlang::inform(c(
@@ -383,6 +390,13 @@ calc_ccei <- function(path_ccei = "misc/ccei", scenario,
 
   hist <- terra::rast(fs::path(path_ccei, "intermediate", "hist_all_vars.tif")) %>%
     terra::values()
+
+  # If Hist SD values == 0, replace with either 0.00001 or the smallest value
+  # whichever is lowest. This prevent missing CCEI values caused by dividing by 0
+  for(v in c("cmd_sd", "tmean_sd")) {
+    zeros <- hist[, v] == 0
+    hist[zeros, v] <- min(0.00001, min(hist[!zeros, v], na.rm = TRUE))
+  }
 
   ccei <- purrr::map(m, ~{
     # Load future models individually, rather than using future_all_vars.tif for memory and
@@ -402,15 +416,11 @@ calc_ccei <- function(path_ccei = "misc/ccei", scenario,
 
 
   c <- ccei
-  #c <- purrr::map(ccei, ~{
-  #  .x[.x > 50] <- NA
-  #  .x})
-  browser()
   c <- rlang::exec("cbind", !!!c) %>%
     rowMeans()
 
   r <- terra::rast(terra::rast(m[1]))
-  r[["ccei"]] <- c
+  r[[paste0("ccei_", scenario)]] <- c
   terra::writeRaster(r, fs::path(path_ccei, paste0(
     "ccei_", scenario,
     if(!is.null(out_append)) paste0("_", out_append),
@@ -450,7 +460,7 @@ is_downloaded <- function(files) {
 
 
 prep_out <- function(path, dir, type) {
-  out_dir <- fs::path(path_ccei, dir)
+  out_dir <- fs::path(path, dir)
   fs::dir_create(out_dir)
   out <- fs::path(out_dir, type)
   return(out)

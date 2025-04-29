@@ -112,7 +112,6 @@ prep_ccei_future()
 calc_ccei(scenario = "ssp245", overwrite = TRUE)
 calc_ccei(scenario = "ssp585", overwrite = TRUE)
 
-
 # Citations -----------------------------------
 
 ## Monthly historical -----------------------------------
@@ -129,7 +128,7 @@ calc_ccei(scenario = "ssp585", overwrite = TRUE)
 # > CRU TS monthly high-resolution gridded multivariate climate dataset. Scientific
 # > Data 7: 109
 
-# Future -----------------------------------
+## Future -----------------------------------
 # See CMIP6 Terms of Use: https://pcmdi.llnl.gov/CMIP6/TermsOfUse/TermsOfUse6-1.html
 
 

@@ -19,6 +19,7 @@ prep_clim_data(
   reproject = FALSE,
   overwrite = FALSE,
   scenario_name = "",
+  brks = NULL,
   brks_mat = NULL,
   brks_cmd = NULL,
   brks_ccei = NULL

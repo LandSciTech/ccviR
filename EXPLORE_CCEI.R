@@ -30,17 +30,6 @@ c(crop(ccei_245, box3), crop(ccei_858, box3), crop(ccei_ns, box3)) %>%
 max(ccei_ns) # Max is is just about 25...
 
 
-brks_ccei <- c(0, 4, 5, 7, 25, Inf)
-m_ccei <- matrix(c(brks_ccei[1:5], brks_ccei[2:6], 1:5), ncol = 3)
-
-c(crop(ccei_245, box1) %>% classify(m_ccei, right = NA),
-  crop(ccei_858, box1) %>% classify(m_ccei, right = NA),
-  crop(ccei_ns, box1) %>% classify(m_ccei, right = NA)) %>%
-  plot()
-
-
-max(ccei_245)
-
 
 # Explore how calculations result in high CCEI --------------------------------
 
@@ -66,7 +55,12 @@ ccei_85 <- terra::rast(fs::path(path_ccei, "ccei_ssp585.tif")) %>%
   setNames("SSP 585")
 ccei_45 <- terra::rast(fs::path(path_ccei, "ccei_ssp245.tif")) %>%
   setNames("SSP 245")
+
+# White Squares are NAs
+# (Current version of calc_ccei() replaces 0 sd values with low values to prevent
+#  dividing by zero which caused the missing values)
 terra::plot(c(ccei_45, ccei_85))
+terra::plot(c(is.na(ccei_45), is.na(ccei_85)))
 
 # Values are higher in 585, but the same problems of exceptionally
 # high areas happen in both, suggesting it's related to *historical*
@@ -109,6 +103,12 @@ future <- fs::path(path_ccei, "intermediate",
 h <- terra::values(hist)
 f <- terra::values(future)
 
+# Replace zeros
+for(v in c("cmd_sd", "tmean_sd")) {
+  zeros <- h[, v] == 0
+  h[zeros, v] <- min(0.00001, min(h[!zeros, v], na.rm = TRUE))
+}
+
 # Calculate SED for different subsets
 sed_all <- calc_sed(b = list(f[, "cmd"], f[, "tmean"]),
                     a = list(h[, "cmd_mean"], h[, "tmean_mean"]),
@@ -126,30 +126,7 @@ future$sed_tmean <- sed_tmean
 
 terra::plot(future)
 
-# What if we corrected 0 SD before calculating SED? --------------------------
-
-f[, "cmd"] |> summary()
-h[, "cmd_mean"] |> summary()
-h[, "cmd_sd"] |> summary()
-h_sd <- h[, "cmd_sd"]
-
-summary(h_sd)
-summary(h_sd[h_sd < 1])
-length(h_sd[h_sd < 1]) # Only 70 / 1054
-length(h_sd)
-
-h_sd[h_sd < 1] <- 1
-
-sed_all <- calc_sed(b = list(f[, "cmd"], f[, "tmean"]),
-                    a = list(h[, "cmd_mean"], h[, "tmean_mean"]),
-                    s = list(h_sd, h[,"tmean_sd"]))
-sed_cmd <- calc_sed(b = list(f[, "cmd"]),
-                    a = list(h[, "cmd_mean"]),
-                    s = list(h_sd))
-
-future$sed_all <- sed_all
-future$sed_cmd <- sed_cmd
-
-terra::plot(future)
-
-# Here max out at about 400 because 0/1 for the historical compared to ~ 400 in the future
+# Two problems:
+# - SD of 0 - Fixed by replacing with very small value.
+#   This results in a very large CCEI but it gets reclassified anyway.
+# - Low SD values - Fixed by reclassifying.

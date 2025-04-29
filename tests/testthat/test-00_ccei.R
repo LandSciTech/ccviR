@@ -163,7 +163,7 @@ test_that("calc_ccei()", {
 
   f <- fs::path(path_ccei, "ccei_ssp585.tif")
   expect_true(fs::file_exists(f))
-  expect_named(r <- terra::rast(f), "ccei")
+  expect_named(r <- terra::rast(f), "ccei_ssp585")
 
   expect_snapshot(terra::values(r))
 })

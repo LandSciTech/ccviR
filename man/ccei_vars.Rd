@@ -4,7 +4,7 @@
 \alias{ccei_vars}
 \title{Calculate monthly Climate Moisture Deficit and Mean Temperature}
 \usage{
-ccei_vars(prec_files, tmin_files, tmax_files, clip, quiet)
+ccei_vars(prec_files, tmin_files, tmax_files, clip, quiet = FALSE)
 }
 \arguments{
 \item{prec_files}{Character. Files paths to precipitation rasters}
