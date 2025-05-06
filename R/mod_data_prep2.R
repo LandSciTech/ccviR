@@ -88,11 +88,11 @@ mod_data_prep_ui <- function(id) {
     textInput(ns("clim_norm_period"), labelMandatory("Historical normal period")),
     textInput(ns("clim_norm_url"), labelMandatory("Link to Source")),
 
-    get_file_ui2(id, "mat_norm_pth", "Historical mean annual temperature", TRUE),
-    get_file_ui2(id, "cmd_norm_pth", "Historical climatic mositure deficit", TRUE),
-    get_file_ui2(id, "map_norm_pth", "Historical mean annual precipitation"),
-    get_file_ui2(id, "mwmt_norm_pth", "Historical mean warmest month temperature"),
-    get_file_ui2(id, "mcmt_norm_pth", "Historical mean coldest month temperature"),
+    get_file_ui2(id, "mat_norm_pth", "Historical mean annual temperature (MAT)", TRUE),
+    get_file_ui2(id, "cmd_norm_pth", "Historical climatic mositure deficit (CMD)", TRUE),
+    get_file_ui2(id, "map_norm_pth", "Historical mean annual precipitation (MAP)"),
+    get_file_ui2(id, "mwmt_norm_pth", "Historical mean warmest month temperature (MWMT)"),
+    get_file_ui2(id, "mcmt_norm_pth", "Historical mean coldest month temperature (MCMT)"),
 
     h3("Supporting data"),
     # TODO: Assessment area?
@@ -319,6 +319,11 @@ mod_data_prep_server <- function(id, input_files = NULL) {
       have_inputs <- purrr::map_lgl(required_inputs(), ~!is.null(.x) && .x != "")
       validate(need(all(have_inputs), "Missing required inputs"))
 
+      # Check that have both MWMT and MCMT if either provided
+      validate(need(
+        isTruthy(file_pths$mwmt_norm_pth) == isTruthy(file_pths$mcmt_norm_pth),
+        "Must provide both MCMT and MWMT or neither"))
+
       shinyjs::enable("submit")
     })
 
@@ -412,6 +417,7 @@ ui_scn <- function(id, ui_id) {
     title = paste0("Scenario ", ui_id),
     textInput(ns(paste0("clim_scn_nm", ui_id)),
               labelMandatory(paste0("Scenario ", ui_id, " Name"))),
+    em("This will be used as a suffix to the saved output data and to identify the scenario"),
     textInput(ns(paste0("clim_scn_gcm", ui_id)), labelMandatory("GCM or Ensemble Name")),
     textInput(ns(paste0("clim_scn_period", ui_id)), labelMandatory("Future period")),
     textInput(ns(paste0("clim_scn_em", ui_id)), labelMandatory("Emissions scenario")),
@@ -419,10 +425,10 @@ ui_scn <- function(id, ui_id) {
 
     get_file_ui2(
       id, paste0("mat_fut_pth", ui_id), mandatory = TRUE,
-      title = paste0("Future mean annual temperature (Scenario ", ui_id, ")")),
+      title = paste0("Future mean annual temperature (MAT; Scenario ", ui_id, ")")),
     get_file_ui2(
       id, paste0("cmd_fut_pth", ui_id), mandatory = TRUE,
-      title = paste0("Future climatic mositure deficit (Scenario ", ui_id, ")"))
+      title = paste0("Future climatic mositure deficit (CMD; Scenario ", ui_id, ")"))
   )
 }
 

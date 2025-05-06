@@ -198,7 +198,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   scenario_name <- stringr::str_replace_all(scenario_name, "\\s", "_")
 
   if(length(out_folder) == 0 || missing(out_folder)){
-    stop("out_folder is missing with no default")
+    stop("out_folder is missing with no default", call. = FALSE)
   }
 
   if(!dir.exists(out_folder)){
@@ -225,9 +225,9 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           pattern = make_pat("MAT_\\d.*", ext_accept),
                           full.names = TRUE)
 
-    cmd_norm <-list.files(in_folder,
-                          pattern = make_pat("CMD", ext_accept),
-                          full.names = TRUE)
+    cmd_norm <- list.files(in_folder,
+                           pattern = make_pat("CMD", ext_accept),
+                           full.names = TRUE)
 
     cmd_fut <- list.files(in_folder,
                           pattern = make_pat("CMD_\\d.*", ext_accept),
@@ -280,28 +280,32 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   cmd_fut <- terra::rast(cmd_fut)
 
-  if(!is.null(ccei) && length(ccei) > 0){
+  if(isTruthy(ccei)){
     ccei <- terra::rast(ccei)
   } else {
     ccei <- NULL
   }
 
-  if(!is.null(map) && length(map) > 0){
+  if(isTruthy(map)){
     map_pth <- map
   } else {
     map_pth <- NULL
   }
 
-  if(!is.null(mwmt) && length(mwmt) > 0){
+  if(isTruthy(mwmt)){
     mwmt <- terra::rast(mwmt)
   } else {
     mwmt <- NULL
   }
 
-  if(!is.null(mcmt) && length(mcmt) > 0){
+  if(isTruthy(mcmt)){
     mcmt <- terra::rast(mcmt)
   } else {
     mcmt <- NULL
+  }
+
+  if(!sum(is.null(mwmt), is.null(mcmt)) %in% c(0, 2)) {
+    stop("Must provide both MCMT and MWMT or neither", call. = FALSE)
   }
 
   if(!is.null(clim_poly) && length(clim_poly) > 0){
