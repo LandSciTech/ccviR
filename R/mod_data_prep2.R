@@ -166,7 +166,12 @@ mod_data_prep_server <- function(id, input_files = NULL) {
         updateCheckboxInput(session, "allow_over", value = TRUE)
 
         # Set paths
-        out_dir("TESTING DATA UI OUTPUTS")
+        if(!is.null(getOption("ccviR.test_data_prep"))) {
+          # Used in shinytest2/testthat testing only
+          # So we can find the folder and test that it prepared the data
+          d <- getOption("ccviR.test_data_prep")
+        } else d <- "TESTING DATA UI OUTPUTS"
+        out_dir(d)
         fs::dir_create(out_dir())
         stringr::str_subset(names(input_files), "pth") %>%
           purrr::walk(~{
