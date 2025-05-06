@@ -175,9 +175,12 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     file_scn_ids <- reactiveVal()
     out_dir <- reactiveVal()
-    file_ids <- c("mat_norm_pth", "cmd_norm_pth",
-                  "ccei_pth", "map_pth",
-                  "mwmt_pth", "mcmt_pth", "assess_pth")
+    file_ids <- c(
+      # Historical Data files
+      "mat_norm_pth", "cmd_norm_pth", "map_norm_pth",
+      "mwmt_norm_pth", "mcmt_norm_pth",
+      # Supporting Data files
+      "assess_pth", "ccei_pth")
 
 
     # Set inputs/paths for testing ----------------------
