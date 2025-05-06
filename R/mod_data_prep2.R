@@ -361,23 +361,36 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 
       #brks <- list(brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL)
 
-      message("Processing data for ", input$scn_n, " scenario(s)")
-
-      brks <- do.call(prep_clim_data_multi, prep_values()$prep_data)
-      do.call(prep_clim_readme, append(prep_values()$prep_readme, brks))
-
-      return(Sys.time())
+      withProgress(
+        message = paste("Processing data for", input$scn_n, "scenario(s)"), {
+          out <- tryCatch({
+            brks <- do.call(prep_clim_data_multi, prep_values()$prep_data)
+            do.call(prep_clim_readme, append(prep_values()$prep_readme, brks))
+            # Testing messages:
+            # stop("Example error message")  # Uncomment when interactive testing
+            return(Sys.time())
+          },
+          error = function(cnd) conditionMessage(cnd)
+          )
+        })
     })
 
     # Signal finish --------------------
-    output$prep_data_done <- renderUI({ # Use UI when rendering HTML
+    output$prep_data_done <- renderUI({ # Use renderUI when rendering HTML
       req(prep_data_done())
 
-      if(!list_equal(prep_values(), prep_values_last_run())) {
+
+      if(!inherits(prep_data_done(), "POSIXct")) {
+        # If error in run
+        tagList(icon("xmark", style = "color:red"),
+                span(strong("Error preparing data: "), prep_data_done()))
+      } else if(!list_equal(prep_values(), prep_values_last_run())) {
+        # If last completed no longer matches the selected values
         tagList(icon("check", style = "color:grey"),
                 span("Last completed at", format(prep_data_done(), "%I:%M %p"),
                      style = "color:grey"))
       } else {
+        # Last completed matches current values
         tagList(icon("check", style = "color:green"),
                 "Completed at", format(prep_data_done(), "%I:%M %p"))
       }

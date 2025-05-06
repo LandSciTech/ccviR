@@ -4,11 +4,12 @@ prep_clim_data_multi <- function(
     in_folder = NULL, out_folder,
     reproject = FALSE, overwrite = FALSE,
     scenario_name = "", brks = NULL, brks_mat = NULL,
-    brks_cmd = NULL, brks_ccei = NULL) {
+    brks_cmd = NULL, brks_ccei = NULL, quiet = FALSE) {
 
   # TODO: Checks that we have the same multiples of all required inputs
 
-  n <- length(scenario_name)
+
+  n_scn <- length(scenario_name)
   i <- 1
   if(is.null(brks)) {
     brks_out <- list("brks_cmd" = brks_cmd,
@@ -16,7 +17,14 @@ prep_clim_data_multi <- function(
                      "brks_ccei" = brks_ccei)
   } else brks_out <- brks
 
-  while(i <= n) {
+  # Setup Progress messages
+  steps <- as.logical(!is.null(ccei)) + as.logical(!is.null(map)) +
+    as.logical(!is.null(mwmt) | !is.null(mcmt)) + 3
+
+  n <- n_scn * steps
+
+  while(i <= n_scn) {
+    inform_prog(paste0("Preparing Scenario ", i), quiet, (i-1)/n_scn, set = TRUE)
     brks_out <- prep_clim_data(
       mat_norm,
       mat_fut[i],
@@ -30,7 +38,9 @@ prep_clim_data_multi <- function(
       out_folder = out_folder,
       overwrite = overwrite,
       scenario_name = scenario_name[i],
-      brks = brks_out
+      brks = brks_out,
+      quiet = quiet,
+      n = n
     )
     i <- i + 1
   }
@@ -175,7 +185,8 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                            reproject = FALSE, overwrite = FALSE,
                            scenario_name = "", brks = NULL,
                            brks_mat = NULL,
-                           brks_cmd = NULL, brks_ccei = NULL) {
+                           brks_cmd = NULL, brks_ccei = NULL, quiet = FALSE,
+                           n = NULL) {
 
   if(!is.null(brks)) {
     brks_mat <- brks$brks_mat
@@ -303,7 +314,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   purrr::map(purrr::compact(list(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
                                  mwmt, mcmt)), check_crs)
 
-  message("processing MAT")
+  inform_prog("Processing MAT", quiet, n)
 
   brks_mat <- prep_exp(mat_norm, mat_fut,
                        file.path(out_folder, paste0("MAT_reclass", scenario_name, ".tif")),
@@ -312,7 +323,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   rm(mat_fut, mat_norm)
 
-  message("processing CMD")
+  inform_prog("Processing CMD", quiet, n)
 
   brks_cmd <- prep_exp(cmd_norm, cmd_fut,
                        file.path(out_folder, paste0("CMD_reclass", scenario_name, ".tif")),
@@ -324,7 +335,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   # Prepare other climate variables
   if(!is.null(ccei)){
     # CCEI
-    message("processing CCEI")
+    inform_prog("Processing CCEI", quiet, n)
 
     rcl_tbl_ccei <- ccei_reclassify(
       ccei, brks_ccei, out_folder, scenario_name, overwrite)
@@ -337,7 +348,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   # MAP
   if(!is.null(map_pth)){
-    message("processing MAP")
+    inform_prog("Processing MAP", quiet, n)
 
     if(reproject){
       ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -357,7 +368,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   # MWMT - MCMT
   if(!is.null(mwmt) && !is.null(mcmt)){
-    message("processing MWMT and MCMT")
+    inform_prog("Processing MWMT and MCMT", quiet, n)
     dif_mt <- mwmt-mcmt
 
     rm(mwmt, mcmt)
@@ -399,7 +410,8 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   if(is.null(clim_poly)){
     # make polygon boundary from raster data
-    message("creating clim_poly from raster data")
+    inform_prog("Creating clim_poly from raster data", quiet, n)
+
     mat <- terra::rast(file.path(out_folder,
                                     paste0("MAT_reclass", scenario_name, ".tif")))
     mat <- terra::extend(mat, c(100,100), snap = "out")
@@ -414,7 +426,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
   sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
 
-  message("finished processing")
+  inform_prog("Finished processing", quiet, n)
   return(invisible(lst(brks_mat, brks_cmd, brks_ccei = rcl_tbl_ccei)))
 
 }
