@@ -22,7 +22,7 @@ mod_C_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Vulnerability Questions - C",
+    "C - Sensitivity and Adaptive Capacity", value = "C",
     fluidRow(
       column(
         12,
@@ -190,7 +190,7 @@ mod_C_server <- function(id, df_loaded, spatial, parent_session) {
     ns <- session$ns
 
     # Continue Button
-    observeEvent(input$continue, switch_tab("Vulnerability Questions - D", parent_session))
+    observeEvent(input$continue, switch_tab("D", parent_session))
     observe(show_guidelines(input)) # Create Guideline buttons
 
     # Restore data ----------------

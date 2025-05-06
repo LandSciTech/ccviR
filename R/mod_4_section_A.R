@@ -24,7 +24,7 @@ mod_A_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Vulnerability Questions - A",
+    "A - Exposure", value = "A",
     fluidRow(
       column(
         12,
@@ -80,7 +80,7 @@ mod_A_server <- function(id, spatial, parent_session) {
     ns <- session$ns
 
     # Continue Button
-    observeEvent(input$continue, switch_tab("Vulnerability Questions - B", parent_session))
+    observeEvent(input$continue, switch_tab("B", parent_session))
 
 
     # Temperature Exposure ----------------------------

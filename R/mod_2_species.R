@@ -25,7 +25,7 @@ mod_species_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Species Information",
+    "Species Information", value = "species",
     column(
       width = 12,
       div(
@@ -72,7 +72,7 @@ mod_species_server <- function(id, df_loaded, parent_session) {
     # Setup --------------------
 
     # Continue Button
-    observeEvent(input$continue, switch_tab("Spatial Data Analysis", parent_session))
+    observeEvent(input$continue, switch_tab("spatial", parent_session))
 
     # Enable the Submit button when all mandatory fields are filled out
     observe({

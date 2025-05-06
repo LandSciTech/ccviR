@@ -23,7 +23,7 @@ mod_D_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Vulnerability Questions - D",
+    "D - Documented or Modeled Response", value = "D",
     fluidRow(
       column(
         12,
@@ -93,7 +93,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
     # Setup --------------------
 
     # Continue Button
-    observeEvent(input$continue, switch_tab("Index Results", parent_session))
+    observeEvent(input$continue, switch_tab("results", parent_session))
     observe(show_guidelines(input)) # Create Guideline buttons
 
     # Restore data ----------------

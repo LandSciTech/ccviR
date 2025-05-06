@@ -30,7 +30,7 @@ mod_spatial_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Spatial Data Analysis",
+    "Spatial Data Analysis", value = "spatial",
     fluidRow(
       column(
         12,
@@ -144,7 +144,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     rng_ids <- reactiveVal()
 
     # Continue Button
-    observeEvent(input$continue, switch_tab("Vulnerability Questions - A", parent_session))
+    observeEvent(input$continue, switch_tab("A", parent_session))
 
     # Enable the Start Spatial button when all mandatory fields are filled out
     observe({

@@ -23,7 +23,7 @@ mod_home_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Welcome",
+    "Welcome", value = "home",
     fluidPage(
       h2("Welcome"),
       p("The ccviR app provides a new interface for the Climate Change Vulnerability Index (CCVI) created by ",
@@ -119,7 +119,7 @@ mod_home_server <- function(id, volumes, parent_session) {
 
     #outputOptions(output, "", suspendWhenHidden = FALSE)
 
-    observeEvent(input$continue, switch_tab("Species Information", parent_session))
+    observeEvent(input$continue, switch_tab("species", parent_session))
 
     # restore a previous session
     shinyFileChoose("loadcsv", root = volumes, input = input,

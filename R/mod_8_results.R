@@ -43,8 +43,7 @@ mod_results_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    id = ns("results"),
-    "Index Results",
+    "Index Results", value = "results",
     fluidPage(
       div(
         id = ns("formData"),
