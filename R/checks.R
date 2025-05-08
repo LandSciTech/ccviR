@@ -37,6 +37,8 @@ check_polys <- function(poly, var_name) {
   if(is.null(poly)) return(poly)
   if(!inherits(poly, "sf")) poly <- sf::st_as_sf(poly)
 
+  poly <- sf::st_zm(poly)
+
   validate(need(
     !is.na(st_crs(poly)),
     paste(var_name, " does not have a CRS.",
