@@ -175,6 +175,12 @@ mod_C_ui <- function(id) {
             "C6) Phenological response to changing seasonal temperature and precipitation dynamics",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
+
+          div(style = "display:inline-block",
+              actionButton(ns("continue"), "Next", class = "btn-primary"),
+              uiOutput(ns("completeness"), class = "button-status")
+          ),
+
           br(), br()
         )
       )
@@ -323,10 +329,16 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
                       location = gt::cells_column_labels(columns = everything()))
     })
 
+    # Questions --------------
+    questions <- reactive(collect_questions(input, "C"))
 
+    # Data Completeness -----------
+    output$completeness <- renderUI({ # Use UI when rendering HTML
+      report_n(questions(), tax_grp = tax_grp())
+    })
 
     # Return -------------------------------------------------
-    list("c" = reactive(collect_questions(input, "C")))
+    list("c" = questions)
 
   })
 

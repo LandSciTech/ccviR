@@ -10,7 +10,7 @@ filter_applicable_qs <- function(vuln_df, tax_grp, plant_taxa){
                              .data$Code == "C5b" & !C5a_unk ~ NA_real_,
                              .data$Code == "C5c" & (!all(C5a_unk, C5b_unk) |
                                                       !tax_grp %in% plant_taxa) ~ NA_real_,
-                             TRUE ~ .data$score))
+                             .default = .data$score))
   vuln_df
 }
 

@@ -520,7 +520,46 @@ bind_elements <- function(questions, type) {
     purrr::list_rbind()
 }
 
+report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
+  n <- list("B" = 3, "C" = 10, "D" = 1)
+  type <- stringr::str_sub(questions$questions$Code[1], 1, 1)
+
+  q <- questions$questions |>
+    dplyr::rowwise() |>
+    # Here score = answered/not answered (NOT ACTUAL SCORE)
+    dplyr::mutate(score = any(dplyr::pick(-Code) >= 0, na.rm = TRUE))
+
+  if(type == "C") { # Where taxa influences questions
+    q <- filter_applicable_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
+  }
+
+  if(type == "D") { # Where spatial isn't captured because possibly multiple scenarios
+    sp <- spatial %>%
+      dplyr::select(dplyr::any_of(c("D2", "D3", "D4"))) %>%
+      dplyr::mutate(dplyr::across(dplyr::everything(), ~any(.x >= 0, na.rm = TRUE))) |>
+      dplyr::distinct() %>%
+      tidyr::pivot_longer(dplyr::everything(), names_to = "Code", values_to = "score") |>
+      dplyr::filter(.data$score)
+    q <- dplyr::rows_update(q, sp, by = "Code")
+    }
+
+  total <- sum(!is.na(q$score))         # Total answerable
+  ans <- sum(q$score > 0, na.rm = TRUE) # no. answered
+
+  total <- paste0(ans, "/", total, " questions answered")
+
+  if(ans >= n[type]) {
+    tagList(icon("check", style = "color:green"), total)
+  } else {
+    tagList(icon("xmark", style = "color:red"), total,
+            strong("(Insufficient, ", HTML("&ge;", .noWS = "after"),
+                   n[type], "required)"))
+  }
+}
+
+
 show_questions <- function(tax_grp) {
+
   tax_lg <- dplyr::case_when(
     tax_grp %in% c("Vascular Plant", "Nonvascular Plant") ~ "Plant",
     tax_grp == "Lichen" ~ "Lichen",

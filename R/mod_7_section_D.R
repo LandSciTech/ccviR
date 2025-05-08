@@ -67,7 +67,10 @@ mod_D_ui <- function(id) {
           q5("D4) Occurrence of protected areas in modeled future distribution"),
           uiOutput(ns("ui_D4")),
 
-          actionButton(ns("continue"), "Next", class = "btn-primary"),
+          div(style = "display:inline-block",
+              actionButton(ns("continue"), "Next", class = "btn-primary"),
+              uiOutput(ns("completeness"), class = "button-status")
+          ),
           br(), br()
         )
       )
@@ -198,8 +201,16 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
                       location = gt::cells_column_labels(columns = everything()))
     })
 
+    # Questions --------------
+    questions <- reactive(collect_questions(input, "D"))
+
+    # Data Completeness -----------
+    output$completeness <- renderUI({ # Use UI when rendering HTML
+      report_n(questions(), spatial = spat_res())
+    })
+
     # Return -------------------------------------------------
-    list("d" = reactive(collect_questions(input, "D")))
+    list("d" = questions)
 
   })
 

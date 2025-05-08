@@ -68,7 +68,12 @@ mod_B_ui <- function(id) {
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          actionButton(ns("continue"), "Next", class = "btn-primary"),
+          div(style = "display:inline-block",
+              actionButton(ns("continue"), "Next", class = "btn-primary"),
+              uiOutput(ns("completeness"), class = "button-status")
+          ),
+
+
           br(), br()
         )
       )
@@ -92,8 +97,16 @@ mod_B_server <- function(id, df_loaded, parent_session) {
       update_restored2(df_loaded(), section = "vuln_qs", session)
     })
 
+    # Questions --------------
+    questions <- reactive(collect_questions(input, "B"))
+
+    # Data Completeness -----------
+    output$completeness <- renderUI({ # Use UI when rendering HTML
+      report_n(questions())
+    })
+
     # Return -------------------------------------------------
-    list("b" = reactive(collect_questions(input, "B")))
+    list("b" = questions)
 
   })
 
