@@ -205,7 +205,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
     observe(show_guidelines(input)) # Create Guideline buttons
 
     # Show correct questions by taxonomic groups
-    observe(show_questions(tax_grp))
+    observe(show_questions(tax_grp()))
 
     # Restore data ----------------
     observeEvent(df_loaded(), {
