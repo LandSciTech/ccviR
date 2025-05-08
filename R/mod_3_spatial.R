@@ -129,6 +129,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     repeatSpatial <- reactiveVal(FALSE)
     doSpatial <- reactiveVal(0)
     doSpatialRestore <- reactiveVal(FALSE)
+    run_spatial_button <- reactiveVal(0)
 
     # Data
     # reactiveVal, not reactive, bc modified through several pathways
@@ -531,22 +532,27 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
     observeEvent(input$startSpatial, {
-      showModal(modalDialog(
-        p("Note: Re-running the spatial analysis will overwrite any changes made to ",
-          "the Spatial Vulnerability Questions. Comments will be preserved so ",
-          "you can record the change made in the comments and then change it ",
-          "again after re-running the analysis."),
-        footer = tagList(
-          actionButton(ns("shinyalert"), "Continue"),
-          modalButton("Cancel")
-        ),
-        title = "Do you want to run the spatial analysis?"))
+      if(repeatSpatial()) {
+        showModal(modalDialog(
+          p("Note: Re-running the spatial analysis will overwrite any changes made to ",
+            "the Spatial Vulnerability Questions. Comments will be preserved so ",
+            "you can record the change made in the comments and then change it ",
+            "again after re-running the analysis."),
+          footer = tagList(
+            actionButton(ns("shinyalert"), "Continue"),
+            modalButton("Cancel")
+          ),
+          title = "Do you want to run the spatial analysis?"))
+      } else {
+        run_spatial_button(run_spatial_button() + 1)
+      }
 
       # Remove if first run
       # TODO: Can we just skip the modal if !repeatSpatial()?
-      if(!repeatSpatial()) shinyjs::click("shinyalert")
+      #if(!repeatSpatial()) shinyjs::click("shinyalert")
     })
 
+    # On Repeat Runs...
     observeEvent(input$shinyalert, {
       removeModal()
       if(input$shinyalert > 0){
@@ -555,6 +561,13 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       }
       shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
     })
+
+    # On the first run...
+    observeEvent(run_spatial_button(), {
+      doSpatial(doSpatial() + 1)
+      repeatSpatial(TRUE)
+      shinyjs::runjs("window.scrollTo(0, document.body.scrollHeight)")
+    }, ignoreInit = TRUE)
 
     # Prepare outputs ------------------------
     range_poly_clip <- reactive({
