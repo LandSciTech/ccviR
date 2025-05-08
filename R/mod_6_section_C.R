@@ -13,7 +13,7 @@ mod_C_test <- function(df_loaded = NULL, spatial = test_spatial(), tax_grp = "Va
     shinyOptions("file_dir" = "inst/extdata/")
 
     mod_C_server(id = "test", reactive(df_loaded), spatial,
-                 tax_grp = tax_grp, parent_session = session)
+                 tax_grp = reactive(tax_grp), parent_session = session)
   }
 
   shinyApp(ui, server)

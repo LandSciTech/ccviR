@@ -207,7 +207,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
 
     # Plots and Tables ----------------------------------
 
-    ## Data completeness
+    ## Table - Data completeness ------------------
     output$n_factors <- gt::render_gt({
       req(index_res())
       facts <- index_res() %>% distinct(across(contains("factors")))
@@ -242,7 +242,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
     })
 
 
-    ## Plot of variation in Index
+    ## Plot Variation in Index ------------------------
 
     #output$conf_index <- renderText(index_res()$conf_index)
     output$conf_graph <- renderPlot({
@@ -250,14 +250,14 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
       plot_conf_score(index_res())
     })
 
-    ## Plot comparison of thresholds and results
+    ## Plot - Comparison of thresholds and results ----------------
     output$ind_score_plt <- renderPlot({
       validate(need(any(index_res()$index != "IE"),
                     "Insufficient Evidence: No Index Value"))
       plot_score_index(index_res())
     })
 
-    ## Plot of individual questions
+    ## Plot - Individual questions ------------------
     output$q_score_plt <- plotly::renderPlotly({
       req(index_res())
       index_res() %>%
@@ -266,7 +266,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
         plot_q_score()
     })
 
-    ## Plot of summary of data evidence
+    ## Plot - Summary of data evidence ------
     output$plot_evidence <- renderPlot({
       # TODO: Omit non-relevant questions
       evidence <- bind_elements(questions, type = "evidence")
