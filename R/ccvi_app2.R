@@ -57,6 +57,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
       id = "section_c",
       df_loaded = restore$df_loaded,
       spatial = spatial,
+      tax_grp = sp$tax_grp,
       parent_session = session)
 
     d <- mod_D_server(

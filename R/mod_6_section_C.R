@@ -3,15 +3,17 @@
 #' @noRd
 #' @examples
 #' mod_C_test()
+#' mod_C_test(tax_grp = "Reptile") # Test different questions
 #' mod_C_test(df_loaded = test_df_loaded())
 
-mod_C_test <- function(df_loaded = NULL, spatial = test_spatial()) {
+mod_C_test <- function(df_loaded = NULL, spatial = test_spatial(), tax_grp = "Vascular Plant") {
 
   ui <- ui_setup(mod_C_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 
-    mod_C_server(id = "test", reactive(df_loaded), spatial, parent_session = session)
+    mod_C_server(id = "test", reactive(df_loaded), spatial,
+                 tax_grp = tax_grp, parent_session = session)
   }
 
   shinyApp(ui, server)
@@ -64,7 +66,7 @@ mod_C_ui <- function(id) {
               q5("C2 bi) Historical hydrological niche"),
               uiOutput(ns("ui_C2bi")),
 
-              check_comment_ui2(id, "C2bii", "ii) Physiological hydrological niche",
+              check_comment_ui2(id, "C2bii", "C2 bii) Physiological hydrological niche",
                                 choiceNames = valueNms,
                                 choiceValues = valueOpts)
           ),
@@ -127,13 +129,17 @@ mod_C_ui <- function(id) {
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(id, "C4f", "C4 f) Sensitivity to competition from native or non-native species",
-                           choiceNames = valueNms[2:4],
-                           choiceValues = valueOpts[2:4]),
+          check_comment_ui2(
+            id, "C4f",
+            "C4 f) Sensitivity to competition from native or non-native species",
+            choiceNames = valueNms[2:4],
+            choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(id, "C4g", "C4 g) Forms part of an interspecific interaction not covered by 4a-f",
-                           choiceNames = valueNms[2:4],
-                           choiceValues = valueOpts[2:4]),
+          check_comment_ui2(
+            id, "C4g",
+            "C4 g) Forms part of an interspecific interaction not covered by 4a-f",
+            choiceNames = valueNms[2:4],
+            choiceValues = valueOpts[2:4]),
 
           check_comment_ui2(id, "C5a", "C5 a) Measured genetic variation",
                            choiceNames = valueNms[2:4],
@@ -141,9 +147,11 @@ mod_C_ui <- function(id) {
 
           conditionalPanel(
             "input.C5a == ''",
-            check_comment_ui2(id, "C5b", "C5 b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown)",
-                             choiceNames = valueNms[2:4],
-                             choiceValues = valueOpts[2:4]),
+            check_comment_ui2(
+              id, "C5b",
+              "C5 b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown)",
+              choiceNames = valueNms[2:4],
+              choiceValues = valueOpts[2:4]),
             ns = NS(id)
           ),
 
@@ -151,19 +159,22 @@ mod_C_ui <- function(id) {
             "input.C5a == '' && input.C5b == ''",
             shinyjs::hidden(
               div(
-                id = "plant_only2",
-                check_comment_ui(id, "C5c", "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown)",
-                                 choiceNames = valueNms[2:4],
-                                 choiceValues = valueOpts[2:4])
+                id = ns("plant_only2"),
+                check_comment_ui2(
+                  id, "C5c",
+                  "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown)",
+                  choiceNames = valueNms[2:4],
+                  choiceValues = valueOpts[2:4])
               )
             ),
             ns = NS(id)
           ),
 
-          check_comment_ui2(id, "C6", "C6) Phenological response to changing seasonal temperature and precipitation dynamics",
-                           choiceNames = valueNms[2:4],
-                           choiceValues = valueOpts[2:4]),
-          actionButton(ns("continue"), "Next", class = "btn-primary"),
+          check_comment_ui2(
+            id, "C6",
+            "C6) Phenological response to changing seasonal temperature and precipitation dynamics",
+            choiceNames = valueNms[2:4],
+            choiceValues = valueOpts[2:4]),
           br(), br()
         )
       )
@@ -171,7 +182,7 @@ mod_C_ui <- function(id) {
   )
 }
 
-mod_C_server <- function(id, df_loaded, spatial, parent_session) {
+mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
 
   purrr::map(spatial, ~stopifnot(is.reactive(.x)))
 
@@ -193,10 +204,15 @@ mod_C_server <- function(id, df_loaded, spatial, parent_session) {
     observeEvent(input$continue, switch_tab("D", parent_session))
     observe(show_guidelines(input)) # Create Guideline buttons
 
+    # Show correct questions by taxonomic groups
+    observe(show_questions(tax_grp))
+
     # Restore data ----------------
     observeEvent(df_loaded(), {
       update_restored2(df_loaded(), section = "vuln_qs", session)
     })
+
+
 
     # Spatial Questions ---------------------
 

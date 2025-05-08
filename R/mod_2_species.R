@@ -134,6 +134,7 @@ mod_species_server <- function(id, df_loaded, parent_session) {
     )
 
     list("species_data" = species_data,
+         "tax_grp" = reactive(input$tax_grp),
          "cave" = reactive(input$cave))
   })
 

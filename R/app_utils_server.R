@@ -520,6 +520,31 @@ bind_elements <- function(questions, type) {
     purrr::list_rbind()
 }
 
+show_questions <- function(tax_grp) {
+  tax_lg <- dplyr::case_when(
+    tax_grp %in% c("Vascular Plant", "Nonvascular Plant") ~ "Plant",
+    tax_grp == "Lichen" ~ "Lichen",
+    .default = "Animal")
+
+  if(tax_lg == "Plant"){
+    shinyjs::show("plant_only")
+    shinyjs::show("plant_only2")
+    shinyjs::hide("animal_only")
+  }
+
+  if(tax_lg == "Animal"){
+    shinyjs::show("animal_only")
+    shinyjs::hide("plant_only")
+    shinyjs::hide("plant_only2")
+  }
+
+  if(tax_lg == "Lichen"){
+    shinyjs::hide("animal_only")
+    shinyjs::hide("plant_only")
+    shinyjs::hide("plant_only2")
+  }
+}
+
 
 #' Check and load spatial vector data
 #'
