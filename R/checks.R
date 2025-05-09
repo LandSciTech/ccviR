@@ -31,13 +31,18 @@ check_scn <- function(clim_vars_lst, hs_rast, scenario_names) {
 
 }
 
-# helper function to check input polys
-check_polys <- function(poly, var_name) {
+#' Check and fix polygons
+#'
+#' @param poly Spaitial object. sf or convertible to sf.
+#' @param var_name Character. Name of the variable for messaging
+#'
+#' @returns sf polygon
+check_polys <- function(poly, var_name = "polygon") {
 
   if(is.null(poly)) return(poly)
   if(!inherits(poly, "sf")) poly <- sf::st_as_sf(poly)
 
-  poly <- sf::st_zm(poly)
+  poly <- check_zm(poly, var_name)
 
   validate(need(
     !is.na(st_crs(poly)),
@@ -51,15 +56,28 @@ check_polys <- function(poly, var_name) {
     validate(need(
       any(geo_type %in% c("POLYGON", "MULTIPOLYGON")),
       paste0(var_name, " has geometry type ", unique(geo_type),
-             " but only polygons are accepted for this input.")
+             " but only (MULTI)POLYGONs are accepted for this input.")
     ))
 
     poly <- st_collection_extract(poly, "POLYGON")
-    message("Point or line geometries in the ", var_name,
+    message("POINT or LINE geometries in ", var_name,
             " were dropped.")
   }
 
   return(poly)
+}
+
+check_zm <- function(poly, var_name = "polygon") {
+  a <- sf::st_geometry(poly) %>%
+    attributes() %>%
+    names()
+
+  if(any(c("z_range", "m_range") %in% a)) {
+    message("Removing Z and/or M dimensions from ", var_name)
+    poly <- sf::st_zm(poly)
+  }
+
+  poly
 }
 
 
