@@ -334,7 +334,7 @@ render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
   prevEvi <- ifelse(is.null(prevEvi), "", prevEvi)
 
   # If have spatial analysis AND have data for this Question
-  if(isTruthy(spat_df) && all(spat_df[[ui_id]] > -1)) {
+  if(isTruthy(spat_df) && all(!is.na(spat_df[[ui_id]]) & spat_df[[ui_id]] > -1)) {
     box_val <- spat_df[[ui_id]] %>% unique()
     if(prevEvi == "") prevEvi <- "Spatial Analysis - ccviR"
   } else {

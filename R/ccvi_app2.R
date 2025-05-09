@@ -8,6 +8,7 @@
 #'
 #' ccvi_app2()  # Basic, no files
 #' ccvi_app2(input_files = test_files()) # With test paths pre-filled
+#' ccvi_app2(input_files = test_files(min_req = TRUE)) # Min-required only
 
 ccvi_app2 <- function(input_files = NULL, ...){
 

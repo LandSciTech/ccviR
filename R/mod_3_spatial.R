@@ -5,6 +5,7 @@
 #' @examples
 #' mod_spatial_test(input_files = NULL) # Basic, no files
 #' mod_spatial_test()                   # With test paths pre-filled
+#' mod_spatial_test(input_files = test_files(min_req = TRUE)) # Min-required only
 #' mod_spatial_test(df_loaded = test_df_loaded(), # As if re-loading from previous run
 #'                  input_files = NULL)
 

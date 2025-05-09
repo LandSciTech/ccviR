@@ -5,6 +5,7 @@
 #' mod_C_test()
 #' mod_C_test(tax_grp = "Reptile") # Test different questions
 #' mod_C_test(df_loaded = test_df_loaded())
+#' mod_C_test(spatial = test_spatial(min_req = TRUE)) # Min-required only
 
 mod_C_test <- function(df_loaded = NULL, spatial = test_spatial(), tax_grp = "Vascular Plant") {
 

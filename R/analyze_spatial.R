@@ -114,8 +114,8 @@ analyze_spatial <- function(
   check_clim_vars(clim_vars_lst)
 
   # Check Rasters
-  clim_vars_lst <- check_rast(clim_vars_lst)
-  hs_rast <- check_rast(hs_rast, var_name = "hs_rast")
+  clim_vars_lst <- check_rast(clim_vars_lst, quiet = quiet)
+  hs_rast <- check_rast(hs_rast, var_name = "hs_rast", quiet = quiet)
 
   # Check Scenario names
   check_scn(clim_vars_lst, hs_rast, scenario_names)
@@ -296,9 +296,9 @@ prep_polys <- function(poly, crs, var_name, quiet = FALSE, poly_clip = NULL, cli
   if(is.null(poly)) return(poly)
 
   inform_prog(paste("Preparing polygon", var_name), quiet)
-  poly <- check_polys(poly, var_name)
+  poly <- check_polys(poly, var_name, quiet)
   if(!is.null(poly_clip)) poly <- clip_poly(poly, poly_clip, var_name, clip_name, quiet)
-  poly <- check_crs(poly, crs, var_name)
+  poly <- check_crs(poly, crs, var_name, quiet)
   poly <- valid_or_error(poly, var_name, quiet)
 
   return(poly)

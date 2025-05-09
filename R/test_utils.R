@@ -46,11 +46,13 @@ expect_no_log_warnings <- function(app) {
 #' @param mock Logical. Whether or not paths should be mocked to resemble that
 #'   returned by shinyFiles (i.e. relative and in a list format). See
 #'   `mock_files()`.
+#' @param min_req Logical. Use only minimum required for spatial analysis.
 #'
 #' @noRd
 #' @examples
 #' test_files()
 #' test_files(mock = TRUE)$saved$final
+#' test_files(min_req = TRUE)
 
 test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
                        scn_nms = c("RCP 4.5", "RCP 8.5"),
@@ -62,7 +64,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
                        rng_chg_pth_2 = "rng_chg_85.tif",
                        protected_poly_pth = "pa_north_america.gpkg",
                        saved = "test_files",
-                       mock = FALSE, paths_only = FALSE) {
+                       mock = FALSE, paths_only = FALSE, min_req = FALSE) {
 
   # Fetch all previously saved test files
   saved <- fs::path(dir, saved) %>%
@@ -76,18 +78,19 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
   f <- list(clim_dir = clim_dir,
             assess_poly_pth = assess_poly_pth,
             rng_poly_pth = rng_poly_pth,
-            ptn_poly_pth = ptn_poly_pth,
-            rng_chg_pth_1 = rng_chg_pth_1,
-            rng_chg_pth_2 = rng_chg_pth_2)
+            ptn_poly_pth = if(!min_req) ptn_poly_pth,
+            rng_chg_pth_1 = if(!min_req) rng_chg_pth_1,
+            rng_chg_pth_2 = if(!min_req) rng_chg_pth_2
+  )
 
   if(!mock) {
     # Demo files
     f <- purrr::map(f, ~fs::path(dir,  .x))
 
     # Big files stored in misc
-    f <- c(f, list(protected_poly_pth = fs::path(dir,
-                                                 "../../misc/protected_areas",
-                                                 protected_poly_pth)))
+    f <- c(f, list(protected_poly_pth = if(!min_req) fs::path(dir,
+                                                              "../../misc/protected_areas",
+                                                              protected_poly_pth)))
   }
 
   # Only mock the reloadable files
@@ -288,7 +291,7 @@ test_questions <- function(file = "final2", as_reactive = TRUE) {
 #' sp$spat_res
 
 test_spatial <- function(d = test_data(), d_paths = test_files(paths_only = TRUE),
-                         min_req = FALSE, as_reactive = TRUE) {
+                         min_req = FALSE, as_reactive = TRUE, quiet = TRUE) {
   # To run interactively
   if(shiny::isRunning()) with_prog <- withProgress else with_prog <- function(x) x
 
@@ -309,7 +312,8 @@ test_spatial <- function(d = test_data(), d_paths = test_files(paths_only = TRUE
       clim_vars_lst = d$clim_vars,
       hs_rcl = d$rng_chg_mat,
       protected_poly = d$protected_poly,
-      scenario_names = d$clim_readme$Scenario_Name)
+      scenario_names = d$clim_readme$Scenario_Name,
+      quiet = quiet)
   })
 
   spat_tbl <- apply_spat_tholds(spat_res$spat_table, cave = FALSE)
