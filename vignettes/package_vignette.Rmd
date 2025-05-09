@@ -276,13 +276,6 @@ We can investigate how the index value was reached using the results of `calc_vu
 The first graph is `plot_score_index()`. It shows how the index values (that are calculated separately for the modeled response to climate change and sensitivity and adaptive capacity modified by exposure sections) are combined into the overall index value. It also shows where the thresholds are for converting the numerical scores from each factor into the categorical index value. In this example, we can see that the index value is driven primarily by the sensitivity section since the score in that section would have produced an index value of Extremely Vulnerable if the D score were higher or not included (-1 in the graph).
 
 ```{r fig.height=4, fig.width=8}
-# set theme
-my_theme <- ggplot2::theme_classic() +
-  ggplot2::theme(text = ggplot2::element_text(size = 12),
-                 strip.background = ggplot2::element_blank())
-
-ggplot2::theme_set(my_theme)
-
 plot_score_index(index_res)
 ```
 
