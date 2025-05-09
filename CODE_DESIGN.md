@@ -17,7 +17,7 @@ Data used for preparing data sets for the package.
   The fix to this (if using RStudio) is to add `PKG_BUILD_COPY_METHOD=link` 
   to your .Renviron file, which will link to those files rather than copying.
   (https://github.com/r-lib/pkgbuild/issues/59#issuecomment-1327752199)
-  
+
 
 ## Workflow style
 
@@ -93,6 +93,13 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
   file in a 'clean' session. Helps find out why getting warnings which are
   once per session, for example, without have to re-run the entire set of tests.
 
+### Test data
+- Most test data is stored in `inst/extdata` with the demo data
+- Most test data can be created on the fly by the `test_xxx()` functions (e.g.,
+  `test_files()`, `test_data()`, `test_spatial()`, depending on what you need for testing.
+- Some test files which are private are stored in `misc/external_test_files`. 
+  Tests using these files are skipped if the file doesn't exist 
+  (e.g., test-01_checks.R tests for the M/Z dimensions)
 
 ### Interactive testing
 - Most functions have an examples section in the roxygen2 docs which can be
