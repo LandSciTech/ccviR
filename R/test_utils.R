@@ -85,7 +85,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 
   if(!mock) {
     # Demo files
-    f <- purrr::map(f, ~fs::path(dir,  .x))
+    f <- purrr::map(f, ~if(!is.null(.x)) fs::path(dir,  .x))
 
     # Big files stored in misc
     f <- c(f, list(protected_poly_pth = if(!min_req) fs::path(dir,
@@ -107,11 +107,11 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 }
 
 
-test_data <- function(f = test_files()) {
+test_data <- function(f = test_files(), min_req = FALSE) {
 
   clim_readme <- read.csv(fs::path(f$clim_dir, "climate_data_readme.csv"))
   clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms)
-  rng_chg_mat <- matrix(c(-1:1, NA, 1:3,0), ncol = 2)
+  rng_chg_mat <- if(!min_req) matrix(c(-1:1, NA, 1:3,0), ncol = 2)
 
   # make the crs's match to avoid warning it has to be verbatim the same
   # nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",
@@ -119,18 +119,18 @@ test_data <- function(f = test_files()) {
   assess <- sf::st_read(f$assess_poly_pth, agr = "constant", quiet = TRUE)
   range <- sf::st_read(f$rng_poly_pth, agr = "constant", quiet = TRUE)
 
-  ptn <- if(fs::file_exists(f$ptn_poly_pth)) {
+  ptn <- if(!min_req && !is.null(f$ptn_poly_pth) && fs::file_exists(f$ptn_poly_pth)) {
     sf::st_read(f$ptn_poly_pth, agr = "constant", quiet = TRUE)
-  } else NULL
+  }
 
   # HS
-  hs <- if(fs::file_exists(f$rng_chg_pth_1)) terra::rast(f$rng_chg_pth_1) else NULL
-  hs2 <- if(fs::file_exists(f$rng_chg_pth_2)) terra::rast(f$rng_chg_pth_2) else NULL
+  hs <- if(!min_req && !is.null(f$rng_chg_pth_1) && fs::file_exists(f$rng_chg_pth_1)) terra::rast(f$rng_chg_pth_1)
+  hs2 <- if(!min_req && !is.null(f$rng_chg_pth_2) && fs::file_exists(f$rng_chg_pth_2)) terra::rast(f$rng_chg_pth_2)
 
   # Protected Areas
-  protected_poly <- if(fs::file_exists(f$protected_poly_pth)) {
+  protected_poly <- if(!min_req && !is.null(f$protected_poly_pth) && fs::file_exists(f$protected_poly_pth)) {
     sf::st_read(f$protected_poly_pth, agr = "constant", quiet = TRUE)
-  } else NULL
+  }
 
   range_points <- range %>% sf::st_make_grid(what = "centers")
 
@@ -290,7 +290,7 @@ test_questions <- function(file = "final2", as_reactive = TRUE) {
 #' sp <- test_spatial(as_reactive = FALSE)
 #' sp$spat_res
 
-test_spatial <- function(d = test_data(), d_paths = test_files(paths_only = TRUE),
+test_spatial <- function(d = test_data(), d_paths = test_files(),
                          min_req = FALSE, as_reactive = TRUE, quiet = TRUE) {
   # To run interactively
   if(shiny::isRunning()) with_prog <- withProgress else with_prog <- function(x) x
@@ -317,6 +317,9 @@ test_spatial <- function(d = test_data(), d_paths = test_files(paths_only = TRUE
   })
 
   spat_tbl <- apply_spat_tholds(spat_res$spat_table, cave = FALSE)
+  pths <- d_paths[stringr::str_subset(names(d_paths), "(dir|pth)")] %>%
+    purrr::discard(is.null) %>%
+    as.data.frame()
 
   spat_run <- data.frame(
     GCM_or_Ensemble_name = "Testing",
@@ -331,7 +334,7 @@ test_spatial <- function(d = test_data(), d_paths = test_files(paths_only = TRUE
     gain = "1, 1",
     ns = "99, 99",
     rng_chg_used = "multiple") %>%
-    bind_cols(as.data.frame(d_paths)) %>%
+    bind_cols(pths) %>%
     rename(clim_dir_pth = clim_dir)
 
   # If as_reactive == TRUE, return `reactive(x)`, else return `x`

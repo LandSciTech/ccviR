@@ -100,6 +100,12 @@ using `renderUI()`, not required for anything going to/from `output` or `input`)
 - Some test files which are private are stored in `misc/external_test_files`. 
   Tests using these files are skipped if the file doesn't exist 
   (e.g., test-01_checks.R tests for the M/Z dimensions)
+- Because terra rasters point to a C++ object (https://github.com/rspatial/terra/issues/161)
+  and shinytest2 does *things*, we can't actually pass rasters to an app for
+  testing with shinytest2 (but no problem with interactive testing). This is why
+  `mod_c_test()` accepts output of `test_files()` and then passes it to
+  `test_data()` and then to `test_spatial()` internally (which ends up preserving
+  the pointer location)
 
 ### Interactive testing
 - Most functions have an examples section in the roxygen2 docs which can be
