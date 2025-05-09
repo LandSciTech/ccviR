@@ -531,7 +531,9 @@ report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
 
   if(type == "C") { # Where taxa influences questions
     q <- filter_applicable_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
-  }
+    # How many C5 questions to remove (to collapse into one)?
+    c5 <- sum(!is.na(q$score[q$Code %in% c("C5a", "C5b", "C5c")])) - 1
+  } else c5 <- 0
 
   if(type == "D") { # Where spatial isn't captured because possibly multiple scenarios
     sp <- spatial %>%
@@ -543,8 +545,8 @@ report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
     q <- dplyr::rows_update(q, sp, by = "Code")
     }
 
-  total <- sum(!is.na(q$score))         # Total answerable
-  ans <- sum(q$score > 0, na.rm = TRUE) # no. answered
+  total <- sum(!is.na(q$score)) - c5     # Total answerable (counting c5 as 1)
+  ans <- sum(q$score > 0, na.rm = TRUE)  # no. answered
 
   total <- paste0(ans, "/", total, " questions answered")
 
