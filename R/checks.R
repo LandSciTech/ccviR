@@ -37,7 +37,7 @@ check_scn <- function(clim_vars_lst, hs_rast, scenario_names) {
 #' @param var_name Character. Name of the variable for messaging
 #'
 #' @returns sf polygon
-check_polys <- function(poly, var_name = "polygon") {
+check_polys <- function(poly, var_name = "polygon", quiet) {
 
   if(is.null(poly)) return(poly)
   if(!inherits(poly, "sf")) poly <- sf::st_as_sf(poly)
@@ -45,7 +45,7 @@ check_polys <- function(poly, var_name = "polygon") {
   poly <- check_zm(poly, var_name)
 
   validate(need(
-    !is.na(st_crs(poly)),
+    !is.na(st_crs(poly, quiet)),
     paste(var_name, " does not have a CRS.",
           " \nPlease load a file with a valid Coordinate Reference System")
   ))
@@ -60,8 +60,8 @@ check_polys <- function(poly, var_name = "polygon") {
     ))
 
     poly <- st_collection_extract(poly, "POLYGON")
-    message("POINT or LINE geometries in ", var_name,
-            " were dropped.")
+    if(!quiet) message("POINT or LINE geometries in ", var_name,
+                       " were dropped.")
   }
 
   return(poly)
@@ -81,7 +81,7 @@ check_zm <- function(poly, var_name = "polygon") {
 }
 
 
-check_rast <- function(ras, var_name){
+check_rast <- function(ras, var_name, quiet) {
 
   if(is.list(ras)) purrr::map2(ras, names(ras), check_rast)
 
@@ -93,7 +93,7 @@ check_rast <- function(ras, var_name){
     }
   }
 
-  check_crs(ras)
+  check_crs(ras, quiet = quiet)
 
   return(ras)
 }

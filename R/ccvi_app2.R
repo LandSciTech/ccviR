@@ -70,6 +70,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
     # Note that save and results modules are a bit circular as they each
     # depend on the outputs of the other. `index` defaults to NULL as a result,
     # so saved can be loaded before
+    index <- NULL # To avoid shinytest2 warning about globals
     saved <- mod_save_server(
       id = "save", volumes,
       species_data = sp$species_data,

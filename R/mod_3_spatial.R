@@ -512,9 +512,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     output$spatial_done <- renderUI({ # Use UI when rendering HTML
       req(spat_res())
+      # For snapshot tests
+      if(is_testing()) dt <- "HH:MM PM" else dt <- format(Sys.time(), "%I:%M %p")
       validate(need(!is.character(spat_res()), spat_res()))
       tagList(icon("check", style="color:green"),
-              "Completed at", format(Sys.time(), "%I:%M %p"))
+              "Completed at", dt)
     })
 
 
