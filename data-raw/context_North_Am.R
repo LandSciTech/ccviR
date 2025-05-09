@@ -1,10 +1,12 @@
 ## code to prepare `context_North_Am` dataset goes here
+north_am <- rnaturalearth::ne_states(c("united states of america", "canada"),
+                                     returnclass = "sf") %>%
+  select(name)
 
-NAm <- rnaturalearth::ne_states(c("united states of america", "canada"),
-                                returnclass = "sf")
+context_North_Am <- sf::st_simplify(north_am, dTolerance = 1000)
 
-tmap::qtm(NAm, fill = NA, borders = "black")
+plot(north_am[1,])
+plot(context_North_Am[1,])
 
-context_North_Am <- NAm %>% select(name)
 usethis::use_data(context_North_Am, overwrite = TRUE)
 
