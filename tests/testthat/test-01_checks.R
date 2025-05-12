@@ -12,7 +12,7 @@ test_that("check_polys()", {
   expect_message(check_polys(p1), "POINT or LINE geometries in polygon were dropped")
 
   # Check for Z/M removal
-  f <- "misc/external_test_files/ccvi_shp/ecozone_max_boundary.shp"
+  f <- test_path("..", "misc", "external_test_files", "ccvi_shp", "ecozone_max_boundary.shp")
   skip_if_not(fs::file_exists(f))
   p2 <- sf::st_read(f, quiet = TRUE)
 

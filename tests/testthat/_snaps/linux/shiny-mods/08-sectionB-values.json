@@ -1,7 +1,5 @@
 {
   "input": {
-    "comsection_c": "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown)",
-    "help_section_c": 0,
     "home-continue": 1,
     "home-loadcsv": 0,
     "results-calcIndex": 0,
@@ -58,7 +56,6 @@
     "section_b-help_B2a": 0,
     "section_b-help_B2b": 0,
     "section_b-help_B3": 0,
-    "section_c": null,
     "section_c-C1": null,
     "section_c-C2ai": "1",
     "section_c-C2aii": "1",
@@ -76,6 +73,7 @@
     "section_c-C4g": null,
     "section_c-C5a": null,
     "section_c-C5b": null,
+    "section_c-C5c": null,
     "section_c-C6": null,
     "section_c-com_C1": "",
     "section_c-com_C2ai": "",
@@ -94,6 +92,7 @@
     "section_c-com_C4g": "",
     "section_c-com_C5a": "",
     "section_c-com_C5b": "",
+    "section_c-com_C5c": "",
     "section_c-com_C6": "",
     "section_c-continue": 0,
     "section_c-evi_C1": "",
@@ -113,6 +112,7 @@
     "section_c-evi_C4g": "",
     "section_c-evi_C5a": "",
     "section_c-evi_C5b": "",
+    "section_c-evi_C5c": "",
     "section_c-evi_C6": "",
     "section_c-help_C1": 0,
     "section_c-help_C2ai": 0,
@@ -131,6 +131,7 @@
     "section_c-help_C4g": 0,
     "section_c-help_C5a": 0,
     "section_c-help_C5b": 0,
+    "section_c-help_C5c": 0,
     "section_c-help_C6": 0,
     "section_d-D1": null,
     "section_d-D2": null,
@@ -178,7 +179,6 @@
     "spatial-rng_chg_used": "multiple",
     "spatial-rng_poly_pth": 0,
     "spatial-rng_poly_pth_clear": 0,
-    "spatial-shinyalert": 1,
     "spatial-startSpatial": 1,
     "species-assessor_name": "Dr. Test",
     "species-cave": false,
@@ -188,7 +188,7 @@
     "species-mig": false,
     "species-species_name": "Testous testa",
     "species-tax_grp": "Vascular Plant",
-    "tabset": "Vulnerability Questions - B"
+    "tabset": "B"
   },
   "export": {
     "save-out_data": {
@@ -605,12 +605,12 @@
         "-1"
       ],
       "evi_C5c": [
-        null,
-        null
+        "",
+        ""
       ],
       "com_C5c": [
-        null,
-        null
+        "",
+        ""
       ],
       "C5c": [
         "-1",

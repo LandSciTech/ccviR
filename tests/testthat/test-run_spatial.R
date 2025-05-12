@@ -214,7 +214,7 @@ test_that("gives error for points early", {
 
   expect_message(analyze_spatial(rng_high_geo, d$assess_poly, d$clim_vars[c(1:2, 6)],
                   scenario_names = d$scn_nms),
-                 "Point")  %>%
+                 "POINT or LINE geometries")  %>%
     suppressMessages()
 
 })

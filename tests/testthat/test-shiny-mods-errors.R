@@ -3,7 +3,7 @@ library(shinytest2)
 #
 # Consider running devtools::test(filter = "shiny-mods-errors") to test just this
 # file in a 'clean' session. (Helps find out why getting warnings which are
-# once per session, for example).
+# once per session, for example, and cannot be replicated by clicking Run Tests).
 #
 
 test_that("Full app - No errors", {
@@ -37,6 +37,8 @@ test_that("Full app - No errors", {
 
   # Results
   expect_no_log_warnings(app)
+
+  #readr::write_csv(app$get_logs(), "~/Desktop/shiny_logs1.csv")
 
   app$stop()
 })
@@ -75,6 +77,8 @@ test_that("Full app - No errors with missing spatial", {
 
   # Results
   expect_no_log_warnings(app)
+
+  #readr::write_csv(app$get_logs(), "~/Desktop/shiny_logs2.csv")
 
   app$stop()
 })

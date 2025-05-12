@@ -1,4 +1,6 @@
 
+# NOTE: These require test data created by /extdata/data_ccei_mini.R
+
 expect_silent({
   path_ccei <- fs::path_package("extdata", "ccei_test", package = "ccviR")
 })
@@ -6,27 +8,6 @@ expect_silent({
 test_that("ccei_clip()", {
   expect_silent(c <- ccei_clip())
   expect_s4_class(c, "SpatExtent")
-})
-
-
-test_that("calc_sed()", {
-
-  hist <- fs::path(path_ccei, "intermediate", "hist_all_vars.tif") %>%
-    terra::rast() %>%
-    terra::values()
-  future <- fs::path(path_ccei, "intermediate", "future_UKESM1-0-LL-ssp585.tif") %>%
-    terra::rast() %>%
-    terra::values()
-
-  expect_silent(
-    sed <- calc_sed(b = list(future[, "cmd"], future[, "tmean"]),
-                    a = list(hist[, "cmd_mean"], hist[, "tmean_mean"]),
-                    s = list(hist[, "cmd_sd"], hist[,"tmean_sd"]))
-  )
-  expect_type(sed, "double")
-  expect_length(sed, length(future[, "cmd"]))
-
-  expect_snapshot(sed)
 })
 
 test_that("combine_xxx()", {
@@ -172,6 +153,25 @@ test_that("prep_ccei()", {
   skip("Can't run final, because no ssp245 files (to save space).")
 })
 
+test_that("calc_sed()", {
+
+  hist <- fs::path(path_ccei, "intermediate", "hist_all_vars.tif") %>%
+    terra::rast() %>%
+    terra::values()
+  future <- fs::path(path_ccei, "intermediate", "future_UKESM1-0-LL-ssp585.tif") %>%
+    terra::rast() %>%
+    terra::values()
+
+  expect_silent(
+    sed <- calc_sed(b = list(future[, "cmd"], future[, "tmean"]),
+                    a = list(hist[, "cmd_mean"], hist[, "tmean_mean"]),
+                    s = list(hist[, "cmd_sd"], hist[,"tmean_sd"]))
+  )
+  expect_type(sed, "double")
+  expect_length(sed, length(future[, "cmd"]))
+
+  expect_snapshot(sed)
+})
 
 # CLEAN UP
 expect_silent(

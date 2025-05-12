@@ -11,7 +11,7 @@ test_that("Section C", {
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
   app$wait_for_idle()
-  Sys.sleep(5)
+  Sys.sleep(7)
 
   app$expect_screenshot(name = "01-full-spatial")
   app$stop()
