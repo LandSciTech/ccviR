@@ -164,7 +164,7 @@ updateCheck_comment_ui2 <- function(inputId, value, com, evi, session) {
 #' })
 
 spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = NULL,
-                       map_table = TRUE, q = FALSE, multi_stop = FALSE) {
+                          map_table = TRUE, q = FALSE, multi_stop = FALSE, optional = FALSE) {
 
   # TODO: Here we assume that if you do not have maps/tables, you don't have
   #  spatial. Correct assumption?
@@ -181,19 +181,30 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
       )
     } else {
       # No spatial - Let them know
-      t <- tagList(
-        div(style = "margin-left: 1em; margin-bottom: 1em;",
-            span("Cannot calculate values: Spatial Data not provided",
-                 class = "shiny-output-error-validation"),
-            br(),
-            span("Require ", desc, "- See 'Spatial Data Analysis'."))
-      )
+      style <- "margin-left: 1em; margin-bottom: 1em;"
+      if(optional) {
+        t <- tagList(
+          div(
+            style = style,
+            span("Optional Spatial Data not provided",
+                 class = "optional-sptial"), br(),
+            span("To calculate, provide ", desc, " on the Spatial Data Analysis page")
+          ))
+      } else {
+        t <- tagList(
+          div(
+            style = style,
+            span("Required Spatial Data not provided.",
+                 class = "shiny-output-error-validation"), br(),
+            span("Run Spatial Data Analysis with ", desc, " first")
+          ))
+      }
     }
   } else t <- tagList()
 
 
-  # If Questions, prepare
-  if(q) {
+  # If Questions, prepare - But only present if Optional, or if Required data ready
+  if(q && (ready || optional)) {
 
     multi_stop <- length(spat_df$range_change) > 1 &
       all(!is.na(spat_df$range_change)) &
@@ -217,8 +228,9 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
         )
       }
     } else {
-      chk_label <- span("Answer spatial question based on expert knowledge or ",
-                        "leave blank for unknown.")
+      chk_label <- span(
+        "If no spatial, answer based on expert knowledge or leave blank for unknown.",
+        style = "color:dimgray;")
     }
 
     t <- tagList(

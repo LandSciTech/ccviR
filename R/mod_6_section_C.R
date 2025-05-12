@@ -278,8 +278,8 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
     output$ui_C2aii <- renderUI({
       spat_vuln_ui2(range_poly(), ptn_poly(),
                     id = id, ui_id = "C2aii",
-                    desc = "\"Range Polygon\" and \"Physiological Thermal Niche\"",
-                    spat_df = spat_res(), input = input, q = TRUE)
+                    desc = "\"Physiological Thermal Niche\"",
+                    spat_df = spat_res(), input = input, q = TRUE, optional = TRUE)
     })
     outputOptions(output, "ui_C2aii", suspendWhenHidden = FALSE) # After creation
 

@@ -121,7 +121,8 @@ mod_A_server <- function(id, spatial, parent_session) {
     output$ui_ccei <- renderUI({
       spat_vuln_ui2(clim_vars()$ccei, nonbreed_poly(),
                     id = id, ui_id = "ccei",
-                    desc = "\"CCEI\" and \"Non-Breeding Range\"")
+                    desc = "\"CCEI\" and \"Non-Breeding Range\"",
+                    optional = TRUE)
     })
 
     output$map_ccei <- leaflet::renderLeaflet({

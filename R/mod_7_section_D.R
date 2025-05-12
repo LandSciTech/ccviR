@@ -117,8 +117,9 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
       spat_vuln_ui2(
         range_poly(), hs_rast2(), assess_poly(),
         id = id, ui_id = "D2D3",
-        desc = "\"Range Polygon\", \"Assessment Area \", and \"Projected Range Changes\"",
-        spat_df = spat_res(), input = input)
+        desc = "\"Projected Range Changes\"",
+        spat_df = spat_res(), input = input,
+        optional = TRUE)
     })
     outputOptions(output, "ui_D2D3", suspendWhenHidden = FALSE) # After creation
 
@@ -154,7 +155,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
         range_poly(), hs_rast2(), assess_poly(),
         id = id, ui_id = "D2",
         spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
-        multi_stop = TRUE)
+        multi_stop = TRUE, optional = TRUE)
     })
 
     outputOptions(output, "ui_D2", suspendWhenHidden = FALSE) # After creation
@@ -165,7 +166,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
         range_poly(), hs_rast2(), assess_poly(),
         id = id, ui_id = "D3",
         spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
-        multi_stop = TRUE)
+        multi_stop = TRUE, optional = TRUE)
     })
     outputOptions(output, "ui_D3", suspendWhenHidden = FALSE) # After creation
 
@@ -176,8 +177,9 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
       spat_vuln_ui2(
         range_poly(), hs_rast2(), protected_poly(), assess_poly(),
         id = id, ui_id = "D4",
-        desc = "\"Range Polygon\", \"Assessment Area \", \"Projected Range Changes\", and \"Protected Areas\"",
-        spat_df = spat_res(), input = input, q = TRUE, multi_stop = TRUE)
+        desc = "\"Projected Range Changes\" and \"Protected Areas\"",
+        spat_df = spat_res(), input = input, q = TRUE, multi_stop = TRUE,
+        optional = TRUE)
     })
     # This makes sure that the value is updated even if the tab isn't reopened
     outputOptions(output, "ui_D4", suspendWhenHidden = FALSE)
