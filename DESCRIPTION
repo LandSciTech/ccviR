@@ -49,6 +49,7 @@ Suggests:
     knitr,
     rmarkdown,
     future,
+    gridExtra,
     stringi,
     furrr,
     readxl,

@@ -184,7 +184,7 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
 
   all <- purrr::walk(groups, function(g) {
     if(!quiet) rlang::inform(paste0(g, " - ", round(Sys.time())))
-    if(!quiet) rlang::inform(capture.output(lobstr::mem_used()))
+    # if(!quiet) rlang::inform(capture.output(lobstr::mem_used()))
     r <- filter(rasts, group == g)
     v <- ccei_vars(prec_files = r$file[r$var == "prec"],
                    tmax_files = r$file[r$var == "tmax"],

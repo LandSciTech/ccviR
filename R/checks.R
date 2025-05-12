@@ -37,7 +37,7 @@ check_scn <- function(clim_vars_lst, hs_rast, scenario_names) {
 #' @param var_name Character. Name of the variable for messaging
 #'
 #' @returns sf polygon
-check_polys <- function(poly, var_name = "polygon", quiet) {
+check_polys <- function(poly, var_name = "polygon", quiet = FALSE) {
 
   if(is.null(poly)) return(poly)
   if(!inherits(poly, "sf")) poly <- sf::st_as_sf(poly)
@@ -81,7 +81,7 @@ check_zm <- function(poly, var_name = "polygon") {
 }
 
 
-check_rast <- function(ras, var_name, quiet) {
+check_rast <- function(ras, var_name, quiet = FALSE) {
 
   if(is.list(ras)) purrr::map2(ras, names(ras), check_rast)
 

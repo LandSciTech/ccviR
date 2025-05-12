@@ -535,7 +535,7 @@ report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
     c5 <- sum(!is.na(q$score[q$Code %in% c("C5a", "C5b", "C5c")])) - 1
   } else c5 <- 0
 
-  if(type == "D") { # Where spatial isn't captured because possibly multiple scenarios
+  if(type == "D" & !is.null(spatial)) { # Where spatial isn't captured because possibly multiple scenarios
     sp <- spatial %>%
       dplyr::select(dplyr::any_of(c("D2", "D3", "D4"))) %>%
       dplyr::mutate(dplyr::across(dplyr::everything(), ~any(.x >= 0, na.rm = TRUE))) |>
