@@ -65,6 +65,15 @@ mod_results_ui <- function(id) {
 
         h3("Data completeness"),
         gt::gt_output(ns("n_factors")),
+        strong("Factors completed"), "indicate the number of questions answered out of the total possible. ", br(),
+        p(icon("check", style = "color:green"), icon("xmark", style = "color:red"),
+          "reflects whether the minimum has been met (B = 3, C = 10 and D = 1).",
+          style = "margin-left: 20px"),
+
+        strong("Evidence provided"), "indicates whether all factors completed have also been supplied with a type of evidence.", br(),
+        p(icon("check", style = "color:green"), icon("xmark", style = "color:red"),
+        "reflects meeting this requirement or not.",
+        style = "margin-left:20px"),
 
         h3("Variation in index"),
         p("When multiple values are selected for any of the vulnerability ",
@@ -207,24 +216,57 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
 
     # Plots and Tables ----------------------------------
 
+    # Get a list of answers and evidence
+    answers <- reactive({
+      purrr::map(
+        questions,
+        ~answered_n(.x(), tax_grp = species_data()$tax_grp, spatial$spat_res()))
+    })
+
+
     ## Table - Data completeness ------------------
     output$n_factors <- gt::render_gt({
       req(index_res())
-      facts <- index_res() %>% distinct(across(contains("factors")))
-      tibble(Section = c("Section B: Indirect Exposure to Climate Change",
-                         "Section C: Sensitivity and Adaptive Capacity",
-                         "Section D: Documented or Modeled Response to Climate Change"),
-             `Factors completed` = c(paste0(facts$n_b_factors, "/4"),
-                                     paste0(facts$n_c_factors, "/16"),
-                                     paste0(facts$n_d_factors, "/4"))) %>%
+
+      purrr::map(answers(), count_n) %>%
+        purrr::list_rbind() %>%
+        dplyr::left_join(
+          tibble(
+            sec = c("B", "C", "D"),
+            Section = c("Section B: Indirect Exposure to Climate Change",
+                        "Section C: Sensitivity and Adaptive Capacity",
+                        "Section D: Documented or Modeled Response to Climate Change")),
+          by = "sec") %>%
+        dplyr::relocate("Section") %>%
         gt::gt() %>%
+        gt::cols_hide(c("sec", "q_total", "q_ans", "e_total", "e_ans", "req")) %>%
+        gt::cols_add(
+          status1 = dplyr::if_else(.data$q_ans >= .data$req, "check", "xmark"),
+          .after = c("q_txt")) |>
+        gt::cols_add(
+          status2 = dplyr::if_else(.data$e_ans == .data$e_total, "check", "xmark"),
+          .after = c("e_txt")) |>
+        gt::cols_label("status1" = "", "status2" = "",
+                       "q_txt" = "Factors completed",
+                       "e_txt" = "Evidence provided") %>%
+        gt::fmt_icon(
+          columns = c(status1, status2),
+          fill_color = c("check" = "green", "xmark" = "red")
+        ) %>%
+        gt::cols_merge(c("q_txt", "status1"),
+                       pattern = "{1}&nbsp;&nbsp;&nbsp;{2}") %>%
+        gt::cols_merge(c("e_txt", "status2"),
+                       pattern = "{1}&nbsp;&nbsp;&nbsp;{2}") %>%
         gt::tab_options(table.font.size = 14,
                         column_labels.padding.horizontal = 10,
                         column_labels.padding = 2,
                         data_row.padding = 2) %>%
-        gt::cols_align(align = "center", columns = 2) %>%
-        gt::tab_style(style = gt::cell_text(weight = "bold", align = "center", v_align = "middle"),
-                      location = gt::cells_column_labels(columns = everything()))
+        gt::cols_align(align = "center", columns = "Section") %>%
+        gt::tab_style(
+          style = gt::cell_text(weight = "bold", align = "center", v_align = "middle"),
+          location = gt::cells_column_labels()) %>%
+        gt::tab_options(table.border.bottom.style = "none")
+
     })
 
     output$slr <- renderText({
@@ -268,9 +310,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
 
     ## Plot - Summary of data evidence ------
     output$plot_evidence <- renderPlot({
-      # TODO: Omit non-relevant questions
-      evidence <- bind_elements(questions, type = "evidence")
-      plot_evidence(evidence)
+      plot_evidence(purrr::list_rbind(answers()))
     }) %>%
       bindEvent(index_res()) # Only update when index_res() updates
 

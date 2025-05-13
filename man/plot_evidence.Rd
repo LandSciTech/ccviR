@@ -12,3 +12,13 @@ ggplot2 figure
 \description{
 Plot evidence by type
 }
+\examples{
+e <- data.frame(
+  score = c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE),
+  Code = c("B1", "B2a", "B2b", "B3", "C1", "C2ai", "C2aii"),
+  evidence = c("", "Other", "Expert Opinion",
+               "Expert Opinion, Literature", "",
+               "Spatial Analysis", "Spatial Analysis - ccviR"))
+plot_evidence(e)
+plot_evidence(e[-5,])
+}
