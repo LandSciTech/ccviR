@@ -44,7 +44,7 @@ from_to_ui2 <- function(id, ui_id, header, vals){
 }
 
 updateFrom_to_ui2 <- function(inputId, value, session){
-  vals <- as.integer(unlist(strsplit(value,",")))
+  vals <- stringr::str_split_1(value, ", ?")
   updateNumericInput(session = session, paste0(inputId, "_from"), value = vals[1])
   updateNumericInput(session = session, paste0(inputId, "_to"), value = vals[2])
 }
@@ -248,5 +248,6 @@ updateSpat_vuln_ui2 <- function(inputId, value, com, evi, session){
   # Could the spat_res object be recreated from the file...? If yes wouldn't
   # need to do this...except for the comment so probably better it comes from
   # the file rather than the spat_res object in case it has been changed.
+  # TODO: Is this used at all...?
   updateCheck_comment_ui2(inputId, value, com, evi, session)
 }

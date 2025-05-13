@@ -6,6 +6,9 @@
 #' @noRd
 #' @examples
 #'
+#' # Use extdata for interactive testing
+#' shinyOptions("file_dir" = fs::path_package("extdata/", package = "ccviR"))
+#'
 #' ccvi_app2()  # Basic, no files
 #' ccvi_app2(input_files = test_files()) # With test paths pre-filled
 #' ccvi_app2(input_files = test_files(min_req = TRUE)) # Min-required only
@@ -91,7 +94,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
   }
 
 
-  onStop(function(){options(testmode_in)})
+  #onStop(function(){options(testmode_in)})
 
   shinyApp(ui, server, enableBookmarking = "server",
            options = list(...))
@@ -118,10 +121,10 @@ ui_setup <- function(...) {
 ui_fmt <- function(title, type = "main") {
   # CSS to use in the app
   appCSS <-
-    ".mandatory_star { color: red; }
+    ".mandatory_star { color: #d9534f; }
    .shiny-input-container { margin-top: 25px; }
    #submit_msg { margin-left: 15px; }
-   #error { color: red; }
+   #error { color: #d9534f; }
    body { background: #fcfcfc; }
    #header { background: #fff; border-bottom: 1px solid #ddd; margin: -20px -15px 0; padding: 15px 15px 10px; }
    .shinyDirectories {margin-bottom: 5px;}

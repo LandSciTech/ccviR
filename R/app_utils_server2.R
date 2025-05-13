@@ -189,13 +189,12 @@ parse_path <- function(volumes, shiny_files_list) {
 
 load_previous <- function(path) {
 
-  # TODO: Replace with validate(need())
   validate(need(fs::is_file(path) & fs::file_exists(path), "File doesn't exist"))
 
   df <- tryCatch(error = function(cnd) {
     validate(need(TRUE, "CSV file is empty, cannot restore from file."))
   },
-  read.csv(path)
+  utils::read.csv(path)
   )
 
   validate(need(!(nrow(df) < 1 || !"scenario_name" %in% colnames(df)),
@@ -385,7 +384,12 @@ widen_vuln_coms2 <- function(questions) {
 
 combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index) {
 
-  out_dat <- bind_cols(species_data, widen_vuln_coms2(questions), spat_run, spat_res) %>%
+
+  qs <- widen_vuln_coms2(questions)
+  out_dat <- bind_cols(
+    species_data, qs, spat_run,
+    dplyr::select(spat_res, -dplyr::any_of(names(qs))) # Questions from questions, not spatial data results to allow overriding
+    ) %>%
       mutate(ccviR_version = utils::packageVersion("ccviR"))
 
   if(!is.null(index)) {

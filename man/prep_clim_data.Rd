@@ -22,7 +22,9 @@ prep_clim_data(
   brks = NULL,
   brks_mat = NULL,
   brks_cmd = NULL,
-  brks_ccei = NULL
+  brks_ccei = NULL,
+  quiet = FALSE,
+  n = NULL
 )
 }
 \arguments{

@@ -8,6 +8,8 @@
 #' mod_spatial_test(input_files = test_files(min_req = TRUE)) # Min-required only
 #' mod_spatial_test(df_loaded = test_df_loaded(), # As if re-loading from previous run
 #'                  input_files = NULL)
+#' mod_spatial_test(df_loaded = test_df_loaded("min"), # As if re-loading from specific run
+#'                  input_files = NULL)
 
 mod_spatial_test <- function(df_loaded = NULL, input_files = test_files()) {
 
@@ -231,8 +233,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
       # Set dir paths
       clim_pth_ldd <- df_loaded$clim_dir_pth[1]
-      clim_pth_ldd <- tidyr::replace_na(clim_pth_ldd, "")
-      clim_dir_pth(clim_pth_ldd)
+      if(!is.na(clim_pth_ldd)) clim_dir_pth(clim_pth_ldd)
 
       # Move to species tab
       switch_tab("Species Information", parent_session)
