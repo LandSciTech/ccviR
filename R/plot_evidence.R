@@ -11,6 +11,8 @@
 #'                "Spatial Analysis", "Spatial Analysis - ccviR"))
 #' plot_evidence(e)
 #' plot_evidence(e[-5,])
+#'
+#' plot_evidence(data.frame(score = FALSE, Code = "B1", evidence = "Other"))
 
 plot_evidence <- function(score_df, base_size = 14) {
 
@@ -22,14 +24,31 @@ plot_evidence <- function(score_df, base_size = 14) {
     # Only keep evidence which corresponds to an answered factor
     dplyr::filter(as.numeric(score) == 1) %>%
     dplyr::rename("evidence" = dplyr::matches("^evi$")) %>%
+    # Depending on whether this comes from a loaded file or the inputs,
+    # may need to be unnested first or later, so double up
+    tidyr::unnest(evidence, keep_empty = TRUE) %>%
+    dplyr::mutate(evidence = purrr::map(.data$evidence, ~{
+      if(!is.na(.x)) stringr::str_split_1(.x, ", ?") else NA_character_
+    })) %>%
+    tidyr::unnest(evidence, keep_empty = TRUE) %>%
     dplyr::mutate(
       evidence = dplyr::case_when(
         .data$evidence == "" | is.na(.data$evidence) ~ na,
         .data$evidence == "Spatial Analysis - ccviR" ~ "Spatial Analysis\nccviR",
         .default = .data$evidence),
-      evidence = purrr::map(.data$evidence, stringr::str_split_1, ", ?"),
-      ) %>%
-    tidyr::unnest(evidence)
+      ,
+      )
+
+  if(nrow(score_df) == 0) {
+    g <- ggplot2::ggplot(data = score_df, ggplot2::aes(x = .data$evidence, fill = .data$evidence == na)) +
+      ccvir_gg_theme(base_size) +
+      ggplot2::annotate(geom = "text", x = 0.5, y = 0.5, label = "No questions answered", size = 6) +
+      ggplot2::theme(axis.title = ggplot2::element_blank(),
+                     axis.ticks = ggplot2::element_blank(),
+                     axis.text = ggplot2::element_blank())
+    return(g)
+  }
+
 
   # Order types of evidence
   lvls <- unique(score_df$evidence)
