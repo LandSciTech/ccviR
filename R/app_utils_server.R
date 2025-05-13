@@ -506,34 +506,45 @@ collect_questions <- function(input, section) {
                com = if(!is.null(input[[.x]])) input[[.x]] else NA)
   })
 
-  e <- purrr::map_df(paste0("evi_", qs), ~{
-    data.frame(Code = stringr::str_remove(.x, "evi_"),
-               evi = if(!is.null(input[[.x]])) input[[.x]] else NA)
-  })
+  e <- purrr::map(paste0("evi_", qs), ~{
+    dplyr::tibble(Code = stringr::str_remove(.x, "evi_"),
+                  evi = if(!is.null(input[[.x]])) list(input[[.x]]) else NA)
+  }) %>%
+    purrr::list_rbind()
 
   list("questions" = q, "comments" = c, "evidence" = e)
 }
 
 bind_elements <- function(questions, type) {
-  questions %>%
+  col <- stringr::str_extract(type, "evi|com")
+  out <- questions %>%
     purrr::map(~.x()[[type]]) %>%
     purrr::list_rbind()
+  if(!is.na(col)) {
+    out <- dplyr::mutate(
+      out, !!col := purrr::map_chr(.data[[col]], ~paste(sort(.x), collapse = ", ")))
+  }
+  out
 }
 
-report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
-  n <- list("B" = 3, "C" = 10, "D" = 1)
+answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
+
   type <- stringr::str_sub(questions$questions$Code[1], 1, 1)
 
   q <- questions$questions |>
     dplyr::rowwise() |>
     # Here score = answered/not answered (NOT ACTUAL SCORE)
-    dplyr::mutate(score = any(dplyr::pick(-Code) >= 0, na.rm = TRUE))
+    dplyr::mutate(score = any(dplyr::pick(-.data$Code) >= 0, na.rm = TRUE)) %>%
+    dplyr::ungroup()
+
+  e <- questions$evidence |>
+    dplyr::filter(.data$Code %in% q$Code[q$score])
 
   if(type == "C") { # Where taxa influences questions
     q <- filter_applicable_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
     # How many C5 questions to remove (to collapse into one)?
-    c5 <- sum(!is.na(q$score[q$Code %in% c("C5a", "C5b", "C5c")])) - 1
-  } else c5 <- 0
+    q$c5 <- sum(!is.na(q$score[q$Code %in% c("C5a", "C5b", "C5c")])) - 1
+  } else q$c5 <- 0
 
   if(type == "D" & !is.null(spatial)) { # Where spatial isn't captured because possibly multiple scenarios
     sp <- spatial %>%
@@ -543,20 +554,53 @@ report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
       tidyr::pivot_longer(dplyr::everything(), names_to = "Code", values_to = "score") |>
       dplyr::filter(.data$score)
     q <- dplyr::rows_update(q, sp, by = "Code")
-    }
-
-  total <- sum(!is.na(q$score)) - c5     # Total answerable (counting c5 as 1)
-  ans <- sum(q$score > 0, na.rm = TRUE)  # no. answered
-
-  total <- paste0(ans, "/", total, " questions answered")
-
-  if(ans >= n[type]) {
-    tagList(icon("check", style = "color:green"), total)
-  } else {
-    tagList(icon("xmark", style = "color:red"), total,
-            strong("(Insufficient, ", HTML("&ge;", .noWS = "after"),
-                   n[type], "required)"))
   }
+
+  dplyr::left_join(q, e, by = "Code") %>%
+    dplyr::mutate(sec = .env$type) %>%
+    dplyr::select("sec", "Code", "score", "evi", "c5")
+}
+
+count_n <- function(questions) {
+  questions %>%
+    dplyr::summarize(q_total = sum(!is.na(.data$score)) - .data$c5[1],
+                     q_ans = sum(.data$score > 0, na.rm = TRUE),
+                     q_txt = paste0(.data$q_ans, "/", .data$q_total),
+                     e_total = .data$q_ans,
+                     e_ans = sum(purrr::map_lgl(.data$evi, isTruthy)),
+                     e_txt = paste0(.data$e_ans, "/", .data$e_total),
+                     .by = "sec") %>%
+    dplyr::left_join(dplyr::tibble(sec = c("B", "C", "D"),
+                                   req = c( 3,  10,   1)),
+                     by = "sec")
+}
+
+report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
+
+  q <- answered_n(questions, tax_grp, spatial) %>%
+    count_n()
+
+  q_txt <- paste0(q$q_txt, " questions answered")
+
+  if(q$q_ans >= q$req) {
+    q_txt <- tagList(icon("check", style = "color:green"), q_txt)
+  } else {
+    q_txt <- tagList(icon("xmark", style = "color:red"), q_txt,
+                     strong("(Insufficient, ", HTML("&ge;", .noWS = "after"),
+                            q$req, "required)"))
+  }
+
+  e_txt <- paste0(q$e_txt, " evidence supplied")
+
+  if(q$e_ans == q$e_total) {
+    e_txt <- tagList(icon("check", style = "color:green"), e_txt)
+  } else {
+    e_txt <- tagList(
+      icon("xmark", style = "color:red"), e_txt,
+      strong("(Evidence must be supplied for each Question answered)"))
+  }
+
+  tagList(q_txt, br(), e_txt)
 }
 
 

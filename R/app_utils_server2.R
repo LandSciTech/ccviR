@@ -223,6 +223,8 @@ update_restored2 <- function(df, session, section = NULL){
       .x, c("com" = "comment", "evi" = "evidence"))) %>%
     mutate(across(any_of(c("comment", "evidence")), ~tidyr::replace_na(.x, "")))
   if(!"evidence" %in% names(df_coms)) df_coms$evidence <- ""
+  df_coms <- df_coms %>%
+    dplyr::mutate(evidence = stringr::str_split(.data$evidence, ", ?"))
 
   # Catch input values
   df2 <- df %>%

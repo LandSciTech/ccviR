@@ -86,7 +86,7 @@ check_comment_ui2 <- function(id, ui_id, label, chk_label = NULL, com = "", evi 
   e_id <- NS(id, paste0("evi_", ui_id))
   e_ui <- selectInput(e_id, label = NULL,
                       choices = c("Type of Evidence" = "", valueEvi),
-                      selected = evi)
+                      selected = evi, multiple = TRUE)
   c_id <- NS(id, paste0("com_", ui_id))
   c_ui <- textAreaInput(c_id, label = NULL,
                         placeholder = "Comments", value = com)
