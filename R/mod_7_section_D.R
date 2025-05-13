@@ -101,7 +101,8 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
     # Restore data ----------------
     observeEvent(df_loaded(), {
-      update_restored2(df_loaded(), section = "vuln_qs", session)
+
+      update_restored2(df_loaded(), section = "vuln_qs_D", session)
     })
 
     # reclassify raster

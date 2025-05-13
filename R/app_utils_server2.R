@@ -255,7 +255,12 @@ update_restored2 <- function(df, session, section = NULL){
   updateTextInput(session, inputId = "hidden", value = "yes")
 
   # Catch both "spatial" and "spatial_range_change" in "spatial" .env$section
-  df2 <- filter(df2, stringr::str_detect(.data$section, .env$section))
+  section2 <- stringr::str_extract(section, "[A-D]{1}$")
+  section <- stringr::str_remove(section, "\\_[A-D]{1}$")
+  df2 <- filter(df2,
+                stringr::str_detect(.data$section, .env$section),
+                is.na(.env$section2) | stringr::str_detect(.data$input, .env$section2))
+
   df2 <- select(df2, -"section")
 
   # run the appropriate update function for each input
@@ -266,6 +271,7 @@ update_restored2 <- function(df, session, section = NULL){
 
 # build the call to update function from the inputs
 update_call2 <- function(input, update_fun, value, arg_name, comment, evidence, session){
+
   update_fun <- get(update_fun)
 
   if(!is.na(comment)){

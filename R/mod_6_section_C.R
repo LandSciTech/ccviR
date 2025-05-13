@@ -219,7 +219,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
 
     # Restore data ----------------
     observeEvent(df_loaded(), {
-      update_restored2(df_loaded(), section = "vuln_qs", session)
+      update_restored2(df_loaded(), section = "vuln_qs_C", session)
     })
 
 
