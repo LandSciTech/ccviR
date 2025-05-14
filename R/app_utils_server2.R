@@ -385,19 +385,18 @@ widen_vuln_coms2 <- function(questions) {
 
 combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index) {
 
+  # Priority order is species, question inputs, spatial run, spatial restored
+  # Note: this is without pipes to ensure always
+  # TODO: Check this, and test different combinations of loading data and changing
+  #  questions
 
   qs <- widen_vuln_coms2(questions)
-  out_dat <- bind_cols(
-    species_data, qs, spat_run,
-    # Questions from questions, not spatial data results to allow overriding
-    # TODO: Check this, and test different combinations of loading data and changing
-    #  questions
-    dplyr::select(spat_res,
-                  -dplyr::any_of(names(qs)),
-                  -dplyr::any_of(names(species_data)),
-                  -dplyr::any_of(names(spat_run))
-    )) %>%
-      mutate(ccviR_version = utils::packageVersion("ccviR"))
+
+  out_dat <- species_data %>%
+    bind_cols(qs[, !names(qs) %in% names(.)]) %>%
+    bind_cols(spat_run[, !names(spat_run) %in% names(.)]) %>%
+    bind_cols(spat_res[, !names(spat_res) %in% names(.)]) %>%
+    dplyr::mutate(ccviR_version = utils::packageVersion("ccviR"))
 
   if(!is.null(index)) {
     out_dat <- select(out_dat, -any_of(colnames(index))) %>%
