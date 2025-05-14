@@ -5,11 +5,14 @@
 #' mod_D_test()
 #' mod_D_test(df_loaded = test_df_loaded())
 
-mod_D_test <- function(df_loaded = NULL, spatial = test_spatial()) {
+mod_D_test <- function(df_loaded = NULL, input_files = test_files()) {
 
   ui <- ui_setup(mod_D_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
+
+    spatial <- test_data(f = input_files) %>%
+      test_spatial(d_paths = input_files)
 
     mod_D_server(id = "test", reactive(df_loaded),
                  spatial, parent_session = session)

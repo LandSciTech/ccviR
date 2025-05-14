@@ -293,7 +293,9 @@ test_questions <- function(file = "final2", as_reactive = TRUE) {
 test_spatial <- function(d = test_data(), d_paths = test_files(),
                          min_req = FALSE, as_reactive = TRUE, quiet = TRUE) {
   # To run interactively
-  if(shiny::isRunning()) with_prog <- withProgress else with_prog <- function(x) x
+  if(shiny::isRunning() & !quiet) {
+    with_prog <- withProgress
+  } else with_prog <- function(x) x
 
   if(min_req) {
     d$rng_chg_rast <- NULL

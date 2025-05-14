@@ -34,8 +34,6 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
       combine_outdata2(species_data(), questions, spat1, spat2, ind)
     })
 
-    exportTestValues(out_data = out_data())
-
     # save the data to a file
     shinyFileSave(input, "downloadData", root = volumes, filetypes = "csv")
 
@@ -83,6 +81,7 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
     })
 
     # Return --------------------------------------
+    exportTestValues(out_data = out_data())
 
     out_data
   })

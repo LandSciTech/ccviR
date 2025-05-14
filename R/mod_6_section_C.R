@@ -7,14 +7,18 @@
 #' mod_C_test(df_loaded = test_df_loaded())
 #' mod_C_test(input_files = test_files(min_req = TRUE)) # Min-required only
 
-mod_C_test <- function(df_loaded = NULL, input_files = test_files(), tax_grp = "Vascular Plant") {
+mod_C_test <- function(df_loaded = NULL, input_files = test_files(),
+                       tax_grp = "Vascular Plant") {
+
 
   ui <- ui_setup(mod_C_ui(id = "test"))
   server <- function(input, output, session) {
     shinyOptions("file_dir" = "inst/extdata/")
 
-    spatial <- test_data(f = input_files) %>%
-      test_spatial(d_paths = input_files)
+    # Speed up data by only loading required for Section C
+    i <- c("assess_poly_pth", "rng_poly_pth", "clim_dir", "ptn_poly_pth", "scn_nms")
+    spatial <- test_data(f = input_files[i]) %>%
+      test_spatial(d_paths = input_files[i], quiet = TRUE)
 
     mod_C_server(id = "test", reactive(df_loaded), spatial,
                  tax_grp = reactive(tax_grp), parent_session = session)
