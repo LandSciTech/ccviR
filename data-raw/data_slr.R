@@ -93,7 +93,7 @@ plot(nb_slr[1])
 st_layers(path(dir_USA, "OR_MFR_slr_final_dist.gdb"))
 or_slr <- st_read(path(dir_USA, "OR_MFR_slr_final_dist.gdb"), layer = "OR_MFR_low_0ft")
 or_slr2 <- st_read(path(dir_USA, "OR_MFR_slr_final_dist.gdb"), layer = "OR_MFR_slr_6ft") %>%
-  mutate(depth = 6) |>
+  mutate(depth = 6) %>%
   bind_rows(
     st_read(path(dir_USA, "OR_MFR_slr_final_dist.gdb"), layer = "OR_MFR_slr_0ft") %>%
       mutate(depth = 0)

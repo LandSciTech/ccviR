@@ -220,18 +220,26 @@ data_prep_ui <- function(id){
 
         # set lower and upper bounds based on min and max across all scenarios
         clim_readme <- clim_readme %>%
-          mutate(across(contains("brks_") & where(~!all(is.na(.x)|.x == "")), \(b){
-            list(b %>% unique() %>% stringr::str_split(";") %>% unlist() %>%
-                   as_tibble() %>%
-                   tidyr::separate(.data$value, into = c("class", "min", "max"),
-                                   sep = ": | - ", ) %>%
-                   mutate(across(everything(),
-                                 \(x) stringr::str_remove(x, "\\(|\\)") %>%
-                                   as.numeric())) %>%
-                   group_by(class) %>%
-                   summarise(min = min(min), max = max(max)) %>%
-                   select(min, max, class) %>% as.matrix() %>% brks_to_txt())
-          }))
+          mutate(across(
+            contains("brks_") & where(~!all(is.na(.x)|.x == "")),
+            function(b) {
+              b %>%
+                unique() %>%
+                stringr::str_split(";") %>%
+                unlist() %>%
+                as_tibble() %>%
+                tidyr::separate(.data$value, into = c("class", "min", "max"),
+                                sep = ": | - ", ) %>%
+                mutate(across(everything(), function(x) {
+                  stringr::str_remove(.x, "\\(|\\)") %>% as.numeric()
+                })) %>%
+                group_by(class) %>%
+                summarise(min = min(min), max = max(max)) %>%
+                select(min, max, class) %>%
+                as.matrix() %>%
+                brks_to_txt() %>%
+                list()
+            }))
       }
 
       utils::write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),

@@ -7,7 +7,7 @@
 #' @param rast_nm ID of raster type
 #' @param max_cell Maximum cells in plotted raster
 #'
-#' @returns
+#' @returns Leaflet map
 #' @noRd
 #'
 #' @examples
@@ -73,7 +73,7 @@ map_rasters <- function(poly, rast, rast_nm, max_cell = 5000000) {
 #' @param poly1 Range polygon
 #' @param poly2 Assessment area polygon
 #'
-#' @returns
+#' @returns Leaflet map
 #' @noRd
 #'
 #' @examples
@@ -105,7 +105,7 @@ map_poly <- function(poly1, poly2) {
 #' @param rast Future ranges polygon
 #' @param max_cell Maximum cells in plotted raster
 #'
-#' @returns
+#' @returns Leaflet map
 #' @noRd
 #'
 #' @examples
@@ -166,7 +166,7 @@ map_range <- function(poly1, poly2, rast, rng_chg_mat, max_cell = 5000000) {
 #' @param rast Future ranges polygon
 #' @param max_cell Maximum cells in plotted raster
 #'
-#' @returns
+#' @returns Leaflet map
 #' @noRd
 #'
 #' @examples

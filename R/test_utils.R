@@ -245,15 +245,15 @@ test_questions <- function(file = "final2", as_reactive = TRUE) {
       values_to = "value",
       values_transform = as.character)
 
-  qs <- filter(q, type == "que") %>%
+  qs <- filter(q, .data$type == "que") %>%
     select("Code", "value") %>%
-    tidyr::separate(value, into = c("Value1", "Value2", "Value3", "Value4"),
+    tidyr::separate("value", into = c("Value1", "Value2", "Value3", "Value4"),
                     fill = "right", sep = ", ?", convert = TRUE) %>%
     split(tolower(stringr::str_extract(.$Code, "^\\w")))
-  coms <- filter(q, type == "com") %>%
+  coms <- filter(q, .data$type == "com") %>%
     select("Code", "com" = "value") %>%
     split(tolower(stringr::str_extract(.$Code, "^\\w")))
-  evi <- filter(q, type == "evi") %>%
+  evi <- filter(q, .data$type == "evi") %>%
     select("Code", "evi" = "value") %>%
     split(f = tolower(stringr::str_extract(.$Code, "^\\w")))
 
@@ -335,7 +335,7 @@ test_spatial <- function(d = test_data(), d_paths = test_files(),
     ns = "99, 99",
     rng_chg_used = "multiple") %>%
     bind_cols(pths) %>%
-    rename(clim_dir_pth = clim_dir)
+    rename("clim_dir_pth" = "clim_dir")
 
   # If as_reactive == TRUE, return `reactive(x)`, else return `x`
   if(as_reactive) trans <- reactive else trans <- function(x) x
@@ -406,7 +406,7 @@ test_data_prep <- function(dir = fs::path_package("extdata", package = "ccviR"))
     # Scenario paths
     mat_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
     cmd_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif"))
-  ) |>
+  ) %>%
     unlist() # To get name1, name2, etc. for multiple scenario information
 }
 

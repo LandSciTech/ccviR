@@ -75,10 +75,10 @@ combine_historical <- function(path_ccei = "misc/ccei") {
     fs::dir_ls(regexp = "\\.tiff?$") %>%
     dplyr::tibble(file = .) %>%
     dplyr::mutate(
-      year = stringr::str_extract(file, "\\d{4}"),
-      month = as.numeric(stringr::str_extract(file, "(?<=\\d{4}-)\\d{2}")),
-      var = stringr::str_extract(file, "prec|tmin|tmax"),
-      group = year)
+      year = stringr::str_extract(.data$file, "\\d{4}"),
+      month = as.numeric(stringr::str_extract(.data$file, "(?<=\\d{4}-)\\d{2}")),
+      var = stringr::str_extract(.data$file, "prec|tmin|tmax"),
+      group = .data$year)
 
   return(rasts)
 }
@@ -117,11 +117,11 @@ combine_future <- function(path_ccei = "misc/ccei", quiet = FALSE) {
     fs::dir_ls(regexp = "\\.tiff?$") %>%
     dplyr::tibble(file = .) %>%
     dplyr::mutate(
-      model = stringr::str_extract(file, "(?<=_)[A-Za-z0-9-]+(?=_ssp)"),
-      ssp = stringr::str_extract(file, "ssp(245|585)"),
-      var = stringr::str_extract(file, "prec|tmin|tmax"),
-      group = paste0(model, "-", ssp)) %>%
-    arrange(model, ssp)
+      model = stringr::str_extract(.data$file, "(?<=_)[A-Za-z0-9-]+(?=_ssp)"),
+      ssp = stringr::str_extract(.data$file, "ssp(245|585)"),
+      var = stringr::str_extract(.data$file, "prec|tmin|tmax"),
+      group = paste0(.data$model, "-", .data$ssp)) %>%
+    arrange(.data$model, .data$ssp)
 
   # Report models and scenarios used
   if(!quiet) {
@@ -185,7 +185,7 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
   all <- purrr::walk(groups, function(g) {
     if(!quiet) rlang::inform(paste0(g, " - ", round(Sys.time())))
     # if(!quiet) rlang::inform(capture.output(lobstr::mem_used()))
-    r <- filter(rasts, group == g)
+    r <- filter(rasts, .data$group == .env$g)
     v <- ccei_vars(prec_files = r$file[r$var == "prec"],
                    tmax_files = r$file[r$var == "tmax"],
                    tmin_files = r$file[r$var == "tmin"],
@@ -228,7 +228,7 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
     terra::writeRaster(final, out_final, overwrite = overwrite)
   } else {
 
-    c(terra::rast(out_cmd), terra::rast(out_tmean)) |>
+    c(terra::rast(out_cmd), terra::rast(out_tmean)) %>%
       terra::writeRaster(out_final, overwrite = overwrite)
   }
 }

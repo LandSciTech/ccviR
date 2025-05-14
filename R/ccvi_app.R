@@ -976,9 +976,9 @@ ccvi_app <- function(testmode_in, ...){
       # check for names of old rng_chg_pths
       nms_old <- stringr::str_subset(names(input), "rng_chg_pth$|rng_chg_pth_\\d")
       if(length(nms_old) > 0){
-        purrr::walk(nms_old, \(x){
+        purrr::walk(nms_old, ~ {
           pths_in <- file_pths()
-          pths_in[[x]] <- ""
+          pths_in[[.x]] <- ""
           file_pths(pths_in)
         })
 

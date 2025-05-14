@@ -1,9 +1,7 @@
 
 #' Calculate the proportion of a raster that overlaps another raster
-#'
+#' TODO: Is this still useful?
 #' @noRd
-#'
-#' @examples
 
 calc_overlap_raster <- function(rast1, rast2) {
 
@@ -27,7 +25,7 @@ calc_overlap_raster <- function(rast1, rast2) {
   # Calculate proportion of overlap
   r <- terra::global(r, c("sum", "notNA"), na.rm = TRUE) %>%
     as.data.frame() %>%
-    mutate(protected = sum / notNA * 100) %>%
+    mutate(protected = .data$sum / .data$notNA * 100) %>%
     select("protected")
   rownames(r) <- NULL
 

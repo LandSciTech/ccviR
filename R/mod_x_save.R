@@ -83,11 +83,6 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
     })
 
     # Return --------------------------------------
-    reactive({
-      if(is_ready(out_data())) {
-        combine_outdata2(out_data_lst)
-      } else NULL
-    })
 
     out_data
   })

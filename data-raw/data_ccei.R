@@ -87,9 +87,9 @@ f <- f[!is_downloaded(f)]
 # Download data --------------------------------------------------------------
 purrr::walk2(u, f, ~ {
   rlang::inform(.x)
-  request(.x) |>
-    req_progress() |>
-    req_retry(max_tries = 3) |>
+  request(.x) %>%
+    req_progress() %>%
+    req_retry(max_tries = 3) %>%
     req_perform(path = .y)
 })
 

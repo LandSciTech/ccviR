@@ -95,7 +95,7 @@ ca <- st_read(f_CAN, layer = "ProtectedConservedArea_2023") %>%
          BIOME != "M")  # Omit Marine Biomes
 
 # Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
-sf::st_geometry_type(ca) |> unique()
+sf::st_geometry_type(ca) %>% unique()
 
 ### Convert to raster -----
 
@@ -163,7 +163,7 @@ us <- st_read(
 #   filter(stringr::str_detect(tolower(Unit_Nm), "mari"))
 
 # Verify that they are all 'standard' (i.e. MULTIPOLYGONs)
-sf::st_geometry_type(us) |> unique()
+sf::st_geometry_type(us) %>% unique()
 
 
 ### Convert to raster ----

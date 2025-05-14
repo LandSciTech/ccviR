@@ -87,7 +87,7 @@ make_map <- function(poly1, rast = NULL, poly2 = NULL,
     rast_ncell <- terra::ncell(rast)
 
     if(rast_ncell > max_cell){
-      fct <- sqrt(rast_ncell/max_cell) %>% ceiling()
+      fct <- ceiling(sqrt(rast_ncell/max_cell))
       rast <- terra::aggregate(rast, fact = fct, fun = "modal", na.rm = TRUE)
       message("aggregating raster for faster plotting")
     }
@@ -172,7 +172,7 @@ prep_raster_map <- function(r, r_nm, max_cell) {
     rast_ncell <- terra::ncell(r)
 
     if(rast_ncell > max_cell) {
-      fct <- sqrt(rast_ncell/max_cell) %>% ceiling()
+      fct <- ceiling(sqrt(rast_ncell/max_cell))
       r <- terra::aggregate(r, fact = fct, fun = "modal", na.rm = TRUE)
       message("aggregating raster", r_nm, "for faster plotting")
     }
@@ -532,13 +532,13 @@ answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
 
   type <- stringr::str_sub(questions$questions$Code[1], 1, 1)
 
-  q <- questions$questions |>
-    dplyr::rowwise() |>
+  q <- questions$questions %>%
+    dplyr::rowwise() %>%
     # Here score = answered/not answered (NOT ACTUAL SCORE)
-    dplyr::mutate(score = any(dplyr::pick(-.data$Code) >= 0, na.rm = TRUE)) %>%
+    dplyr::mutate(score = any(dplyr::pick(-"Code") >= 0, na.rm = TRUE)) %>%
     dplyr::ungroup()
 
-  e <- questions$evidence |>
+  e <- questions$evidence %>%
     dplyr::filter(.data$Code %in% q$Code[q$score])
 
   if(type == "C") { # Where taxa influences questions
@@ -550,9 +550,9 @@ answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
   if(type == "D" & !is.null(spatial)) { # Where spatial isn't captured because possibly multiple scenarios
     sp <- spatial %>%
       dplyr::select(dplyr::any_of(c("D2", "D3", "D4"))) %>%
-      dplyr::mutate(dplyr::across(dplyr::everything(), ~any(.x >= 0, na.rm = TRUE))) |>
+      dplyr::mutate(dplyr::across(dplyr::everything(), ~any(.x >= 0, na.rm = TRUE))) %>%
       dplyr::distinct() %>%
-      tidyr::pivot_longer(dplyr::everything(), names_to = "Code", values_to = "score") |>
+      tidyr::pivot_longer(dplyr::everything(), names_to = "Code", values_to = "score") %>%
       dplyr::filter(.data$score)
     q <- dplyr::rows_update(q, sp, by = "Code")
   }

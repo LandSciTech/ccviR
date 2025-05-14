@@ -22,15 +22,15 @@ plot_evidence <- function(score_df, base_size = 14) {
 
   score_df <- score_df %>%
     # Only keep evidence which corresponds to an answered factor
-    dplyr::filter(as.numeric(score) == 1) %>%
+    dplyr::filter(as.numeric(.data$score) == 1) %>%
     dplyr::rename("evidence" = dplyr::matches("^evi$")) %>%
     # Depending on whether this comes from a loaded file or the inputs,
     # may need to be unnested first or later, so double up
-    tidyr::unnest(evidence, keep_empty = TRUE) %>%
+    tidyr::unnest("evidence", keep_empty = TRUE) %>%
     dplyr::mutate(evidence = purrr::map(.data$evidence, ~{
       if(!is.na(.x)) stringr::str_split_1(.x, ", ?") else NA_character_
     })) %>%
-    tidyr::unnest(evidence, keep_empty = TRUE) %>%
+    tidyr::unnest("evidence", keep_empty = TRUE) %>%
     dplyr::mutate(
       evidence = dplyr::case_when(
         .data$evidence == "" | is.na(.data$evidence) ~ na,

@@ -186,5 +186,5 @@ not_exe_fun <- function(fn){
   writeBin(r, fn)
 }
 
-list.files("inst/extdata", pattern = "dbf", recursive = TRUE, full.names = TRUE) |>
+list.files("inst/extdata", pattern = "dbf", recursive = TRUE, full.names = TRUE) %>%
   purrr::walk(not_exe_fun)

@@ -250,15 +250,15 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
         gt::cols_hide(c("sec", "q_total", "q_ans", "e_total", "e_ans", "req")) %>%
         gt::cols_add(
           status1 = dplyr::if_else(.data$q_ans >= .data$req, "check", "xmark"),
-          .after = c("q_txt")) |>
+          .after = c("q_txt")) %>%
         gt::cols_add(
           status2 = dplyr::if_else(.data$e_ans == .data$e_total, "check", "xmark"),
-          .after = c("e_txt")) |>
+          .after = c("e_txt")) %>%
         gt::cols_label("status1" = "", "status2" = "",
                        "q_txt" = "Factors completed",
                        "e_txt" = "Evidence provided") %>%
         gt::fmt_icon(
-          columns = c(status1, status2),
+          columns = c("status1", "status2"),
           fill_color = c("check" = "green", "xmark" = "red")
         ) %>%
         gt::cols_merge(c("q_txt", "status1"),

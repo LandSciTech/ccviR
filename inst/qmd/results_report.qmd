@@ -61,9 +61,9 @@ index_labs <- tribble(
   "EV", "Extremely Vulnerable",  "#FF0000", "white",
   "NA", "Not Applicable",        "white",   "black")
 
-value_labs <- index_labs |>
-  filter(code != "NA") |>
-  select(col, text_col) |>
+value_labs <- index_labs %>%
+  filter(code != "NA") %>%
+  select(col, text_col) %>%
   mutate(value = c("Unknown", ccviR:::valueNms),
          opts = c(-1, ccviR:::valueOpts))
 

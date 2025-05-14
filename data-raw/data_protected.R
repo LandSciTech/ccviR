@@ -280,9 +280,9 @@ us <- st_read(
 
 # Note: What about Maritime and Marine parks?
 # - "Alaska Maritime National Wildlife Refuge" -> Marine?
-# filter(us, stringr::str_detect(tolower(Unit_Nm), "maritime|marine")) |>
-#   st_drop_geometry() |>
-#   select(Unit_Nm) |>
+# filter(us, stringr::str_detect(tolower(Unit_Nm), "maritime|marine")) %>%
+#   st_drop_geometry() %>%
+#   select(Unit_Nm) %>%
 #   distinct()
 
 # Verify that they are all 'standard' (i.e. MULTIPOLYGONs)

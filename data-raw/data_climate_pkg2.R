@@ -8,9 +8,9 @@ library(fs)
 scenarios <- c("ssp245", "ssp585")
 
 clim_raw <- path("misc", "climate", "raw")
-clim_prep <- path("misc", "climate", "prepared") |>
+clim_prep <- path("misc", "climate", "prepared") %>%
   dir_create()
-ccei <- dir_ls("misc/ccei") |>
+ccei <- dir_ls("misc/ccei") %>%
   fs::path_filter(regexp = paste0(paste0(scenarios, "\\.tif"), collapse = "|"))
 
 # Download Climate data ------------------------------------------------------

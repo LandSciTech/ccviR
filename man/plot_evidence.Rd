@@ -21,4 +21,6 @@ e <- data.frame(
                "Spatial Analysis", "Spatial Analysis - ccviR"))
 plot_evidence(e)
 plot_evidence(e[-5,])
+
+plot_evidence(data.frame(score = FALSE, Code = "B1", evidence = "Other"))
 }

@@ -27,8 +27,8 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
 
   # If we're building directly with only a location, no file path
   if(fs::path_ext(file_loc) != "pdf") {
-    nm <- tolower(saved$common_name[1]) |>
-      stringr::str_extract_all("\\w+", simplify = TRUE) |>
+    nm <- tolower(saved$common_name[1]) %>%
+      stringr::str_extract_all("\\w+", simplify = TRUE) %>%
       paste0(collapse = "_")
     out <- fs::path(file_loc, paste0("report_", nm, "_", Sys.Date(), ".pdf"))
 

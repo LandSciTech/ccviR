@@ -58,7 +58,7 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
     ggplot2::ggplot()+
     ggplot2::geom_raster(ggplot2::aes(x = .data[["x"]], y = .data[["y"]],
                                       fill = as.factor(.data[["lyr.1"]])))+
-    ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
+    ggplot2::scale_fill_manual(values = as.vector(col_mat) %>% stats::setNames(1:36),
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")+
     ggplot2::coord_equal()+
@@ -92,7 +92,7 @@ plot_bivar_exp <- function(mat, cmd, scale_poly, rng_poly = NULL, leg_rel_size =
                          data = rast_df)+
     ggplot2::geom_sf(data = scale_poly, fill = NA, col = "black")+
     ggplot2::theme_void()+
-    ggplot2::scale_fill_manual(values = as.vector(col_mat) |> setNames(1:36),
+    ggplot2::scale_fill_manual(values = as.vector(col_mat) %>% stats::setNames(1:36),
                                name = NULL, na.value = "white")+
     ggplot2::guides(fill = "none")
     # ggplot2::theme(plot.margin = ggplot2::unit(c(0.01,0.333,0.01,0.01), "npc"))
@@ -154,7 +154,7 @@ bivar_map <- function(rasterx, rastery, nclass = 6, max_cell = 5000000) {
   rast_ncell <- terra::ncell(rasterx)
 
   if(rast_ncell > max_cell){
-    fct <- sqrt(rast_ncell/max_cell) %>% ceiling()
+    fct <- ceiling(sqrt(rast_ncell/max_cell))
     rasterx <- terra::aggregate(rasterx, fact = fct, fun = "modal", na.rm = TRUE)
     rastery <- terra::aggregate(rastery, fact = fct, fun = "modal", na.rm = TRUE)
     message("aggregating raster for faster plotting")

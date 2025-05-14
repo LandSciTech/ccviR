@@ -40,7 +40,7 @@ ca_df %>%
   filter(PA_OECM_DF == 3, TYPE_E == "Ownership by Environmental Non-Governmental Organization")
 
 # Verify that they are all 'standard'
-sf::st_geometry_type(ca) |> unique()
+sf::st_geometry_type(ca) %>% unique()
 
 r <- raster::raster(ca, res = 1000)
 ca_rast <- fasterize::fasterize(ca, r, field = "STATUS", fun = "first")
