@@ -136,11 +136,15 @@ shinytest2) https://mastering-shiny.org/scaling-testing.html#testing-reactivity
 - Careful: if you have a general error that won't allow the app to work, running
   that tests can delete the snapshots. If that happens, revert that change in git, 
   fix the app problem then retry.
-- Errors in the test pane that imply the app is working (not that specific tests 
+- Errors in the test pane that imply the app isn't working (not that specific tests 
   are failing) are best troubleshooted by calling the app interactively, 
   or by using `record_test()` (don't actually 
   record it, but the errors messages are much better in this mode, and may be 
   something as simple as misspelling a function name, for example)
+- Errors like "Unable request data from server" when trying to get snapshots
+  may indicate that there is something wrong with the "Save progress" step. 
+  Run the app interactively and see what happens when you click "Save progress"
+  at that step in the application run.
 - Because the app is running from a function, `record_test()` can be used to 
   create the details of the test, but not the whole test file (you need to copy
   the code and add it to an existing test). 

@@ -2,7 +2,7 @@ library(shinytest2)
 
 # Remember to re-build/install package before running tests! Ctrl-Shift-B
 
-# devtools::test(filter = "shiny-mods") # Run just the shiny apps test programatically
+# devtools::test(filter = "shiny-mods$") # Run just the shiny apps test programatically
 
 test_that("Full app", {
 
@@ -79,7 +79,6 @@ test_that("Full app", {
   app$wait_for_idle()
   Sys.sleep(1)
   app$expect_values(input = TRUE, export = TRUE, name = "11-sectionC-values")
-
   app$click("section_c-continue")
 
   # Section D
@@ -89,7 +88,6 @@ test_that("Full app", {
 
   app$set_inputs(`section_d-D1` = "2")
   app$expect_values(input = TRUE, export = TRUE, name = "13-sectionD-set")
-
   app$click("section_d-continue")
 
   # Results

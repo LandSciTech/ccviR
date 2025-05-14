@@ -50,7 +50,8 @@ test_that("spatial data created", {
       # Run spatial
       doSpatial(1)
       session$flushReact() %>%
-        suppressWarnings() # TODO: Catch this warning in the app, don't suppress here
+        suppressWarnings() %>% # TODO: Catch this warning in the app, don't suppress here
+        suppressMessages()
 
       # Have spatial
       expect_type(spat_res(), "list")

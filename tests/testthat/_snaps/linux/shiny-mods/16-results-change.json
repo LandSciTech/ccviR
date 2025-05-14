@@ -281,6 +281,10 @@
         "",
         ""
       ],
+      "C2ai": [
+        "1",
+        "1"
+      ],
       "evi_C2aii": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -289,6 +293,10 @@
         "",
         ""
       ],
+      "C2aii": [
+        "1",
+        "1"
+      ],
       "evi_C2bi": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -296,6 +304,10 @@
       "com_C2bi": [
         "",
         ""
+      ],
+      "C2bi": [
+        "2",
+        "2"
       ],
       "evi_C2bii": [
         "",
@@ -497,6 +509,10 @@
         "",
         ""
       ],
+      "D2": [
+        "2",
+        "2"
+      ],
       "evi_D3": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -505,6 +521,10 @@
         "",
         ""
       ],
+      "D3": [
+        "2",
+        "2"
+      ],
       "evi_D4": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -512,6 +532,10 @@
       "com_D4": [
         "",
         ""
+      ],
+      "D4": [
+        "1",
+        "2"
       ],
       "GCM_or_Ensemble_name": [
         "AdaptWest 15 CMIP5 AOGCM Ensemble",
@@ -572,30 +596,6 @@
       "rng_chg_pth_2": [
         "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif",
         "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif"
-      ],
-      "C2ai": [
-        null,
-        null
-      ],
-      "C2aii": [
-        null,
-        null
-      ],
-      "C2bi": [
-        null,
-        null
-      ],
-      "D2": [
-        null,
-        null
-      ],
-      "D3": [
-        null,
-        null
-      ],
-      "D4": [
-        null,
-        null
       ],
       "nonbreed_poly_pth": [
         null,

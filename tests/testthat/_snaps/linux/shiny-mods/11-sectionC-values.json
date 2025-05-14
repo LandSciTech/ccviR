@@ -48,10 +48,10 @@
     "section_b-com_B2b": "",
     "section_b-com_B3": "",
     "section_b-continue": 1,
-    "section_b-evi_B1": "",
-    "section_b-evi_B2a": "",
-    "section_b-evi_B2b": "",
-    "section_b-evi_B3": "",
+    "section_b-evi_B1": null,
+    "section_b-evi_B2a": null,
+    "section_b-evi_B2b": null,
+    "section_b-evi_B3": null,
     "section_b-help_B1": 1,
     "section_b-help_B2a": 0,
     "section_b-help_B2b": 0,
@@ -95,25 +95,25 @@
     "section_c-com_C5c": "",
     "section_c-com_C6": "",
     "section_c-continue": 0,
-    "section_c-evi_C1": "",
+    "section_c-evi_C1": null,
     "section_c-evi_C2ai": "Spatial Analysis - ccviR",
     "section_c-evi_C2aii": "Spatial Analysis - ccviR",
     "section_c-evi_C2bi": "Spatial Analysis - ccviR",
-    "section_c-evi_C2bii": "",
-    "section_c-evi_C2c": "",
-    "section_c-evi_C2d": "",
-    "section_c-evi_C3": "",
-    "section_c-evi_C4a": "",
-    "section_c-evi_C4b": "",
-    "section_c-evi_C4c": "",
-    "section_c-evi_C4d": "",
-    "section_c-evi_C4e": "",
-    "section_c-evi_C4f": "",
-    "section_c-evi_C4g": "",
-    "section_c-evi_C5a": "",
-    "section_c-evi_C5b": "",
-    "section_c-evi_C5c": "",
-    "section_c-evi_C6": "",
+    "section_c-evi_C2bii": null,
+    "section_c-evi_C2c": null,
+    "section_c-evi_C2d": null,
+    "section_c-evi_C3": null,
+    "section_c-evi_C4a": null,
+    "section_c-evi_C4b": null,
+    "section_c-evi_C4c": null,
+    "section_c-evi_C4d": null,
+    "section_c-evi_C4e": null,
+    "section_c-evi_C4f": null,
+    "section_c-evi_C4g": null,
+    "section_c-evi_C5a": null,
+    "section_c-evi_C5b": null,
+    "section_c-evi_C5c": null,
+    "section_c-evi_C6": null,
     "section_c-help_C1": 0,
     "section_c-help_C2ai": 0,
     "section_c-help_C2aii": 0,
@@ -178,7 +178,7 @@
     "section_d-com_D3": "",
     "section_d-com_D4": "",
     "section_d-continue": 0,
-    "section_d-evi_D1": "",
+    "section_d-evi_D1": null,
     "section_d-evi_D2": "Spatial Analysis - ccviR",
     "section_d-evi_D3": "Spatial Analysis - ccviR",
     "section_d-evi_D4": "Spatial Analysis - ccviR",
@@ -468,6 +468,10 @@
         "",
         ""
       ],
+      "C2ai": [
+        "1",
+        "1"
+      ],
       "evi_C2aii": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -476,6 +480,10 @@
         "",
         ""
       ],
+      "C2aii": [
+        "1",
+        "1"
+      ],
       "evi_C2bi": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -483,6 +491,10 @@
       "com_C2bi": [
         "",
         ""
+      ],
+      "C2bi": [
+        "2",
+        "2"
       ],
       "evi_C2bii": [
         "",
@@ -684,6 +696,10 @@
         "",
         ""
       ],
+      "D2": [
+        "-1",
+        "-1"
+      ],
       "evi_D3": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -692,6 +708,10 @@
         "",
         ""
       ],
+      "D3": [
+        "-1",
+        "-1"
+      ],
       "evi_D4": [
         "Spatial Analysis - ccviR",
         "Spatial Analysis - ccviR"
@@ -699,6 +719,10 @@
       "com_D4": [
         "",
         ""
+      ],
+      "D4": [
+        "-1",
+        "-1"
       ],
       "GCM_or_Ensemble_name": [
         "AdaptWest 15 CMIP5 AOGCM Ensemble",
@@ -797,30 +821,6 @@
         null
       ],
       "MC_freq_IE": [
-        null,
-        null
-      ],
-      "C2ai": [
-        null,
-        null
-      ],
-      "C2aii": [
-        null,
-        null
-      ],
-      "C2bi": [
-        null,
-        null
-      ],
-      "D2": [
-        null,
-        null
-      ],
-      "D3": [
-        null,
-        null
-      ],
-      "D4": [
         null,
         null
       ],

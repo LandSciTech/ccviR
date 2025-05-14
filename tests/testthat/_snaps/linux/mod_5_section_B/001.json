@@ -11,10 +11,10 @@
     "test-com_B2b": "",
     "test-com_B3": "",
     "test-continue": 0,
-    "test-evi_B1": "",
-    "test-evi_B2a": "",
-    "test-evi_B2b": "",
-    "test-evi_B3": "",
+    "test-evi_B1": null,
+    "test-evi_B2a": null,
+    "test-evi_B2b": null,
+    "test-evi_B3": null,
     "test-help_B1": 0,
     "test-help_B2a": 0,
     "test-help_B2b": 0,
@@ -22,7 +22,7 @@
   },
   "output": {
     "test-completeness": {
-      "html": "<i class=\"fas fa-check\" role=\"presentation\" aria-label=\"check icon\" style=\"color:green\"><\/i>\n3/4 questions answered",
+      "html": "<i class=\"fas fa-check\" role=\"presentation\" aria-label=\"check icon\" style=\"color:green\"><\/i>\n3/4 questions answered\n<br/>\n<i class=\"fas fa-xmark\" role=\"presentation\" aria-label=\"xmark icon\" style=\"color:red\"><\/i>\n0/3 evidence supplied\n<strong>(Evidence must be supplied for each Question answered)<\/strong>",
       "deps": [
         {
           "name": "font-awesome",

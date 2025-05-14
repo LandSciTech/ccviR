@@ -7,7 +7,7 @@ test_that("spatial runs with all data or optional data",{
       d$rng_poly, d$assess_poly, d$clim_vars, NULL, d$ptn_poly, d$rng_chg_rast_1,
       hs_rcl = d$rng_chg_mat,
       scenario_names = d$scn_nms)
-  ) |> suppressMessages()
+  ) %>% suppressMessages()
   expect_type(res, "list")
   expect_false(anyNA(res$spat_table %>% dplyr::select(-matches("CCEI|protected"))))
 
@@ -15,7 +15,7 @@ test_that("spatial runs with all data or optional data",{
   expect_message(
     res2 <- analyze_spatial(d$rng_poly, d$assess_poly, d$clim_vars[c(1:2, 6)],
                             scenario_names = d$scn_nms)
-  ) |> suppressMessages()
+  ) %>% suppressMessages()
   expect_type(res2, "list")
   expect_true(anyNA(res2$spat_table))
 
@@ -173,7 +173,7 @@ test_that("works with mulitple clim scenarios",{
   expect_message({
     res2 <- analyze_spatial(
       d$rng_poly, d$assess_poly,
-      purrr::map(d$clim_vars, ~if(is(.x, "SpatRaster")){.x[[1]]}else{.x}),
+      purrr::map(d$clim_vars, ~if(inherits(.x, "SpatRaster")){.x[[1]]}else{.x}),
       non_breed_poly = NULL, hs_rast = d$rng_chg_rast,
       hs_rcl = d$rng_chg_mat,
       scenario_names = c("RCP 4.5", "RCP 8.5"))
@@ -233,7 +233,7 @@ test_that("protected areas", {
       hs_rcl = d$rng_chg_mat,
       protected_poly = d$protected_poly,
       scenario_names = d$scn_nms)
-  ) |> suppressMessages()
+  ) %>% suppressMessages()
   expect_type(res, "list")
   expect_false(anyNA(res$spat_table %>% dplyr::select(-contains("CCEI"))))
   expect_true("protected" %in% names(res$spat_table))
