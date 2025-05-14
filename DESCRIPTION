@@ -34,6 +34,7 @@ Imports:
     plotly,
     purrr,
     R.utils,
+    rlang (>= 1.1.6),
     scales,
     sf (>= 1.0.19),
     shiny,
@@ -46,14 +47,16 @@ Imports:
     units
 Suggests: 
     testthat (>= 3.0.0),
+    climr,
     knitr,
-    rmarkdown,
+    quarto,
     future,
     gridExtra,
     stringi,
     furrr,
     readxl,
     raster,
+    rnaturalearth,
     shinytest2,
     withr
 RoxygenNote: 7.3.2
@@ -61,9 +64,9 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
 URL: https://github.com/see24/ccviR,
-    https://landscitech.github.io/ccviR/
+     https://landscitech.github.io/ccviR/
 BugReports: https://github.com/see24/ccviR/issues
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Remotes: 
-    rstudio/leaflet
+    bcgov/climr
