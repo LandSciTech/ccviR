@@ -306,7 +306,7 @@ vuln_qs <- vuln_qs %>%
                                "color:", ..3)))) %>%
   summarize(Value = tagList(Value), .by = c("scenario_name", "Code"))
 #mutate(Value = stringr::str_replace_all(
-#  Value, setNames(value_labs$value, as.character(value_labs$opts))))
+#  Value, stats::setNames(value_labs$value, as.character(value_labs$opts))))
 
 
 vuln_tbl <- left_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>%

@@ -16,7 +16,7 @@ check_clim_vars <- function(clim_vars_lst, hs_rast) {
 
 check_scn <- function(clim_vars_lst, hs_rast, scenario_names) {
   # Check scenario names match raster layers
-  rast_lyrs <- purrr::keep(clim_vars_lst, ~is(.x, "SpatRaster")) %>%
+  rast_lyrs <- purrr::keep(clim_vars_lst, ~inherits(.x, "SpatRaster")) %>%
     c(hs_rast = hs_rast) %>%
     purrr::compact() %>%
     purrr::map_dbl(terra::nlyr)
@@ -85,9 +85,9 @@ check_rast <- function(ras, var_name, quiet = FALSE) {
 
   if(is.list(ras)) purrr::map2(ras, names(ras), check_rast)
 
-  if(!is(ras, "SpatRaster")){
-    if(is(ras, "Raster")){
-      ras <- as(ras, "SpatRaster")
+  if(!inherits(ras, "SpatRaster")){
+    if(inherits(ras, "Raster")){
+      ras <- methods::as(ras, "SpatRaster")
     } else {
       return(ras)
     }

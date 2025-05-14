@@ -141,7 +141,7 @@ mod_home_server <- function(id, volumes, parent_session) {
       content = function(file) {
         out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                            package = "ccviR"))
-        write.csv(out, file, row.names = FALSE)
+        utils::write.csv(out, file, row.names = FALSE)
       }
     )
 

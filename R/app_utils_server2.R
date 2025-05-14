@@ -247,9 +247,10 @@ update_restored2 <- function(df, session, section = NULL){
                      "", .data$value)) %>%
     rowwise() %>%
     # TODO: Get rid of this when merging all versions
-    mutate(update_fun = if_else(stringr::str_detect(update_fun, "_"),
-                                paste0(update_fun, "2"), update_fun)) %>%
-    mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
+    mutate(update_fun = if_else(stringr::str_detect(.data$update_fun, "_"),
+                                paste0(.data$update_fun, "2"), .data$update_fun)) %>%
+    mutate(arg_name = intersect(c("selected", "value"),
+                                methods::formalArgs(.data$update_fun)))
 
   # this is used as a trigger to skip running spatial until after returning to
   # UI so that input is updated with values from csv

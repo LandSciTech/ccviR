@@ -24,7 +24,7 @@ mock_files <- function(file) {
 
 expect_no_log_warnings <- function(app) {
   l <- as.character(app$get_logs())
-  expect_false(any(stringr::str_detect(l, "Warning\\: ")))
+  testthat::expect_false(any(stringr::str_detect(l, "Warning\\: ")))
 }
 
 #' Load test data
@@ -426,8 +426,8 @@ ccei_by_hand <- function(r, row = 1, col = 1) {
   r_prec <- terra::rast(r$file[r$var == "prec"])[row,col]
   r_tmax <- terra::rast(r$file[r$var == "tmax"])[row,col]
   r_tmin <- terra::rast(r$file[r$var == "tmin"])[row,col]
-  lat <- setNames(terra::init(terra::rast(r$file[1]), "y")[row,col],
-                  "latitude")[[1]]
+  lat <- stats::setNames(terra::init(terra::rast(r$file[1]), "y")[row,col],
+                         "latitude")[[1]]
 
   cmd <- NULL
   tmean <- NULL

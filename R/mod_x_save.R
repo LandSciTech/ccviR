@@ -46,7 +46,7 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
           filename <- paste0(filename, ".csv")
         }
         saveAttempt <- tryCatch({
-          write.csv(out_data(), filename, row.names = FALSE)},
+          utils::write.csv(out_data(), filename, row.names = FALSE)},
           error = function(e){
             showModal(modalDialog(
               p("File could not be saved. Is it open?"),
@@ -77,7 +77,7 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
                           stringr::str_replace_all("\\W", "_"),
                         "_")
       file_nm <- tempfile(pattern = file_nm, fileext = ".csv")
-      isolate(write.csv(out_data(), file_nm, row.names = FALSE))
+      isolate(utils::write.csv(out_data(), file_nm, row.names = FALSE))
       message("Temporary file saved to:\n ", file_nm, "\n This will be deleted after R is closed")
       stopApp()
     })

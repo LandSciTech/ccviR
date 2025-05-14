@@ -293,7 +293,7 @@ combine_outdata <- function(out_data_lst){
   return(out_dat)
 }
 
-# read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
+# utils::read.csv("../../../Downloads/CCVI_data-2022-11-18 (1).csv") %>% colnames() %>% paste0(collapse = "', '")
 
 # Update UI based on values loaded from csv
 update_restored <- function(df, session){
@@ -331,7 +331,8 @@ update_restored <- function(df, session){
       value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
                      "", .data$value)) %>%
     rowwise() %>%
-    mutate(arg_name = intersect( c("selected", "value"), formalArgs(.data$update_fun)))
+    dplyr::mutate(arg_name = intersect(c("selected", "value"),
+                                       methods::formalArgs(.data$update_fun)))
 
   # this is used as a trigger to skip running spatial until after returning to
   # UI so that input is updated with values from csv

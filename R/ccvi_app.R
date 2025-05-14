@@ -651,7 +651,7 @@ ccvi_app <- function(testmode_in, ...){
     # Restore from saved file #=================================================
     df_loaded <- eventReactive(input$loadcsv, {
       if(!is.integer(input$loadcsv)){
-        df_in <- try(read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
+        df_in <- try(utils::read.csv(parseFilePaths(volumes, input$loadcsv)$datapath), silent = TRUE)
 
         # Check that csv is not empty
         if(inherits(df_in, "try-error")){
@@ -1662,8 +1662,10 @@ ccvi_app <- function(testmode_in, ...){
           filename <- paste0(filename, ".csv")
         }
         saveAttempt <- tryCatch({
-          write.csv(combine_outdata(reactiveValuesToList(out_data_lst)), filename,
-                  row.names = FALSE)},
+          utils::write.csv(combine_outdata(reactiveValuesToList(out_data_lst)),
+                           filename,
+                           row.names = FALSE
+          )},
           error = function(e){
             showModal(modalDialog(
               p("File could not be saved. Is it open?"),
@@ -1689,7 +1691,7 @@ ccvi_app <- function(testmode_in, ...){
       content = function(file) {
         out <- utils::read.csv(system.file("extdata/column_definitions_results.csv",
                                     package = "ccviR"))
-        write.csv(out, file, row.names = FALSE)
+        utils::write.csv(out, file, row.names = FALSE)
       }
     )
 
@@ -1752,9 +1754,9 @@ ccvi_app <- function(testmode_in, ...){
                         "_")
       file_nm <- tempfile(pattern = file_nm, fileext = ".csv")
       isolate(
-        write.csv(combine_outdata(reactiveValuesToList(out_data_lst)),
-                  file_nm,
-                  row.names = FALSE)
+        utils::write.csv(combine_outdata(reactiveValuesToList(out_data_lst)),
+                         file_nm,
+                         row.names = FALSE)
       )
       message("Temporary file saved to:\n ", file_nm, "\n This will be deleted after R is closed")
       stopApp()

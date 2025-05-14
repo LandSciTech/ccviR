@@ -174,7 +174,7 @@ coms <- out_data %>%
 
 valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral", "Unknown")
 names(valueNms) <- c(3, 2, 1, 0, -1)
-cols2 <- cols %>% setNames(rev(names(valueNms)))
+cols2 <- cols %>% stats::setNames(rev(names(valueNms)))
 
 
 vuln_qs <- out_data %>% 
@@ -189,7 +189,7 @@ vuln_qs <- out_data %>%
   filter(!is.na(score)) %>% 
   rowwise() %>% 
   mutate(Score = c(.data$Value1, .data$Value2, .data$Value3, .data$Value4) %>% 
-           na.omit() %>% range() %>%  
+           stats::na.omit() %>% range() %>%  
            unique() %>% as.character() %>% 
            {text_spec(valueNms[.], format = "latex", background = cols2[.], bold = TRUE)} %>%
            paste0(collapse = " - "))
