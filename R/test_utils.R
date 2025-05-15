@@ -29,9 +29,7 @@ expect_no_log_warnings <- function(app) {
 
 #' Load test data file paths
 #'
-#' Helper function for loading the file paths local test data. Paths for files
-#' stored in `misc` are returned with reference to the test/testthat directory
-#' so that it can be used for unit testing as well as interactive testing.
+#' Helper function for loading the file paths local test data.
 #'
 #' @param dir Character. Directory containing test data
 #' @param scn_nms Character. Scenario names
@@ -219,11 +217,13 @@ test_files_prep <- function(dir = fs::path_package("extdata", package = "ccviR")
     mwmt_norm_pth = fs::path(dir_clim, "NB_norm_MWMT.tif"),
     mcmt_norm_pth = fs::path(dir_clim, "NB_norm_MCMT.tif"),
     assess_pth = fs::path(dir, "assess_poly.shp"),
-    ceei_pth = NULL,
+    ccei_pth1 =  fs::path(dir, "../../misc/ccei", "ccei_ssp245.tif"),
+    ccei_pth2 =  fs::path(dir, "../../misc/ccei", "ccei_ssp585.tif"),
 
     # Scenario inputs
     clim_scn_nm = c("RCP 4.5", "RCP 8.5"),
-    clim_scn_gcm = c("AdaptWest 15 CMIP5 AOGCM Ensemble", "AdaptWest 15 CMIP5 AOGCM Ensemble"),
+    clim_scn_gcm = c("AdaptWest 15 CMIP5 AOGCM Ensemble",
+                     "AdaptWest 15 CMIP5 AOGCM Ensemble"),
     clim_scn_period = c("2050s", "2050s"),
     clim_scn_em = c("RCP 4.5", "RCP 8.5"),
     clim_scn_url = c("https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
