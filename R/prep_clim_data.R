@@ -26,15 +26,15 @@ prep_clim_data_multi <- function(
   while(i <= n_scn) {
     inform_prog(paste0("Preparing Scenario ", i), quiet, (i-1)/n_scn, set = TRUE)
     brks_out <- prep_clim_data(
-      mat_norm,
-      mat_fut[i],
-      cmd_norm,
-      cmd_fut[i],
-      ccei[i],
-      map,
-      mwmt,
-      mcmt,
-      clim_poly,
+      mat_norm = mat_norm,
+      mat_fut = mat_fut[i],
+      cmd_norm = cmd_norm,
+      cmd_fut = cmd_fut[i],
+      ccei = ccei[i],
+      map = map,
+      mwmt = mwmt,
+      mcmt = mcmt,
+      clim_poly = clim_poly,
       out_folder = out_folder,
       overwrite = overwrite,
       scenario_name = scenario_name[i],
@@ -320,19 +320,21 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   inform_prog("Processing MAT", quiet, n)
 
-  brks_mat <- prep_exp(mat_norm, mat_fut,
-                       file.path(out_folder, paste0("MAT_reclass", scenario_name, ".tif")),
-                       reproject = reproject, overwrite = overwrite,
-                       brs = brks_mat)
+  brks_mat <- prep_exp(
+    mat_norm, mat_fut,
+    file.path(out_folder, paste0("MAT_reclass", scenario_name, ".tif")),
+    reproject = reproject, overwrite = overwrite,
+    brs = brks_mat)
 
   rm(mat_fut, mat_norm)
 
   inform_prog("Processing CMD", quiet, n)
 
-  brks_cmd <- prep_exp(cmd_norm, cmd_fut,
-                       file.path(out_folder, paste0("CMD_reclass", scenario_name, ".tif")),
-                       reproject = reproject, overwrite = overwrite,
-                       brs = brks_cmd)
+  brks_cmd <- prep_exp(
+    cmd_norm, cmd_fut,
+    file.path(out_folder, paste0("CMD_reclass", scenario_name, ".tif")),
+    reproject = reproject, overwrite = overwrite,
+    brs = brks_cmd)
 
   rm(cmd_fut, cmd_norm)
 
@@ -474,7 +476,8 @@ ccei_reclassify <- function(ccei, brks = NULL, out_folder, scenario_name,
 #'
 #' @noRd
 prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
-                     overwrite = FALSE, type = "halfIQR", brs = NULL){
+                     overwrite = FALSE, type = "halfIQR", brs = NULL) {
+
   rast_delta <-  rast_norm - rast_fut
 
   if(reproject){
