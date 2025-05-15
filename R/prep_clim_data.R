@@ -190,8 +190,8 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   if(!is.null(brks)) {
     brks_mat <- brks$brks_mat
-    brks_cmd <- brks$cmd
-    brks_ccei <- brks$ccei
+    brks_cmd <- brks$brks_cmd
+    brks_ccei <- brks$brk_ccei
   }
 
   # remove spaces from scenario_name
