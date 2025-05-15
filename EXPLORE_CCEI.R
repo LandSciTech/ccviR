@@ -5,9 +5,9 @@ library(fs)
 # Local paths
 d <- path("misc", "ccei")
 
-ccei_ns <- rast(path(d, "ccei.img")) %>% setNames("NatureServe")
-ccei_245 <- rast(path(d, "ccei_ssp245.tif")) %>% setNames("SSP 245")
-ccei_858 <- rast(path(d, "ccei_ssp585.tif")) %>% setNames("SSP 858")
+ccei_ns <- rast(path(d, "ccei.img")) %>% stats::setNames("NatureServe")
+ccei_245 <- rast(path(d, "ccei_ssp245.tif")) %>% stats::setNames("SSP 245")
+ccei_858 <- rast(path(d, "ccei_ssp585.tif")) %>% stats::setNames("SSP 858")
 
 # South American points of interest where CMD extra high
 box1 <- sf::st_bbox(c(xmin = -75, xmax = -50, ymin = -15, ymax = 0), crs = 4326) %>% ext()
@@ -52,9 +52,9 @@ path_ccei <- fs::path_package("extdata", "ccei_test", package = "ccviR")
 
 # Inf and high CCEI Values:
 ccei_85 <- terra::rast(fs::path(path_ccei, "ccei_ssp585.tif")) %>%
-  setNames("SSP 585")
+  stats::setNames("SSP 585")
 ccei_45 <- terra::rast(fs::path(path_ccei, "ccei_ssp245.tif")) %>%
-  setNames("SSP 245")
+  stats::setNames("SSP 245")
 
 # White Squares are NAs
 # (Current version of calc_ccei() replaces 0 sd values with low values to prevent

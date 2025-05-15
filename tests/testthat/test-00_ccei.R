@@ -172,8 +172,3 @@ test_that("calc_sed()", {
 
   expect_snapshot(sed)
 })
-
-# CLEAN UP
-expect_silent(
-  unlink(fs::path(path_ccei, "intermediate"), recursive = TRUE)
-)
