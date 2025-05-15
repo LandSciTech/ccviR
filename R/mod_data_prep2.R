@@ -23,7 +23,7 @@ run_data_prep2 <- function(file_dir = getwd(),
                            port = getOption("shiny.port")){
 
   if(file_dir == "demo"){
-    file_dir <- system.file("extdata", package = "ccviR")
+    file_dir <- fs::path_package("extdata", package = "ccviR")
   }
   shiny::shinyOptions(file_dir = file_dir)
 
@@ -50,7 +50,7 @@ run_data_prep2 <- function(file_dir = getwd(),
 #' # Test with vanilla
 #' mod_data_prep_test(input_files = NULL)
 
-mod_data_prep_test <- function(input_files = test_data_prep()) {
+mod_data_prep_test <- function(input_files = test_files_prep()) {
   ui <- fluidPage(
     title = "Data Preparation for the ccviR app",
     ui_fmt(type = "data-ui"),

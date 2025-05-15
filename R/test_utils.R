@@ -27,11 +27,11 @@ expect_no_log_warnings <- function(app) {
   testthat::expect_false(any(stringr::str_detect(l, "Warning\\: ")))
 }
 
-#' Load test data
+#' Load test data file paths
 #'
-#' Helper function for keeping track of local test data. Paths for files stored
-#' in `misc` are returned with reference to the test/testthat directory so that
-#' it can be used for unit testing as well as interactive testing.
+#' Helper function for loading the file paths local test data. Paths for files
+#' stored in `misc` are returned with reference to the test/testthat directory
+#' so that it can be used for unit testing as well as interactive testing.
 #'
 #' @param dir Character. Directory containing test data
 #' @param scn_nms Character. Scenario names
@@ -106,6 +106,20 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
   }
 }
 
+#' Load test data
+#'
+#' Helper function for loading and prepare local test data. Loads a list of
+#' files, returned by `test_files()` by default. Names are expected to match
+#' standard file input names (this function isn't very flexible from that
+#' respect).
+#'
+#' @param f Named character vector. Files to load (including one directory,
+#'   `clim_dir`).
+#' @param min_req Logical. Use only minimum required for spatial analysis.
+#'
+#' @noRd
+#' @examples
+#' test_data()
 
 test_data <- function(f = test_files(), min_req = FALSE) {
 
@@ -174,6 +188,54 @@ test_df_loaded <- function(file = "final2") {
   load_previous(test_files()$saved[[file]]) %>%
     mutate(across(contains("pth"), fix_path))
 }
+
+
+#' Load test data file paths for climatic data prep
+#'
+#' Helper function for loading the file paths local climatic test data.
+#'
+#' @param dir Character. File path to the where the `clim_files/raw` folders can
+#'   be found.
+#'
+#' @noRd
+#' @examples
+#' test_files_prep()
+
+test_files_prep <- function(dir = fs::path_package("extdata", package = "ccviR")) {
+
+  dir_clim <- fs::path(dir, "clim_files", "raw")
+
+  # Inputs
+  list(
+
+    # Hist inputs
+    clim_norm_period = "1961-1990",
+    clim_norm_url = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
+
+    # Hist/standard File/dir paths
+    mat_norm_pth = fs::path(dir_clim, "NB_norm_MAT.tif"),
+    cmd_norm_pth = fs::path(dir_clim, "NB_norm_CMD.tif"),
+    map_norm_pth = fs::path(dir_clim, "NB_norm_MAP.tif"),
+    mwmt_norm_pth = fs::path(dir_clim, "NB_norm_MWMT.tif"),
+    mcmt_norm_pth = fs::path(dir_clim, "NB_norm_MCMT.tif"),
+    assess_pth = fs::path(dir, "assess_poly.shp"),
+    ceei_pth = NULL,
+
+    # Scenario inputs
+    clim_scn_nm = c("RCP 4.5", "RCP 8.5"),
+    clim_scn_gcm = c("AdaptWest 15 CMIP5 AOGCM Ensemble", "AdaptWest 15 CMIP5 AOGCM Ensemble"),
+    clim_scn_period = c("2050s", "2050s"),
+    clim_scn_em = c("RCP 4.5", "RCP 8.5"),
+    clim_scn_url = c("https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
+                     "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
+
+    # Scenario paths
+    mat_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
+    cmd_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif"))
+  ) %>%
+    unlist() # To get name1, name2, etc. for multiple scenario information
+}
+
 
 fix_path <- function(p) {
 
@@ -376,43 +438,6 @@ test_exp_tbl <- function(exp_lev) {
     "Scn1", lev6[1], lev6[2], lev6[3], lev6[4], lev6[5], lev6[6], lev6[1], lev6[2], lev6[3], lev6[4], lev6[5], lev6[6], 40.8,	31.0,	23.3, 4.9, 0,	NA,	NA,	NA,	NA,	0,	8073,	216, NA,	NA,	3.16572E+12, 4
   )
 }
-
-test_data_prep <- function(dir = fs::path_package("extdata", package = "ccviR")) {
-
-  dir_clim <- fs::path(dir, "clim_files", "raw")
-
-  # Inputs
-  list(
-
-    # Hist inputs
-    clim_norm_period = "1961-1990",
-    clim_norm_url = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
-
-    # Hist/standard File/dir paths
-    mat_norm_pth = fs::path(dir_clim, "NB_norm_MAT.tif"),
-    cmd_norm_pth = fs::path(dir_clim, "NB_norm_CMD.tif"),
-    map_norm_pth = fs::path(dir_clim, "NB_norm_MAP.tif"),
-    mwmt_norm_pth = fs::path(dir_clim, "NB_norm_MWMT.tif"),
-    mcmt_norm_pth = fs::path(dir_clim, "NB_norm_MCMT.tif"),
-    assess_pth = fs::path(dir, "assess_poly.shp"),
-    ceei_pth = NULL,
-
-    # Scenario inputs
-    clim_scn_nm = c("RCP 4.5", "RCP 8.5"),
-    clim_scn_gcm = c("AdaptWest 15 CMIP5 AOGCM Ensemble", "AdaptWest 15 CMIP5 AOGCM Ensemble"),
-    clim_scn_period = c("2050s", "2050s"),
-    clim_scn_em = c("RCP 4.5", "RCP 8.5"),
-    clim_scn_url = c("https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
-                     "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"),
-
-    # Scenario paths
-    mat_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
-    cmd_fut_pth = fs::path(dir_clim, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif"))
-  ) %>%
-    unlist() # To get name1, name2, etc. for multiple scenario information
-}
-
-
 
 #' Simplified CMD and Tmean calculations
 #'
