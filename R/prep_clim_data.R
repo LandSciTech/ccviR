@@ -130,14 +130,19 @@ prep_clim_readme <- function(
 #'   according to the convention described in details
 #' @param out_folder file path where the processed files will be saved
 #' @param reproject should the data be re-projected to lat/long? Not recommended.
-#' @param overwrite should existing files in out_folder be overwritten?
 #' @param scenario_name a string identifying the climate change scenario that
 #'   will be used as a suffix for the output files.
+#' @param brks List. Optionally supply `brks_mat`, `brks_cmd` and `brks_ccei`
+#'   as a list.
 #' @param brks_mat,brks_cmd,brks_ccei a matrix containing breaks to use for
 #'   classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
 #'   \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
 #'   the default, the breaks will be determined using the median and half the
 #'   interquartile range
+#' @param n Numeric. Only for use by `prep_clim_data_multi()` for progressess
+#'   messages.
+#'
+#' @inheritParams common_docs
 #'
 #' @return Returns a list of matrices with the breaks used to classify mat, cmd
 #'   and ccei. This list can be supplied to a future call to
@@ -470,7 +475,6 @@ ccei_reclassify <- function(ccei, brks = NULL, out_folder, scenario_name,
 #' @param rast_fut raster for future period
 #' @param file_nm filename
 #' @param reproject Should the raster be projected to longlat?
-#' @param overwrite option passed to \code{writeRaster}
 #' @param type one of "halfIQR" or "sd"
 #' @param brs breaks matrix to use. If not NULL type is ignored
 #'

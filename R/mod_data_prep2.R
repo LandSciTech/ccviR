@@ -8,8 +8,6 @@
 #'   data included in the package.
 #' @param launch.browser logical. Run app in browser?
 #' @param port If launch.browser is FALSE, specify port to run CCVI app.
-#' @param test.mode Should the app be launched using shiny test.mode. Only set
-#'   to TRUE for debugging.
 #'
 #' @export
 #'

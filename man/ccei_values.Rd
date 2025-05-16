@@ -6,6 +6,18 @@
 \usage{
 ccei_values(rasts, out, aggregate = FALSE, overwrite = TRUE, quiet = FALSE)
 }
+\arguments{
+\item{rasts}{Data.frame of rasters from \code{prep_ccei_historical()} or
+\code{prep_ccei_future()}}
+
+\item{out}{Character. Out folder/file preface}
+
+\item{aggregate}{Logical. Whether tmean and cmd should be aggregated.}
+
+\item{overwrite}{Logical. Whether to overwrite existing file(s)}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
+}
 \value{
 Annual CMD raster tif and Annual Mean Temperature raster tif saved
 to an 'intermediate' folder in the \code{path_ccei}. If \code{aggregate == TRUE},

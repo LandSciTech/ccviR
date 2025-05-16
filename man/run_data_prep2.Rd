@@ -17,9 +17,6 @@ data included in the package.}
 \item{launch.browser}{logical. Run app in browser?}
 
 \item{port}{If launch.browser is FALSE, specify port to run CCVI app.}
-
-\item{test.mode}{Should the app be launched using shiny test.mode. Only set
-to TRUE for debugging.}
 }
 \value{
 A shiny app.

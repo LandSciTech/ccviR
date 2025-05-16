@@ -6,6 +6,11 @@
 \usage{
 plot_evidence(score_df, base_size = 14)
 }
+\arguments{
+\item{score_df}{Data frame of codes, evidence and scores for questions.}
+
+\item{base_size}{Numeric. Font base size passed.}
+}
 \value{
 ggplot2 figure
 }

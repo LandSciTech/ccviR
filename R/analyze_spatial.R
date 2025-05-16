@@ -33,6 +33,8 @@
 #' @param scenario_names character vector with names that identify multiple
 #'   future climate scenarios.
 #'
+#' @inheritParams common_docs
+#'
 #' @return a list with elements: \code{spat_table} the results of the spatial
 #'   analysis, \code{range_poly_assess} the range polygon clipped to the
 #'   assessment area, and \code{range_poly_clim} the range polygon clipped to

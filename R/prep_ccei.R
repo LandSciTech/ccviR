@@ -152,6 +152,13 @@ combine_future <- function(path_ccei = "misc/ccei", quiet = FALSE) {
 #' Calculate Annual CMD and Mean Temperature in
 #' preparation for creating the Climate Exposure Index Raster.
 #'
+#' @param rasts Data.frame of rasters from `prep_ccei_historical()` or
+#'   `prep_ccei_future()`
+#' @param out Character. Out folder/file preface
+#' @param aggregate Logical. Whether tmean and cmd should be aggregated.
+#'
+#' @details
+#'
 #' CMD = Sum of Monthly CMD (difference between Eref and monthly
 #' precipitation)
 #'
@@ -249,7 +256,8 @@ ccei_values <- function(rasts, out, aggregate = FALSE,
 #' @param tmin_files Character. Files paths to minimum temperature rasters
 #' @param tmax_files  Character. Files paths to maximum temperature rasters
 #' @param clip SpatExtent. Area which to clip the raster to.
-#' @param quiet Logical. Silence progress messages.
+#'
+#' @inheritParams common_docs
 #'
 #' @returns SpatRaster with `tmean` and `cmd`
 
@@ -360,6 +368,9 @@ calc_sed <- function(b, a, s) {
 #'   all models).
 #' @param scenario Character. Which scenario to calculate CCEI for. Must match
 #'   scenario used in raster file names, e.g., "ssp245" or "ssp585"
+#' @param out_append Character. String to apped to the output file.
+#'
+#' @inheritParams common_docs
 #'
 #' @returns Writes final CCEI rasters (one for each scenario) to `path_ccei`.
 #'   `ccei_SCENARIO.tif`.

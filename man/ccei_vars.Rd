@@ -15,7 +15,7 @@ ccei_vars(prec_files, tmin_files, tmax_files, clip, quiet = FALSE)
 
 \item{clip}{SpatExtent. Area which to clip the raster to.}
 
-\item{quiet}{Logical. Silence progress messages.}
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 SpatRaster with \code{tmean} and \code{cmd}

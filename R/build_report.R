@@ -1,7 +1,3 @@
-# Using template: https://github.com/quarto-dev/quarto-cli/discussions/5373#discussioncomment-5772210
-# Quarto Parameters: https://quarto.org/docs/computations/parameters.html
-# quarto R package: https://quarto-dev.github.io/quarto-r/
-
 #' Build the report from saved data
 #'
 #' @param saved Data frame. Data saved from the Shiny app.
@@ -9,19 +5,24 @@
 #'  name of file to create.
 #' @param include_about Logical. Whether to include page explaining report
 #'   interpretation.
-#' @param overwrite Logical. Whether to overwrite previous reports with the same
 #'   name.
-#' @param quiet Logical. Whether to suppress progress messages.
+#' @param debug Logical. Whether to print debugging messages.
+#'
+#' @inheritParams common_docs
 #'
 #' @returns File location for the pdf report
-#' @export
 #'
+#' @noRd
 #' @examples
 #' build_report(test_df_loaded())
 #' build_report(test_df_loaded(), debug = TRUE)
 
 build_report <- function(saved, file_loc = ".", include_about = TRUE,
                          overwrite = TRUE, quiet = FALSE, debug = FALSE) {
+
+  # Using template: https://github.com/quarto-dev/quarto-cli/discussions/5373#discussioncomment-5772210
+  # Quarto Parameters: https://quarto.org/docs/computations/parameters.html
+  # quarto R package: https://quarto-dev.github.io/quarto-r/
 
   inform_prog("Preparing report template", quiet, 4)
 

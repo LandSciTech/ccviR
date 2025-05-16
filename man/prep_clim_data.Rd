@@ -37,16 +37,24 @@ according to the convention described in details}
 
 \item{reproject}{should the data be re-projected to lat/long? Not recommended.}
 
-\item{overwrite}{should existing files in out_folder be overwritten?}
+\item{overwrite}{Logical. Whether to overwrite existing file(s)}
 
 \item{scenario_name}{a string identifying the climate change scenario that
 will be used as a suffix for the output files.}
+
+\item{brks}{List. Optionally supply \code{brks_mat}, \code{brks_cmd} and \code{brks_ccei}
+as a list.}
 
 \item{brks_mat, brks_cmd, brks_ccei}{a matrix containing breaks to use for
 classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
 \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
 the default, the breaks will be determined using the median and half the
 interquartile range}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
+
+\item{n}{Numeric. Only for use by \code{prep_clim_data_multi()} for progressess
+messages.}
 }
 \value{
 Returns a list of matrices with the breaks used to classify mat, cmd

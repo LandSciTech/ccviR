@@ -10,6 +10,8 @@ check_polys(poly, var_name = "polygon", quiet = FALSE)
 \item{poly}{Spaitial object. sf or convertible to sf.}
 
 \item{var_name}{Character. Name of the variable for messaging}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 sf polygon

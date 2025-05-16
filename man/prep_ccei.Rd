@@ -9,6 +9,10 @@ prep_ccei(path_ccei = "misc/ccei", overwrite = TRUE, quiet = FALSE)
 \arguments{
 \item{path_ccei}{Character. Path to pre-downloaded climate data to be used to
 calculate CCEI. Expects two folders \code{historical} and \code{future}.}
+
+\item{overwrite}{Logical. Whether to overwrite existing file(s)}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 Creates rasters and saves them to \code{path_ccei}. The final CCEI rasters are

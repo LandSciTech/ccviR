@@ -1,5 +1,8 @@
 #' Plot evidence by type
 #'
+#' @param score_df Data frame of codes, evidence and scores for questions.
+#' @param base_size Numeric. Font base size passed.
+#'
 #' @returns ggplot2 figure
 #' @export
 #' @examples

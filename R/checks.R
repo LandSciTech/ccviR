@@ -36,6 +36,8 @@ check_scn <- function(clim_vars_lst, hs_rast, scenario_names) {
 #' @param poly Spaitial object. sf or convertible to sf.
 #' @param var_name Character. Name of the variable for messaging
 #'
+#' @inheritParams common_docs
+#'
 #' @returns sf polygon
 check_polys <- function(poly, var_name = "polygon", quiet = FALSE) {
 

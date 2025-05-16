@@ -49,6 +49,8 @@ in the modeled range change under climate change}
 
 \item{scenario_names}{character vector with names that identify multiple
 future climate scenarios.}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 a list with elements: \code{spat_table} the results of the spatial

@@ -22,6 +22,12 @@ scenario used in raster file names, e.g., "ssp245" or "ssp585"}
 
 \item{models}{Character Vector. Subset of models to include (otherwise uses
 all models).}
+
+\item{out_append}{Character. String to apped to the output file.}
+
+\item{overwrite}{Logical. Whether to overwrite existing file(s)}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 Writes final CCEI rasters (one for each scenario) to \code{path_ccei}.
