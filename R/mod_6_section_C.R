@@ -310,7 +310,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
 
     ## C2 bi ---------
     output$ui_C2bi <- renderUI({
-      spat_vuln_ui2(range_poly(), ptn_poly(),
+      spat_vuln_ui2(range_poly(), clim_vars(),
                     id = id, ui_id = "C2bi",
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"",
                     spat_df = spat_res(), input = input, q = TRUE)
