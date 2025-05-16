@@ -12,6 +12,11 @@ expect_silent({
     "ns_to" = 99,
     "gain_mod" = 1,
     "gain_mod_comm" = "")
+
+  input_files <- test_files()
+  if(!isTruthy(Sys.getenv("CI"))) {
+    input_files <- input_files[names(input_files) != "protected_poly_pth"]
+  }
 })
 
 test_that("spatial data created", {
@@ -21,7 +26,7 @@ test_that("spatial data created", {
     df_loaded = reactive(NULL),
     cave = reactive(FALSE),
     # Use Testing files
-    input_files = test_files()), {
+    input_files = input_files), {
 
       # Set the inputs
       session$setInputs(!!!test_inputs)
@@ -36,7 +41,7 @@ test_that("spatial data created", {
       expect_null(nonbreed_poly())
       expect_s4_class(rng_chg_rast(), "SpatRaster")
 
-      if(!skip_on_ci()) expect_s3_class(protected_poly(), "sf") # no protected on ci
+      if(!isTruthy(Sys.getenv("CI"))) expect_s3_class(protected_poly(), "sf") # no protected on ci
 
       expect_equal(terra::nlyr(rng_chg_rast()), 2)
 
@@ -80,7 +85,7 @@ test_that("1 range with mult scenarios", {
     df_loaded = reactive(NULL),
     cave = reactive(FALSE),
     # Use Testing files
-    input_files = test_files()), {
+    input_files = input_files), {
 
       # Set the inputs
       session$setInputs(!!!test_inputs)
