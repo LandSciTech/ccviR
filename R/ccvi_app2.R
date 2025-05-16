@@ -12,6 +12,9 @@
 #' ccvi_app2()  # Basic, no files
 #' ccvi_app2(input_files = test_files()) # With test paths pre-filled
 #' ccvi_app2(input_files = test_files(min_req = TRUE)) # Min-required only
+#'
+#' # With ccei and migration
+#' ccvi_app2(input_files = test_files(clim_dir = "../../misc/climate/processed"))
 
 ccvi_app2 <- function(input_files = NULL, ...){
 

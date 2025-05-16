@@ -129,4 +129,20 @@ spat_res <- analyze_spatial(
   scenario_names = scn_nms
 )
 }
+
+\dontrun{
+# With CCEI (using `non_breed` spatial example)
+clim_vars <- get_clim_vars("misc/climate/processed", scenario_names = scn_nms)
+spat_res <- analyze_spatial(
+  range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+  scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+  protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
+  non_breed_poly = non_breed,
+  clim_vars_lst = clim_vars,
+  hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+                          file.path(base_pth, "rng_chg_85.tif"))),
+  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  scenario_names = scn_nms
+)
+}
 }

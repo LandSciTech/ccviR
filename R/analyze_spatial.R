@@ -101,6 +101,22 @@
 #'   scenario_names = scn_nms
 #' )
 #' }
+#'
+#' \dontrun{
+#' # With CCEI (using `non_breed` spatial example)
+#' clim_vars <- get_clim_vars("misc/climate/processed", scenario_names = scn_nms)
+#' spat_res <- analyze_spatial(
+#'   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+#'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+#'   protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
+#'   non_breed_poly = non_breed,
+#'   clim_vars_lst = clim_vars,
+#'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+#'                           file.path(base_pth, "rng_chg_85.tif"))),
+#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+#'   scenario_names = scn_nms
+#' )
+#' }
 
 analyze_spatial <- function(
     range_poly, scale_poly, clim_vars_lst,
@@ -173,17 +189,19 @@ analyze_spatial <- function(
                                      val_range = 1:4, check_overlap = 0,
                                      return_overlap_as = "prop_non_breed_over_ccei")
 
-    overlap <- ccei_classes$prop_non_breed_over_ccei[1]
+    overlap <- ccei_classes$prop_non_breed_over_ccei
 
-    if(overlap == 0){
-      stop("The nonbreeding range polygon does not overlap the CCEI raster")
+    if(any(overlap == 0)) {
+      stop("The nonbreeding range polygon does not overlap at least one of ",
+           "the CCEI raster(s)", call. = FALSE)
     }
 
-    if(overlap < 0.4){
-      warning(round(1-overlap, 2) *100, "% of the nonbreeding range polygon does not",
-              " overlap the CCEI raster. Migratory exposure index only reflects ",
-              "conditions in the area of overlap",
-              call. = FALSE)
+    if(any(overlap < 0.4)) {
+      warning(
+        paste0(round(1 - overlap, 2) * 100, collapse = "% and "),
+        "% of the nonbreeding range polygon does not overlap the CCEI raster(s).\n",
+        "Migratory exposure index only reflects conditions in the area of overlap",
+        call. = FALSE)
     }
   }
 

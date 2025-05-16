@@ -14,7 +14,7 @@ expect_silent({
     "gain_mod_comm" = "")
 
   input_files <- test_files()
-  if(!isTruthy(Sys.getenv("CI"))) {
+  if(isTruthy(Sys.getenv("CI"))) { # No protected if on CI
     input_files <- input_files[names(input_files) != "protected_poly_pth"]
   }
 })
@@ -38,7 +38,7 @@ test_that("spatial data created", {
       expect_s3_class(rng_poly(), "sf")
       expect_s3_class(assess_poly(), "sf")
       expect_s3_class(ptn_poly(), "sf")
-      expect_null(nonbreed_poly())
+      expect_s3_class(nonbreed_poly(), "sf")
       expect_s4_class(rng_chg_rast(), "SpatRaster")
 
       if(!isTruthy(Sys.getenv("CI"))) expect_s3_class(protected_poly(), "sf") # no protected on ci
@@ -122,9 +122,62 @@ test_that("1 range with mult scenarios", {
       expect_s3_class(range_poly_clim(), "sf")
       expect_s3_class(spat_run(), "data.frame")
 
-      # Expect two scnarios but equal range changes
+      # Expect two scenarios but equal range changes
       expect_equal(nrow(spat_res()$spat_table), 2)
       expect_length(unique(spat_res()$spat_table$range_change), 1)
+
+      # Get Spat run and clean up paths
+      r <- session$getReturned()$spat_run() %>%
+        dplyr::mutate(dplyr::across(dplyr::contains("pth"), fs::path_file))
+      expect_snapshot_value(r, style = "json2")
+    })
+})
+
+
+# Can have 1 range change even if clim data has multiple scenarios
+test_that("CCEI and non-breeding", {
+
+  skip_on_ci()
+
+  input_files <- test_files(clim_dir = "../../misc/climate/processed")
+
+  testServer(mod_spatial_server, args = list(
+    volumes,
+    df_loaded = reactive(NULL),
+    cave = reactive(FALSE),
+    # Use Testing files
+    input_files = input_files), {
+
+      # Set the inputs
+      session$setInputs(!!!test_inputs)
+      session$setInputs(rng_chg_used = "no")
+      session$flushReact()
+
+      # Expect spatial files to load right away
+      expect_s4_class(clim_vars()$ccei, "SpatRaster")
+      expect_s3_class(nonbreed_poly(), "sf")
+      expect_s3_class(clim_vars()$clim_poly, "sf")
+      expect_s3_class(clim_readme(), "data.frame")
+
+      # No spatial without button
+      expect_error(spat_res())   # Reactive
+      expect_null(spat_thresh()) # ReactiveVal
+
+      # Run spatial
+      doSpatial(1)
+      session$flushReact() %>%
+        suppressWarnings() %>% # TODO: Catch this warning in the app, don't suppress here
+        suppressMessages()
+
+      # Have spatial
+      expect_type(spat_res(), "list")
+      expect_s3_class(spat_run(), "data.frame")
+
+      # Expect two scenarios with different CCEI's none missing and some > 0
+      expect_equal(nrow(spat_res()$spat_table), 2)
+      ccei <- dplyr::select(spat_res()$spat_table, dplyr::contains("CCEI"))
+      expect_true(all(!is.na(ccei)))
+      expect_true(any(ccei > 0))
 
       # Get Spat run and clean up paths
       r <- session$getReturned()$spat_run() %>%
