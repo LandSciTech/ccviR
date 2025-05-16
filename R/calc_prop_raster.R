@@ -10,7 +10,6 @@
 #'
 #' @return a data.frame
 #'
-#'
 #' @noRd
 calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
                              check_overlap = 0.99, return_overlap_as = NULL) {
