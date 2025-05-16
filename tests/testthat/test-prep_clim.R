@@ -77,7 +77,7 @@ test_that("ccei_reclassify()", {
   unlink(out, recursive = TRUE)
 })
 
-test_that("prep_clim_data()", {
+test_that("prep_clim_data() - no ccei", {
 
   out <- fs::path(tempdir(), "processed")
   fs::dir_create(out)
@@ -91,7 +91,7 @@ test_that("prep_clim_data()", {
       map = f["map_norm_pth"],
       mwmt = f["mwmt_norm_pth"],
       mcmt = f["mcmt_norm_pth"],
-      ccei = f["ccei_pth1"],
+      ccei = NULL,
       out_folder = out,
       clim_poly = test_files()$assess_poly_pth,
       overwrite = TRUE,
@@ -111,7 +111,7 @@ test_that("prep_clim_data()", {
       map = f["map_norm_pth"],
       mwmt = f["mwmt_norm_pth"],
       mcmt = f["mcmt_norm_pth"],
-      ccei = f["ccei_pth2"],
+      ccei = NULL,
       out_folder = out,
       clim_poly = test_files()$assess_poly_pth,
       overwrite = TRUE,
@@ -123,7 +123,7 @@ test_that("prep_clim_data()", {
   expect_type(clim2, "list")
   expect_length(clim2, 3)
 
-  expect_length(fs::dir_ls(out), 12) # no readme here
+  expect_length(fs::dir_ls(out), 10) # no readme here
 
   # Scenario 2 has higher values than Scenario 1
   r <- fs::path(out, c("MAT_reclassRCP_4.5.tif", "MAT_reclassRCP_8.5.tif"))
@@ -136,10 +136,44 @@ test_that("prep_clim_data()", {
   expect_snapshot_value(clim2, style = "json2")
 
   unlink(out, recursive = TRUE)
+
+  # Multi gives same results
+  fs::dir_create(out)
+
+  expect_silent({
+    clim12 <- prep_clim_data_multi(
+      mat_norm = f["mat_norm_pth"],
+      mat_fut = c(f["mat_fut_pth1"], f["mat_fut_pth2"]),
+      cmd_norm = f["cmd_norm_pth"],
+      cmd_fut = c(f["cmd_fut_pth1"], f["cmd_fut_pth2"]),
+      map = f["map_norm_pth"],
+      mwmt = f["mwmt_norm_pth"],
+      mcmt = f["mcmt_norm_pth"],
+      ccei = NULL,
+      out_folder = out,
+      clim_poly = test_files()$assess_poly_pth,
+      overwrite = TRUE,
+      scenario_name = c("RCP 4.5", "RCP 8.5"),
+      quiet = TRUE)
+  })
+
+  expect_type(clim12, "list")
+  expect_length(clim12, 3)
+  expect_length(fs::dir_ls(out), 10) # no readme here
+
+  # Multi is the same as a two staged prep
+  expect_equal(clim2, clim12)
+
+  expect_snapshot_value(clim1, style = "json2")
+  expect_snapshot_value(clim2, style = "json2")
+
+  unlink(out, recursive = TRUE)
 })
 
 
-test_that("prep_clim_data() and _multi()", {
+test_that("prep_clim_data() - ccei", {
+
+  skip_if_not(all(fs::file_exists(c(f["ccei_pth1"], f["ccei_pth2"]))))
 
   out <- fs::path(tempdir(), "processed")
   fs::dir_create(out)
@@ -187,12 +221,8 @@ test_that("prep_clim_data() and _multi()", {
 
   expect_length(fs::dir_ls(out), 12) # no readme here
 
-  # Scenario 2 has higher values than Scenario 1
-  r <- fs::path(out, c("MAT_reclassRCP_4.5.tif", "MAT_reclassRCP_8.5.tif"))
-  expect_true(all(fs::file_exists(r)))
-
-  expect_lt(terra::global(terra::rast(r[1]), "mean", na.rm = TRUE)[1,1],
-            terra::global(terra::rast(r[2]), "mean", na.rm = TRUE)[1,1])
+  expect_snapshot_value(clim1, style = "json2")
+  expect_snapshot_value(clim2, style = "json2")
 
   unlink(out, recursive = TRUE)
 

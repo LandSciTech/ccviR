@@ -54,7 +54,167 @@
       "value": [0, 4, 5, 7, 4, 5, 7, "Inf", 1, 2, 3, 4]
     }
 
-# prep_clim_data()
+# prep_clim_data() - no ccei
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["brks_mat", "brks_cmd", "brks_ccei"]
+        }
+      },
+      "value": [
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-4.105, -3.13, -3.05, -2.97, -2.89, -2.81, -3.13, -3.05, -2.97, -2.89, -2.81, -1.556, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-20.75, -13.97, -12.175, -10.38, -8.585, -6.79, -13.97, -12.175, -10.38, -8.585, -6.79, 2.14, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "NULL"
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["brks_mat", "brks_cmd", "brks_ccei"]
+        }
+      },
+      "value": [
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-5.2, -3.13, -3.05, -2.97, -2.89, -2.81, -3.13, -3.05, -2.97, -2.89, -2.81, -1.556, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-23.7, -13.97, -12.175, -10.38, -8.585, -6.79, -13.97, -12.175, -10.38, -8.585, -6.79, 2.14, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "NULL"
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["brks_mat", "brks_cmd", "brks_ccei"]
+        }
+      },
+      "value": [
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-4.105, -3.13, -3.05, -2.97, -2.89, -2.81, -3.13, -3.05, -2.97, -2.89, -2.81, -1.556, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-20.75, -13.97, -12.175, -10.38, -8.585, -6.79, -13.97, -12.175, -10.38, -8.585, -6.79, 2.14, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "NULL"
+        }
+      ]
+    }
+
+---
+
+    {
+      "type": "list",
+      "attributes": {
+        "names": {
+          "type": "character",
+          "attributes": {},
+          "value": ["brks_mat", "brks_cmd", "brks_ccei"]
+        }
+      },
+      "value": [
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-5.2, -3.13, -3.05, -2.97, -2.89, -2.81, -3.13, -3.05, -2.97, -2.89, -2.81, -1.556, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "double",
+          "attributes": {
+            "dim": {
+              "type": "integer",
+              "attributes": {},
+              "value": [6, 3]
+            }
+          },
+          "value": [-23.7, -13.97, -12.175, -10.38, -8.585, -6.79, -13.97, -12.175, -10.38, -8.585, -6.79, 2.14, 6, 5, 4, 3, 2, 1]
+        },
+        {
+          "type": "NULL"
+        }
+      ]
+    }
+
+# prep_clim_data() - ccei
 
     {
       "type": "list",
@@ -150,7 +310,7 @@
       ]
     }
 
-# prep_clim_data() and _multi()
+---
 
     {
       "type": "list",
