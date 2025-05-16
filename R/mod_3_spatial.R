@@ -271,8 +271,8 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
         rng_ids(NULL)
         return(NULL)
       } else if(input$rng_chg_used == "one"){
-        rng_ids("rng_chg_pth")
-        get_file_ui2(id, "rng_chg_pth", "Projected range change raster")
+        rng_ids("rng_chg_pth_1")
+        get_file_ui2(id, "rng_chg_pth_1", "Projected range change raster")
       } else if (input$rng_chg_used == "multiple"){
         validate(need(
           is_ready(clim_readme()),
