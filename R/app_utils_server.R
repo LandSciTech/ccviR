@@ -468,7 +468,7 @@ recreate_index_res <- function(df){
 }
 
 switch_tab <- function(tab, parent_session) {
-  updateTabsetPanel(session = parent_session, input = "tabset", selected = tab)
+  updateTabsetPanel(session = parent_session, inputId = "tabset", selected = tab)
   shinyjs::runjs("window.scrollTo(0, 0)")
 }
 

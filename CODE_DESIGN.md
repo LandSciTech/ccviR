@@ -47,7 +47,7 @@ use sections (# Header -------) to create the TOC used in RStudio.
 ### Namespacing
 Namespacing can be a bit tricky in modules. In the simplest way, you just need
 to use the `NS()` function in the UI or the `ns` variable in the server (if
-using `renderUI()`, not required for anything going to/from `output` or `input`)
+using `renderUI()`, not required for anything else going to/from `output` or `input`)
 
 - UI: Use `ns <- NS(id)` at the start, wrap all UI ids in `ns(my_id)`
 - Server: Use `ns <- session$ns` at the start, then wrap ids in `ns(my_id)`. 

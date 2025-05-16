@@ -13,4 +13,7 @@ rsconnect
 _\.new\.png$
 ^deploy$
 ^misc$
-^EXPLORE_CCEI.R$
+^EXPLORE_CCEI\.R$
+^CODE_DESIGN\.md$
+^CITATION\.cff$
+^DEVTEST_TESTING_SHINY\.R$

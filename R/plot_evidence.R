@@ -53,7 +53,9 @@ plot_evidence <- function(score_df, base_size = 14) {
   # Order types of evidence
   lvls <- unique(score_df$evidence)
   lvls <- c(lvls[!lvls %in% c("Other", na)], "Other", na)
-  score_df <- dplyr::mutate(score_df, evidence = factor(evidence, levels = lvls))
+  score_df <- dplyr::mutate(
+    score_df,
+    evidence = factor(.data$evidence, levels = .env$lvls))
 
   # Calculate counts
   n_qs <- dplyr::filter(score_df, .data$evidence != na) %>%

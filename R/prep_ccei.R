@@ -276,7 +276,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet = FALSE) {
   # Prep infrastructure
   cells <- terra::ncell(sample)
   vals_cmd <- vals_tmean <- matrix(nrow = cells, ncol = 12)
-  lat <-  setNames(terra::init(sample, "y"), "latitude") %>%
+  lat <- stats::setNames(terra::init(sample, "y"), "latitude") %>%
     terra::values(mat = FALSE)
 
   # Calculate eref, cmd, tmean
