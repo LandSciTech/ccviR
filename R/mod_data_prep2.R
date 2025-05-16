@@ -141,7 +141,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     # reactiveVal/ues, not reactive, bc modified through several pathways
     file_pths <- reactiveValues() # Prevent individual file paths from depending on each other
     file_scn_ids <- reactiveVal()
-    out_dir <- reactiveVal()
+    out_folder <- reactiveVal()
     file_ids <- c(
       # Historical Data files
       "mat_norm_pth", "cmd_norm_pth", "map_norm_pth",
@@ -169,8 +169,8 @@ mod_data_prep_server <- function(id, input_files = NULL) {
           # So we can find the folder and test that it prepared the data
           d <- getOption("ccviR.test_data_prep")
         } else d <- "TESTING DATA UI OUTPUTS"
-        out_dir(d)
-        fs::dir_create(out_dir())
+        out_folder(d)
+        fs::dir_create(out_folder())
         stringr::str_subset(names(input_files), "pth") %>%
           purrr::walk(~{
             file_pths[[.x]] <- input_files[[.x]]
@@ -236,7 +236,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     # Parse Dir paths
     observeEvent(input$out_folder, {
       if(!is.integer(input$out_folder)) {
-        out_dir(parseDirPath(volumes, input$out_folder))
+        out_folder(parseDirPath(volumes, input$out_folder))
       }
     }, ignoreInit = TRUE)
 
@@ -265,7 +265,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 
     # Clear Dir paths when x clicked
     observeEvent(input$out_folder_clear, {
-      out_dir(NULL)
+      out_folder(NULL)
     })
 
     # Output File paths
@@ -281,7 +281,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 
     # Output Dir paths
     output$out_folder_out <- renderText({
-      out_dir()
+      out_folder()
     })
 
 
@@ -303,7 +303,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
                       "clim_scn_em", "clim_scn_url"), rep(sort(input$scn_n), 5))
       req_scn <- purrr::map(stats::setNames(nm = scn), ~input[[.x]])
 
-      req_dir <- c("out_dir" = out_dir())
+      req_dir <- c("out_folder" = out_folder())
 
       c(req_pths, req_static, req_dir, req_scn)
     })
@@ -346,7 +346,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
                   "mcmt" = file_pths$mcmt_norm_pth,
                   "clim_poly" = file_pths$assess_pth,
                   "in_folder" = NULL,
-                  "out_folder" = out_dir(),
+                  "out_folder" = out_folder(),
                   "reproject" = FALSE,
                   "overwrite" = input$allow_over,
                   "scenario_name" = collect_inputs(input, "clim_scn_nm")
@@ -358,7 +358,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
              "fut_period" = collect_inputs(input, "clim_scn_period"),
              "emissions_scenario" = collect_inputs(input, "clim_scn_em"),
              "url" = collect_inputs(input, "clim_scn_url"),
-             "out_dir" = out_dir()
+             "out_folder" = out_folder()
            )
       )
     })

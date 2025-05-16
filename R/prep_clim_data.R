@@ -51,7 +51,7 @@ prep_clim_data_multi <- function(
 prep_clim_readme <- function(
     scenario_name, gcm_ensemble, hist_period,
     fut_period, emissions_scenario, url,
-    out_dir, brks = NULL,
+    out_folder, brks = NULL,
     brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL) {
 
   if(is.null(brks)) {
@@ -92,7 +92,7 @@ prep_clim_readme <- function(
   #     }))
   # }
 
-  utils::write.csv(clim_readme, fs::path(out_dir, "climate_data_readme.csv"),
+  utils::write.csv(clim_readme, fs::path(out_folder, "climate_data_readme.csv"),
                    row.names = FALSE)
 }
 
