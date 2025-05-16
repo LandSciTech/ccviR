@@ -394,15 +394,19 @@ mod_data_prep_server <- function(id, input_files = NULL) {
         # If error in run
         tagList(icon("xmark", style = "color:red"),
                 span(strong("Error preparing data: "), prep_data_done()))
-      } else if(!list_equal(prep_values(), prep_values_last_run())) {
-        # If last completed no longer matches the selected values
-        tagList(icon("check", style = "color:grey"),
-                span("Last completed at", format(prep_data_done(), "%I:%M %p"),
-                     style = "color:grey"))
       } else {
-        # Last completed matches current values
-        tagList(icon("check", style = "color:green"),
-                "Completed at", format(prep_data_done(), "%I:%M %p"))
+
+        # When testing use placeholder
+        if(is_testing()) dt <- "HH:MM PM" else dt <- format(prep_data_done(), "%I:%M %p")
+
+        if(!list_equal(prep_values(), prep_values_last_run())) {
+          # If last completed no longer matches the selected values
+          tagList(icon("check", style = "color:grey"),
+                  span("Last completed at", dt, style = "color:grey"))
+        } else {
+          # Last completed matches current values
+          tagList(icon("check", style = "color:green"), "Completed at", dt)
+        }
       }
 
     })

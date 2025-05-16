@@ -5,32 +5,46 @@ library(shinytest2)
 # devtools::test(filter = "shiny-mods-data-prep") # Run just the shiny apps test programatically
 
 
+
 test_that("Data Prep app - inputs", {
 
   shiny_app <- mod_data_prep_test()
-  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
+  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE),
+                       expect_values_screenshot_args = FALSE)
   app$set_window_size(width = 1619, height = 993)
 
   # Standard setup
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "01-ready")
+  g <- app$get_value(output = "data-ui_scenarios")$html
+  expect_true(stringr::str_detect(g, "Scenario 1"))
+  expect_false(stringr::str_detect(g, "Scenario 2"))
+  expect_screenshot_local(app, name = "01-ready")
 
   # Add scenarios
   app$set_inputs(`data-scn_n` = 2)
-  app$expect_screenshot(name = "01_2-ready")
+  g <- app$get_value(output = "data-ui_scenarios")$html
+  expect_true(stringr::str_detect(g, "Scenario 1"))
+  expect_true(stringr::str_detect(g, "Scenario 2"))
+  expect_screenshot_local(app, name = "01_2-ready")
 
   # Half of MWMT/MCMT
   app$click("data-mwmt_norm_pth_clear")
-  app$expect_screenshot(name = "02-mwmt-mcmt-mismatch")
+  expect_equal(app$get_value(output = "data-submit_error")$message,
+               "Must provide both MCMT and MWMT or neither")
+  expect_screenshot_local(app, name = "02-mwmt-mcmt-mismatch")
 
   # Missing inputs
   app$click("data-mat_norm_pth_clear")
-  app$expect_screenshot(name = "03-missing-inputs")
+  expect_equal(app$get_value(output = "data-submit_error")$message,
+               "Missing required inputs")
+  expect_screenshot_local(app, name = "03-missing-inputs")
 
 })
 
 test_that("Data Prep app - run", {
+
+  unlink(test_path("TESTING DATA UI OUTPUTS"), recursive = TRUE)
 
   # Use options by hand
   # - shinytest2 doesn't work with runApp()
@@ -47,7 +61,8 @@ test_that("Data Prep app - run", {
   shiny_app <- mod_data_prep_test()
   app <- AppDriver$new(
     shiny_app, variant = platform_variant(r_version = FALSE),
-    options = list("ccviR.test_data_prep" = path))
+    options = list("ccviR.test_data_prep" = path),
+    expect_values_screenshot_args = FALSE)
   app$set_window_size(width = 1619, height = 993)
 
   # Now we have the dir - but no files
@@ -68,7 +83,7 @@ test_that("Data Prep app - run", {
                     "CMD_reclassRCP_4.5.tif", "MAT_reclassRCP_4.5.tif") %in% f))
   expect_false(any(c("CMD_reclassRCP_8.5.tif", "MAT_reclassRCP_8.5.tif") %in% f)) # Only one scenario
 
-  #app$expect_screenshot(name = "04-run") # This changes every time because of the time stamp...
+  expect_screenshot_local(app, name = "04-run")
 
   # Clean up
   fs::file_delete(f0)
@@ -88,6 +103,8 @@ test_that("Data Prep app - run", {
   expect_true(all(c("climate_data_readme.csv",
                     "CMD_reclassRCP_4.5.tif", "CMD_reclassRCP_8.5.tif",
                     "MAT_reclassRCP_4.5.tif", "MAT_reclassRCP_8.5.tif") %in% f))
+
+  expect_screenshot_local(app, name = "05-run")
 
   # Clean up
   unlink(test_path("TESTING DATA UI OUTPUTS"), recursive = TRUE)

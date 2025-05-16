@@ -27,6 +27,12 @@ expect_no_log_warnings <- function(app) {
   testthat::expect_false(any(stringr::str_detect(l, "Warning\\: ")))
 }
 
+
+expect_screenshot_local <- function(app, name = NULL) {
+  testthat::skip_on_ci()
+  app$expect_screenshot(name = name)
+}
+
 #' Load test data file paths
 #'
 #' Helper function for loading the file paths local test data.
