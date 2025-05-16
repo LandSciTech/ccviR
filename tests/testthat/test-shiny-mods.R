@@ -20,7 +20,7 @@ test_that("Full app", {
   app$set_inputs(`species-species_name` = "Testous testa")
   app$set_inputs(`species-common_name` = "Test sp.")
 
-  app$expect_screenshot(name = "02-species-ready")
+  expect_screenshot_local(app, name = "02-species-ready")
   app$click("species-continue")
 
   # Spatial
@@ -28,19 +28,19 @@ test_that("Full app", {
   app$set_inputs(`spatial-rng_chg_used` = "multiple")
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "03-spatial-ready")
+  expect_screenshot_local(app, name = "03-spatial-ready")
 
   app$click("spatial-startSpatial")
 
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "04-spatial-run")
+  expect_screenshot_local(app, name = "04-spatial-run")
   app$click("spatial-continue")
 
   # Section A
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "05-sectionA-ready")
+  expect_screenshot_local(app, name = "05-sectionA-ready")
   app$click("section_a-continue")
 
   # Section B
@@ -48,10 +48,10 @@ test_that("Full app", {
   app$click("section_b-help_B1")
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "06-sectionB-help")
+  expect_screenshot_local(app, name = "06-sectionB-help")
   app$click(selector = "button[data-dismiss='modal']")
   Sys.sleep(1)
-  app$expect_screenshot(name = "07-sectionB-ready")
+  expect_screenshot_local(app, name = "07-sectionB-ready")
   app$set_inputs(`section_b-B1` = "0")
   app$set_inputs(`section_b-B2a` = "0")
   app$set_inputs(`section_b-B2b` = "0")
@@ -61,7 +61,7 @@ test_that("Full app", {
 
   # Section C
   app$wait_for_idle()
-  app$expect_screenshot(name = "09-sectionC-ready")
+  expect_screenshot_local(app, name = "09-sectionC-ready")
 
   app$set_inputs(`section_c-C1` = "0")
   app$set_inputs(`section_c-C2bii` = "0")
@@ -71,7 +71,7 @@ test_that("Full app", {
   app$click("section_c-help_C4e")
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "10-sectionC-help")
+  expect_screenshot_local(app, name = "10-sectionC-help")
 
   app$click(selector = "button[data-dismiss='modal']")
   app$set_inputs(`section_c-C5a` = "0")
@@ -84,7 +84,7 @@ test_that("Full app", {
   # Section D
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "12-sectionD-ready")
+  expect_screenshot_local(app, name = "12-sectionD-ready")
 
   app$set_inputs(`section_d-D1` = "2")
   app$expect_values(input = TRUE, export = TRUE, name = "13-sectionD-set")
@@ -93,12 +93,12 @@ test_that("Full app", {
   # Results
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "14-results-ready")
+  expect_screenshot_local(app, name = "14-results-ready")
 
   app$click("results-calcIndex")
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_screenshot(name = "15-results-run")
+  expect_screenshot_local(app, name = "15-results-run")
 
   # Modify and rerun
   app$set_inputs(`section_d-D1` = "3")
