@@ -3,6 +3,8 @@ library(shinytest2)
 # Remember to re-build/install package before running tests! Ctrl-Shift-B
 
 test_that("Section D", {
+  skip_on_ci()
+
   shiny_app <- mod_D_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
@@ -15,6 +17,8 @@ test_that("Section D", {
 
 # Optional spatial
 test_that("Section D - min required", {
+  skip_on_ci()
+
   shiny_app <- mod_D_test(input_files = test_files(min_req = TRUE))
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)

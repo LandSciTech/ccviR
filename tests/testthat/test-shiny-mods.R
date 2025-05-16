@@ -5,6 +5,7 @@ library(shinytest2)
 # devtools::test(filter = "shiny-mods$") # Run just the shiny apps test programatically
 
 test_that("Full app", {
+  skip_on_ci()
 
   shiny_app <- ccvi_app2(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))

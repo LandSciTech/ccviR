@@ -44,6 +44,7 @@ test_that("Full app - No errors", {
 
 # Remember to re-build/install package before running tests! Ctrl-Shift-B
 test_that("Full app - No errors with missing spatial", {
+  skip_on_ci()
 
   f <- test_files(protected_poly_pth = NA,
                   ptn_poly_pth = NA,

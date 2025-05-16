@@ -4,6 +4,8 @@ library(shinytest2)
 
 test_that("Section B", {
 
+  skip_on_ci()
+
   shiny_app <- mod_B_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)

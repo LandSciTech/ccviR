@@ -35,7 +35,8 @@ test_that("spatial data created", {
       expect_s3_class(ptn_poly(), "sf")
       expect_null(nonbreed_poly())
       expect_s4_class(rng_chg_rast(), "SpatRaster")
-      expect_s3_class(protected_poly(), "sf")
+
+      if(!skip_on_ci()) expect_s3_class(protected_poly(), "sf") # no protected on ci
 
       expect_equal(terra::nlyr(rng_chg_rast()), 2)
 
