@@ -130,7 +130,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 test_data <- function(f = test_files(), min_req = FALSE) {
 
   clim_readme <- utils::read.csv(fs::path(f$clim_dir, "climate_data_readme.csv"))
-  clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms)
+  clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms, quiet = TRUE)
   rng_chg_mat <- if(!min_req) matrix(c(-1:1, NA, 1:3,0), ncol = 2)
 
   # make the crs's match to avoid warning it has to be verbatim the same
