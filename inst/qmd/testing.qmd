@@ -1,0 +1,60 @@
+---
+params: 
+  saved: none
+  species: Test Species Name
+title: '{{< meta params.species >}}'
+subtitle: Climate Change Vulnerability Index Report
+format: 
+  html:
+    page-layout: full
+    theme: 
+      - default
+      - styles.scss
+keep-md: true
+---
+
+```{r}
+#| results: "asis"
+#| echo: false
+library(htmltools)
+div(class = "card mb-3",
+    div(class = "grid g-0",
+        div(class = "g-col-2", style = "margin-top: auto; margin-bottom: auto;",
+            tags$ul(class = "list-group list-group-flush align-middle",
+                    tags$li(class = "list-group-item", "First"),
+                    tags$li(class = "list-group-item", "Second")
+            )
+        ),
+        div(class = "g-col-10",
+            div(class = "card-body",
+                h5(class = "card-title", "Card title"),
+                p(class = "card-text", "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+                )
+            )
+        )
+    )
+)
+```
+
+
+```{=html}
+<div class="card mb-3">
+  <div class = "grid g-0">
+    <div class="g-col-2">
+    <ul class="list-group list-group-flush">
+    <li class="list-group-item">An item</li>
+    <li class="list-group-item">A second item</li>
+    <li class="list-group-item">A third item</li>
+    </ul>
+    </div>
+    <div class="g-col-10">
+    <div class = "card-body">
+  <h5 class="card-title">Card title</h5>
+  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+  <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+  </div>
+  </div>
+  </div>
+</div>
+</div>
+```

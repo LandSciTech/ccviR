@@ -45,6 +45,16 @@ usethis::use_data(ui_build_table, overwrite = TRUE)
 # Only needed internally
 guideline_lu_tbl <- read.csv("data-raw/guideline_lu_tbl.csv")
 
+# Shiny Input options for Vulnerability Questions
+valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral")
+valueOpts <- c(3, 2, 1, 0)
+
+# Evidence Options
+# TODO: Finalize evidence types
+valueEvi <- c("Literature", "Expert Opinion", "Spatial Analysis",
+              "Spatial Analysis - ccviR", "Other")
+
 # need to include all object for internal because they are saved together.
 usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, guideline_lu_tbl,
+                  valueNms, valueOpts, valueEvi,
                   overwrite = TRUE, internal = TRUE)

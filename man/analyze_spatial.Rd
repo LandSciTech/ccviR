@@ -12,8 +12,10 @@ analyze_spatial(
   ptn_poly = NULL,
   hs_rast = NULL,
   hs_rcl = NULL,
+  protected_poly = NULL,
   gain_mod = 1,
-  scenario_names = "Scenario 1"
+  scenario_names = "Scenario 1",
+  quiet = FALSE
 )
 }
 \arguments{
@@ -40,11 +42,15 @@ the layers matches the order of \code{scenario_names}.}
 lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
 details on the matrix format.}
 
+\item{protected_poly}{Optional. A sf polygon object with protected areas.}
+
 \item{gain_mod}{a number between 0 and 1 that can be used to down-weight gains
 in the modeled range change under climate change}
 
 \item{scenario_names}{character vector with names that identify multiple
 future climate scenarios.}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 a list with elements: \code{spat_table} the results of the spatial
@@ -98,4 +104,45 @@ spat_res <- analyze_spatial(
   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
   scenario_names = scn_nms
 )
+
+# With only one range change scenario (suboptimal)
+
+spat_res <- analyze_spatial(
+  range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+  scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+  clim_vars_lst = clim_vars,
+  hs_rast = terra::rast(file.path(base_pth, "rng_chg_45.tif")),
+  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  scenario_names = scn_nms
+)
+
+\dontrun{
+# With protected areas
+spat_res <- analyze_spatial(
+  range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+  scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+  protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
+  clim_vars_lst = clim_vars,
+  hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+                          file.path(base_pth, "rng_chg_85.tif"))),
+  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  scenario_names = scn_nms
+)
+}
+
+\dontrun{
+# With CCEI (using `non_breed` spatial example)
+clim_vars <- get_clim_vars("misc/climate/processed", scenario_names = scn_nms)
+spat_res <- analyze_spatial(
+  range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+  scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+  protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
+  non_breed_poly = non_breed,
+  clim_vars_lst = clim_vars,
+  hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
+                          file.path(base_pth, "rng_chg_85.tif"))),
+  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  scenario_names = scn_nms
+)
+}
 }

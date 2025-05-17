@@ -1,4 +1,16 @@
-apply_spat_tholds <-function(spat_df, cave){
+#' Calculate spatial thresholds
+#'
+#' Adds variables to spat_df, AND changes C2ai, C2aii, D2, D3, D4
+#'
+#' Use `setNames(valueOpts, valueNms)` for levels
+#'
+#' @param spat_df Data frame.
+#' @param cave Logical.
+#'
+#' @returns Data frame.
+#' @noRd
+
+apply_spat_tholds <-function(spat_df, cave) {
   spat_df %>% rowwise() %>%
     mutate(
       temp_exp = case_when(
@@ -47,7 +59,12 @@ apply_spat_tholds <-function(spat_df, cave){
                      .data$range_overlap < 30 ~ 2,
                      .data$range_overlap < 60 ~ 1,
                      is.na(.data$range_overlap) ~ -1,
-                     TRUE ~ 0))
+                     TRUE ~ 0),
+      D4 = case_when(.data$protected  <  5 ~ 2,
+                     .data$protected  < 30 ~ 1,
+                     is.na(.data$protected) ~ -1,
+                     TRUE ~ 0)
+    )
   # Code the vulnerability section as 3 = Greatly increase, 2 = Increase, 1 =
   # Somewhat increase, 0 = Neutral and -1 = Unknown
 }

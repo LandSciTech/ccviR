@@ -19,9 +19,12 @@ prep_clim_data(
   reproject = FALSE,
   overwrite = FALSE,
   scenario_name = "",
+  brks = NULL,
   brks_mat = NULL,
   brks_cmd = NULL,
-  brks_ccei = NULL
+  brks_ccei = NULL,
+  quiet = FALSE,
+  n = NULL
 )
 }
 \arguments{
@@ -30,20 +33,28 @@ prep_clim_data(
 \item{in_folder}{file path where files are stored. Files must be named
 according to the convention described in details}
 
-\item{out_folder}{file path where the processed files will be saved}
+\item{out_folder}{Character. Path where the processed files will be saved.}
 
 \item{reproject}{should the data be re-projected to lat/long? Not recommended.}
 
-\item{overwrite}{should existing files in out_folder be overwritten?}
+\item{overwrite}{Logical. Whether to overwrite existing file(s)}
 
-\item{scenario_name}{a string identifying the climate change scenario that
-will be used as a suffix for the output files.}
+\item{scenario_name}{Character. A string identifying the climate change
+scenario(s) that will be used as a suffix for the output files.}
+
+\item{brks}{List. Optionally supply \code{brks_mat}, \code{brks_cmd} and \code{brks_ccei}
+as a list.}
 
 \item{brks_mat, brks_cmd, brks_ccei}{a matrix containing breaks to use for
 classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
 \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
 the default, the breaks will be determined using the median and half the
 interquartile range}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
+
+\item{n}{Numeric. Only for use by \code{prep_clim_data_multi()} for progressess
+messages.}
 }
 \value{
 Returns a list of matrices with the breaks used to classify mat, cmd

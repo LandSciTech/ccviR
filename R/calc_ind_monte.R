@@ -20,7 +20,7 @@ calc_ind_monte <- function(vuln_df, n_rnds, d_ie){
 
   vuln_df <- vuln_df %>%
     mutate(round_id = rep(seq_len(n_rnds), n_facts) %>% sort(),
-           rnd_num = runif(n()),
+           rnd_num = stats::runif(n()),
            which_val = ifelse(.data$rnd_num < .data$thold, 1,
                               ifelse(.data$rnd_num < .data$thold *2, 2,
                                      ifelse(.data$rnd_num < .data$thold*3, 3, 4)))) %>%

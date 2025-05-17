@@ -10,6 +10,7 @@ plot_conf_score <- function(score_df){
     tidyr::unnest("mc_results") %>%
     ggplot2::ggplot(ggplot2::aes(x = factor(.data$index, levels = c( "EV", "HV", "MV", "LV", "IE")),
                                  y = .data$frequency))+
+    ccvir_gg_theme() +
     ggplot2::geom_col(position = "dodge")+
     ggplot2::labs(x = "Index",
                   y = "Proportion of Runs",

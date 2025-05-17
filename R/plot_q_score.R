@@ -39,6 +39,7 @@
 #' # vulnerability factor table with score 1 (somewhat increase vulnerability)
 #' # for all factors
 #' vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+#' vuln$Value1[vuln$Code == "D4"] <- 1
 #'
 #' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 #'
@@ -110,6 +111,7 @@ plot_q_score <- function(vuln_df){
           ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip,
                        fill = .data$section)
         )+
+          ccvir_gg_theme() +
           # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
           ggplot2::geom_point(size = 0.1, color = "grey35")+
           ggplot2::geom_col(color = "grey35")+
