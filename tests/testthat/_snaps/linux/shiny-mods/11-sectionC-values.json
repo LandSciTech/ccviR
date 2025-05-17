@@ -745,24 +745,28 @@
         "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
       ],
       "rng_poly_pth": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_poly.shp"
+        "/inst/extdata/rng_poly.shp",
+        "/inst/extdata/rng_poly.shp"
       ],
       "assess_poly_pth": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/assess_poly.shp"
+        "/inst/extdata/assess_poly.shp",
+        "/inst/extdata/assess_poly.shp"
+      ],
+      "nonbreed_poly_pth": [
+        "/inst/extdata/non_breed.shp",
+        "/inst/extdata/non_breed.shp"
       ],
       "ptn_poly_pth": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/PTN_poly.shp",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/PTN_poly.shp"
+        "/inst/extdata/PTN_poly.shp",
+        "/inst/extdata/PTN_poly.shp"
       ],
       "clim_dir_pth": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/clim_files/processed"
+        "/inst/extdata/clim_files/processed",
+        "/inst/extdata/clim_files/processed"
       ],
       "protected_poly_pth": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg"
+        "/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg",
+        "/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg"
       ],
       "ccviR_version": [
         [
@@ -777,12 +781,12 @@
         ]
       ],
       "rng_chg_pth_1": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_45.tif",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_45.tif"
+        "/inst/extdata/rng_chg_45.tif",
+        "/inst/extdata/rng_chg_45.tif"
       ],
       "rng_chg_pth_2": [
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif",
-        "/home/steffi/Projects/Business/Sarah Endicott/ccviR/inst/extdata/rng_chg_85.tif"
+        "/inst/extdata/rng_chg_85.tif",
+        "/inst/extdata/rng_chg_85.tif"
       ],
       "CCVI_index": [
         null,
@@ -821,10 +825,6 @@
         null
       ],
       "MC_freq_IE": [
-        null,
-        null
-      ],
-      "nonbreed_poly_pth": [
         null,
         null
       ],
