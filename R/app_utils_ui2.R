@@ -229,7 +229,7 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
       }
     } else {
       chk_label <- span(
-        "Spatial data not provided, answer based on expert knowledge or leave blank for unknown.",
+        "Spatial data not provided, answer based on other evidence or leave blank for unknown",
         style = "color:dimgray;")
     }
 
