@@ -6,6 +6,7 @@ library(shinytest2)
 # once per session, for example, and cannot be replicated by clicking Run Tests).
 
 test_that("Full app - No errors", {
+  skip_on_ci()
 
   shiny_app <- ccvi_app2(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))

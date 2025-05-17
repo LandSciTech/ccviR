@@ -10,8 +10,7 @@ test_that("Data Prep app - inputs", {
   skip_on_ci()
 
   shiny_app <- mod_data_prep_test()
-  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE),
-                       expect_values_screenshot_args = FALSE)
+  app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 
   # Standard setup
@@ -63,8 +62,7 @@ test_that("Data Prep app - run", {
   shiny_app <- mod_data_prep_test()
   app <- AppDriver$new(
     shiny_app, variant = platform_variant(r_version = FALSE),
-    options = list("ccviR.test_data_prep" = path),
-    expect_values_screenshot_args = FALSE)
+    options = list("ccviR.test_data_prep" = path))
   app$set_window_size(width = 1619, height = 993)
 
   # Now we have the dir - but no files

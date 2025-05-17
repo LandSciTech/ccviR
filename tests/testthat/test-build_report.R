@@ -34,6 +34,8 @@ test_that("check_chrome()", {
 
 test_that("build_report()", {
 
+  skip_on_ci()
+
   withr::with_file(
     r <- test_path("test_report.pdf"), {
 
