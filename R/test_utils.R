@@ -27,6 +27,9 @@ expect_no_log_warnings <- function(app) {
   testthat::expect_false(any(stringr::str_detect(l, "Warning\\: ")))
 }
 
+clean_paths <- function(x) {
+  stringr::str_remove_all(x, fs::path_abs(testthat::test_path("../..")))
+}
 
 expect_screenshot_local <- function(app, name = NULL) {
   testthat::skip_on_ci()
