@@ -139,7 +139,7 @@ if (identical(rmarkdown::metadata$runtime, "shiny")){
 ```{r bivar_exp,fig.height= 3, fig.width=7, results='hide', fig.cap="Map of exposure based on both change in temperature and change in moisture regime."}
 # plotly graphics don't show up in pdf. Either output to png or just print the text. 
 # walk2(index_res$index, index_res$scenario_name, 
-#       ~ccviR:::plt_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
+#       ~ccviR:::plot_index_gauge(.x, type = "", codes = c("IE","LV", "MV", "HV", "EV"),
 #     nms = c("Insufficient Evidence",
 #                "Less Vulnerable",
 #                "Moderately Vulnerable",
@@ -174,7 +174,7 @@ coms <- out_data %>%
 
 valueNms <- c("Greatly increase", "Increase", "Somewhat increase", "Neutral", "Unknown")
 names(valueNms) <- c(3, 2, 1, 0, -1)
-cols2 <- cols %>% setNames(rev(names(valueNms)))
+cols2 <- cols %>% stats::setNames(rev(names(valueNms)))
 
 
 vuln_qs <- out_data %>% 
@@ -189,7 +189,7 @@ vuln_qs <- out_data %>%
   filter(!is.na(score)) %>% 
   rowwise() %>% 
   mutate(Score = c(.data$Value1, .data$Value2, .data$Value3, .data$Value4) %>% 
-           na.omit() %>% range() %>%  
+           stats::na.omit() %>% range() %>%  
            unique() %>% as.character() %>% 
            {text_spec(valueNms[.], format = "latex", background = cols2[.], bold = TRUE)} %>%
            paste0(collapse = " - "))

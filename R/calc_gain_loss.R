@@ -17,9 +17,11 @@ calc_gain_loss <- function(rast, poly, gain_mod){
   out <- calc_prop_raster(rast, poly, var_name = "HS", val_range = 0:3,
                           digits = 10)
   if(!is.null(out[["HS_NA"]])){
-    if(any(out$HS_NA > 10)){
-      warning("More than 10% of the range change raster does not match the expected values.\n",
-              "Is the classification table correct?", call. = FALSE)
+    if(any(out$HS_NA > 10)) {
+      if(!is_shiny_testing()) {
+        warning("More than 10% of the range change raster does not match the expected values.\n",
+                "Is the classification table correct?", call. = FALSE)
+      }
     }
   }
   out <- out %>%

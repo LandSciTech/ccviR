@@ -9,6 +9,9 @@
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.07150/status.svg)](https://doi.org/10.21105/joss.07150)
+[![R-CMD-check](https://github.com/steffilazerte/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/steffilazerte/ccviR/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/steffilazerte/ccviR/graph/badge.svg)](https://app.codecov.io/gh/steffilazerte/ccviR)
 <!-- badges: end -->
 
 The ccviR package implements the [NatureServe Climate Change
