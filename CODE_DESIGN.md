@@ -18,6 +18,11 @@ Data used for preparing data sets for the package.
   to your .Renviron file, which will link to those files rather than copying.
   (https://github.com/r-lib/pkgbuild/issues/59#issuecomment-1327752199)
 
+### Tests
+Note that local tests will expect there to be `protected_areas` in misc and 
+interactive tests will look for climate/processed (from `data-raw/data_climate_pkg2.R`),
+and `ccei` (from `data-raw/data_ccei.R`).
+
 
 ## Workflow style
 

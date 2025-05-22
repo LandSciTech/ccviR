@@ -1,4 +1,4 @@
-# Local Spatial tests, included data from misc folder
+# CI Spatial tests, do not include data from misc folder
 
 expect_silent({
   volumes <- server_setup()
@@ -14,12 +14,13 @@ expect_silent({
     "ns_to" = 99,
     "gain_mod" = 1,
     "gain_mod_comm" = "")
+
+  # No protected if on CI
   input_files <- test_files()
+  input_files <- input_files[names(input_files) != "protected_poly_pth"]
 })
 
 test_that("spatial data created", {
-
-  skip_on_ci()
 
   testServer(mod_spatial_server, args = list(
     volumes,
@@ -40,8 +41,6 @@ test_that("spatial data created", {
       expect_s3_class(ptn_poly(), "sf")
       expect_s3_class(nonbreed_poly(), "sf")
       expect_s4_class(rng_chg_rast(), "SpatRaster")
-
-      expect_s3_class(protected_poly(), "sf") # only when testing locally
 
       expect_equal(terra::nlyr(rng_chg_rast()), 2)
 
@@ -79,8 +78,6 @@ test_that("spatial data created", {
 
 # Can have 1 range change even if clim data has multiple scenarios
 test_that("1 range with mult scenarios", {
-
-  skip_on_ci()
 
   testServer(mod_spatial_server, args = list(
     volumes,
