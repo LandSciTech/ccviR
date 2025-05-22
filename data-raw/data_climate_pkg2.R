@@ -1,15 +1,20 @@
 # Download and Prepare Climate Data
 
-# Assumes we have ccei data in misc/ folder
+# Assumes we have ccei data in misc/ folder and raw clim data in extdata/clim_files/raw
 
 # Setup ----------------------------------------------------------------------
 library(fs)
 
 scenarios <- c("ssp245", "ssp585")
 
-clim_raw <- path("misc", "climate", "raw")
-clim_prep <- path("misc", "climate", "processed") %>%
-  dir_create()
+clim_raw <- path("misc", "climate", "raw") %>% dir_create()
+clim_prep <- path("misc", "climate", "processed") %>% dir_create()
+
+# Copy climate data to misc
+path_package("ccviR", "extdata", "clim_files", "raw") %>%
+  dir_ls() %>%
+  file_copy(clim_raw, overwrite = TRUE)
+
 ccei <- dir_ls("misc/ccei") %>%
   fs::path_filter(regexp = paste0(paste0(scenarios, "\\.tif"), collapse = "|"))
 
