@@ -285,7 +285,9 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet = FALSE) {
   cells <- terra::ncell(sample)
   vals_cmd <- vals_tmean <- matrix(nrow = cells, ncol = 12)
   lat <- stats::setNames(terra::init(sample, "y"), "latitude") %>%
-    terra::values(mat = FALSE)
+    terra::values(mat = FALSE) |>
+    abs() # climr::calc_Eref() might treat negative latitudes incorrectly
+          # - https://github.com/LandSciTech/ccviR/issues/209
 
   # Calculate eref, cmd, tmean
   # TODO: Use exported climr functions when available
@@ -302,9 +304,9 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet = FALSE) {
 
     # Here, slightly faster to use non-na values only
     n <- !is.na(prec)
-    eref <- climr:::calc_Eref(
+    eref <- climr::calc_Eref(
       m, tmmin = tmmin[n], tmmax = tmmax[n], latitude = lat[n])
-    vals_cmd[n, m] <- climr:::calc_CMD(eref, prec[n])
+    vals_cmd[n, m] <- climr::calc_CMD(eref, prec[n])
     vals_tmean[n, m] <- (tmmax[n] + tmmin[n])/2
   }
 

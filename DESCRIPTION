@@ -48,7 +48,7 @@ Imports:
     units
 Suggests: 
     testthat (>= 3.0.0),
-    climr,
+    climr (>= 0.2.0),
     knitr,
     quarto,
     future,
