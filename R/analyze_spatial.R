@@ -11,6 +11,12 @@
 #' calculate all results except the historical thermal and hydrological niches
 #' for which the range within the extent of the climate data is used.
 #'
+#' The projections used will be that of the Mean Annual Temperature (in
+#' `clim_vars_lst`), the non-breeding range (`non_breed_poly`, if used), the
+#' predicted changes in breeding range (`hs_rasts`; if used). Therefore these
+#' spatial data files would ideally be projected with a projection appropriate
+#' for preserving area in calculations.
+#'
 #' @param range_poly an sf polygon object giving the species range.
 #' @param scale_poly an sf polygon object giving the area of the assessment
 #' @param clim_vars_lst a list of climate data, the result of
@@ -155,8 +161,9 @@ analyze_spatial <- function(
       quiet)
   }
 
-  if(!is.null(non_breed_poly) & !is.null(clim_vars_lst$ccei[[1]])) {
-    non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(clim_vars_lst$ccei[[1]]),
+  ccei <- clim_vars_lst$ccei[[1]]
+  if(!is.null(non_breed_poly) & !is.null(ccei)) {
+    non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(non_breed_poly),
                                   "non-breeding range")
   } else if (!is.null(non_breed_poly)){
     non_breed_poly <- NULL
@@ -180,12 +187,19 @@ analyze_spatial <- function(
   cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD")
 
   # Migratory Exposure
-  if(is.null(non_breed_poly) || is.null(clim_vars_lst$ccei)){
+  if(is.null(non_breed_poly) || is.null(ccei)){
     ccei_classes <- rep(NA_real_, 5) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(c(paste0("CCEI_", 1:4), "prop_non_breed_over_ccei"))
   } else {
 
-    ccei_classes <- calc_prop_raster(clim_vars_lst$ccei, non_breed_poly, "CCEI",
+    # Clip CCEI to non-breeding area, then re-project
+    non_breed_clip <- sf::st_transform(non_breed_poly, crs = sf::st_crs(ccei))
+    ccei_clip <- terra::crop(ccei, non_breed_clip)
+    if(!terra::same.crs(ccei_clip, non_breed_poly)) {
+      ccei_clip <- terra::project(ccei_clip, terra::crs(non_breed_poly), method = "near")
+    }
+
+    ccei_classes <- calc_prop_raster(ccei_clip, non_breed_poly, "CCEI",
                                      val_range = 1:4, check_overlap = 0,
                                      return_overlap_as = "prop_non_breed_over_ccei")
 

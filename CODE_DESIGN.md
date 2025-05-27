@@ -46,7 +46,20 @@ use sections (# Header -------) to create the TOC used in RStudio.
   i.e., `tagList()` takes ... so you need to do `tagList(div1, div2, div3)`
   So if you programatically create the divs, you have a list, then you can use
   `tagList(!!!list_of_divs)` to 'explode' them out (this is used a lot in the report).
-  
+
+## Spatial Data
+
+When creating our own spatial data, we use 
+- Equal Area Albers projection for North America (i.e. ESRI:102008 for protected areas) 
+- In `analyze_spatial()` data are reprojected to match their overlapping datasets
+  - *Generally* these polygons are reprojected to match the rasters
+  - Most are matched to Mean Annual Temperature
+  - Protected areas are matched to the Projected range change rasters (hrasts)
+  - CCEI is first clipped to the non-breeding range and *then* reprojected to this
+    range (because the CCEI is such a large raster, it makes sense to have the
+    user define the projection in the non-breeding polygon)
+  - We reproject to CRS 3857 for mapping (after simplifying, so it's pretty speedy)
+    
 ## Shiny Modules
 
 ### Namespacing

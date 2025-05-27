@@ -51,6 +51,12 @@ mod_spatial_ui <- function(id) {
                   component. If provided, the range change raster(s) will be used to
                   evalaute questions about the modeled response to climate change
                   in Section D. Required datasets are indicated with", labelMandatory("a")),
+          p(strong("Note:"),
+            "Spatial analyses calculate the degree of overlap among different datasets.",
+            "To do this, data will be made comparable using projections the Mean Annual Temperature,",
+            "the non-breeding range (if used), and the predicted changes in breeding range (if used).",
+            "Therefore these spatial data files will ideally be projected with a projection appropriate",
+            "for preserving area in calculations (Equal Area projections, for example)."),
           get_file_ui2(id, "clim_var_dir", "Folder location of prepared climate data",
                       type = "dir", mandatory = TRUE, spinner = TRUE),
           br(),
