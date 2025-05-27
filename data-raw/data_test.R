@@ -1,12 +1,6 @@
 # Make a test data set for examples etc.
 
-
-# vuln <- make_vuln_df("Testious sp.", val1 = 1, mig = 1)
-# vuln$Value2[c(5, 7, 9)] <- 3
-# vuln$evidence[c(5, 7, 9)] <- c("Literature", "Expert Opinion", "Other")
-#
-# usethis::use_data(vuln, overwrite = TRUE)
-
+# Testing deliberate errors -------------------------------------------------
 # Make Error test data for spatial analyses
 pkg <- fs::path(fs::path_package("extdata", package = "ccviR"))
 pkg_error <- fs::dir_create(pkg, "error_files")

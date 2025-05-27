@@ -3,7 +3,81 @@
 devtools::load_all(".")
 library(dplyr)
 library(sf)
+library(terra)
 library(purrr)
+library(fs)
+
+# TODO: Consider adding code to create the assessment area polygon (?)
+
+pth <- path_package("ccviR", "extdata")
+
+# Mini datasets -------------------------------------------------------------
+
+## Protected areas ------------------
+# Include Protected areas where overlaps assessment area provided
+protected <- st_read("misc/protected_areas/pa_north_america.gpkg")
+
+range <- st_read(test_files()[["assess_poly_pth"]]) %>%
+  st_buffer(2000) %>%
+  st_transform(st_crs(protected))
+
+# Make file smaller
+protected <- st_crop(protected, range) %>%
+  st_simplify(dTolerance = 1000)
+
+# library(ggplot2)
+# ggplot() +
+#   geom_sf(data = range) +
+#   geom_sf(data = protected)
+
+# Use shp because for such a small file, want a lighter weight option than gpkg
+st_write(protected, path(pth, "protected_areas.shp"), append = FALSE)
+
+
+
+## Non-breeding range -----------------------
+non_breed0 <- rnaturalearth::ne_states("united states of america", returnclass = "sf") %>%
+  filter(name == "Florida") %>%
+  select(name)
+
+non_breed <- st_simplify(non_breed0, dTolerance = 1000) %>%
+  st_transform(crs = "ESRI:102008") # Good for area calculations
+
+#plot(non_breed0[1,])
+#plot(non_breed[1,])
+
+st_write(non_breed, path(pth, "non_breed.shp"), append = FALSE)
+
+
+
+## CCEI -----------------------------
+# Clip CCEI rasters and move to demo data (raw and processed)
+non_breed_clip <- st_transform(
+  non_breed,
+  st_crs(rast(path("misc", "ccei", "ccei_ssp245.tif"))))
+
+rast(path("misc", "ccei", "ccei_ssp245.tif")) |>
+  crop(non_breed_clip) |>
+  writeRaster(path(pth, "clim_files", "raw", "ccei_ssp245_fl.tif"),
+              overwrite = TRUE)
+
+rast(path("misc", "ccei", "ccei_ssp585.tif")) |>
+  crop(non_breed_clip) |>
+  writeRaster(path(pth, "clim_files", "raw", "ccei_ssp585_fl.tif"),
+              overwrite = TRUE)
+
+rast(path("misc", "climate", "processed", "CCEI_reclassRCP_4.5.tif")) |>
+  crop(non_breed_clip) |>
+  writeRaster(path(pth, "clim_files", "processed", "CCEI_reclassRCP_4.5.tif"),
+              overwrite = TRUE)
+
+rast(path("misc", "climate", "processed", "CCEI_reclassRCP_8.5.tif")) |>
+  crop(non_breed_clip) |>
+  writeRaster(path(pth, "clim_files", "processed", "CCEI_reclassRCP_8.5.tif"),
+              overwrite = TRUE)
+
+
+# Climate Data #================================================================
 
 # location of climate data that all other paths will be relative to
 base_pth <-  "D:/Ilona/Climate_data/data/"
@@ -11,7 +85,7 @@ base_pth <-  "D:/Ilona/Climate_data/data/"
 # plan is to use a subset of the NA climate data ie a province and potentially
 # aggregate the raster to save space
 
-# Climate Data #================================================================
+
 # raw climate data
 # location of folders with future climate data names will become scenario names
 fut_clim <- list(`RCP 4.5` = file.path(base_pth, "NA_ENSEMBLE_rcp45_2050s_Bioclim_ASCII"),
@@ -111,17 +185,20 @@ purrr::walk2(sp_dat, names(sp_dat), write_fun,
 in_folder <- "inst/extdata/clim_files/raw/"
 
 # use first scenario to set breaks
+
+
+
 brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
-                          mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
-                          cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
-                          cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
-                          map = file.path(in_folder, "NB_norm_MAP.tif"),
-                          mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
-                          mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
-                          out_folder = "inst/extdata/clim_files/processed/",
-                          clim_poly = "inst/extdata/assess_poly.shp",
-                          overwrite = TRUE,
-                          scenario_name = "RCP 4.5")
+                           mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
+                           cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+                           cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
+                           map = file.path(in_folder, "NB_norm_MAP.tif"),
+                           mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+                           mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+                           out_folder = "inst/extdata/clim_files/processed/",
+                           clim_poly = "inst/extdata/assess_poly.shp",
+                           overwrite = TRUE,
+                           scenario_name = "RCP 4.5")
 
 prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
               mat_fut = file.path(in_folder, "NB_RCP.8.5_MAT.tif"),
