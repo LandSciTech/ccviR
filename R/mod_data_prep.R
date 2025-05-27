@@ -88,7 +88,7 @@ data_prep_ui <- function(id){
 
     purrr::map(filePathIds, shinyFiles::shinyFileChoose, root = volumes,
                input = input,
-               filetypes = c("shp", "tif", "asc", "nc", "grd", "bil", ".img"))
+               filetypes = spatial_file_types)
 
     file_pths <- reactive({
       purrr::map(filePathIds, ~{

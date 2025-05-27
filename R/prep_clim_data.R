@@ -22,8 +22,10 @@
 #'   climate data. It will be created from the climate data if it is missing
 #'   but it is faster to provide it.}
 #' }
-#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
-
+#'
+#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd", ".img", ".bil"
+#' and ".gpkg" (see `spatial_file_raster()`).
+#'
 #' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt,clim_poly
 #'   file paths to find data if in_folder is not given
 #' @param in_folder file path where files are stored. Files must be named
@@ -226,7 +228,9 @@ prep_clim_readme <- function(
 #'   climate data. It will be created from the climate data if it is missing
 #'   but it is faster to provide it.}
 #' }
-#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
+#'
+#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd", ".img", ".bil"
+#' and ".gpkg" (see `spatial_file_raster()`).
 
 #' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt,clim_poly
 #'   file paths to find data if in_folder is not given
@@ -304,7 +308,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     stop("out_folder does not exist", call. = FALSE)
   }
 
-  ext_accept <- c(".asc", ".tif", ".tiff", ".nc", ".grd", ".img")
+  ext_accept <- spatial_file_raster
 
   make_pat <- function(x, ext_accept){
     paste0(x, ext_accept, "$", collapse = "|")

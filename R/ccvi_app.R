@@ -846,7 +846,7 @@ ccvi_app <- function(testmode_in, ...){
     shinyDirChoose(input, "clim_var_dir", root = volumes)
     observe({
       purrr::map(filePathIds(), shinyFileChoose, root = volumes, input = input,
-                 filetypes = c("shp", "tif", "tiff", "asc", "nc", "grd", "bil"))
+                 filetypes = spatial_file_types)
     })
 
     # parse file paths

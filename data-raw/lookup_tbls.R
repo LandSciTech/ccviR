@@ -54,7 +54,14 @@ valueOpts <- c(3, 2, 1, 0)
 valueEvi <- c("Literature", "Expert Opinion", "Spatial Analysis",
               "Spatial Analysis - ccviR", "Other")
 
+# Permitted spatial file types
+spatial_file_raster <- c("asc", "tif", "tiff", "nc", "grd", "img", "bil", "gpkg")
+spatial_file_poly <- c("shp", "asc", "gpkg")
+spatial_file_types <- unique(c(spatial_file_raster, spatial_file_poly))
+
+usethis::use_data(spatial_file_raster, spatial_file_poly, spatial_file_types, overwrite = TRUE)
+
 # need to include all object for internal because they are saved together.
 usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, guideline_lu_tbl,
-                  valueNms, valueOpts, valueEvi,
+                  valueNms, valueOpts, valueEvi, spatial_files_types,
                   overwrite = TRUE, internal = TRUE)

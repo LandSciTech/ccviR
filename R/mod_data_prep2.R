@@ -184,11 +184,11 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     shinyFiles::shinyDirChoose(input, "out_folder", root = volumes)
     purrr::map(
       file_ids, shinyFileChoose, root = volumes, input = input,
-      filetypes = c("shp", "tif", "tiff", "asc", "nc", "grd", "bil", ".img"))
+      filetypes = spatial_file_types)
     observeEvent(file_scn_ids(), {
       purrr::map(
         file_scn_ids(), shinyFileChoose, root = volumes, input = input,
-        filetypes = c("shp", "tif", "tiff", "asc", "nc", "grd", "bil",".img"))
+        filetypes = spatial_file_types)
     })
 
     # Scenarios -----------------------------------
