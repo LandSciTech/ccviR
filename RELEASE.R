@@ -6,14 +6,14 @@ source("data-raw/maps.R") # North American Context and example non-breeding
 source("data-raw/lookup_tbls.R")
 
 # Update/Create Large Supplemental data sets as needed ---------------
-# source("data-raw/ccei.R")
-# source("data-raw/data_climate_pkg2.R") / source("data-raw/data_climate_pkg.R") # Also re
-# source("data-raw/protected.R")
+# source("data-raw/ccei.R")  # Calculate CCEI
+# source("data-raw/data_climate_pkg2.R") / source("data-raw/data_climate_pkg.R") # Prep climate and re-scale CCEI
+# source("data-raw/protected.R") # Calculate protected areass
 
 # Update/Create Demo or testing datasets
 # source("data-raw/data_test.R")      # General test data
 # source("data-raw/data_ccei_mini.R") # CCEI data for tests and exploring large values
-# source("data-raw/data_demo.R")
+# source("data-raw/data_demo.R")      # Sub data sets (protected areas, CCEI, ranges, etc.)
 
 
 # Test coverage --------------------------------------------
