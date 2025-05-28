@@ -19,3 +19,6 @@ misc
 inst/qmd/*.html*
 inst/qmd/*.pdf
 inst/rmd/*.pdf
+
+# But not the clim_files!
+!clim_files
