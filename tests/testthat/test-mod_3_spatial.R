@@ -17,9 +17,13 @@ expect_silent({
   input_files <- test_files()
 })
 
-test_that("spatial data created", {
+# NOTE: "Error in `trace_back(top = getOption("testthat_topenv"), bottom = trace_env)`: Can't find `bottom` on the call tree."
+#
+# This usually means that the snapshot has changed, use:
+#
+# testthat::snapshot_review()
 
-  skip_on_ci()
+test_that("spatial data created", {
 
   testServer(mod_spatial_server, args = list(
     volumes,
@@ -40,14 +44,13 @@ test_that("spatial data created", {
       expect_s3_class(ptn_poly(), "sf")
       expect_s3_class(nonbreed_poly(), "sf")
       expect_s4_class(rng_chg_rast(), "SpatRaster")
-
-      expect_s3_class(protected_poly(), "sf") # only when testing locally
+      expect_s3_class(protected_poly(), "sf")
 
       expect_equal(terra::nlyr(rng_chg_rast()), 2)
 
       expect_type(clim_vars(), "list")
       expect_s4_class(clim_vars()$mat, "SpatRaster")
-      expect_null(clim_vars()$ccei)
+      expect_s4_class(clim_vars()$ccei, "SpatRaster")
       expect_s3_class(clim_vars()$clim_poly, "sf")
       expect_s3_class(clim_readme(), "data.frame")
 
@@ -80,8 +83,6 @@ test_that("spatial data created", {
 # Can have 1 range change even if clim data has multiple scenarios
 test_that("1 range with mult scenarios", {
 
-  skip_on_ci()
-
   testServer(mod_spatial_server, args = list(
     volumes,
     df_loaded = reactive(NULL),
@@ -101,7 +102,7 @@ test_that("1 range with mult scenarios", {
       expect_type(clim_vars(), "list")
       expect_s4_class(clim_vars()$mat, "SpatRaster")
       expect_equal(terra::nlyr(clim_vars()$mat), 2)  # Still 2
-      expect_null(clim_vars()$ccei)
+      expect_s4_class(clim_vars()$ccei, "SpatRaster")
       expect_s3_class(clim_vars()$clim_poly, "sf")
       expect_s3_class(clim_readme(), "data.frame")
 
@@ -134,57 +135,3 @@ test_that("1 range with mult scenarios", {
       expect_snapshot_value(r, style = "json2")
     })
 })
-
-
-# Can have 1 range change even if clim data has multiple scenarios
-test_that("CCEI and non-breeding", {
-
-  skip_on_ci()
-
-  input_files <- test_files(clim_dir = "../../misc/climate/processed")
-
-  testServer(mod_spatial_server, args = list(
-    volumes,
-    df_loaded = reactive(NULL),
-    cave = reactive(FALSE),
-    # Use Testing files
-    input_files = input_files), {
-
-      # Set the inputs
-      session$setInputs(!!!test_inputs)
-      session$setInputs(rng_chg_used = "no")
-      session$flushReact()
-
-      # Expect spatial files to load right away
-      expect_s4_class(clim_vars()$ccei, "SpatRaster")
-      expect_s3_class(nonbreed_poly(), "sf")
-      expect_s3_class(clim_vars()$clim_poly, "sf")
-      expect_s3_class(clim_readme(), "data.frame")
-
-      # No spatial without button
-      expect_error(spat_res())   # Reactive
-      expect_null(spat_thresh()) # ReactiveVal
-
-      # Run spatial
-      doSpatial(1)
-      session$flushReact() %>%
-        suppressWarnings() %>% # TODO: Catch this warning in the app, don't suppress here
-        suppressMessages()
-
-      # Have spatial
-      expect_type(spat_res(), "list")
-      expect_s3_class(spat_run(), "data.frame")
-
-      # Expect two scenarios with different CCEI's none missing and some > 0
-      expect_equal(nrow(spat_res()$spat_table), 2)
-      ccei <- dplyr::select(spat_res()$spat_table, dplyr::contains("CCEI"))
-      expect_true(all(!is.na(ccei)))
-      expect_true(any(ccei > 0))
-
-      # Get Spat run and clean up paths
-      r <- session$getReturned()$spat_run() %>%
-        dplyr::mutate(dplyr::across(dplyr::contains("pth"), fs::path_file))
-      expect_snapshot_value(r, style = "json2")
-    })
-})
-

@@ -25,9 +25,7 @@ test_that("spatial runs with all data or optional data",{
 })
 
 test_that("Nonoverlaping poly and raster",{
-  # TODO: nonbreed not created yet for demo so shift rng_high
-  nonbreed <- sf::st_as_sf(data.frame(geometry = sf::st_geometry(d$rng_poly) - 1000000)) %>%
-    sf::st_set_crs(sf::st_crs(d$rng_poly))
+  nonbreed <- d$non_breed_poly
 
   # use nonbreed as range - no overlap - should not be allowed
   expect_error(analyze_spatial(nonbreed, d$assess_poly, d$clim_vars[c(1:2, 6)],
@@ -44,27 +42,42 @@ test_that("Nonoverlaping poly and raster",{
 
   # nonbreed is allowed to only partially overlap CCEI but should there be a
   # warning if below a certain threshold based on what Sarah O did 40%
-  nonbreed_lt40 <- mutate(nonbreed, geometry = geometry + 800000) %>%
-    sf::st_set_crs(sf::st_crs(nonbreed))
+  nonbreed_lt40 <- nonbreed
+  nonbreed_lt40$geometry <- nonbreed_lt40$geometry + c(500000, 0)
+  sf::st_crs(nonbreed_lt40) <- sf::st_crs(nonbreed)
 
-  clim_vars <- d$clim_vars
-  clim_vars$ccei <- clim_vars$mat[[1]]
+  # library(ggplot2)
+  # ggplot() +
+  #   geom_sf(data = nonbreed) +
+  #   geom_sf(data = nonbreed_lt40, colour = "red")
 
-  expect_warning(analyze_spatial(d$rng_poly, d$assess_poly, clim_vars[c(1:2, 4, 6)],
-              non_breed_poly = nonbreed_lt40,
-              scenario_names = d$scn_nms),
-              "does not overlap") %>%
+  expect_warning({
+    analyze_spatial(d$rng_poly, d$assess_poly, d$clim_vars[c(1:2, 4, 6)],
+                    non_breed_poly = nonbreed_lt40,
+                    scenario_names = d$scn_nms)
+    }, "% of the nonbreeding range polygon does not overlap") %>%
     suppressMessages()
 
   # not allowed to not overlap at all
-  expect_error(analyze_spatial(d$rng_poly, d$assess_poly, clim_vars[c(1:2, 4, 6)],
-                               non_breed_poly = nonbreed,
-                               scenario_names = d$scn_nms),
-               "does not overlap") %>%
+  expect_error({
+    analyze_spatial(d$rng_poly, d$assess_poly, d$clim_vars[c(1:2, 4, 6)],
+                    non_breed_poly = d$rng_poly,
+                    scenario_names = d$scn_nms)
+    }, "does not overlap") %>%
     suppressMessages()
 
+  # No problem otherwise
+  expect_message({
+    analyze_spatial(d$rng_poly, d$assess_poly, d$clim_vars[c(1:2, 4, 6)],
+                    non_breed_poly = nonbreed,
+                    scenario_names = d$scn_nms)
+  }) %>%
+    suppressMessages()
+
+
+
   # ptn should not be allowed to be not overlapping assess
-  expect_error(analyze_spatial(d$rng_poly, d$assess_poly, clim_vars[c(1:2, 4, 6)],
+  expect_error(analyze_spatial(d$rng_poly, d$assess_poly, d$clim_vars[c(1:2, 4, 6)],
                                ptn_poly = nonbreed,
                                scenario_names = d$scn_nms),
                "does not overlap") %>%

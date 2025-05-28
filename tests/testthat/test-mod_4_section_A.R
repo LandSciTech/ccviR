@@ -3,39 +3,42 @@ test_that("A overall", {
     spatial = suppressMessages(test_spatial())), {
 
       # Maps
-      expect_message(output$map_texp, "projecting raster") %>%
-        expect_message("projecting raster") # Message triggered by output (?)
-      expect_s3_class(output$map_texp, "json")
+      #expect_message(output$map_texp, "projecting raster") %>%
+      #  expect_message("projecting raster") # Message triggered by output (?)
+      expect_s3_class(output$map_texp, "json") %>%
+        expect_message("Projecting raster") %>%
+        expect_message("Projecting raster") %>%
+        expect_message("Projecting raster")
       expect_s3_class(output$map_cmd, "json")
-      expect_error(output$map_ccei)
+      expect_s3_class(output$map_ccei, "json")
 
       # Tables
       expect_type(output$tbl_texp, "list")
       expect_type(output$tbl_cmd, "list")
-      expect_error(output$tbl_ccei)
+      expect_type(output$tbl_ccei, "list")
     })
 })
 
-test_that("A min spatial", {
+test_that("A min spatial", {  # NO CCEI
 
-  sp <- test_files(protected_poly_pth = NA,
-                   ptn_poly_pth = NA,
-                   rng_chg_pth_1 = NA,
-                   rng_chg_pth_2 = NA) %>%
+  sp <- test_files(min_req = TRUE) %>%
     test_data() %>%
-    test_spatial() %>%
-    suppressMessages()
+    test_spatial(quiet = TRUE)
 
   testServer(mod_A_server, args = list(
-    spatial = suppressMessages(test_spatial())), {
-      expect_message(output$map_texp, "projecting raster") %>%
-        expect_message("projecting raster") # Message triggered by output (?)
+    spatial = sp), {
+
+      expect_s3_class(output$map_texp, "json") %>%
+        expect_message("Projecting raster") %>%
+        expect_message("Projecting raster")
       expect_s3_class(output$map_texp, "json")
       expect_s3_class(output$map_cmd, "json")
       expect_error(output$map_ccei)
 
       expect_type(output$tbl_texp, "list")
       expect_type(output$tbl_cmd, "list")
-      expect_error(output$tbl_ccei)
+
+      expect_true(stringr::str_detect(
+        output$ui_ccei$html, "Optional Spatial Data not provided"))
     })
 })

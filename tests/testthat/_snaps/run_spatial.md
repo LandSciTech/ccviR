@@ -2001,7 +2001,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [8.72, 0.227]
+          "value": [9.368, 0.246]
         }
       ]
     }

@@ -47,10 +47,7 @@ test_that("Full app - No errors", {
 test_that("Full app - No errors with missing spatial", {
   skip_on_ci()
 
-  f <- test_files(protected_poly_pth = NA,
-                  ptn_poly_pth = NA,
-                  rng_chg_pth_1 = NA,
-                  rng_chg_pth_2 = NA)
+  f <- test_files(min_req = TRUE)
 
   shiny_app <- ccvi_app2(input_files = f)
   app <- shinytest2::AppDriver$new(shiny_app, variant = shinytest2::platform_variant(r_version = FALSE))
