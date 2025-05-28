@@ -119,19 +119,21 @@ mod_A_server <- function(id, spatial, parent_session) {
 
     # Migratory Exposure and CCEI ---------------------------------
     output$ui_ccei <- renderUI({
-      spat_vuln_ui2(clim_vars()$ccei, nonbreed_poly(),
-                    id = id, ui_id = "ccei",
-                    desc = "\"CCEI\" and \"Non-Breeding Range\"",
-                    optional = TRUE)
+        spat_vuln_ui2(clim_vars()$ccei, nonbreed_poly(),
+                      id = id, ui_id = "ccei",
+                      desc = "\"CCEI\" and \"Non-Breeding Range\"",
+                      optional = TRUE)
     })
 
     output$map_ccei <- leaflet::renderLeaflet({
+      req(nonbreed_poly(), clim_vars()$ccei)
+
       make_map2(nonbreed_poly(), clim_vars()$ccei, rast1_nm = "ccei",
                 rast1_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
     output$tbl_ccei <- gt::render_gt({
-      if(is.null(clim_readme()$brks_ccei)){
+      if(is.null(clim_readme()$brks_ccei) || all(is.na(clim_readme()$brks_ccei))) {
         class_brks <- "4: (> 7);3: (6 - 7);2: (4 - 5);1: (< 4)"
       } else {
         class_brks <- clim_readme()$brks_ccei
