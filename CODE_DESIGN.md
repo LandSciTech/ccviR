@@ -55,6 +55,11 @@ When creating our own spatial data, we use
     user define the projection in the non-breeding polygon)
   - We reproject to CRS 3857 for mapping (after simplifying, so it's pretty speedy)
     
+Sometimes raster data get's weird when it's reprojected for maps
+(https://github.com/rspatial/terra/issues/1356), where the NA values become
+super large. This creates a warning, but can otherwise be ignored *or* this can
+be fixed by loading the raster is loaded into memory. See `prep_raster_map()`.
+
 ## Shiny Modules
 
 ### Namespacing

@@ -379,6 +379,10 @@ test_spatial <- function(d = test_data(), d_paths = test_files(),
     with_prog <- withProgress
   } else with_prog <- function(x) x
 
+  # Avoid warnings when testing
+  # TODO: fix this another way? see prep_raster_map()
+  d$clim_vars$ccei <- terra::toMemory(d$clim_vars$ccei)
+
   if(min_req) {
     d$clim_vars$ccei <- NULL
     d$clim_vars$htn <- NULL
