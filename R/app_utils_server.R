@@ -171,7 +171,7 @@ prep_raster_map <- function(r, r_nm, max_cell, quiet = FALSE) {
 
   if(!is.null(r)){
     rast_ncell <- terra::ncell(r)
-    withProgress(message = paste("Preparing Raster:", r_nm), {
+    with_progress(message = paste("Preparing Raster:", r_nm), {
       if(rast_ncell > max_cell) {
         fct <- ceiling(sqrt(rast_ncell/max_cell))
         r <- terra::aggregate(r, fact = fct, fun = "modal", na.rm = TRUE)
@@ -549,9 +549,6 @@ answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
     dplyr::mutate(score = any(dplyr::pick(-"Code") >= 0, na.rm = TRUE)) %>%
     dplyr::ungroup()
 
-  e <- questions$evidence %>%
-    dplyr::filter(.data$Code %in% q$Code[q$score])
-
   if(type == "C") { # Where taxa influences questions
     q <- filter_applicable_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
     # How many C5 questions to remove (to collapse into one)?
@@ -567,6 +564,10 @@ answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
       dplyr::filter(.data$score)
     q <- dplyr::rows_update(q, sp, by = "Code")
   }
+
+  # Get evidence after having resolved questions
+  e <- questions$evidence %>%
+    dplyr::filter(.data$Code %in% q$Code[isTruthy(q$score)])
 
   dplyr::left_join(q, e, by = "Code") %>%
     dplyr::mutate(sec = .env$type) %>%

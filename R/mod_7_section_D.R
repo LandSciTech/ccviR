@@ -4,6 +4,7 @@
 #' @examples
 #' mod_D_test()
 #' mod_D_test(df_loaded = test_df_loaded())
+#' mod_D_test(input_files = test_files(min_req = TRUE))
 
 mod_D_test <- function(df_loaded = NULL, input_files = test_files()) {
 

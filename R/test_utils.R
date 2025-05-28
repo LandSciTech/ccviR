@@ -491,7 +491,7 @@ ccei_by_hand <- function(r, row = 1, col = 1) {
     eref <- climr:::calc_Eref(m,
                               tmmin = r_tmin[[m]],
                               tmmax = r_tmax[[m]],
-                              latitude = lat)
+                              latitude = abs(lat))
     cmd <- c(cmd, climr:::calc_CMD(eref, r_prec[[m]]))
     tmean <- c(tmean, (r_tmax[[m]] + r_tmin[[m]]) / 2)
   }

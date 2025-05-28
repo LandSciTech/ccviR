@@ -1,3 +1,34 @@
+#' Only use Shiny progress if running Shiny
+#'
+#' Wrapper around `withProgress()`
+#'
+#' @param message withProgress() message arg
+#' @param expr withProgress() expr arg
+#'
+#' @noRd
+
+with_progress <- function(message, expr) {
+  if(shiny::isRunning()) {
+    return(withProgress(message = message, expr = expr))
+  } else {
+    return(expr)
+  }
+}
+
+
+#' Use progress messages
+#'
+#' Uses Shiny or normal progress messages depending on whether Shiny is running.
+#'
+#' @param detail Character. Message
+#' @param quiet Logical. Suppress Messages
+#' @param n Numeric. Progress to set (if `set = TRUE`) or total number of steps
+#'   in the whole process.
+#' @param set Logical. Whether to set the progress value to `n` or to use
+#'   incremental steps.
+#'
+#' @noRd
+
 inform_prog <- function(detail, quiet = FALSE, n = 100, set = FALSE) {
   if(quiet) return(invisible())
   session <- getDefaultReactiveDomain()
