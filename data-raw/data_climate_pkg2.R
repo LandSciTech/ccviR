@@ -7,13 +7,8 @@ library(fs)
 
 scenarios <- c("ssp245", "ssp585")
 
-clim_raw <- path("misc", "climate", "raw") %>% dir_create()
-clim_prep <- path("misc", "climate", "processed") %>% dir_create()
-
-# Copy climate data to misc
-path_package("ccviR", "extdata", "clim_files", "raw") %>%
-  dir_ls() %>%
-  file_copy(clim_raw, overwrite = TRUE)
+clim_raw <- path_package("ccviR", "extdata", "clim_files", "raw")  # In
+clim_prep <- path("misc", "ccei_processed") %>% dir_create()       # Out
 
 ccei <- dir_ls("misc/ccei") %>%
   fs::path_filter(regexp = paste0(paste0(scenarios, "\\.tif"), collapse = "|"))
@@ -48,6 +43,10 @@ prep_clim_readme(
   url = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
   out_folder = clim_prep,
   brks = brks)
+
+# Keep just the processed CCEI files
+dir_ls(clim_prep, glob = "*CCEI*", invert = TRUE) %>%
+  file_delete()
 
 # Checks...
 t0 <- terra::rast(ccei[1])

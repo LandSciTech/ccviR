@@ -1,7 +1,7 @@
 # Some things to consider with CCEI
 path_ccei <- "misc/ccei"
-hist <- terra::rast(fs::path(path_ccei, "intermediate", "hist_ccei.tif"))
-future <- terra::rast(fs::path(path_ccei, "intermediate", "future_years_cmd.tif"))
+hist <- terra::rast(fs::path(path_ccei, "intermediate", "hist_all_vars.tif"))
+future <- terra::rast(fs::path(path_ccei, "intermediate", "future_all_vars.tif"))
 
 # Some CMD st devs are zero or very small as they occur in cold areas, where the
 # CMD is 0 (where all monthly mean temps are < 0, or where precipitation is greater than Eref).
@@ -27,12 +27,12 @@ terra::plot(terra::crop(r, r0))
 r0 <- terra::rast("misc/ccei/ccei.img")
 r1 <- terra::rast("misc/ccei/ccei_ssp245.tif")
 r2 <- terra::rast("misc/ccei/ccei_ssp585.tif")
-t <- terra::rast("misc/ccei/ccei_ssp245_test.tif")
+#t <- terra::rast("misc/ccei/ccei_ssp245_test.tif")
 
 terra::plot(r0)
 terra::plot(r1)
 terra::plot(r2)
-terra::plot(t)
+#terra::plot(t)
 
 ext <- terra::ext(-67.68503693181682, -45.94485241375469,
                   -22.813051124621953, 0.49423033772188435)
