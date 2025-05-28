@@ -194,7 +194,12 @@ analyze_spatial <- function(
 
     # Clip CCEI to non-breeding area, then re-project
     non_breed_clip <- sf::st_transform(non_breed_poly, crs = sf::st_crs(ccei))
-    ccei_clip <- terra::crop(ccei, non_breed_clip)
+    ccei_clip <- tryCatch(
+      terra::crop(ccei, non_breed_clip),
+      error = \(x) stop("The nonbreeding range polygon does not overlap at least one of ",
+                   "the CCEI raster(s)", call. = FALSE)
+    )
+
     if(!terra::same.crs(ccei_clip, non_breed_poly)) {
       ccei_clip <- terra::project(ccei_clip, terra::crs(non_breed_poly), method = "near")
     }
