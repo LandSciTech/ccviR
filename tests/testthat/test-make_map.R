@@ -13,7 +13,7 @@ test_that("make_map2", {
   expect_message({
     map2 <- make_map2(d$rng_poly, d$clim_vars$mat[[1]], rast1_nm = "mat",
                    poly2 = d$assess_poly, poly2_nm = "assess_poly")
-  }, "projecting raster")
+  }, "Projecting raster")
 
   expect_message({
     map4 <- make_map2(
@@ -21,13 +21,13 @@ test_that("make_map2", {
       poly2 = d$assess_poly, poly2_nm = "assess_poly",
       rast1_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
                             value = c(0, 1, 2, 3)))
-  }, "projecting raster")
+  }, "Projecting raster")
 
   expect_message({
     map1 <- make_map2(d$rng_poly, d$clim_vars$mat,
                      rast1_nm = "mat", poly2 = d$assess_poly,
                      poly2_nm = "assess_poly")
-  }, "projecting raster")
+  }, "Projecting raster")
 
   expect_silent({
     map3 <- make_map2(d$rng_poly, poly2 = d$assess_poly, poly2_nm = "assess_poly")
@@ -35,7 +35,7 @@ test_that("make_map2", {
 
   expect_message({
     map5 <- make_map2(d$rng_poly, d$clim_vars$map, rast1_nm = "map")
-  }, "projecting raster")
+  }, "Projecting raster")
 
   # Expect created
   purrr::map(list(map1, map2, map3, map4, map5),

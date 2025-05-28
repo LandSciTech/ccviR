@@ -7,6 +7,22 @@
     "results-restart": 0,
     "save-downloadData": 0,
     "section_a-continue": 1,
+    "section_a-map_ccei_bounds": {
+      "north": 27.83907609477782,
+      "east": -83.84765625000001,
+      "south": 27.83907609477782,
+      "west": -83.84765625000001
+    },
+    "section_a-map_ccei_center": {
+      "lng": -83.84765625000001,
+      "lat": 27.83907609477782
+    },
+    "section_a-map_ccei_groups": [
+      "CartoDB",
+      "RCP 4.5",
+      "RCP 8.5"
+    ],
+    "section_a-map_ccei_zoom": 6,
     "section_a-map_cmd_bounds": {
       "north": 46.58906908309185,
       "east": -66.40136718750001,
@@ -309,24 +325,24 @@
         0.706
       ],
       "CCEI_1": [
-        null,
-        null
+        0,
+        0
       ],
       "CCEI_2": [
-        null,
-        null
+        27.359,
+        27.359
       ],
       "CCEI_3": [
-        null,
-        null
+        72.34099999999999,
+        72.34099999999999
       ],
       "CCEI_4": [
-        null,
-        null
+        0,
+        0
       ],
       "prop_non_breed_over_ccei": [
-        null,
-        null
+        0.9999999999816878,
+        0.9999999999816878
       ],
       "HTN_1": [
         0.185,
@@ -369,8 +385,8 @@
         25902079658.56419
       ],
       "protected": [
-        8.720000000000001,
-        0.227
+        9.368,
+        0.246
       ],
       "gain_mod": [
         1,
@@ -765,8 +781,8 @@
         "/inst/extdata/clim_files/processed"
       ],
       "protected_poly_pth": [
-        "/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg",
-        "/inst/extdata/../../misc/protected_areas/pa_north_america.gpkg"
+        "/inst/extdata/protected_areas.shp",
+        "/inst/extdata/protected_areas.shp"
       ],
       "ccviR_version": [
         [
