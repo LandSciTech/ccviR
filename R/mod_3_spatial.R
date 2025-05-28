@@ -7,14 +7,13 @@
 #' mod_spatial_test()                   # With test paths pre-filled
 #' mod_spatial_test(input_files = test_files(min_req = TRUE)) # Min-required only
 #'
-#' # With ccei and migration
-#' mod_spatial_test(input_files = test_files(clim_dir = "../../misc/climate/processed"))
-#'
 #' # As if previously loaded
-#' mod_spatial_test(df_loaded = test_df_loaded(), # As if re-loading from previous run
-#'                  input_files = NULL)
-#' mod_spatial_test(df_loaded = test_df_loaded("min"), # As if re-loading from specific run
-#'                  input_files = NULL)
+#' mod_spatial_test(
+#'   df_loaded = test_df_loaded(), # As if re-loading from previous run
+#'   input_files = NULL)
+#' mod_spatial_test(
+#'   df_loaded = test_df_loaded("min"), # As if re-loading from specific run
+#'   input_files = NULL)
 
 mod_spatial_test <- function(df_loaded = NULL, input_files = test_files()) {
 

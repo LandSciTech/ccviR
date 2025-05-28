@@ -54,7 +54,8 @@ st_write(non_breed, path(pth, "non_breed.shp"), append = FALSE)
 # Clip CCEI rasters and move to demo data (raw and processed)
 non_breed_clip <- st_transform(
   non_breed,
-  st_crs(rast(path("misc", "ccei", "ccei_ssp245.tif"))))
+  st_crs(rast(path("misc", "ccei", "ccei_ssp245.tif")))) %>%
+  st_buffer(25000)
 
 rast(path("misc", "ccei", "ccei_ssp245.tif")) |>
   crop(non_breed_clip) |>
@@ -66,12 +67,12 @@ rast(path("misc", "ccei", "ccei_ssp585.tif")) |>
   writeRaster(path(pth, "clim_files", "raw", "ccei_ssp585_fl.tif"),
               overwrite = TRUE)
 
-rast(path("misc", "climate", "processed", "CCEI_reclassRCP_4.5.tif")) |>
+rast(path("misc", "ccei_processed", "CCEI_reclassRCP_4.5.tif")) |>
   crop(non_breed_clip) |>
   writeRaster(path(pth, "clim_files", "processed", "CCEI_reclassRCP_4.5.tif"),
               overwrite = TRUE)
 
-rast(path("misc", "climate", "processed", "CCEI_reclassRCP_8.5.tif")) |>
+rast(path("misc", "ccei_processed", "CCEI_reclassRCP_8.5.tif")) |>
   crop(non_breed_clip) |>
   writeRaster(path(pth, "clim_files", "processed", "CCEI_reclassRCP_8.5.tif"),
               overwrite = TRUE)

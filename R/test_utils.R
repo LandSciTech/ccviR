@@ -48,6 +48,7 @@ expect_screenshot_local <- function(app, name = NULL) {
 #' @param ptn_poly_pth Character. PTN polygon shape file.
 #' @param rng_chg_pths Character. Range change polygon shape files (one for each
 #'   scenario).
+#' @param protected_poly_pth Character. Protected areas polygon shape file.
 #' @param saved_final Character. Previously saved Shiny App output.
 #' @param saved_empty Character. Previously saved Shiny App output.
 #' @param mock Logical. Whether or not paths should be mocked to resemble that
@@ -70,7 +71,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
                        ptn_poly_pth = "PTN_poly.shp",
                        rng_chg_pth_1 = "rng_chg_45.tif",
                        rng_chg_pth_2 = "rng_chg_85.tif",
-                       protected_poly_pth = "pa_north_america.gpkg",
+                       protected_poly_pth = "protected_areas.shp",
                        saved = "test_files",
                        mock = FALSE, paths_only = FALSE, min_req = FALSE) {
 
@@ -87,6 +88,7 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
             assess_poly_pth = assess_poly_pth,
             rng_poly_pth = rng_poly_pth,
             nonbreed_poly_pth = if(!min_req) nonbreed_poly_pth,
+            protected_poly_pth = if(!min_req) protected_poly_pth,
             ptn_poly_pth = if(!min_req) ptn_poly_pth,
             rng_chg_pth_1 = if(!min_req) rng_chg_pth_1,
             rng_chg_pth_2 = if(!min_req) rng_chg_pth_2
@@ -95,11 +97,6 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
   if(!mock) {
     # Demo files
     f <- purrr::map(f, ~if(!is.null(.x)) fs::path(dir,  .x))
-
-    # Big files stored in misc
-    f <- c(f, list(protected_poly_pth = if(!min_req) fs::path(dir,
-                                                              "../../misc/protected_areas",
-                                                              protected_poly_pth)))
   }
 
   # Only mock the reloadable files
@@ -129,12 +126,18 @@ test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
 #' @noRd
 #' @examples
 #' test_data()
+#' test_data(min_req = TRUE)
 
 test_data <- function(f = test_files(), min_req = FALSE) {
 
   clim_readme <- utils::read.csv(fs::path(f$clim_dir, "climate_data_readme.csv"))
   clim_vars <- get_clim_vars(f$clim_dir, f$scn_nms, quiet = TRUE)
   rng_chg_mat <- if(!min_req) matrix(c(-1:1, NA, 1:3,0), ncol = 2)
+
+  if(min_req) {
+    clim_vars$ccei <- NULL
+    clim_vars$htn <- NULL
+  }
 
   # make the crs's match to avoid warning it has to be verbatim the same
   # nonbreed <- st_read(file.path(file_dir, "nonbreed_poly.shp"), agr = "constant",
@@ -150,8 +153,13 @@ test_data <- function(f = test_files(), min_req = FALSE) {
   hs <- if(!min_req && !is.null(f$rng_chg_pth_1) && fs::file_exists(f$rng_chg_pth_1)) terra::rast(f$rng_chg_pth_1)
   hs2 <- if(!min_req && !is.null(f$rng_chg_pth_2) && fs::file_exists(f$rng_chg_pth_2)) terra::rast(f$rng_chg_pth_2)
 
+  # Non-breeding range
+  non_breed <- if(!min_req && !is.null(f$nonbreed_poly_pth)) {
+    sf::st_read(f$nonbreed_poly_pth, agr = "constant", quiet = TRUE)
+  }
+
   # Protected Areas
-  protected_poly <- if(!min_req && !is.null(f$protected_poly_pth) && fs::file_exists(f$protected_poly_pth)) {
+  protected_poly <- if(!min_req && !is.null(f$protected_poly_pth)) {
     sf::st_read(f$protected_poly_pth, agr = "constant", quiet = TRUE)
   }
 
@@ -165,6 +173,7 @@ test_data <- function(f = test_files(), min_req = FALSE) {
        clim_readme = clim_readme,
        rng_chg_mat = rng_chg_mat,
        assess_poly = assess,
+       non_breed_poly = non_breed,
        rng_poly = range,
        ptn_poly = ptn,
        rng_chg_rast_1 = hs,
@@ -228,8 +237,8 @@ test_files_prep <- function(dir = fs::path_package("extdata", package = "ccviR")
     mwmt_norm_pth = fs::path(dir_clim, "NB_norm_MWMT.tif"),
     mcmt_norm_pth = fs::path(dir_clim, "NB_norm_MCMT.tif"),
     assess_pth = fs::path(dir, "assess_poly.shp"),
-    ccei_pth1 =  fs::path(dir, "../../misc/ccei", "ccei_ssp245.tif"),
-    ccei_pth2 =  fs::path(dir, "../../misc/ccei", "ccei_ssp585.tif"),
+    ccei_pth1 =  fs::path(dir_clim, "ccei_ssp245_fl.tif"),
+    ccei_pth2 =  fs::path(dir_clim, "ccei_ssp585_fl.tif"),
 
     # Scenario inputs
     clim_scn_nm = c("RCP 4.5", "RCP 8.5"),
@@ -371,16 +380,21 @@ test_spatial <- function(d = test_data(), d_paths = test_files(),
   } else with_prog <- function(x) x
 
   if(min_req) {
+    d$clim_vars$ccei <- NULL
+    d$clim_vars$htn <- NULL
     d$rng_chg_rast <- NULL
     d$protected_poly <- NULL
+    d$non_breed_poly <- NULL
     d$ptn_poly <- NULL
     d$rng_chg_mat <- NULL
   }
 
+
+
   with_prog({
     spat_res <- analyze_spatial(
       range_poly = d$rng_poly,
-      non_breed_poly = NULL,
+      non_breed_poly = d$non_breed_poly,
       scale_poly = d$assess_poly,
       hs_rast = d$rng_chg_rast,
       ptn_poly = d$ptn_poly,
@@ -423,7 +437,7 @@ test_spatial <- function(d = test_data(), d_paths = test_files(),
     "range_poly" = trans(spat_res$range_poly_assess),
     "range_poly_clim" = trans(spat_res$range_poly_clim),
     "ptn_poly" = trans(d$ptn_poly),
-    "nonbreed_poly" = trans(NULL),
+    "nonbreed_poly" = trans(d$non_breed_poly),
     "assess_poly" = trans(d$assess_poly),
     "protected_poly" = trans(spat_res$protected_poly),
     "hs_rast" = trans(d$rng_chg_rast),
