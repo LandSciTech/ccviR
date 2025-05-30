@@ -46,16 +46,15 @@ use sections (# Header -------) to create the TOC used in RStudio.
 
 When creating our own spatial data, we use 
 - Equal Area Albers projection for North America (i.e. ESRI:102008 for protected areas) 
-- In `analyze_spatial()` data are reprojected to match their overlapping datasets
-  - *Generally* these polygons are reprojected to match the rasters
+- CRS 4326 (i.e. no projection) for CCEI raster
+- In `analyze_spatial()` data are transformed to match their overlapping datasets
+  - Polygons are transformed to match the rasters
   - Most are matched to Mean Annual Temperature
-  - Protected areas are matched to the Projected range change rasters (hrasts)
-  - CCEI is first clipped to the non-breeding range and *then* reprojected to this
-    range (because the CCEI is such a large raster, it makes sense to have the
-    user define the projection in the non-breeding polygon)
-  - We reproject to CRS 3857 for mapping (after simplifying, so it's pretty speedy)
+  - Protected areas are matched to the projected range change rasters (hrasts)
+  - Non-breeding polygon is transformed to CCEI projection
+  - We transform to CRS 3857 for mapping (after simplifying, so it's pretty speedy)
     
-Sometimes raster data get's weird when it's reprojected for maps
+Sometimes raster data get's weird when it's transformed for maps
 (https://github.com/rspatial/terra/issues/1356), where the NA values become
 super large. This creates a warning, but can otherwise be ignored *or* this can
 be fixed by loading the raster is loaded into memory. See `prep_raster_map()`.

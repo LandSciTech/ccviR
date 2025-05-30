@@ -53,7 +53,7 @@ mod_spatial_ui <- function(id) {
           p(strong("Note:"),
             "Spatial analyses calculate the degree of overlap among different datasets.",
             "To do this, data will be made comparable using projections from the Mean Annual Temperature raster,",
-            "the non-breeding range polygon (if used), and the predicted changes in breeding range rasters (if used).",
+            "the CCEI raster (if used), and the predicted changes in breeding range rasters (if used).",
             "Therefore these spatial data files should ideally be projected with a projection appropriate",
             "for preserving area in calculations (Equal Area projections, for example)."),
           get_file_ui2(id, "clim_var_dir", "Folder location of prepared climate data",
