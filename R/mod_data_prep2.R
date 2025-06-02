@@ -95,7 +95,6 @@ mod_data_prep_ui <- function(id) {
     h3("Supporting data"),
     # TODO: Assessment area?
     get_file_ui2(id, "assess_pth", "Assessment area (Climate data extent polygon)"),
-    get_file_ui2(id, "ccei_pth", "Climate change exposure index"),
 
     h3("Future scenario data"),
     numericInput(ns("scn_n"), label = "How many future scenarios?",
@@ -111,7 +110,7 @@ mod_data_prep_ui <- function(id) {
     ),
     br(),
     br(),
-    actionButton("data_done", "Close", class = "btn-primary")
+    actionButton(ns("data_done"), "Close", class = "btn-primary")
   )
 }
 
@@ -147,7 +146,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
       "mat_norm_pth", "cmd_norm_pth", "map_norm_pth",
       "mwmt_norm_pth", "mcmt_norm_pth",
       # Supporting Data files
-      "assess_pth", "ccei_pth")
+      "assess_pth")
 
 
     # Set inputs/paths for testing ----------------------
@@ -184,11 +183,11 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     shinyFiles::shinyDirChoose(input, "out_folder", root = volumes)
     purrr::map(
       file_ids, shinyFileChoose, root = volumes, input = input,
-      filetypes = spatial_file_types)
+      filetypes = ccviR::spatial_file_types)
     observeEvent(file_scn_ids(), {
       purrr::map(
         file_scn_ids(), shinyFileChoose, root = volumes, input = input,
-        filetypes = spatial_file_types)
+        filetypes = ccviR::spatial_file_types)
     })
 
     # Scenarios -----------------------------------
@@ -196,7 +195,8 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 
       # Get file name ids for each scenario
       file_scn_ids(c(paste0("mat_fut_pth", seq_len(input$scn_n)),
-                     paste0("cmd_fut_pth", seq_len(input$scn_n))))
+                     paste0("cmd_fut_pth", seq_len(input$scn_n)),
+                     paste0("ccei_pth", seq_len(input$scn_n))))
 
       # Create inputs
       tabsetPanel(!!!purrr::map(seq_len(input$scn_n), ~ui_scn(id, .x)))
@@ -340,7 +340,7 @@ mod_data_prep_server <- function(id, input_files = NULL) {
                   "mat_fut" = collect_inputs(file_pths, "mat_fut_pth"),
                   "cmd_norm" = file_pths$cmd_norm_pth,
                   "cmd_fut" = collect_inputs(file_pths, "cmd_fut_pth"),
-                  "ccei" = file_pths$ccei_pth,
+                  "ccei" = collect_inputs(file_pths, "ccei_pth"),
                   "map" = file_pths$map_norm_pth,
                   "mwmt" = file_pths$mwmt_norm_pth,
                   "mcmt" = file_pths$mcmt_norm_pth,
@@ -378,7 +378,14 @@ mod_data_prep_server <- function(id, input_files = NULL) {
             # stop("Example error message")  # Uncomment when interactive testing
             return(Sys.time())
           },
-          error = function(cnd) conditionMessage(cnd)
+          error = function(cnd) {
+            if(stringr::str_detect(conditionMessage(cnd), "file exists")) {
+              paste0("Files exist: Check 'Overwrite existing files?' ",
+                     "under 'Setup' to overwrite these files")
+            } else {
+              conditionMessage(cnd)
+            }
+          }
           )
         })
     })
@@ -435,7 +442,8 @@ ui_scn <- function(id, ui_id) {
       title = paste0("Future mean annual temperature (MAT; Scenario ", ui_id, ")")),
     get_file_ui2(
       id, paste0("cmd_fut_pth", ui_id), mandatory = TRUE,
-      title = paste0("Future climatic mositure deficit (CMD; Scenario ", ui_id, ")"))
+      title = paste0("Future climatic mositure deficit (CMD; Scenario ", ui_id, ")")),
+    get_file_ui2(id, paste0("ccei_pth", ui_id), "Climate change exposure index"),
   )
 }
 
