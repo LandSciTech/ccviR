@@ -381,7 +381,7 @@ test_spatial <- function(d = test_data(), d_paths = test_files(),
 
   # Avoid warnings when testing
   # TODO: fix this another way? see prep_raster_map()
-  d$clim_vars$ccei <- terra::toMemory(d$clim_vars$ccei)
+  if(!is.null(d$clim_vars$ccei)) d$clim_vars$ccei <- terra::toMemory(d$clim_vars$ccei)
 
   if(min_req) {
     d$clim_vars$ccei <- NULL
@@ -488,11 +488,11 @@ ccei_by_hand <- function(r, row = 1, col = 1) {
   cmd <- NULL
   tmean <- NULL
   for(m in 1:12) {
-    eref <- climr:::calc_Eref(m,
+    eref <- climr::calc_Eref(m,
                               tmmin = r_tmin[[m]],
                               tmmax = r_tmax[[m]],
                               latitude = abs(lat))
-    cmd <- c(cmd, climr:::calc_CMD(eref, r_prec[[m]]))
+    cmd <- c(cmd, climr::calc_CMD(eref, r_prec[[m]]))
     tmean <- c(tmean, (r_tmax[[m]] + r_tmin[[m]]) / 2)
   }
 

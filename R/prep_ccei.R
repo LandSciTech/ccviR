@@ -379,11 +379,13 @@ calc_sed <- function(b, a, s) {
 #' @export
 #'
 #' @examples
+#' \donttest{
 #' calc_ccei(scenario = "ssp245")
 #' calc_ccei(scenario = "ssp585")
 #' calc_ccei(scenario = "ssp245",
 #'           models = c("ACCESS-ESM1-5", "CanESM5"),
 #'           out_append = "test")
+#' }
 calc_ccei <- function(path_ccei = "misc/ccei", scenario,
                       models = NULL, out_append = NULL,
                       overwrite = FALSE, quiet = FALSE) {

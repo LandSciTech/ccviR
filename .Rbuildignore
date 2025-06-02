@@ -17,3 +17,7 @@ _\.new\.png$
 ^CODE_DESIGN\.md$
 ^CITATION\.cff$
 ^DEVTESTS_TESTING_SHINY\.R$
+^DEVTESTS_SPEED\.R$
+^DEVTESTS_INTERACTIVE\.R$
+^RELEASE\.R$
+^codecov\.yml$

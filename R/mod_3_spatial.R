@@ -182,10 +182,10 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Find File/Dir paths
     purrr::map(file_ids, shinyFileChoose, root = volumes, input = input,
-               filetypes = spatial_file_types)
+               filetypes = ccviR::spatial_file_types)
     observeEvent(rng_ids(), {
       purrr::map(rng_ids(), shinyFileChoose, root = volumes, input = input,
-                 filetypes = spatial_file_types)
+                 filetypes = ccviR::spatial_file_types)
     })
     shinyDirChoose(input, "clim_var_dir", root = volumes)
 

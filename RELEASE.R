@@ -18,7 +18,7 @@ source("data-raw/lookup_tbls.R")
 
 # Test coverage --------------------------------------------
 # Check for the entire suite, Actions only test non-shiny components
-covr::package_coverage(function_exclusions = c("^shiny", "^mod", "^run", "^ccvi_app"))
+covr::package_coverage()
 
 
 # Documentation --------------------------------
@@ -42,7 +42,7 @@ file.edit("DESCRIPTION")
 # Final checks --------------------------------------------------
 
 # - Checks
-devtools::check(run_dont_test = TRUE)   # Local, run long-running examples
+devtools::check(run_dont_test = TRUE)   # With local, run long-running examples
 
 # - Run in console - (Only if trying to be very persnickity)
 system("cd ..; R CMD build ccviR")

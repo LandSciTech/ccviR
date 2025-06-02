@@ -69,7 +69,7 @@ terra::plot(c(is.na(ccei_45), is.na(ccei_85)))
 
 # Some typical values for Eref in the area we're looking at (upper right corner)
 # NOTE: Not exact, because using min/max expected values for tmin, tmax
-eref <- purrr::map_dbl(1:12, ~climr:::calc_Eref(.x, 20, 30, -1.6))
+eref <- purrr::map_dbl(1:12, ~climr::calc_Eref(.x, 20, 30, -1.6))
 
 # Historical precipitation - 1960 & 1989 for example
 prec <- fs::dir_ls(fs::path(path_ccei, "historical"), glob = "*prec*") %>%
