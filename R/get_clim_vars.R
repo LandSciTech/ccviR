@@ -169,7 +169,7 @@ load_clim <- function(pth, scenario_names = "scn1", quiet = FALSE) {
 check_trim <- function(ras, quiet = FALSE){
   do_trim <- sum(!is.na(ras[1:10,]))
   if(do_trim == 0){
-    message("doing trim")
+    if(!quiet) message("doing trim")
     ras <- terra::trim(ras)
   }
   return(ras)

@@ -59,6 +59,16 @@ Sometimes raster data get's weird when it's transformed for maps
 super large. This creates a warning, but can otherwise be ignored *or* this can
 be fixed by loading the raster is loaded into memory. See `prep_raster_map()`.
 
+**Speed**
+- projecting and checking geometries in lat/lon coordinates (as opposed to projected data)
+  is realllllly slow
+- try to clip all data before transforming
+- when matching CRS, try to transform non-complex data to match more complex data
+  
+For example, protected areas is a complicated polygon. 
+So we first clip it to the assessment area (transform assessment area to match protected areas).
+Then we transform protected areas to match the hs raster.
+
 ## Shiny Modules
 
 ### Namespacing

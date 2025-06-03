@@ -141,17 +141,17 @@ analyze_spatial <- function(
   # Check polygon inputs have only one feature and if not union and crs
   crs_use <- sf::st_crs(clim_vars_lst$mat[[1]])
 
-  clim_poly <- prep_polys(clim_vars_lst$clim_poly, crs_use, "Climate Data Extext", quiet)
-  scale_poly <- prep_polys(scale_poly, crs_use, "Assessment Area", quiet)
-  range_poly <- prep_polys(range_poly, crs_use, "Range", quiet)
+  clim_poly <- prep_polys(clim_vars_lst$clim_poly, crs_use, "Climate Data Extext", quiet = quiet)
+  scale_poly <- prep_polys(scale_poly, crs_use, "Assessment Area", quiet = quiet)
+  range_poly <- prep_polys(range_poly, crs_use, "Range", quiet = quiet)
 
   # Optional inputs
-  ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet)
+  ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet = quiet)
 
   ccei <- clim_vars_lst$ccei[[1]]
   if(!is.null(non_breed_poly) & !is.null(ccei)) {
     non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(ccei),
-                                  "non-breeding range")
+                                  "non-breeding range", quiet = quiet)
   } else if (!is.null(non_breed_poly)){
     non_breed_poly <- NULL
     message("non_breed_poly was supplied but ccei was not included in clim_vars_lst, ",
@@ -161,19 +161,19 @@ analyze_spatial <- function(
   }
 
   # Clip range to climate data polygon and to scale poly
-  range_poly_clim <- clip_poly(range_poly, clim_poly, "Range", "Climate Data Extent", quiet)
-  range_poly <- clip_poly(range_poly, scale_poly, "Range", "Assessment Area", quiet)
+  range_poly_clim <- clip_poly(range_poly, clim_poly, "Range", "Climate Data Extent", quiet = quiet)
+  range_poly <- clip_poly(range_poly, scale_poly, "Range", "Assessment Area", quiet = quiet)
 
   # Section A - Exposure to Local Climate Change: #====
   inform_prog("Assessing local climate exposure", quiet, n)
 
-  # Temperature
+  ## Temperature ----
   mat_classes <- calc_prop_raster(clim_vars_lst$mat, range_poly, "MAT")
 
-  # Moisture
+  ## Moisture ----
   cmd_classes <- calc_prop_raster(clim_vars_lst$cmd, range_poly, "CMD")
 
-  # Migratory Exposure
+  ## Migratory Exposure --------------
   if(is.null(non_breed_poly) || is.null(ccei)){
     ccei_classes <- rep(NA_real_, 5) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(c(paste0("CCEI_", 1:4), "prop_non_breed_over_ccei"))
@@ -210,7 +210,7 @@ analyze_spatial <- function(
   # Section C - Sensitivity and Adaptive Capacity: #====
   inform_prog("Assessing thermal & hydrological niches", quiet, n)
 
-  # Historical Thermal niche
+  ## Historical Thermal niche ------------
   if(is.null(clim_vars_lst$htn)){
     htn_classes <- rep(NA_real_, 4) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(paste0("HTN_", 1:4))
@@ -220,7 +220,7 @@ analyze_spatial <- function(
   }
 
 
-  # Physiological Thermal niche
+  ## Physiological Thermal niche --------------
   if(is.null(ptn_poly)){
     ptn_perc <- data.frame(PTN = NA_real_)
   } else {
@@ -238,7 +238,7 @@ analyze_spatial <- function(
     }
   }
 
-  # Historical Hydrological niche
+  ## Historical Hydrological niche --------------
   if(is.null(clim_vars_lst$map)){
     range_MAP <- data.frame(MAP_max = NA_real_, MAP_min = NA_real_)
   } else {
@@ -247,8 +247,9 @@ analyze_spatial <- function(
 
 
   # Section D - Modelled Response to Climate Change #====
-  inform_prog("Assessing modelled response to climate change", quiet, n)
+  inform_prog("Assessing modelled range response to climate change", quiet, n)
 
+  ## Future range gain/loss ----------------
   if(is.null(hs_rast)) {
     mod_resp_CC <- rep(NA_real_, 2) %>% as.list() %>% as.data.frame() %>%
       purrr::set_names(c("range_change", "range_overlap"))
@@ -269,6 +270,7 @@ analyze_spatial <- function(
     mod_resp_CC <- calc_gain_loss(hs_rast, scale_poly, gain_mod = gain_mod)
   }
 
+  ## Protected areas ----------------
   if(is.null(protected_poly) | is.null(hs_rast)) {
     protected <- data.frame(protected = NA_real_)
     protected_clipped <- NULL
@@ -332,12 +334,14 @@ analyze_spatial <- function(
   return(out)
 }
 
-prep_polys <- function(poly, crs, var_name, quiet = FALSE, poly_clip = NULL, clip_name = NULL) {
+prep_polys <- function(poly, crs, var_name, poly_clip = NULL, clip_name = NULL,
+                       quiet = FALSE) {
   if(is.null(poly)) return(poly)
 
-  inform_prog(paste("Preparing polygon", var_name), quiet)
+  inform_prog(paste0("Preparing polygon '", var_name, "'"), quiet)
   poly <- check_polys(poly, var_name, quiet)
-  if(!is.null(poly_clip)) poly <- clip_poly(poly, poly_clip, var_name, clip_name, quiet)
+  if(!is.null(poly_clip)) poly <- clip_poly(poly, poly_clip, var_name,
+                                            clip_name, quiet = quiet)
   poly <- check_crs(poly, crs, var_name, quiet)
   poly <- valid_or_error(poly, var_name, quiet)
 
@@ -346,16 +350,20 @@ prep_polys <- function(poly, crs, var_name, quiet = FALSE, poly_clip = NULL, cli
 
 clip_poly <- function(poly, poly_clip, var1, var2, quiet) {
 
-  inform_prog(paste("Clipping", var1, "to", var2), quiet)
+  poly <- validate_poly(poly, var1, quiet)
 
-  clipped <- st_intersection(poly, sf::st_transform(poly_clip, sf::st_crs(poly))) %>%
-    st_set_agr("constant")
+  inform_prog(paste0("Clipping '", var1, "' to '", var2, "'"), quiet)
+
+  clipped <- sf::st_intersection(
+    poly,
+    sf::st_transform(poly_clip, sf::st_crs(poly)))
+
   if(nrow(clipped) == 0 ||
-     st_geometry_type(clipped) %in% c("LINESTRING", "MULTILINESTRING")) {
-    stop("The ", var1, "polygon does not overlap with the ", var2, "polygon",
+     all(st_geometry_type(clipped) %in% c("LINESTRING", "MULTILINESTRING"))) {
+    stop("The '", var1, "' polygon does not overlap with the '", var2, "' polygon",
          call. = FALSE)
   }
-  valid_or_error(clipped, var_name = paste(var1, var2, "intersection"))
+  clipped <- valid_or_error(clipped, var_name = paste(var1, var2, "intersection"))
 
   return(clipped)
 }

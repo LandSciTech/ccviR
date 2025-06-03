@@ -57,14 +57,17 @@ check_polys <- function(poly, var_name = "polygon", quiet = FALSE) {
 
     validate(need(
       any(geo_type %in% c("POLYGON", "MULTIPOLYGON")),
-      paste0(var_name, " has geometry type ", unique(geo_type),
+      paste0("'", var_name, "' has geometry type ", unique(geo_type),
              " but only (MULTI)POLYGONs are accepted for this input.")
     ))
 
     poly <- st_collection_extract(poly, "POLYGON")
-    if(!quiet) message("POINT or LINE geometries in ", var_name,
+    if(!quiet) message("POINT or LINE geometries in '", var_name, "'",
                        " were dropped.")
   }
+
+  # Assume attribute variables to be spatially constant throughout all geometries
+  poly <- st_set_agr(poly, "constant")
 
   return(poly)
 }
@@ -75,7 +78,7 @@ check_zm <- function(poly, var_name = "polygon") {
     names()
 
   if(any(c("z_range", "m_range") %in% a)) {
-    message("Removing Z and/or M dimensions from ", var_name)
+    message("Removing Z and/or M dimensions from '", var_name, "'")
     poly <- sf::st_zm(poly)
   }
 
@@ -107,7 +110,7 @@ check_crs <- function(sp, crs_target = NULL, var_name = NULL, quiet = FALSE) {
   if(inherits(sp, c("SpatRaster", "RasterLayer", "Raster"))) {
     if(is.null(var_name)) var_name <- terra::sources(sp)
     if(is.na(terra::crs(sp))||terra::crs(sp) == ""){
-      stop("The raster ", var_name, " does not have a CRS.",
+      stop("The raster '", var_name, "' does not have a CRS.",
            " \nPlease load a file with a valid Coordinate Reference System",
            call. = FALSE)
     }
@@ -115,7 +118,7 @@ check_crs <- function(sp, crs_target = NULL, var_name = NULL, quiet = FALSE) {
 
   if(!is.null(crs_target) && sf::st_crs(sp) != crs_target) {
     if(inherits(sp, "sf")) {
-      inform_prog(paste("Transforming polygon", var_name), quiet)
+      inform_prog(paste0("Transforming polygon '", var_name, "'"), quiet)
       sp <- sf::st_transform(sp, crs_target)
     }
   }

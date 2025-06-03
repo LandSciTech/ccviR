@@ -479,59 +479,34 @@ pp <- p[!st_is_valid(p), ]
 nrow(p)
 nrow(pp)  # 9 problems overall
 
-plot(pp, col = "yellow")
+pp$id <- seq_len(nrow(pp))
+
+plot(pp)
+
+plot(pp[1,])
+plot(pp[2,])
+plot(pp[3,])
+plot(pp[4,])
+plot(pp[5,])
+plot(pp[6,])
+plot(pp[7,])
+plot(pp[8,])
+plot(pp[9,])
+
+ggplot() +
+  geom_sf(data = context_North_Am) +
+  geom_sf(data = pp[1,], fill = "blue") +
+  coord_sf(xlim = c(-170, -80), ylim = c(40, 70))
+
+# Something funky with the rivers?
+ggplot() +
+  geom_sf(data = context_North_Am) +
+  geom_sf(data = pp[1,], fill = "blue") +
+  coord_sf(xlim = c(-165, -148), ylim = c(64, 69))
 
 
 # README ---------------------------------------------------------
 # see data-raw/README_protected.md
-
-
-
-
-# Explore the problems
-tt <- st_transform(t, 4326)
-
-nv <- which(!st_is_valid(tt))
-length(nv) # 268
-
-st_is_valid(tt[nv[1],], reason = TRUE)
-plot(tt[nv[1],]) # trans
-plot(t[nv[1],])  # original
-
-# Try snap to grid with different sizes, what is the smallest size that works?
-lwgeom::st_snap_to_grid(t[nv[1],], size = 0.00000001) %>%
-  st_transform(4326) %>%
-  st_is_valid()
-
-# Test again! Fixes a couple
-length(nv)
-t[nv, ] %>%
-  lwgeom::st_snap_to_grid(size = 0.00000001) %>%
-  st_transform(4326) %>%
-  st_make_valid() %>%
-  st_is_valid() %>%
-  sum()
-
-# AGain
-tt <- t %>%
-  lwgeom::st_snap_to_grid(size = 0.00000001) %>%
-  st_transform(4326)
-
-nv <- which(!st_is_valid(tt))
-length(nv) # 266
-
-
-c <- lwgeom::st_snap_to_grid(ca1, size = 1e-7)
-u <- lwgeom::st_snap_to_grid(us1, size = 1e-7)
-
-na <- rbind(c, u)
-
-na_p <- st_cast(na, "POLYGON")
-all(st_is_valid(na))
-
-na_t <- st_transform(na_p, 4326)
-all(st_is_valid(na_t))
-
 
 
 # Citations -------------------------------------------------------------------

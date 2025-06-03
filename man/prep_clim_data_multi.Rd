@@ -80,7 +80,9 @@ normal period}
 climate data. It will be created from the climate data if it is missing
 but it is faster to provide it.}
 }
-Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
+
+Accepted raster file types are ".asc", ".tif", ".nc", ".grd", ".img", ".bil"
+and ".gpkg" (see \code{spatial_file_raster()}).
 }
 \examples{
 in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")

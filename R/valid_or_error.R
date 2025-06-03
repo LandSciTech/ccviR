@@ -8,7 +8,7 @@ validate_poly <- function(poly, var_name, quiet = FALSE) {
 
     validate(need(
       all(sf::st_is_valid(poly)),
-      paste0(var_name, " is not valid. Check the polygon is ",
+      paste0("'", var_name, "' is not valid. Check the polygon is ",
              "correct or provide a different version.")
     ))
   }
@@ -27,7 +27,7 @@ valid_or_error <- function(poly, var_name = "Spatial data", quiet = FALSE) {
   # TODO: Catch this message in the Shiny app
   if(nrow(poly) > 1) {
     if(nrow(poly) > 100){
-      warning("The ", var_name, " povided contains more than 100 polygons. ",
+      warning("The '", var_name, "' povided contains more than 100 polygons. ",
               "These will be unioned to create one polygon. ",
               "If this is not expected please use a different shapefile.",
               call. = FALSE)
@@ -35,8 +35,7 @@ valid_or_error <- function(poly, var_name = "Spatial data", quiet = FALSE) {
 
     inform_prog(paste0("Unionizing polygon '", var_name, "'"), quiet)
     poly <- sf::st_union(poly) %>% sf::st_as_sf()
-
-    validate_poly(poly, var_name = paste0("Unionized ", var_name), quiet)
+    poly <- validate_poly(poly, var_name = paste0("Unionized ", var_name), quiet)
   }
 
   poly

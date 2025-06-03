@@ -38,9 +38,4 @@ pth <- system.file("extdata/clim_files/processed", package = "ccviR")
 scn_nms <- c("RCP 4.5", "RCP 8.5")
 
 get_clim_vars(pth, scn_nms)
-
-\dontrun{
-  pth <- "misc/climate/processed"
-  get_clim_vars(pth, scn_nms)
-}
 }

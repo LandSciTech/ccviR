@@ -39,8 +39,8 @@ results for each scenario use a raster with multiple layers and ensure that the 
 the layers matches the order of \code{scenario_names}.}
 
 \item{hs_rcl}{a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
-lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
-details on the matrix format.}
+lost, 2: maintained, 3: gained. See \code{rng_chg_mat()} for a helper function.
+See \code{\link[terra]{classify}} for details on the matrix format.}
 
 \item{protected_poly}{Optional. A sf polygon object with protected areas.}
 
@@ -84,13 +84,18 @@ The range polygon will be clipped to the area overlapping the
 climate data polygon. The range within the assessment area is used to
 calculate all results except the historical thermal and hydrological niches
 for which the range within the extent of the climate data is used.
+
+The projections used will be that of the Mean Annual Temperature (in
+\code{clim_vars_lst}), the CCEI (in \code{clim_vars_lst}, if used), and the
+predicted changes in breeding range (\code{hs_rasts}; if used). Therefore these
+spatial data files will ideally be projected with a projection appropriate
+for preserving area in calculations (Equal Area projections, for example).
 }
 \examples{
-
+# Setup
+library(sf)
 base_pth <- system.file("extdata", package = "ccviR")
-
-# scenario names
-scn_nms <- c("RCP 4.5", "RCP 8.5")
+scn_nms <- c("RCP 4.5", "RCP 8.5") # scenario names
 
 clim_vars <- get_clim_vars(file.path(base_pth, "clim_files/processed"),
                            scenario_names = scn_nms)
@@ -101,7 +106,7 @@ spat_res <- analyze_spatial(
   clim_vars_lst = clim_vars,
   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
                           file.path(base_pth, "rng_chg_85.tif"))),
-  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  hs_rcl = rng_chg_mat(-1, 0, 1),
   scenario_names = scn_nms
 )
 
@@ -112,37 +117,32 @@ spat_res <- analyze_spatial(
   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
   clim_vars_lst = clim_vars,
   hs_rast = terra::rast(file.path(base_pth, "rng_chg_45.tif")),
-  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  hs_rcl = rng_chg_mat(-1, 0, 1),
   scenario_names = scn_nms
 )
 
-\dontrun{
 # With protected areas
 spat_res <- analyze_spatial(
   range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
-  protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
+  protected_poly = sf::read_sf(file.path(base_pth, "protected_areas.shp")),
   clim_vars_lst = clim_vars,
   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
                           file.path(base_pth, "rng_chg_85.tif"))),
-  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  hs_rcl = rng_chg_mat(-1, 0, 1),
   scenario_names = scn_nms
 )
-}
 
-\dontrun{
 # With CCEI (using `non_breed` spatial example)
-clim_vars <- get_clim_vars("misc/climate/processed", scenario_names = scn_nms)
 spat_res <- analyze_spatial(
-  range_poly = sf::read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
-  scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
-  protected_poly = sf::read_sf("misc/protected_areas/pa_north_america.gpkg"),
-  non_breed_poly = non_breed,
+  range_poly = read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
+  scale_poly = read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
+  protected_poly = read_sf(file.path(base_pth, "protected_areas.shp")),
+  non_breed_poly = read_sf(file.path(base_pth, "non_breed.shp")),
   clim_vars_lst = clim_vars,
   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
                           file.path(base_pth, "rng_chg_85.tif"))),
-  hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+  hs_rcl = rng_chg_mat(-1, 0, 1),
   scenario_names = scn_nms
 )
-}
 }
