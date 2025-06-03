@@ -31,8 +31,8 @@
 #'   results for each scenario use a raster with multiple layers and ensure that the order of
 #'   the layers matches the order of \code{scenario_names}.
 #' @param hs_rcl a matrix used to classify \code{hs_rast} into 0: not suitable, 1:
-#'   lost, 2: maintained, 3: gained. See \code{\link[terra]{classify}} for
-#'   details on the matrix format.
+#'   lost, 2: maintained, 3: gained. See `rng_chg_mat()` for a helper function.
+#'   See \code{\link[terra]{classify}} for details on the matrix format.
 #' @param protected_poly Optional. A sf polygon object with protected areas.
 #' @param gain_mod a number between 0 and 1 that can be used to down-weight gains
 #'   in the modeled range change under climate change
@@ -78,7 +78,7 @@
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
 #'                           file.path(base_pth, "rng_chg_85.tif"))),
-#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+#'   hs_rcl = rng_chg_mat(-1, 0, 1),
 #'   scenario_names = scn_nms
 #' )
 #'
@@ -89,7 +89,7 @@
 #'   scale_poly = sf::read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = terra::rast(file.path(base_pth, "rng_chg_45.tif")),
-#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+#'   hs_rcl = rng_chg_mat(-1, 0, 1),
 #'   scenario_names = scn_nms
 #' )
 #'
@@ -101,7 +101,7 @@
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
 #'                           file.path(base_pth, "rng_chg_85.tif"))),
-#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+#'   hs_rcl = rng_chg_mat(-1, 0, 1),
 #'   scenario_names = scn_nms
 #' )
 #'
@@ -114,7 +114,7 @@
 #'   clim_vars_lst = clim_vars,
 #'   hs_rast = terra::rast(c(file.path(base_pth, "rng_chg_45.tif"),
 #'                           file.path(base_pth, "rng_chg_85.tif"))),
-#'   hs_rcl = matrix(c(-1, 0, 1, 1, 2, 3), ncol = 2),
+#'   hs_rcl = rng_chg_mat(-1, 0, 1),
 #'   scenario_names = scn_nms
 #' )
 
@@ -360,3 +360,48 @@ clip_poly <- function(poly, poly_clip, var1, var2, quiet) {
   return(clipped)
 }
 
+#' Create a range change matrix
+#'
+#' Creates a matrix defining the range change scores for a range change raster.
+#' This matrix is required for the `hs_rcl` argument of `analyze_spatial()`. The
+#' matrix indicates how the range change matrix is scored; which cell values
+#' mean the range was lost, maintained, or gained. This is then used by
+#' `analyze_spatial()` to re-calibrate the range change raster to values of 0-3
+#' indicating NA, lost, maintained, or gained.
+#'
+#' @param lost Numeric vector. Two values representing the lowest and highest
+#'   values indicating range lost.
+#' @param maintained Numeric vector. Two values representing the lowest and
+#'   highest values indicating range maintained.
+#' @param gained Numeric vector. Two values representing the lowest and highest
+#'   values indicating range gained.
+#' @param not_suitable Numeric vector. Two values representing the lowest and
+#'   highest values indicating range not suitable.
+#'
+#' @returns A matrix of scores for use in `analyze_spatial()`
+#' @export
+#'
+#' @examples
+#' rng_chg_mat(lost = -1,
+#'             maintained = 0,
+#'             gained = 1,
+#'             not_suitable = NA)
+#'
+#' rng_chg_mat(lost = 1,
+#'             maintained = c(2, 6),
+#'             gained = 7,
+#'             not_suitable = NA)
+
+rng_chg_mat <- function(lost, maintained, gained, not_suitable = NA) {
+
+  if(length(lost) == 1) lost <- c(lost, lost)
+  if(length(maintained) == 1) maintained <- c(maintained, maintained)
+  if(length(gained) == 1) gained <- c(gained, gained)
+  if(length(not_suitable) == 1) not_suitable <- c(not_suitable, not_suitable)
+
+  matrix(c(lost,          1,
+           maintained,    2,
+           gained,        3,
+           not_suitable,  0),
+         byrow = TRUE, ncol = 3)
+}

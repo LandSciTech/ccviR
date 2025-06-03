@@ -424,11 +424,10 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
     # Matrix
     rng_chg_mat <- reactive({
-      mat <- matrix(c(input$lost_from, input$lost_to, 1,
-                      input$maint_from, input$maint_to, 2,
-                      input$gain_from, input$gain_to, 3,
-                      input$ns_from, input$ns_to, 0),
-                    byrow = TRUE, ncol = 3)
+      mat <- rng_chg_mat(c(input$lost_from, input$lost_to),
+                         c(input$maint_from, input$maint_to),
+                         c(input$gain_from, input$gain_to),
+                         c(input$ns_from, input$ns_to))
 
       # if an input is blank then the value is NA but that converts raster values that
       # are NA to that value
