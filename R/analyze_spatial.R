@@ -147,13 +147,6 @@ analyze_spatial <- function(
 
   # Optional inputs
   ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet)
-  if(!is.null(hs_rast)) {
-    protected_poly <- prep_polys(
-      protected_poly, var_name = "Protected Areas",
-      crs = st_crs(hs_rast),
-      poly_clip = scale_poly, clip_name = "Assessment Area",
-      quiet)
-  }
 
   ccei <- clim_vars_lst$ccei[[1]]
   if(!is.null(non_breed_poly) & !is.null(ccei)) {
@@ -278,25 +271,43 @@ analyze_spatial <- function(
 
   if(is.null(protected_poly) | is.null(hs_rast)) {
     protected <- data.frame(protected = NA_real_)
+    protected_clipped <- NULL
   } else {
 
-    # Only keep actual range
+    # Only keep actual future range which overlaps the assessment area
     # set 0 (not suitable) and 1 (lost) to NA,
     # set 2 (maint) and 3 (gained) to 1
-    range_future <- terra::subst(hs_rast, c(0, 1), NA) %>%
+    clip <- scale_poly %>%
+      sf::st_transform(sf::st_crs(hs_rast))
+
+    range_future <- terra::crop(hs_rast, clip, mask = TRUE) %>%
+      terra::subst(c(0, 1), NA) %>%
       terra::subst(c(2,3), 1)
 
+    # Crop and prepare polygon
+    var_name <- "Protected Areas"
+    inform_prog("Preparing polygon 'Protected Areas'", quiet)
+    protected_poly <- check_polys(protected_poly, var_name, quiet)
+
+    protected_clipped <- clip_poly(protected_poly, scale_poly,
+                                   var_name, "Assessment Area", quiet)
+    protected_trans <- check_crs(protected_clipped, st_crs(hs_rast), var_name, quiet)
+
+    # Do not union, do not fail if invalid
+    protected_trans <- sf::st_make_valid(protected_trans)
+
     protected <- calc_prop_raster(
-      range_future, protected_poly, var_name = "protected",
-      val_range = 1) %>%
+      range_future, protected_trans, var = "range change", var_name = "protected",
+      check_overlap = FALSE, val_range = 1) %>%
       select("protected" = "protected_1")
+
+    # Return the clipped but un-transformed protected polygon for mapping
   }
 
   inform_prog("Finalizing outputs", quiet, n)
 
   # Range size
   range_size <- tibble(range_size = st_area(range_poly) %>% units::set_units(NULL))
-
 
   # outs <- lst(mat_classes, cmd_classes, ccei_classes, htn_classes,
   #             ptn_perc, range_MAP, mod_resp_CC, range_size)
@@ -316,7 +327,7 @@ analyze_spatial <- function(
                                      protected),
               range_poly_assess = range_poly,
               range_poly_clim = range_poly_clim,
-              protected_poly_assess = protected_poly)
+              protected_poly_assess = protected_clipped)
 
   return(out)
 }

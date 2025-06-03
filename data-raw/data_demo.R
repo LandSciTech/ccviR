@@ -15,7 +15,7 @@ pth <- path_package("ccviR", "extdata")
 
 ## Protected areas ------------------
 # Include Protected areas where overlaps assessment area provided
-protected <- st_read("misc/protected_areas/pa_north_america.gpkg")
+protected <- st_read("misc/protected_areas/pa_north_america_no_sm.gpkg")
 
 range <- st_read(test_files()[["assess_poly_pth"]]) %>%
   st_buffer(2000) %>%
@@ -25,12 +25,14 @@ range <- st_read(test_files()[["assess_poly_pth"]]) %>%
 protected <- st_crop(protected, range) %>%
   st_simplify(dTolerance = 1000)
 
-# library(ggplot2)
-# ggplot() +
-#   geom_sf(data = range) +
-#   geom_sf(data = protected)
+if(FALSE) {
+  library(ggplot2)
+  ggplot() +
+    geom_sf(data = range) +
+    geom_sf(data = protected, fill = "green")
+}
 
-# Use shp because for such a small file, want a lighter weight option than gpkg
+# Use shp because for such a small file, seems to be a lighter weight option than gpkg
 st_write(protected, path(pth, "protected_areas.shp"), append = FALSE)
 
 

@@ -219,7 +219,7 @@
                   "value": ["ECOZONE", "GID_0", "NAME_0", "GID_1", "NAME_1", "VARNAME_1", "NL_NAME_1", "TYPE_1", "ENGTYPE_1", "CC_1", "HASC_1"]
                 }
               },
-              "value": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+              "value": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"]
             }
           },
           "value": [
@@ -586,7 +586,7 @@
                   "value": ["ECOZONE", "GID_0", "NAME_0", "GID_1", "NAME_1", "VARNAME_1", "NL_NAME_1", "TYPE_1", "ENGTYPE_1", "CC_1", "HASC_1"]
                 }
               },
-              "value": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+              "value": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"]
             }
           },
           "value": [
@@ -1138,7 +1138,7 @@
                   "value": ["ECOZONE", "GID_0", "NAME_0", "GID_1", "NAME_1", "VARNAME_1", "NL_NAME_1", "TYPE_1", "ENGTYPE_1", "CC_1", "HASC_1"]
                 }
               },
-              "value": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+              "value": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"]
             }
           },
           "value": [
@@ -1505,7 +1505,7 @@
                   "value": ["ECOZONE", "GID_0", "NAME_0", "GID_1", "NAME_1", "VARNAME_1", "NL_NAME_1", "TYPE_1", "ENGTYPE_1", "CC_1", "HASC_1"]
                 }
               },
-              "value": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+              "value": ["NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA", "NA"]
             }
           },
           "value": [
@@ -2001,7 +2001,7 @@
         {
           "type": "double",
           "attributes": {},
-          "value": [9.368, 0.246]
+          "value": [9.498, 0.243]
         }
       ]
     }

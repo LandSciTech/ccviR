@@ -11,17 +11,34 @@
 #' @return a data.frame
 #'
 #' @noRd
-calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
-                             check_overlap = 0.99, return_overlap_as = NULL) {
+calc_prop_raster <- function(rast, poly, var, var_name = NULL, val_range = 1:6, digits = 3,
+                             check_overlap = 0.99, return_overlap_as = NULL,
+                             quiet = FALSE) {
+
+  if(is.null(var_name)) var_name <- var
+
+  # Debugging invalid protected areas (use `TRUE` to debug and explore)
+  if(FALSE && var_name == "protected") {
+    browser()
+    p <- sf::st_cast(poly, "MULTIPOLYGON") %>%
+      sf::st_cast("POLYGON")
+    i <- sf::st_is_valid(p)
+    nv <- which(!i)
+    length(nv)
+    nrow(p)
+    plot(p[nv,], col = "yellow")
+    sf::st_is_valid(p[nv,], reason = TRUE)
+  }
+
   if(st_crs(poly) != st_crs(rast)) {
     poly <- st_transform(poly, st_crs(rast))
-    message("Calculating raster overlap: Polygons transformed to match CRS of ",
-            var_name, " raster")
+    inform_prog(
+      paste0("Calculating raster overlap: Polygons transformed to match CRS of '",
+             var, "' raster"),
+      quiet)
   }
 
   ext_out <- exactextractr::exact_extract(rast, poly, progress = FALSE, include_area = TRUE)
-
-  poly_area <- st_area(poly)
 
   out <- ext_out[[1]] %>%
     select(-"area") %>%
@@ -41,18 +58,23 @@ calc_prop_raster <- function(rast, poly, var_name, val_range = 1:6, digits = 3,
     select(-"layer")
 
   if(check_overlap > 0 || !is.null(return_overlap_as)){
-    cov_area <- ext_out[[1]] %>% mutate(area_frac = .data$area*.data$coverage_fraction) %>%
-      pull(.data$area_frac) %>% sum()
+    cov_area <- ext_out[[1]] %>%
+      mutate(area_frac = .data$area*.data$coverage_fraction) %>%
+      pull(.data$area_frac) %>%
+      sum()
+
+    poly_area <- sum(st_area(poly))
 
     prop_cov <- cov_area/units::drop_units(poly_area)
 
     if(!is.null(return_overlap_as)) {
-      prop_out <- data.frame(x = prop_cov) %>% stats::setNames(return_overlap_as)
+      prop_out <- data.frame(x = prop_cov) %>%
+        stats::setNames(return_overlap_as)
       out <- bind_cols(out, prop_out)
     }
 
     if(prop_cov < check_overlap){
-      stop("The range polygon does not fully overlap the supplied ", var_name,
+      stop("The polygon does not fully overlap the supplied ", var,
            " raster.", call. = FALSE)
     }
   }

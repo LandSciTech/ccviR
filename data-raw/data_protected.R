@@ -23,6 +23,7 @@ library(fs)
 library(glue)
 library(sf)
 library(dplyr)
+library(units)
 
 # Setup file paths
 dir_pa <- path("misc", "protected_areas")
@@ -96,7 +97,7 @@ ca <- st_read(f_CAN, layer = "ProtectedConservedArea_2023") %>%
     #"PA_OECM_DF",  # 1 Protected Area; 2 OECM; 3 Interim PA; 4 Interim OECM; 5 NA
 
     #"TYPE_E",      # Description of the type of protected area
-    #"ZONEDESC_E",  # Description of the zone
+    "ZONEDESC_E",  # Description of the zone
     #"OWNER_E"      # Owner
     ) %>%
   filter(IUCN_CAT <= 7, # Using only IUCN recognized (i.e. I - VI, 1-7)
@@ -107,14 +108,43 @@ sf::st_geometry_type(ca) %>% unique()
 
 ### Simplify and union -----------------------------
 
-ca1 <- ca %>%
+# Look at the sizes of small features (could also first separate into polygons)
+areas <- st_area(ca)
+min(areas)
+summary(areas)
+length(areas)
+
+# Set our cutoff to 50m x 50m (to correspond to simplification of 50m)
+cut <- set_units(2500, "m2")
+
+# This cutoff results in:
+
+# Removal of 0.000015% area (0.18 km2 out of 1,221,842 km2)
+(t <- set_units(sum(areas), "km2"))
+(tt <- set_units(sum(areas[areas >= cut]), "km2"))
+
+(t - tt)
+(t - tt) / t * 100
+
+# Removal of 1.4% features (175 out of 12,703)
+(l <- length(areas))
+(ll <- length(areas[areas >= cut]))
+
+(l - ll)
+(l - ll) / l * 100
+
+ca1 <- ca[areas >= cut, ] %>%
   st_simplify(preserveTopology = TRUE, dTolerance = 50) %>%
-  st_make_valid() %>%  # Could use st_buffer(0) to increase speed (Magic Fairy dust: https://github.com/r-spatial/sf/issues/518)
+  st_make_valid()%>%
   st_union() %>%
-  st_transform(crs = crs_out)
+  st_transform(crs = crs_out) %>%
+  st_make_valid()
 
-st_write(ca1, path(dir_pa, "pa_canada.gpkg"), overwrite = TRUE, append = FALSE)
+all(st_is_valid(ca1))
 
+p <- path(dir_pa, "pa_canada_no_sm.gpkg")
+unlink(p)
+st_write(ca1, p, overwrite = TRUE, append = FALSE)
 
 
 ### Explore - Final set of polygons ------------------------------
@@ -257,12 +287,12 @@ if(FALSE) {
 
 f_USA <- path(dir_USA, "PADUS4_0VectorAnalysis_GAP_PADUS_Only_ClipCENSUS.gdb/")
 #st_layers(f_USA)
-us_glimpse <- st_read(
-  f_USA,
-  query = paste(
-    "SELECT *",
-    "FROM PADUS4_0VectorAnalysis_GAP_Simp_SingP_ClipCENSUS",
-    "LIMIT 10"))
+# us_glimpse <- st_read(
+#   f_USA,
+#   query = paste(
+#     "SELECT *",
+#     "FROM PADUS4_0VectorAnalysis_GAP_Simp_SingP_ClipCENSUS",
+#     "LIMIT 10"))
 
 # This can take a couple of minutes
 us <- st_read(
@@ -289,14 +319,45 @@ us <- st_read(
 sf::st_geometry_type(us) %>% unique()
 
 ### Simplify and union -----------------------------
-# Be patient!
-us1 <- us %>%
-  st_simplify(preserveTopology = TRUE, dTolerance = 50) %>%
-  st_make_valid() %>% # could use st_buffer(0) to increase speed
-  st_union() %>%
-  st_transform(crs = crs_out)
 
-st_write(us1, path(dir_pa, "pa_usa.gpkg"), overwrite = TRUE, append = FALSE)
+# Look at the sizes of small features (could also first separate into polygons)
+areas <- st_area(us)
+min(areas)
+summary(areas)
+length(areas)
+
+# Set our cutoff to 50m x 50m (to correspond to simplification of 50m)
+cut <- set_units(2500, "m2")
+
+# This cutoff results in:
+
+# Removal of 0.00457% area (58 km2 out of 1,268,923 km2)
+(t <- set_units(sum(areas), "km2"))
+(tt <- set_units(sum(areas[areas >= cut]), "km2"))
+
+(t - tt)
+(t - tt) / t * 100
+
+# Removal of 42% features (130,780 out of 314,069)
+(l <- length(areas))
+(ll <- length(areas[areas >= cut]))
+
+(l - ll)
+(l - ll) / l * 100
+
+# Be patient!
+us1 <- us[areas >= cut, ] %>%
+  st_simplify(preserveTopology = TRUE, dTolerance = 50) %>%
+  st_make_valid() %>%
+  st_union() %>%
+  st_transform(crs = crs_out) %>%
+  st_make_valid()
+
+all(st_is_valid(us1))
+
+p <- path(dir_pa, "pa_usa_no_sm.gpkg")
+unlink(p)
+st_write(us1, p, overwrite = TRUE, append = FALSE)
 
 ### Explore - Final set of polygons ------------------------------
 if(FALSE) {
@@ -389,20 +450,88 @@ if(FALSE) {
 
 # Combine ---------------------------------------------------------------------
 # Be PATIENT!
-ca1 <- st_read(path(dir_pa, "pa_canada.gpkg"))
-us1 <- st_read(path(dir_pa, "pa_usa.gpkg"))
+ca1 <- st_read(path(dir_pa, "pa_canada_no_sm2.gpkg"))
+us1 <- st_read(path(dir_pa, "pa_usa_no_sm2.gpkg"))
 
-north_america <- rbind(ca1, us1) %>%
-  ccviR:::valid_or_error()
+north_america <- rbind(ca1, us1)
 
+all(st_is_valid(north_america))
+
+p <- path(dir_pa, "pa_north_america_no_sm.gpkg")
+unlink(p)
 st_write(north_america,
-         path(dir_pa, "pa_north_america.gpkg"),
+         p,
          overwrite = TRUE, append = FALSE)
 
+# Transforming Problems ----------------------------------
 #plot(north_america)
+na <- st_read(path(dir_pa, "pa_north_america_no_sm.gpkg"))
+
+na_t <- st_transform(na, 4326) %>%
+  st_make_valid()  # (SLOOOOOOOOOW)
+
+any(!st_is_valid(na_t)) # So we have problems
+
+# Where are the problems?
+p <- st_cast(na_t, "POLYGON")
+pp <- p[!st_is_valid(p), ]
+
+nrow(p)
+nrow(pp)  # 9 problems overall
+
+plot(pp, col = "yellow")
+
 
 # README ---------------------------------------------------------
 # see data-raw/README_protected.md
+
+
+
+
+# Explore the problems
+tt <- st_transform(t, 4326)
+
+nv <- which(!st_is_valid(tt))
+length(nv) # 268
+
+st_is_valid(tt[nv[1],], reason = TRUE)
+plot(tt[nv[1],]) # trans
+plot(t[nv[1],])  # original
+
+# Try snap to grid with different sizes, what is the smallest size that works?
+lwgeom::st_snap_to_grid(t[nv[1],], size = 0.00000001) %>%
+  st_transform(4326) %>%
+  st_is_valid()
+
+# Test again! Fixes a couple
+length(nv)
+t[nv, ] %>%
+  lwgeom::st_snap_to_grid(size = 0.00000001) %>%
+  st_transform(4326) %>%
+  st_make_valid() %>%
+  st_is_valid() %>%
+  sum()
+
+# AGain
+tt <- t %>%
+  lwgeom::st_snap_to_grid(size = 0.00000001) %>%
+  st_transform(4326)
+
+nv <- which(!st_is_valid(tt))
+length(nv) # 266
+
+
+c <- lwgeom::st_snap_to_grid(ca1, size = 1e-7)
+u <- lwgeom::st_snap_to_grid(us1, size = 1e-7)
+
+na <- rbind(c, u)
+
+na_p <- st_cast(na, "POLYGON")
+all(st_is_valid(na))
+
+na_t <- st_transform(na_p, 4326)
+all(st_is_valid(na_t))
+
 
 
 # Citations -------------------------------------------------------------------
