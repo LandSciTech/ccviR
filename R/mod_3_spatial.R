@@ -227,15 +227,22 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       }
 
       # Get previous path locations
+
+      rng_chg_pth <- df_loaded$rng_chg_pth
+      rng_chg_pth <- stats::setNames(
+        rng_chg_pth,
+        paste0("rng_chg_pth_", seq_along(rng_chg_pth)))
+      rng_ids(names(rng_chg_pth))
+
       loaded_pths <- df_loaded %>%
         slice(1) %>%
-        select(contains("pth"), -any_of("clim_dir_pth")) %>%
-        as.list()
+        select(contains("pth"), -any_of("clim_dir_pth"), -"rng_chg_pth") %>%
+        as.list() %>%
+        append(rng_chg_pth) # Add rng_chg_pth back in the correct format
 
       # Set file paths
       if(length(loaded_pths) > 0) {
         pths <- purrr::discard(loaded_pths, is.na)
-        names(pths)[names(pths) == "range_poly_pth"] <- "rng_poly_pth"
         purrr::walk(names(pths), ~{
           file_pths[[.x]] <- pths[[.x]]
         })
@@ -640,9 +647,17 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
         select(-"Scenario_Name", -contains("brks"))
 
       spat_fnms <- reactiveValuesToList(file_pths) %>%
-        purrr::map(~ifelse(is.null(.x), "", .x)) %>%
+        purrr::map(~ifelse(is.null(.x), "", .x))
+
+      # Combine rng_chg_pth into a single column
+      r <- stringr::str_subset(names(spat_fnms), "rng_chg_pth")
+      rng_chg_pth <- unlist(spat_fnms[r])
+      spat_fnms <- spat_fnms[!names(spat_fnms) %in% r]
+
+      spat_fnms <- spat_fnms %>%
         as.data.frame() %>%
-        mutate(clim_dir_pth = clim_dir_pth())
+        mutate(clim_dir_pth = clim_dir_pth()) %>%
+        bind_cols(rng_chg_pth = rng_chg_pth)
 
       spat_df <- data.frame(
         gain_mod = input$gain_mod,
