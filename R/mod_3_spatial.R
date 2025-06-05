@@ -246,7 +246,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       if(!is.na(clim_pth_ldd)) clim_dir_pth(clim_pth_ldd)
 
       # Move to species tab
-      switch_tab("Species Information", parent_session)
+      switch_tab("species", parent_session)
 
       return(TRUE)
     })
