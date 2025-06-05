@@ -79,6 +79,9 @@ rast(path("misc", "ccei_processed", "CCEI_reclassRCP_8.5.tif")) |>
   writeRaster(path(pth, "clim_files", "processed", "CCEI_reclassRCP_8.5.tif"),
               overwrite = TRUE)
 
+file_copy(path("misc", "ccei_processed", "climate_data_readme.csv"),
+          path(pth, "clim_files", "processed"), overwrite = TRUE)
+
 
 # Climate Data #================================================================
 

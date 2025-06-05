@@ -44,8 +44,8 @@ prep_clim_readme(
   out_folder = clim_prep,
   brks = brks)
 
-# Keep just the processed CCEI files
-dir_ls(clim_prep, glob = "*CCEI*", invert = TRUE) %>%
+# Keep just the processed CCEI files and README
+dir_ls(clim_prep, glob = "*CCEI*|*readme*", invert = TRUE) %>%
   file_delete()
 
 # Checks...
