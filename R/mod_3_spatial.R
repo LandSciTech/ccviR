@@ -423,11 +423,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
     })
 
     # Matrix
-    rng_chg_mat <- reactive({
-      mat <- rng_chg_mat(c(input$lost_from, input$lost_to),
-                         c(input$maint_from, input$maint_to),
-                         c(input$gain_from, input$gain_to),
-                         c(input$ns_from, input$ns_to))
+    rng_mat <- reactive({
+      mat <- rng_chg_mat(lost = c(input$lost_from, input$lost_to),
+                         maintained = c(input$maint_from, input$maint_to),
+                         gained = c(input$gain_from, input$gain_to),
+                         not_suitable = c(input$ns_from, input$ns_to))
 
       # if an input is blank then the value is NA but that converts raster values that
       # are NA to that value
@@ -505,7 +505,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
                           hs_rast = rng_chg_rast(),
                           ptn_poly = ptn_poly(),
                           clim_vars_lst = clim_vars(),
-                          hs_rcl = rng_chg_mat(),
+                          hs_rcl = rng_mat(),
                           protected_poly = protected_poly(),
                           gain_mod = input$gain_mod,
                           scenario_names = clim_readme()$Scenario_Name)
@@ -672,7 +672,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       "assess_poly" = assess_poly,
       "protected_poly" = protected_poly_clip,
       "hs_rast" = rng_chg_rast,
-      "hs_rcl_mat" = rng_chg_mat
+      "hs_rcl_mat" = rng_mat
     )
   })
 
