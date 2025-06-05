@@ -110,9 +110,10 @@ ui_setup <- function(...) {
         id = "tabset",
         well = FALSE,
         widths = c(3, 9),
+        footer = mod_save_ui("save"),
         ...
       ),
-      mod_save_ui("save")
+
     )
   )
 

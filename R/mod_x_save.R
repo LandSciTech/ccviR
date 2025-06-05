@@ -4,9 +4,12 @@ mod_save_ui <- function(id, title) {
 
   div(
     id = "footer",
-    style = "float:right; margin-top: 2rem;padding-right: 15px;",
-    shinySaveButton(ns("downloadData"), "Save progress", "Save app data as a csv file",
-                    class = "btn-primary", icon = shiny::icon("save")),
+    style = "float:left;",
+    div(style = "display:inline-block",
+        shinySaveButton(ns("downloadData"), "Save progress", "Save app data as a csv file",
+                        class = "btn-primary", icon = shiny::icon("save")),
+        uiOutput(ns("status"), class = "button-status")
+    ),
     br(),
     br(),
     br()
@@ -27,11 +30,23 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
 
     # Make out_data #========================================================
 
+    qs <- reactive(widen_vuln_coms2(questions))
+
     out_data <- reactive({
       ind <- if(is_ready(index())) index() else NULL
       spat1 <- if(is_ready(spatial$spat_run())) spatial$spat_run() else NULL
       spat2 <- if(is_ready(spatial$spat_res())) spatial$spat_res() else NULL
-      combine_outdata2(species_data(), questions, spat1, spat2, ind)
+      combine_outdata2(species_data(), qs(), spat1, spat2, ind)
+    })
+
+    output$status <- renderUI({ # Use UI when rendering HTML
+      req(index(), qs())
+
+      if(!index_match_qs(qs(), index())) {
+        return(tagList(icon("xmark", style = "color:red"),
+                       "Omitting Index Results", br(), "(Questions have changed)"))
+      } else return(NULL)
+
     })
 
     # save the data to a file

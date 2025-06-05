@@ -352,29 +352,44 @@ widen_vuln_coms2 <- function(questions) {
 }
 
 
+# Compare Questions in the index to questions in the app to see if they
+# are in synchrony.
+index_match_qs <- function(questions, index) {
+  qs <- select(questions, -contains("com_"), -contains("evi_"))
+  index <- select(index, matches("^[BCD]{1}\\d{1}[a-z]{0,3}")) %>%
+    distinct()
 
-
+  # If they match TRUE else FALSE
+  nrow(qs) == nrow(index) && all(qs == index)
+}
 
 
 combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index) {
 
   # Priority order is species, question inputs, spatial run, spatial restored
-  # Note: this is without pipes to ensure always
   # TODO: Check this, and test different combinations of loading data and changing
   #  questions
 
-  qs <- widen_vuln_coms2(questions)
-
   out_dat <- species_data %>%
-    bind_cols(qs[, !names(qs) %in% names(.)]) %>%
+    bind_cols(questions[, !names(questions) %in% names(.)]) %>%
     bind_cols(spat_run[, !names(spat_run) %in% names(.)]) %>%
     bind_cols(spat_res[, !names(spat_res) %in% names(.)]) %>%
     dplyr::mutate(ccviR_version = utils::packageVersion("ccviR"))
 
-  if(!is.null(index)) {
+  # If there is no index OR the index questions don't match the answered
+  # questions, don't save the index.
+  if(!is.null(index) && index_match_qs(questions, index)) {
     out_dat <- select(out_dat, -any_of(colnames(index))) %>%
       bind_cols(index)
+  } else {
+    # Remove potentially out-of-date index scores
+    out_dat <- select(
+      out_dat, -any_of(c(
+        "CCVI_index", "CCVI_conf_index", "mig_exposure", "b_c_score", "d_score",
+        "MC_freq_EV", "MC_freq_HV", "MC_freq_MV", "MC_freq_LV", "MC_freq_IE"))
+    )
   }
+
 
   exp_cols <- fs::path_package("extdata", "column_definitions_results.csv",
                                package = "ccviR") %>%
