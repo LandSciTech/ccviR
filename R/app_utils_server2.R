@@ -194,7 +194,7 @@ load_previous <- function(path) {
   df <- tryCatch(error = function(cnd) {
     validate(need(TRUE, "CSV file is empty, cannot restore from file."))
   },
-  utils::read.csv(path)
+  utils::read.csv(path, na.strings = "") # Only blanks are NA
   )
 
   validate(need(!(nrow(df) < 1 || !"scenario_name" %in% colnames(df)),

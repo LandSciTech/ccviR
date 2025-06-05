@@ -44,7 +44,9 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
           filename <- paste0(filename, ".csv")
         }
         saveAttempt <- tryCatch({
-          utils::write.csv(out_data(), filename, row.names = FALSE)},
+          # Use blank for NA, so that NA in other fields can be kept as text
+          # (e.g., what if someone uses NA for North America?)
+          utils::write.csv(out_data(), filename, row.names = FALSE, na = "")},
           error = function(e){
             showModal(modalDialog(
               p("File could not be saved. Is it open?"),
