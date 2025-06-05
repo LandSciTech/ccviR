@@ -380,6 +380,8 @@ combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index)
   # If there is no index OR the index questions don't match the answered
   # questions, don't save the index.
   if(!is.null(index) && index_match_qs(questions, index)) {
+    # Get the comments and evidence from the actual questions
+    index <- select(index, -starts_with("com_"), -starts_with("evi_"))
     out_dat <- select(out_dat, -any_of(colnames(index))) %>%
       bind_cols(index)
   } else {
