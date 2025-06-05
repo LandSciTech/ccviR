@@ -163,8 +163,9 @@ updateCheck_comment_ui2 <- function(inputId, value, com, evi, session) {
 #'                spat_df = spat_res(), input = input, q = TRUE)
 #' })
 
-spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = NULL,
-                          map_table = TRUE, q = FALSE, multi_stop = FALSE, optional = FALSE) {
+spat_vuln_ui2 <- function(
+    ..., id, ui_id, desc = NULL, spat_df = NULL, input = NULL,
+    map_table = TRUE, q = FALSE, multi_stop = FALSE, optional = FALSE) {
 
   # TODO: Here we assume that if you do not have maps/tables, you don't have
   #  spatial. Correct assumption?
@@ -203,12 +204,14 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
   } else t <- tagList()
 
 
-  # If Questions, prepare - But only present if Optional, or if Required data ready
-  if(q && (ready || optional)) {
+  # If Questions, prepare
+  if(q) {
 
     multi_stop <- length(spat_df$range_change) > 1 &
       all(!is.na(spat_df$range_change)) &
       multi_stop
+
+    chk_label <- NULL
 
     if(ready) {
 
@@ -233,10 +236,13 @@ spat_vuln_ui2 <- function(..., id, ui_id, desc = NULL, spat_df = NULL, input = N
         style = "color:dimgray;")
     }
 
-    t <- tagList(
-      t,
-      render_spat_vuln_box2(id, ui_id, spat_df, input, chk_label,
-                            multi_stop = multi_stop))
+
+    box <- render_spat_vuln_box2(id, ui_id, spat_df, input, chk_label,
+                                 multi_stop = multi_stop)
+
+    if(!ready && !optional) box <- shinyjs::hidden(box)
+
+    t <- tagList(t, box)
   }
 
   t

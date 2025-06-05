@@ -260,7 +260,7 @@ update_restored2 <- function(df, session, section = NULL){
   section2 <- stringr::str_extract(section, "[A-D]{1}$")
   section <- stringr::str_remove(section, "\\_[A-D]{1}$")
   df2 <- filter(df2,
-                stringr::str_detect(.data$section, .env$section),
+                stringr::str_detect(.data$section, paste0("^", .env$section)),
                 is.na(.env$section2) | stringr::str_detect(.data$input, .env$section2))
 
   df2 <- select(df2, -"section")
@@ -278,7 +278,8 @@ update_call2 <- function(input, update_fun, value, arg_name, comment, evidence, 
 
   if(!is.na(comment)){
     if(arg_name == "value"){
-      update_fun(session = session, inputId = input, value = value, com = comment, evi = evidence)
+      update_fun(session = session, inputId = input, value = value,
+                 com = comment, evi = evidence)
     }
   } else {
     if(arg_name == "value"){
@@ -293,38 +294,10 @@ update_call2 <- function(input, update_fun, value, arg_name, comment, evidence, 
 
 
 
-spat_vuln_hide2 <- function(id, spatial, values) {
-  mis <- paste0("missing_", id)
-  mapid <- paste0("map_", id)
-  nmis <- paste0("not_missing_", id)
-  tblid <- paste0("tbl_", id)
-
-  # TODO: Replace this with validate(need())?
-
-  # Do we have the spatial map?
-  if(isTruthy(spatial)) {
-    # Show everything (hide missing message)
-    shinyjs::hide(mis)
-    shinyjs::show(mapid)
-    shinyjs::show(tblid)
-    shinyjs::show(nmis)
-
-  # Do we have the values?
-  } else if(isTruthy(values)) {
-    # Show table and message that not missing, but hide map (because we haven't recalculated the spatial data)
-    shinyjs::hide(mis)
-    shinyjs::hide(mapid)
-    shinyjs::show(nmis)
-    shinyjs::show(tblid)
-
-    # Otherwise...
-  } else {
-    # Hide all details and show "missing" message
-    shinyjs::show(mis)
-    shinyjs::hide(mapid)
-    shinyjs::hide(tblid)
-    shinyjs::hide(nmis)
-  }
+spat_vuln_hide2 <- function(id, ...) {
+  ready <- is_ready(list(...)) && # Any errors in ...?
+    all(vapply(list(...), isTruthy, logical(1))) # Any NULLs?
+  shinyjs::toggle(paste0(id, "div"), condition = ready)
 }
 
 
@@ -332,19 +305,19 @@ spat_vuln_hide2 <- function(id, spatial, values) {
 render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
                                   multi_stop = FALSE) {
 
-  com_id <- NS(id, paste0("com", ui_id))
-  evi_id <- NS(id, paste0("evi", ui_id))
+  com_id <- paste0("com_", ui_id)
+  evi_id <- paste0("evi_", ui_id)
 
   # get previous comment/evidence
   prevCom <- isolate(input[[com_id]])
   prevCom <- ifelse(is.null(prevCom), "", prevCom)
   prevEvi <- isolate(input[[evi_id]])
-  prevEvi <- ifelse(is.null(prevEvi), "", prevEvi)
+  prevEvi <- if(is.null(prevEvi)) "" else prevEvi # Permits lengths > 1
 
   # If have spatial analysis AND have data for this Question
   if(isTruthy(spat_df) && all(!is.na(spat_df[[ui_id]]) & spat_df[[ui_id]] > -1)) {
     box_val <- spat_df[[ui_id]] %>% unique()
-    if(prevEvi == "") prevEvi <- "Spatial Analysis - ccviR"
+    if(all(prevEvi == "")) prevEvi <- "Spatial Analysis - ccviR"
   } else {
     box_val <- NULL
   }

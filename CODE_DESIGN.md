@@ -69,6 +69,16 @@ For example, protected areas is a complicated polygon.
 So we first clip it to the assessment area (transform assessment area to match protected areas).
 Then we transform protected areas to match the hs raster.
 
+## Inputs
+Spatial inputs are created dynamically and update by using `updateInputsXX()`
+functions when re-loading data.
+This means that the inputs need to be available when loading the saved data, 
+*before* the spatial data is available. 
+Therefore, questions that *require* spatial data are created, but hidden until the
+spatial data is available. This way they can have the comments and evidence
+restored when re-loading data, and then it will be show after the spatial 
+analyses rerun. 
+
 ## Shiny Modules
 
 ### Namespacing

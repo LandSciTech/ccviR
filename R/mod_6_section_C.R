@@ -238,6 +238,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
                     spat_df = spat_res(), input = input, q = TRUE)
     })
     outputOptions(output, "ui_C2ai", suspendWhenHidden = FALSE) # After creation
+    observe(spat_vuln_hide2("C2ai", range_poly(), clim_vars()))
 
     output$map_C2ai <- leaflet::renderLeaflet({
       make_map2(range_poly_clim(), rast1 = clim_vars()$htn, rast1_nm = "htn",
@@ -316,6 +317,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
                     spat_df = spat_res(), input = input, q = TRUE)
     })
     outputOptions(output, "ui_C2bi", suspendWhenHidden = FALSE)
+    observe(spat_vuln_hide2("C2bi", range_poly(), clim_vars()))
 
     output$map_C2bi <- leaflet::renderLeaflet({
       make_map2(poly1 = range_poly_clim(), rast1 = clim_vars()$map,
