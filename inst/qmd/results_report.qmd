@@ -113,7 +113,7 @@ vuln_box <- function(tbl) {
 #| include: false
 # If testing use test saved data
 if(length(saved) == 1 && saved == "none") {
-  saved <- ccviR:::test_files()$saved$final2 %>%
+  saved <- ccviR:::test_files()$saved$full_run %>%
     ccviR:::load_previous()
 } else {
   # Otherwise remember that Quarto isn't R! So can handle lists, but not data.frames

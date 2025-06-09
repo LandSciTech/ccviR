@@ -20,5 +20,6 @@ inst/qmd/*.html*
 inst/qmd/*.pdf
 inst/rmd/*.pdf
 
-# But not the clim_files!
+# But not the clim_files or test_files!
 !clim_files
+!test_files

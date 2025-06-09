@@ -54,7 +54,7 @@ test_that("spatial data created", {
       expect_s3_class(clim_vars()$clim_poly, "sf")
       expect_s3_class(clim_readme(), "data.frame")
 
-      expect_true(is.matrix(rng_chg_mat()))
+      expect_true(is.matrix(rng_mat()))
 
       # No spatial without button
       expect_error(spat_res())   # Reactive
@@ -106,7 +106,7 @@ test_that("1 range with mult scenarios", {
       expect_s3_class(clim_vars()$clim_poly, "sf")
       expect_s3_class(clim_readme(), "data.frame")
 
-      expect_true(is.matrix(rng_chg_mat()))
+      expect_true(is.matrix(rng_mat()))
 
       # No spatial without button
       expect_error(spat_res())   # Reactive

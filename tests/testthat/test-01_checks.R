@@ -9,7 +9,7 @@ test_that("check_polys()", {
   p1 <- sf::st_read(fs::path_package("ccviR", "extdata", "error_files", "rng_point.shp"), quiet = TRUE)
   expect_error(check_polys(p1), "has geometry type POINT but only")
   p1 <- rbind(select(p0, geometry), select(p1, geometry))
-  expect_message(check_polys(p1), "POINT or LINE geometries in polygon were dropped")
+  expect_message(check_polys(p1), "POINT or LINE geometries in 'polygon' were dropped")
 
   # Check for Z/M removal
   f <- test_path("..", "..", "misc", "external_test_files", "ccvi_shp", "ecozone_max_boundary.shp")

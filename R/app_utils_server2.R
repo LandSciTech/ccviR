@@ -184,8 +184,7 @@ parse_path <- function(volumes, shiny_files_list) {
 #' @noRd
 #'
 #' @examples
-#' f <- parse_path(server_setup(), test_files("test_final.csv"))
-#' load_previous(f)
+#' load_previous(test_files()$saved$full_run)
 
 load_previous <- function(path) {
 

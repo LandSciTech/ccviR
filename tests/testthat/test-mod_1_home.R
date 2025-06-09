@@ -15,17 +15,19 @@ test_that("loads data", {
   testServer(mod_home_server, args = list(volumes = volumes), {
     r <- session$getReturned()
 
-    session$setInputs(loadcsv = test_files(mock = TRUE)$saved$final)
+    session$setInputs(loadcsv = test_files(mock = TRUE)$saved$questions_only)
 
     expect_true(fs::file_exists(path()))
 
+    # No index
     expect_s3_class(df_loaded(), "data.frame")
     expect_equal(df_loaded(), r$df_loaded())
-    expect_true(!all(is.na(df_loaded()$CCVI_index)))
+    expect_true(all(is.na(df_loaded()$CCVI_index)))
 
-    session$setInputs(loadcsv = test_files(mock = TRUE)$saved$spatial)
+    # Index
+    session$setInputs(loadcsv = test_files(mock = TRUE)$saved$full_run)
     expect_s3_class(df_loaded(), "data.frame")
     expect_equal(df_loaded(), r$df_loaded())
-    expect_false(!all(is.na(df_loaded()$CCVI_index)))
+    expect_false(all(is.na(df_loaded()$CCVI_index)))
   })
 })

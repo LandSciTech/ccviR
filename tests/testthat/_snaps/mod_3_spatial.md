@@ -6,7 +6,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["gain_mod", "gain_mod_comm", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "nonbreed_poly_pth", "protected_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "clim_dir_pth"]
+          "value": ["gain_mod", "gain_mod_comm", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "nonbreed_poly_pth", "protected_poly_pth", "ptn_poly_pth", "clim_dir_pth", "rng_chg_pth"]
         },
         "class": {
           "type": "character",
@@ -73,7 +73,7 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["RCP 4.5", "RCP8.5"]
+          "value": ["RCP 4.5", "RCP 8.5"]
         },
         {
           "type": "character",
@@ -108,17 +108,12 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["rng_chg_45.tif", "rng_chg_45.tif"]
-        },
-        {
-          "type": "character",
-          "attributes": {},
-          "value": ["rng_chg_85.tif", "rng_chg_85.tif"]
-        },
-        {
-          "type": "character",
-          "attributes": {},
           "value": ["processed", "processed"]
+        },
+        {
+          "type": "character",
+          "attributes": {},
+          "value": ["rng_chg_45.tif", "rng_chg_85.tif"]
         }
       ]
     }
@@ -131,7 +126,7 @@
         "names": {
           "type": "character",
           "attributes": {},
-          "value": ["gain_mod", "gain_mod_comm", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "nonbreed_poly_pth", "protected_poly_pth", "ptn_poly_pth", "rng_chg_pth_1", "rng_chg_pth_2", "clim_dir_pth"]
+          "value": ["gain_mod", "gain_mod_comm", "lost", "maint", "gain", "ns", "rng_chg_used", "GCM_or_Ensemble_name", "Historical_normal_period", "Future_period", "Emissions_scenario", "Link_to_source", "assess_poly_pth", "rng_poly_pth", "nonbreed_poly_pth", "protected_poly_pth", "ptn_poly_pth", "clim_dir_pth", "rng_chg_pth"]
         },
         "class": {
           "type": "character",
@@ -198,7 +193,7 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["RCP 4.5", "RCP8.5"]
+          "value": ["RCP 4.5", "RCP 8.5"]
         },
         {
           "type": "character",
@@ -233,17 +228,12 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["rng_chg_45.tif", "rng_chg_45.tif"]
-        },
-        {
-          "type": "character",
-          "attributes": {},
-          "value": ["rng_chg_85.tif", "rng_chg_85.tif"]
-        },
-        {
-          "type": "character",
-          "attributes": {},
           "value": ["processed", "processed"]
+        },
+        {
+          "type": "character",
+          "attributes": {},
+          "value": ["rng_chg_45.tif", "rng_chg_85.tif"]
         }
       ]
     }
