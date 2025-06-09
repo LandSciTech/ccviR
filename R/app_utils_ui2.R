@@ -1,6 +1,7 @@
 # Get file path
 get_file_ui2 <- function(id, ui_id, title, mandatory = FALSE, type = "file",
-                         subtitle = "", multiple = FALSE, spinner = FALSE) {
+                         subtitle = "", multiple = FALSE, spinner = FALSE,
+                         note = NULL) {
 
   title2 <- strong(paste0(title, ": "))
   if(mandatory) title2 <- labelMandatory(title2)
@@ -25,6 +26,7 @@ get_file_ui2 <- function(id, ui_id, title, mandatory = FALSE, type = "file",
 
   div(label,
       button,
+      if(!is.null(note)) tagList(br(), em(note)),
       splitLayout(text_out, clear, cellWidths = c("80%", "20%")),
       error_out
   )
