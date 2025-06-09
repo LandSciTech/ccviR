@@ -361,7 +361,7 @@ index_match_qs <- function(questions, index) {
     distinct()
 
   # If they match TRUE else FALSE
-  nrow(qs) == nrow(index) && all(qs == index)
+  nrow(qs) == nrow(index) && ncol(qs) == ncol(index) && all(qs == index)
 }
 
 
