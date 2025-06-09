@@ -314,27 +314,33 @@ test_species <- function(file = "final2") {
 #' test_questions(as_reactive = FALSE)
 #' test_questions() # Reactive values
 #' isolate(test_questions()$b()) # Look at reactive values
+#' isolate(test_questions("full_run")$b()) # Look at reactive values
 
 test_questions <- function(file = "final2", as_reactive = TRUE) {
 
   q <- load_previous(test_files()$saved[[file]]) %>%
     select(matches("^(com_|evi_)?(B|C|D)\\d+")) %>%
-    distinct() %>%
     rename_with(.cols = matches("^(B|C|D)\\d+"), ~paste0("que_", .x)) %>%
     tidyr::pivot_longer(
       everything(), names_to = c("type", "Code"),
       names_pattern = "(com|evi|que)_(.+)",
       values_to = "value",
-      values_transform = as.character)
+      values_transform = as.character) %>%
+    summarize(value = paste0(value, collapse = ","), .by = c("type", "Code"))
 
   qs <- filter(q, .data$type == "que") %>%
     select("Code", "value") %>%
+    slice(1, .by = "Code")  %>%# Questions ignore scenarios, so just take the first (if has multiple answers, it's based on spatial and cannot be supplied manually.).
     tidyr::separate("value", into = c("Value1", "Value2", "Value3", "Value4"),
                     fill = "right", sep = ", ?", convert = TRUE) %>%
     split(tolower(stringr::str_extract(.$Code, "^\\w")))
+
+
   coms <- filter(q, .data$type == "com") %>%
     select("Code", "com" = "value") %>%
+    distinct() %>%
     split(tolower(stringr::str_extract(.$Code, "^\\w")))
+
   evi <- filter(q, .data$type == "evi") %>%
     select("Code", "evi" = "value") %>%
     split(f = tolower(stringr::str_extract(.$Code, "^\\w")))
