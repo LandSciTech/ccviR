@@ -8,12 +8,15 @@
 #'
 #' # Test with minimum spatial required
 #' mod_A_test(spatial = test_spatial(min_req = TRUE))
+#'
+#' # Test with non-migratory
+#' mod_A_test(species = test_species() %>% mutate(mig = FALSE))
 
-mod_A_test <- function(spatial = test_spatial()) {
+mod_A_test <- function(spatial = test_spatial(), species = test_species()) {
 
   ui <- ui_setup(mod_A_ui(id = "test"))
   server <- function(input, output, session) {
-    mod_A_server(id = "test", spatial, parent_session = session)
+    mod_A_server(id = "test", spatial, reactive(species), parent_session = session)
   }
 
   shinyApp(ui, server)
@@ -63,7 +66,7 @@ mod_A_ui <- function(id) {
   )
 }
 
-mod_A_server <- function(id, spatial, parent_session) {
+mod_A_server <- function(id, spatial, species, parent_session) {
 
   purrr::map(spatial, ~stopifnot(is.reactive(.x)))
 
@@ -119,20 +122,23 @@ mod_A_server <- function(id, spatial, parent_session) {
 
     # Migratory Exposure and CCEI ---------------------------------
     output$ui_ccei <- renderUI({
-        spat_vuln_ui2(clim_vars()$ccei, nonbreed_poly(),
-                      id = id, ui_id = "ccei",
-                      desc = "\"CCEI\" and \"Non-Breeding Range\"",
-                      optional = TRUE)
+      validate(need(
+        species()$mig, "No migratory exposure for non-migratory species"),
+        errorClass = "alert")
+      spat_vuln_ui2(clim_vars()$ccei, nonbreed_poly(),
+                    id = id, ui_id = "ccei",
+                    desc = "\"CCEI\" and \"Non-Breeding Range\"",
+                    optional = TRUE)
     })
 
     output$map_ccei <- leaflet::renderLeaflet({
       req(nonbreed_poly(), clim_vars()$ccei)
-
       make_map2(nonbreed_poly(), clim_vars()$ccei, rast1_nm = "ccei",
                 rast1_lbl = c("1 Low", "2", "3", "4 High"))
     })
 
     output$tbl_ccei <- gt::render_gt({
+      req(species()$mig)
       get_exposure_table(spat_res(), "CCEI", clim_readme(), clim_readme()$brks_ccei)
     })
 

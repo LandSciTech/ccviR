@@ -190,7 +190,7 @@ spat_vuln_ui2 <- function(
           div(
             style = style,
             span("Optional Spatial Data not provided",
-                 class = "optional-sptial"), br(),
+                 class = "optional-spatial"), br(),
             span("To calculate, provide ", desc, " on the Spatial Data Analysis page")
           ))
       } else {

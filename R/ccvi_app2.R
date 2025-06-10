@@ -49,7 +49,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
 
     mod_A_server(
       id = "section_a",
-      spatial = spatial,
+      spatial = spatial, species = sp$species_data,
       parent_session = session)
 
     b <- mod_B_server(
@@ -132,8 +132,9 @@ ui_fmt <- function(title, type = "main") {
    .shinyFiles {margin-bottom: 5px;}
 
    .shiny-output-error-validation {color: #d9534f; font-weight: bold;}
+   .shiny-output-error-alert {color: #fd7e14; font-weight: bold; padding-bottom:15px}
 
-   .optional-sptial {color: #fd7e14; font-weight: bold;}
+   .optional-spatial {color: #fd7e14; font-weight: bold;}
 
    h5 {font-weight: bold; font-size: 100%;}
    .question {font-size: 120%; margin-top: 1.5em;}
