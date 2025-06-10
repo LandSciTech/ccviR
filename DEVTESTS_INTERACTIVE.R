@@ -33,6 +33,8 @@ mod_results_test(spatial = test_spatial(min_req = TRUE),
 mod_C_test(df_loaded = test_df_loaded())
 mod_C_test(input_files = test_files(min_req = TRUE)) # Min-required only
 
+
+# Specific checks --------------------------------------
 # ✔ Check saved data -----------------------------
 # Launch App - Reload File - Save file - Compare
 
@@ -50,11 +52,20 @@ waldo::compare(
 )
 
 # ✔ Check saved data - With manually changing spatial scores -------------------
-# test_sp_changes.csv -> Launch App - Reload test_full_run.csv  - Make change to spatial questions - Save
-# Test -> Launch App - Reload test_sp_changes.csv - Check results - Save - Compare
+# Test1 -> Reload test_full_run.csv  - Make change to spatial questions - Save as test_sp_changes.csv - Compare
+# Test2 -> Reload test_sp_changes.csv - Check results - Save as test_comp.csv - Compare
 
 ccvi_app2()
 
+# Expect differences in the questions
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run.csv")) %>%
+    select(matches("[A-D]{1}\\d")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_sp_changes.csv"))  %>%
+    select(matches("[A-D]{1}\\d"))
+)
+
+# Expect NO differences
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_sp_changes.csv")),
   read.csv(fs::path_package("ccviR", "extdata", "test_comp.csv"))
@@ -64,17 +75,35 @@ waldo::compare(
 
 # ✔ Check that when only comments/evidence updated gets saved and included in reports -----------------
 
-# Check that can reload a different file  -----------------
+# ✔ Check that can reload a different file in the same session  -----------------
+
+# Check that can save/reload a questions from optional spatial data -----------------
+# This data has no protected areas
+mod_D_test(df_loaded = test_df_loaded("questions_only"),
+           input_files = test_files(min_req = TRUE))
 
 # Varieties of conditions ----------------------------------------------
 
-# Obliate caves
-# Migratory
-# Gain modifier
+## ✔ Migratory & CCEI --------------------
 
-# Different questions for different taxa
-mod_C_test(tax_grp = "Nonvascular Plant")
-mod_C_test(tax_grp = "Lichen")
+# Choose Mammal, Bird, or Invert-Insect
+ccvi_app2()
+ccvi_app2(input_files = test_files())
+mod_results_test(species_data = test_species("full_run_migratory"),
+                 spatial = test_spatial(),
+                 questions = test_questions("full_run_migratory"))
+
+
+## Obligate caves --------------------------
+
+
+## Gain modifier -------------------------
+
+
+
+## ✔ Expect different questions for different taxa -----------------------------
+
+# ✔ Animal only - C4b
 mod_C_test(tax_grp = "Invert-Insect")
 mod_C_test(tax_grp = "Invert-Mollusk")
 mod_C_test(tax_grp = "Invert-Other")
@@ -84,13 +113,17 @@ mod_C_test(tax_grp = "Reptile")
 mod_C_test(tax_grp = "Mammal")
 mod_C_test(tax_grp = "Bird")
 
+# ✔ Plant only - C4c
+mod_C_test(tax_grp = "Vascular Plant")
+mod_C_test(tax_grp = "Nonvascular Plant")
 
-# Test when run spatial but then change spatial question answers -------
+# ✔ Not plant nor animal (no C4b nor C4c)
+mod_C_test(tax_grp = "Lichen")
 
-# Test when reload previous run but then change questions ---------
 
-# Only one range change but multiple scenarios
-# Empty range change matrix values (should not be NA in matrix)
+## Only one range change but multiple scenarios ---------------------------
+
+## Empty range change matrix values (should not be NA in matrix) ----------
 
 # Troubleshooting -------------------------------------------------------
 # Testing a particular set of files
