@@ -326,7 +326,7 @@ test_questions <- function(file = "full_run", as_reactive = TRUE) {
       names_pattern = "(com|evi|que)_(.+)",
       values_to = "value",
       values_transform = as.character) %>%
-    summarize(value = paste0(value, collapse = ","), .by = c("type", "Code"))
+    summarize(value = paste0(.data$value, collapse = ","), .by = c("type", "Code"))
 
   qs <- filter(q, .data$type == "que") %>%
     select("Code", "value") %>%
