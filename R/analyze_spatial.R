@@ -105,7 +105,7 @@
 #'   scenario_names = scn_nms
 #' )
 #'
-#' # With CCEI (using `non_breed` spatial example)
+#' # With CCEI (by supplying `non_breed.shp` spatial example)
 #' spat_res <- analyze_spatial(
 #'   range_poly = read_sf(file.path(base_pth, "rng_poly.shp"), agr = "constant"),
 #'   scale_poly = read_sf(file.path(base_pth, "assess_poly.shp"), agr = "constant"),
