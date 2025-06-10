@@ -148,7 +148,7 @@ analyze_spatial <- function(
   # Optional inputs
   ptn_poly <- prep_polys(ptn_poly, crs_use, "PTN", quiet = quiet)
 
-  ccei <- clim_vars_lst$ccei[[1]]
+  ccei <- clim_vars_lst$ccei
   if(!is.null(non_breed_poly) & !is.null(ccei)) {
     non_breed_poly <- prep_polys(non_breed_poly, sf::st_crs(ccei),
                                   "non-breeding range", quiet = quiet)

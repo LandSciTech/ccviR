@@ -133,12 +133,7 @@ mod_A_server <- function(id, spatial, parent_session) {
     })
 
     output$tbl_ccei <- gt::render_gt({
-      if(is.null(clim_readme()$brks_ccei) || all(is.na(clim_readme()$brks_ccei))) {
-        class_brks <- "4: (> 7);3: (6 - 7);2: (4 - 5);1: (< 4)"
-      } else {
-        class_brks <- clim_readme()$brks_ccei
-      }
-      get_exposure_table(spat_res(), "CCEI", clim_readme(), class_brks)
+      get_exposure_table(spat_res(), "CCEI", clim_readme(), clim_readme()$brks_ccei)
     })
 
   })
