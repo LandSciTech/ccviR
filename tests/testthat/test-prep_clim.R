@@ -257,6 +257,28 @@ test_that("prep_clim_data() - ccei", {
   expect_snapshot_value(clim2, style = "json2")
 
   unlink(out, recursive = TRUE)
+
+  # Multi can use the same CCEI
+  fs::dir_create(out)
+
+  expect_warning({
+    prep_clim_data_multi(
+      mat_norm = f["mat_norm_pth"],
+      mat_fut = c(f["mat_fut_pth1"], f["mat_fut_pth2"]),
+      cmd_norm = f["cmd_norm_pth"],
+      cmd_fut = c(f["cmd_fut_pth1"], f["cmd_fut_pth2"]),
+      map = f["map_norm_pth"],
+      mwmt = f["mwmt_norm_pth"],
+      mcmt = f["mcmt_norm_pth"],
+      ccei = f["ccei_pth1"],
+      out_folder = out,
+      clim_poly = test_files()$assess_poly_pth,
+      overwrite = TRUE,
+      scenario_name = c("RCP 4.5", "RCP 8.5"),
+      quiet = TRUE)
+  }, "Mismatch between scenarios and CCEI, using the same CCEI for all scenarios")
+
+  unlink(out, recursive = TRUE)
 })
 
 

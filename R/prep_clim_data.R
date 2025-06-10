@@ -43,16 +43,16 @@
 #'
 #' @examples
 #' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
-#'
-#' pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
+#' pth_out <- "processed_temp"
+#' fs::dir_create(pth_out)
 #'
 #' # Process both scenarios at once with the same set of breaks
 #'
 #' prep_clim_data_multi(
 #'   mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
-#'   mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
+#'   mat_fut = file.path(in_folder, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
 #'   cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
-#'   cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
+#'   cmd_fut = file.path(in_folder, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif")),
 #'   map = file.path(in_folder, "NB_norm_MAP.tif"),
 #'   mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
 #'   mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
@@ -61,6 +61,32 @@
 #'                         "assess_poly.shp"),
 #'   overwrite = TRUE,
 #'   scenario_name = c("RCP 4.5", "RCP 8.5"))
+#'
+#' # Clean up
+#' fs::dir_delete(pth_out)
+#'
+#'
+#' # Process both scenarios at with CCEI
+#' pth_out <- "processed_temp"
+#' fs::dir_create(pth_out)
+#'
+#' prep_clim_data_multi(
+#'   mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+#'   mat_fut = file.path(in_folder, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
+#'   cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+#'   cmd_fut = file.path(in_folder, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif")),
+#'   ccei = file.path(in_folder, c("ccei_ssp245_fl.tif", "ccei_ssp585_fl.tif")),
+#'   map = file.path(in_folder, "NB_norm_MAP.tif"),
+#'   mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+#'   mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+#'   out_folder = pth_out,
+#'   clim_poly = file.path(system.file("extdata", package = "ccviR"),
+#'                         "assess_poly.shp"),
+#'   overwrite = TRUE,
+#'   scenario_name = c("RCP 4.5", "RCP 8.5"))
+#'
+#' # Clean up
+#' fs::dir_delete(pth_out)
 
 prep_clim_data_multi <- function(
     mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
@@ -70,9 +96,21 @@ prep_clim_data_multi <- function(
     scenario_name = "", brks = NULL, brks_mat = NULL,
     brks_cmd = NULL, brks_ccei = NULL, quiet = FALSE) {
 
-  # TODO: Checks that we have the same multiples of all required inputs
-
   n_scn <- length(scenario_name)
+
+  if(length(ccei) != n_scn && length(ccei) == 1) {
+    warning("Mismatch between scenarios and CCEI, using the same CCEI for all scenarios",
+            call. = FALSE)
+    ccei <- rep(ccei, n_scn)
+  }
+
+  if(n_scn != length(mat_fut) | n_scn != length(cmd_fut)) {
+    stop("Mismatch between scenarios and future MAT or CMD\n",
+         "Provide the same number of each", call. = FALSE)
+  }
+
+
+
   i <- 1
   if(is.null(brks)) {
     brks_out <- list("brks_cmd" = brks_cmd,
