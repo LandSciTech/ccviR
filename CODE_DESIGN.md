@@ -143,6 +143,12 @@ using `renderUI()`, not required for anything else going to/from `output` or `in
   `mod_c_test()` accepts output of `test_files()` and then passes it to
   `test_data()` and then to `test_spatial()` internally (which ends up preserving
   the pointer location)
+- There are several saved progress files for testing different things (stored in `inst/extdata/test_files`)
+  - `test_full_run.csv` - Full run of a plant
+  - `test_full_run_migration.csv` - Full run for a migratory species
+  - `test_questions_only.csv` - Run with spatial and questions but no index
+  - `test_sp_changes.csv` - Full run of a plant, but some spatial questions changed
+  - `test_empty.csv` - An empty run file
 
 ### Interactive testing
 - Most functions have an examples section in the roxygen2 docs which can be
