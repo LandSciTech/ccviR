@@ -501,7 +501,7 @@ show_guidelines <- function(input) {
              }, ignoreInit = TRUE))
 }
 
-collect_questions <- function(input, section) {
+collect_questions <- function(input, section, tax_grp = NULL) {
 
   # Use a predefined list so we update as changes added
   # - if we use names(input) - invalidates constantly
@@ -510,8 +510,14 @@ collect_questions <- function(input, section) {
   qs <- vulnq_code_lu_tbl$Code %>%
     stringr::str_subset(paste0("^", section))
 
+  type <- stringr::str_sub(qs[1], 1, 1)
+
   q <- purrr::map_df(qs, ~getMultValues(input[[.x]], .x)) %>%
     as_tibble()
+
+  if(type == "C") { # Where taxa influences questions
+    q <- filter_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
+  }
 
   c <- purrr::map_df(paste0("com_", qs), ~{
     data.frame(Code = stringr::str_remove(.x, "com_"),
@@ -539,7 +545,7 @@ bind_elements <- function(questions, type) {
   out
 }
 
-answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
+answered_n <- function(questions, spatial = NULL) {
 
   type <- stringr::str_sub(questions$questions$Code[1], 1, 1)
 
@@ -547,11 +553,11 @@ answered_n <- function(questions, tax_grp = NULL, spatial = NULL) {
     dplyr::rowwise() %>%
     # Here score = answered/not answered (NOT ACTUAL SCORE)
     dplyr::mutate(score = any(dplyr::pick(-"Code") >= 0, na.rm = TRUE)) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(Value1))
 
-  if(type == "C") { # Where taxa influences questions
-    q <- filter_applicable_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
-    # How many C5 questions to remove (to collapse into one)?
+  # How many Q5's to omit from count?
+  if(type == "C") {
     q$c5 <- sum(!is.na(q$score[q$Code %in% c("C5a", "C5b", "C5c")])) - 1
   } else q$c5 <- 0
 
@@ -588,9 +594,9 @@ count_n <- function(questions) {
                      by = "sec")
 }
 
-report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
+report_n <- function(questions, spatial = NULL) {
 
-  q <- answered_n(questions, tax_grp, spatial) %>%
+  q <- answered_n(questions, spatial) %>%
     count_n()
 
   q_txt <- paste0(q$q_txt, " questions answered")
@@ -615,6 +621,29 @@ report_n <- function(questions, tax_grp = NULL, spatial = NULL) {
 
   tagList(q_txt, br(), e_txt)
 }
+
+# Compare Questions in the index to questions in the app to see if they
+# are in synchrony.
+index_match_qs <- function(questions, index, spatial) {
+
+  # Which D questions answered spatially?
+  #  splice in if they were to catch changes in spatial data run
+  sp <- select(spatial, matches("D{1}\\d")) %>%
+    select(where(~any(.x != -1)))
+
+  qs <- select(questions, -contains("com_"), -contains("evi_")) %>%
+    select(-where(~all(.x == "")), -any_of(names(sp))) %>%
+    bind_cols(sp)
+
+  index <- select(index, matches("^[BCD]{1}\\d{1}[a-z]{0,3}")) %>%
+    select(-where(~all(.x == ""))) %>%
+    distinct()
+
+  # If they match TRUE else FALSE
+  nrow(qs) == nrow(index) && ncol(qs) == ncol(index) && all(qs == index)
+}
+
+
 
 
 show_questions <- function(tax_grp) {

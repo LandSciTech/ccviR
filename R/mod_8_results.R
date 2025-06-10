@@ -230,7 +230,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
     answers <- reactive({
       purrr::map(
         questions,
-        ~answered_n(.x(), tax_grp = species_data()$tax_grp, spatial$spat_res()))
+        ~answered_n(.x(), spatial$spat_res()))
     })
 
 

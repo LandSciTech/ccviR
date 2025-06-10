@@ -340,11 +340,11 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
     })
 
     # Questions --------------
-    questions <- reactive(collect_questions(input, "C"))
+    questions <- reactive(collect_questions(input, "C", tax_grp()))
 
     # Data Completeness -----------
     output$completeness <- renderUI({ # Use UI when rendering HTML
-      report_n(questions(), tax_grp = tax_grp())
+      report_n(questions())
     })
 
     # Return -------------------------------------------------

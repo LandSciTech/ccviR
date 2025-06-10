@@ -351,19 +351,6 @@ widen_vuln_coms2 <- function(questions) {
   select(vuln_df, order(colnames(vuln_df)))
 }
 
-
-# Compare Questions in the index to questions in the app to see if they
-# are in synchrony.
-index_match_qs <- function(questions, index) {
-  qs <- select(questions, -contains("com_"), -contains("evi_"))
-  index <- select(index, matches("^[BCD]{1}\\d{1}[a-z]{0,3}")) %>%
-    distinct()
-
-  # If they match TRUE else FALSE
-  nrow(qs) == nrow(index) && ncol(qs) == ncol(index) && all(qs == index)
-}
-
-
 combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index) {
 
   # Priority order is species, question inputs, spatial run, spatial restored
@@ -378,7 +365,7 @@ combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index)
 
   # If there is no index OR the index questions don't match the answered
   # questions, don't save the index.
-  if(!is.null(index) && index_match_qs(questions, index)) {
+  if(!is.null(index) && index_match_qs(questions, index, spat_res)) {
     # Get the comments and evidence from the actual questions
     index <- select(index, -starts_with("com_"), -starts_with("evi_"))
     out_dat <- select(out_dat, -any_of(colnames(index))) %>%

@@ -42,9 +42,9 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
     output$status <- renderUI({ # Use UI when rendering HTML
       req(index(), qs())
 
-      if(!index_match_qs(qs(), index())) {
+      if(!index_match_qs(qs(), index(), spatial$spat_res())) {
         return(tagList(icon("xmark", style = "color:red"),
-                       "Omitting Index Results", br(), "(Questions have changed)"))
+                       "Omitting Index Results", br(), "(Answers have changed)"))
       } else return(NULL)
 
     })
