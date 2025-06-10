@@ -59,7 +59,7 @@ expect_screenshot_local <- function(app, name = NULL) {
 #' @noRd
 #' @examples
 #' test_files()
-#' test_files(mock = TRUE)$saved$final
+#' test_files(mock = TRUE)$saved$full_run
 #' test_files(min_req = TRUE)
 
 test_files <- function(dir = fs::path_package("extdata", package = "ccviR"),
@@ -202,7 +202,7 @@ test_data <- function(f = test_files(), min_req = FALSE) {
 #'
 #' @examples
 #' test_df_loaded()
-test_df_loaded <- function(file = "final2") {
+test_df_loaded <- function(file = "full_run") {
   load_previous(test_files()$saved[[file]]) %>%
     mutate(across(contains("pth"), fix_path))
 }
@@ -288,7 +288,7 @@ fix_path <- function(p) {
 #'
 #' @examples
 #' test_species()
-test_species <- function(file = "final2") {
+test_species <- function(file = "full_run") {
   load_previous(test_files()$saved[[file]]) %>%
     select("species_name", "common_name", "assessor_name", "geo_location",
            "tax_grp", "mig", "cave") %>%
@@ -316,7 +316,7 @@ test_species <- function(file = "final2") {
 #' isolate(test_questions()$b()) # Look at reactive values
 #' isolate(test_questions("full_run")$b()) # Look at reactive values
 
-test_questions <- function(file = "final2", as_reactive = TRUE) {
+test_questions <- function(file = "full_run", as_reactive = TRUE) {
 
   q <- load_previous(test_files()$saved[[file]]) %>%
     select(matches("^(com_|evi_)?(B|C|D)\\d+")) %>%

@@ -46,7 +46,7 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
 
   # Force all NAs to ".na" before sending
   # Otherwise:
-  #  - In future my error: https://github.com/quarto-dev/quarto-r/issues/168#issuecomment-2024805212
+  #  - In future may error: https://github.com/quarto-dev/quarto-r/issues/168#issuecomment-2024805212
   #  - If we let quarto_render() convert, they use more than one 'na' type
   #     which is harder to recover from (.na.real .na.character, etc.)
   saved <- as.list(saved) %>%

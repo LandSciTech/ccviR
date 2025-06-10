@@ -1,9 +1,9 @@
 test_that("load_previous()", {
 
   expect_silent(volumes <- server_setup())
-  expect_silent(parse_path(volumes, test_files(mock = TRUE)$saved$final))
+  expect_silent(parse_path(volumes, test_files(mock = TRUE)$saved$full_run))
 
-  expect_silent(load_previous(test_files()$saved$final))
+  expect_silent(load_previous(test_files()$saved$full_run))
   expect_error(load_previous(""), "File doesn't exist")
   expect_error(load_previous(test_files()$saved$empty),
                "CSV file is empty, cannot restore from file.")

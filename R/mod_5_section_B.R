@@ -13,7 +13,7 @@ mod_B_test <- function(df_loaded = TRUE) {
     shinyOptions("file_dir" = "inst/extdata/")
 
     if(df_loaded) {
-      df_loaded <- test_files()$saved$final %>%
+      df_loaded <- test_files()$saved$full_run %>%
         load_previous() %>%
         reactive()
     } else df_loaded <- reactive(NULL)

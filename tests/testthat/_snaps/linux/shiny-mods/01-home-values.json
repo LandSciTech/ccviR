@@ -25,7 +25,9 @@
     "section_b-help_B2b": 0,
     "section_b-help_B3": 0,
     "section_c-C1": null,
+    "section_c-C2ai": null,
     "section_c-C2aii": null,
+    "section_c-C2bi": null,
     "section_c-C2bii": null,
     "section_c-C2c": null,
     "section_c-C2d": null,
@@ -42,7 +44,9 @@
     "section_c-C5c": null,
     "section_c-C6": null,
     "section_c-com_C1": "",
+    "section_c-com_C2ai": "",
     "section_c-com_C2aii": "",
+    "section_c-com_C2bi": "",
     "section_c-com_C2bii": "",
     "section_c-com_C2c": "",
     "section_c-com_C2d": "",
@@ -60,7 +64,9 @@
     "section_c-com_C6": "",
     "section_c-continue": 0,
     "section_c-evi_C1": null,
+    "section_c-evi_C2ai": null,
     "section_c-evi_C2aii": null,
+    "section_c-evi_C2bi": null,
     "section_c-evi_C2bii": null,
     "section_c-evi_C2c": null,
     "section_c-evi_C2d": null,
@@ -77,7 +83,9 @@
     "section_c-evi_C5c": null,
     "section_c-evi_C6": null,
     "section_c-help_C1": 0,
+    "section_c-help_C2ai": 0,
     "section_c-help_C2aii": 0,
+    "section_c-help_C2bi": 0,
     "section_c-help_C2bii": 0,
     "section_c-help_C2c": 0,
     "section_c-help_C2d": 0,
@@ -156,10 +164,49 @@
       ]
     },
     "results-calcFlag": false,
+    "save-status": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
     "section_c-ui_C2ai": {
-      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"shiny-output-error-validation\">Required Spatial Data not provided.<\/span>\n  <br/>\n  <span>\n    Run Spatial Data Analysis with \n    \"Range Polygon\" and \"Prepared Climate Data\"\n     first\n  <\/span>\n<\/div>",
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"shiny-output-error-validation\">Required Spatial Data not provided.<\/span>\n  <br/>\n  <span>\n    Run Spatial Data Analysis with \n    \"Range Polygon\" and \"Prepared Climate Data\"\n     first\n  <\/span>\n<\/div>\n<div class=\"shinyjs-hide\">\n  <div id=\"section_c-C2aidiv\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_c-C2ai\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2ai-label\">\n          <label class=\"control-label\" id=\"section_c-C2ai-label\" for=\"section_c-C2ai\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_c-help_C2ai\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-evi_C2ai\" id=\"section_c-evi_C2ai-label\"><\/label>\n        <div>\n          <select id=\"section_c-evi_C2ai\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_c-evi_C2ai\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"form-group shiny-input-container\">\n          <label class=\"control-label shiny-label-null\" for=\"section_c-com_C2ai\" id=\"section_c-com_C2ai-label\"><\/label>\n          <textarea id=\"section_c-com_C2ai\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
       "deps": [
-
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
       ]
     },
     "section_c-ui_C2aii": {
@@ -200,9 +247,40 @@
       ]
     },
     "section_c-ui_C2bi": {
-      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"shiny-output-error-validation\">Required Spatial Data not provided.<\/span>\n  <br/>\n  <span>\n    Run Spatial Data Analysis with \n    \"Range Polygon\" and \"Prepared Climate Data\"\n     first\n  <\/span>\n<\/div>",
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"shiny-output-error-validation\">Required Spatial Data not provided.<\/span>\n  <br/>\n  <span>\n    Run Spatial Data Analysis with \n    \"Range Polygon\" and \"Prepared Climate Data\"\n     first\n  <\/span>\n<\/div>\n<div class=\"shinyjs-hide\">\n  <div id=\"section_c-C2bidiv\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_c-C2bi\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2bi-label\">\n          <label class=\"control-label\" id=\"section_c-C2bi-label\" for=\"section_c-C2bi\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_c-help_C2bi\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-evi_C2bi\" id=\"section_c-evi_C2bi-label\"><\/label>\n        <div>\n          <select id=\"section_c-evi_C2bi\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_c-evi_C2bi\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"form-group shiny-input-container\">\n          <label class=\"control-label shiny-label-null\" for=\"section_c-com_C2bi\" id=\"section_c-com_C2bi-label\"><\/label>\n          <textarea id=\"section_c-com_C2bi\" class=\"shiny-input-textarea form-control\" placeholder=\"Comments\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
       "deps": [
-
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
       ]
     },
     "section_d-ui_D2": {

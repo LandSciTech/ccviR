@@ -308,7 +308,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
     stop("out_folder does not exist", call. = FALSE)
   }
 
-  ext_accept <- spatial_file_raster
+  ext_accept <- ccviR::spatial_file_raster
 
   make_pat <- function(x, ext_accept){
     paste0(x, ext_accept, "$", collapse = "|")
