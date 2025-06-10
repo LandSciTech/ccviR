@@ -113,14 +113,14 @@ prep_clim_data_multi <- function(
 
   i <- 1
   if(is.null(brks)) {
-    brks_out <- list("brks_cmd" = brks_cmd,
-                     "brks_mat" = brks_mat,
-                     "brks_ccei" = brks_ccei)
-  } else brks_out <- brks
+    brks <- list("brks_cmd" = brks_cmd,
+                 "brks_mat" = brks_mat,
+                 "brks_ccei" = brks_ccei)
+  }
 
   while(i <= n_scn) {
     inform_prog(paste0("Preparing Scenario ", i), quiet, (i-1)/n_scn, set = TRUE)
-    brks_out <- prep_clim_data(
+    b <- prep_clim_data(
       mat_norm = mat_norm,
       mat_fut = mat_fut[i],
       cmd_norm = cmd_norm,
@@ -133,13 +133,21 @@ prep_clim_data_multi <- function(
       out_folder = out_folder,
       overwrite = overwrite,
       scenario_name = scenario_name[i],
-      brks = brks_out,
+      brks = brks,
       quiet = quiet,
       n = c(i, n_scn)
     )
+
+    # Always use the breaks provided OR the first breaks calculated
+    if(i == 1) {
+      # Supply any which are missing
+      for(m in c("brks_mat", "brks_cmd", "brks_ccei")) {
+        if(is.null(brks[[m]]) & !is.null(b[[m]])) brks[[m]] <- b[[m]]
+      }
+    }
     i <- i + 1
   }
-  brks_out
+  brks
 }
 
 

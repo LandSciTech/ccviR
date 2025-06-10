@@ -162,7 +162,7 @@ test_that("prep_clim_data() - no ccei", {
   expect_length(fs::dir_ls(out), 10) # no readme here
 
   # Multi is the same as a two staged prep
-  expect_equal(clim2, clim12)
+  expect_equal(clim1, clim12, list_as_map = TRUE)
 
   expect_snapshot_value(clim1, style = "json2")
   expect_snapshot_value(clim2, style = "json2")
@@ -251,7 +251,7 @@ test_that("prep_clim_data() - ccei", {
   expect_length(fs::dir_ls(out), 12) # no readme here
 
   # Multi is the same as a two staged prep
-  expect_equal(clim2, clim12)
+  expect_equal(clim1, clim12, list_as_map = TRUE)
 
   expect_snapshot_value(clim1, style = "json2")
   expect_snapshot_value(clim2, style = "json2")
@@ -281,4 +281,77 @@ test_that("prep_clim_data() - ccei", {
   unlink(out, recursive = TRUE)
 })
 
+test_that("prep_clim_data_multi() breaks", {
 
+  skip_if_not(all(fs::file_exists(c(f["ccei_pth1"], f["ccei_pth2"]))))
+
+  out <- fs::path(tempdir(), "processed")
+
+
+  # Always use first set of breaks
+  fs::dir_create(out)
+  expect_silent({
+    b1 <- prep_clim_data(
+      mat_norm = f["mat_norm_pth"],
+      mat_fut = f["mat_fut_pth1"],
+      cmd_norm = f["cmd_norm_pth"],
+      cmd_fut = f["cmd_fut_pth1"],
+      map = f["map_norm_pth"],
+      mwmt = f["mwmt_norm_pth"],
+      mcmt = f["mcmt_norm_pth"],
+      ccei = f["ccei_pth1"],
+      out_folder = out,
+      clim_poly = test_files()$assess_poly_pth,
+      scenario_name = "RCP 4.5",
+      quiet = TRUE)
+  })
+  unlink(out, recursive = TRUE)
+
+  fs::dir_create(out)
+  expect_silent({
+    b2 <- prep_clim_data_multi(
+      mat_norm = f["mat_norm_pth"],
+      mat_fut = c(f["mat_fut_pth1"], f["mat_fut_pth2"]),
+      cmd_norm = f["cmd_norm_pth"],
+      cmd_fut = c(f["cmd_fut_pth1"], f["cmd_fut_pth2"]),
+      map = f["map_norm_pth"],
+      mwmt = f["mwmt_norm_pth"],
+      mcmt = f["mcmt_norm_pth"],
+      ccei = c(f["ccei_pth1"], f["ccei_pth2"]),
+      out_folder = out,
+      clim_poly = test_files()$assess_poly_pth,
+      scenario_name = c("RCP 4.5", "RCP 8.5"),
+      quiet = TRUE)
+  })
+  unlink(out, recursive = TRUE)
+
+  expect_equal(b1, b2, list_as_map = TRUE)
+
+  # Always use the provided breaks
+
+  brks_mat <- b1$brks_mat
+  brks_mat[1,1] <- -8
+  fs::dir_create(out)
+  expect_silent({
+    b3 <- prep_clim_data_multi(
+      mat_norm = f["mat_norm_pth"],
+      mat_fut = c(f["mat_fut_pth1"], f["mat_fut_pth2"]),
+      cmd_norm = f["cmd_norm_pth"],
+      cmd_fut = c(f["cmd_fut_pth1"], f["cmd_fut_pth2"]),
+      map = f["map_norm_pth"],
+      mwmt = f["mwmt_norm_pth"],
+      mcmt = f["mcmt_norm_pth"],
+      ccei = c(f["ccei_pth1"], f["ccei_pth2"]),
+      brks_mat = brks_mat,
+      out_folder = out,
+      clim_poly = test_files()$assess_poly_pth,
+      scenario_name = c("RCP 4.5", "RCP 8.5"),
+      quiet = TRUE)
+  })
+  unlink(out, recursive = TRUE)
+
+  expect_equal(b1$brks_cmd, b3$brks_cmd)
+  expect_equal(b1$brks_ccei, b3$brks_ccei)
+  expect_equal(brks_mat, b3$brks_mat) # Match supplied not created
+
+})
