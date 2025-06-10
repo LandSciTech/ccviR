@@ -329,20 +329,20 @@
         0
       ],
       "CCEI_2": [
-        27.359,
-        27.359
+        27.323,
+        0
       ],
       "CCEI_3": [
-        72.34099999999999,
-        72.34099999999999
+        72.611,
+        99.934
       ],
       "CCEI_4": [
         0,
         0
       ],
       "prop_non_breed_over_ccei": [
-        0.9999999999816878,
-        0.9999999999816878
+        1.00053362254208,
+        1.00053362254208
       ],
       "HTN_1": [
         0.185,
@@ -385,8 +385,8 @@
         25902079658.56419
       ],
       "protected": [
-        9.368,
-        0.246
+        9.497999999999999,
+        0.243
       ],
       "gain_mod": [
         1,
@@ -581,8 +581,8 @@
         ""
       ],
       "C4b": [
-        "-1",
-        "-1"
+        "",
+        ""
       ],
       "evi_C4c": [
         "",
@@ -665,8 +665,8 @@
         ""
       ],
       "C5b": [
-        "-1",
-        "-1"
+        "",
+        ""
       ],
       "evi_C5c": [
         "",
@@ -677,8 +677,8 @@
         ""
       ],
       "C5c": [
-        "-1",
-        "-1"
+        "",
+        ""
       ],
       "evi_C6": [
         "",
@@ -754,7 +754,7 @@
       ],
       "Emissions_scenario": [
         "RCP 4.5",
-        "RCP8.5"
+        "RCP 8.5"
       ],
       "Link_to_source": [
         "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
@@ -780,6 +780,10 @@
         "/inst/extdata/clim_files/processed",
         "/inst/extdata/clim_files/processed"
       ],
+      "rng_chg_pth": [
+        "/inst/extdata/rng_chg_45.tif",
+        "/inst/extdata/rng_chg_85.tif"
+      ],
       "protected_poly_pth": [
         "/inst/extdata/protected_areas.shp",
         "/inst/extdata/protected_areas.shp"
@@ -795,14 +799,6 @@
           1,
           1
         ]
-      ],
-      "rng_chg_pth_1": [
-        "/inst/extdata/rng_chg_45.tif",
-        "/inst/extdata/rng_chg_45.tif"
-      ],
-      "rng_chg_pth_2": [
-        "/inst/extdata/rng_chg_85.tif",
-        "/inst/extdata/rng_chg_85.tif"
       ],
       "CCVI_index": [
         null,
@@ -841,10 +837,6 @@
         null
       ],
       "MC_freq_IE": [
-        null,
-        null
-      ],
-      "rng_chg_pth": [
         null,
         null
       ]

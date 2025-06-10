@@ -103,6 +103,8 @@ test_that("Full app", {
 
   # Modify and rerun
   app$set_inputs(`section_d-D1` = "3")
+  expect_screenshot_local(app, name = "16-results-sync")
+
   app$set_inputs(`section_b-B1` = "3")
   app$set_inputs(`section_b-B2a` = "3")
   app$set_inputs(`section_b-B2b` = "3")
@@ -113,7 +115,7 @@ test_that("Full app", {
   app$set_inputs(`section_c-C2d` = "3")
   app$click("results-calcIndex")
   app$wait_for_idle()
-  app$expect_values(export = TRUE, name = "16-results-change", transform = clean_paths)
+  app$expect_values(export = TRUE, name = "17-results-change", transform = clean_paths)
 
 #
 #   # Save Data
