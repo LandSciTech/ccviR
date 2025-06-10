@@ -51,21 +51,20 @@ Prepare README for climate data
 }
 \examples{
 in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
-pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
+pth_out <- fs::dir_create("processed_temp")
 
 # Process both scenarios at once with the same set of breaks
 brks <- prep_clim_data_multi(
   mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
-  mat_fut = file.path(in_folder, "NB_RCP.4.5_MAT.tif"),
+  mat_fut = file.path(in_folder, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
   cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
-  cmd_fut = file.path(in_folder, "NB_RCP.4.5_CMD.tif"),
+  cmd_fut = file.path(in_folder, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif")),
   map = file.path(in_folder, "NB_norm_MAP.tif"),
   mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
   mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
   out_folder = pth_out,
   clim_poly = file.path(system.file("extdata", package = "ccviR"),
                         "assess_poly.shp"),
-  overwrite = TRUE,
   scenario_name = c("RCP 4.5", "RCP 8.5"))
 
 # Add README
@@ -76,6 +75,9 @@ prep_clim_readme(
   fut_period = "2050s",
   emissions_scenario = c("RCP 4.5", "RCP 8.5"),
   url = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
-  out_dir = clim_prep,
+  out_folder = pth_out,
   brks = brks)
+
+# Clean up
+fs::dir_delete(pth_out)
 }

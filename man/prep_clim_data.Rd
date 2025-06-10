@@ -24,7 +24,7 @@ prep_clim_data(
   brks_cmd = NULL,
   brks_ccei = NULL,
   quiet = FALSE,
-  n = NULL
+  n = c(1, 1)
 )
 }
 \arguments{
@@ -53,8 +53,8 @@ interquartile range}
 
 \item{quiet}{Logical. Whether to suppress progress messages.}
 
-\item{n}{Numeric. Only for use by \code{prep_clim_data_multi()} for progressess
-messages.}
+\item{n}{Numeric vector. Only for use by \code{prep_clim_data_multi()} for progresses
+messages and to skip unnecessary steps. Do not change.}
 }
 \value{
 Returns a list of matrices with the breaks used to classify mat, cmd
@@ -91,8 +91,7 @@ and ".gpkg" (see \code{spatial_file_raster()}).
 }
 \examples{
 in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
-
-pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
+pth_out <- fs::dir_create("processed_temp")
 
 # use first scenario to set breaks
 brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
@@ -119,6 +118,8 @@ prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
                scenario_name = "RCP 8.5",
                brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
                brks_ccei = brks_out$brks_ccei)
+
+fs::dir_delete(pth_out)
 }
 \seealso{
 \code{\link{get_clim_vars}} for loading the processed data.
