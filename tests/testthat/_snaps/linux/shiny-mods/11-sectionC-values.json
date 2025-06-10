@@ -237,7 +237,7 @@
     "species-common_name": "Test sp.",
     "species-continue": 1,
     "species-geo_location": "Canada",
-    "species-mig": false,
+    "species-mig": true,
     "species-species_name": "Testous testa",
     "species-tax_grp": "Vascular Plant",
     "tabset": "C"
@@ -269,8 +269,8 @@
         "Vascular Plant"
       ],
       "mig": [
-        false,
-        false
+        true,
+        true
       ],
       "cave": [
         false,
@@ -341,8 +341,8 @@
         0
       ],
       "prop_non_breed_over_ccei": [
-        1.00053362254208,
-        1.00053362254208
+        1.000533691802219,
+        1.000533691802219
       ],
       "HTN_1": [
         0.185,
@@ -859,7 +859,7 @@
         "Vascular Plant"
       ],
       "mig": [
-        false
+        true
       ],
       "cave": [
         false

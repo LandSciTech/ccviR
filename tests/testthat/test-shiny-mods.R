@@ -20,6 +20,7 @@ test_that("Full app", {
   app$set_inputs(`species-geo_location` = "Canada")
   app$set_inputs(`species-species_name` = "Testous testa")
   app$set_inputs(`species-common_name` = "Test sp.")
+  app$set_inputs(`species-mig` = TRUE)
 
   expect_screenshot_local(app, name = "02-species-ready")
   app$click("species-continue")
