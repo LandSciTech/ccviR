@@ -148,9 +148,23 @@ mod_data_prep_server <- function(id, input_files = NULL) {
       # Supporting Data files
       "assess_pth")
 
-
     # Set inputs/paths for testing ----------------------
+    # Only at the start - set dir
+    observeEvent(input_files, {
+      if(!is.null(input_files)) {
+        req(input$scn_n)
+        # Set paths
+        if(!is.null(getOption("ccviR.test_data_prep"))) {
+          # Used in shinytest2/testthat testing only
+          # So we can find the folder and test that it prepared the data
+          d <- getOption("ccviR.test_data_prep")
+        } else d <- "TESTING DATA UI OUTPUTS"
+        out_folder(d)
+        fs::dir_create(out_folder())
+      }
+    })
 
+    # Any time - set file paths
     observe({
       if(!is.null(input_files)) {
         req(input$scn_n)
@@ -162,14 +176,6 @@ mod_data_prep_server <- function(id, input_files = NULL) {
           })
         updateCheckboxInput(session, "allow_over", value = TRUE)
 
-        # Set paths
-        if(!is.null(getOption("ccviR.test_data_prep"))) {
-          # Used in shinytest2/testthat testing only
-          # So we can find the folder and test that it prepared the data
-          d <- getOption("ccviR.test_data_prep")
-        } else d <- "TESTING DATA UI OUTPUTS"
-        out_folder(d)
-        fs::dir_create(out_folder())
         stringr::str_subset(names(input_files), "pth") %>%
           purrr::walk(~{
             file_pths[[.x]] <- input_files[[.x]]
