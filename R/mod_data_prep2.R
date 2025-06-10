@@ -174,7 +174,6 @@ mod_data_prep_server <- function(id, input_files = NULL) {
           purrr::walk(~{
             updateTextInput(session, .x, value = input_files[[.x]])
           })
-        updateCheckboxInput(session, "allow_over", value = TRUE)
 
         stringr::str_subset(names(input_files), "pth") %>%
           purrr::walk(~{

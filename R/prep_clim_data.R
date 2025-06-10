@@ -59,7 +59,6 @@
 #'   out_folder = pth_out,
 #'   clim_poly = file.path(system.file("extdata", package = "ccviR"),
 #'                         "assess_poly.shp"),
-#'   overwrite = TRUE,
 #'   scenario_name = c("RCP 4.5", "RCP 8.5"))
 #'
 #' # Clean up
@@ -82,7 +81,6 @@
 #'   out_folder = pth_out,
 #'   clim_poly = file.path(system.file("extdata", package = "ccviR"),
 #'                         "assess_poly.shp"),
-#'   overwrite = TRUE,
 #'   scenario_name = c("RCP 4.5", "RCP 8.5"))
 #'
 #' # Clean up
@@ -109,7 +107,11 @@ prep_clim_data_multi <- function(
          "Provide the same number of each", call. = FALSE)
   }
 
-
+  if(!overwrite && length(fs::dir_ls(out_folder)) > 0) {
+    stop("out_folder is not empty and overwrite is FALSE, ",
+         "either use overwrite, or an empty directory", call. = FALSE)
+  }
+  overwrite <- TRUE # Because either empty, so okay, or overwrite is already TRUE
 
   i <- 1
   if(is.null(brks)) {
@@ -117,12 +119,6 @@ prep_clim_data_multi <- function(
                      "brks_mat" = brks_mat,
                      "brks_ccei" = brks_ccei)
   } else brks_out <- brks
-
-  # Setup Progress messages
-  steps <- as.logical(!is.null(ccei)) + as.logical(!is.null(map)) +
-    as.logical(!is.null(mwmt) | !is.null(mcmt)) + 3
-
-  n <- n_scn * steps
 
   while(i <= n_scn) {
     inform_prog(paste0("Preparing Scenario ", i), quiet, (i-1)/n_scn, set = TRUE)
@@ -141,7 +137,7 @@ prep_clim_data_multi <- function(
       scenario_name = scenario_name[i],
       brks = brks_out,
       quiet = quiet,
-      n = n
+      n = c(i, n_scn)
     )
     i <- i + 1
   }
@@ -275,8 +271,8 @@ prep_clim_readme <- function(
 #' @param in_folder file path where files are stored. Files must be named
 #'   according to the convention described in details
 #' @param reproject should the data be re-projected to lat/long? Not recommended.
-#' @param n Numeric. Only for use by `prep_clim_data_multi()` for progressess
-#'   messages.
+#' @param n Numeric vector. Only for use by `prep_clim_data_multi()` for progresses
+#'   messages and to skip unnecessary steps. Do not change.
 #'
 #' @inheritParams common_docs
 #'
@@ -291,8 +287,8 @@ prep_clim_readme <- function(
 #'
 #' @examples
 #' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
-#'
-#' pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
+#' pth_out <- "processed_temp"
+#' fs::dir_create(pth_out)
 #'
 #' # use first scenario to set breaks
 #' brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
@@ -319,6 +315,8 @@ prep_clim_readme <- function(
 #'                scenario_name = "RCP 8.5",
 #'                brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
 #'                brks_ccei = brks_out$brks_ccei)
+#'
+#' unlink(pth_out)
 
 prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                            map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
@@ -327,7 +325,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                            scenario_name = "", brks = NULL,
                            brks_mat = NULL,
                            brks_cmd = NULL, brks_ccei = NULL, quiet = FALSE,
-                           n = NULL) {
+                           n = c(1, 1)) {
 
   if(!is.null(brks)) {
     brks_mat <- brks$brks_mat
@@ -345,6 +343,11 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   if(!dir.exists(out_folder)){
     stop("out_folder does not exist", call. = FALSE)
   }
+
+  # Get total steps for the process for messages
+  steps <- as.logical(!is.null(ccei)) + as.logical(!is.null(map)) +
+    as.logical(!is.null(mwmt) | !is.null(mcmt)) + 3
+  steps <- steps * n[2]
 
   ext_accept <- ccviR::spatial_file_raster
 
@@ -459,7 +462,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   purrr::map(purrr::compact(list(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
                                  mwmt, mcmt)), check_crs)
 
-  inform_prog("Processing MAT", quiet, n)
+  inform_prog("Processing MAT", quiet, steps)
 
   brks_mat <- prep_exp(
     mat_norm, mat_fut,
@@ -469,7 +472,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   rm(mat_fut, mat_norm)
 
-  inform_prog("Processing CMD", quiet, n)
+  inform_prog("Processing CMD", quiet, steps)
 
   brks_cmd <- prep_exp(
     cmd_norm, cmd_fut,
@@ -482,7 +485,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   # Prepare other climate variables
   if(!is.null(ccei)){
     # CCEI
-    inform_prog("Processing CCEI", quiet, n)
+    inform_prog("Processing CCEI", quiet, steps)
 
     rcl_tbl_ccei <- ccei_reclassify(
       ccei, brks_ccei, out_folder, scenario_name, overwrite)
@@ -494,7 +497,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
 
   # MAP
-  if(!is.null(map_pth)){
+  if(!is.null(map_pth) &&  n[1] == 1){
     inform_prog("Processing MAP", quiet, n)
 
     if(reproject){
@@ -514,7 +517,7 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   # MWMT - MCMT
-  if(!is.null(mwmt) && !is.null(mcmt)){
+  if(!is.null(mwmt) && !is.null(mcmt) && n[1] == 1){
     inform_prog("Processing MWMT and MCMT", quiet, n)
     dif_mt <- mwmt-mcmt
 
@@ -549,33 +552,35 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   # Climate data polygon boundary
   #does a clim_poly already exist in output folder
-  clim_exists <- list.files(out_folder, pattern = "clim_poly.shp")
-  if(length(clim_exists) > 0 && !overwrite){
-    stop("A clim_poly already exists in out_folder. Set overwrite = TRUE or",
-         " clim_poly = path/to/existing/climpoly", call. = FALSE)
+
+  if(n[1] == 1) {
+    clim_exists <- list.files(out_folder, pattern = "clim_poly.shp")
+    if(length(clim_exists) > 0 && !overwrite){
+      stop("A clim_poly already exists in out_folder. Set overwrite = TRUE or",
+           " clim_poly = path/to/existing/climpoly", call. = FALSE)
+    }
+
+    if(is.null(clim_poly)){
+      # make polygon boundary from raster data
+      inform_prog("Creating clim_poly from raster data", quiet, n)
+
+      mat <- terra::rast(file.path(out_folder,
+                                   paste0("MAT_reclass", scenario_name, ".tif")))
+      mat <- terra::extend(mat, c(100,100), snap = "out")
+
+      clim_bound <- terra::as.contour(is.na(mat), levels = 1)
+
+      clim_poly <- clim_bound %>% sf::st_as_sf() %>%
+        sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
+        sf::st_union() %>%
+        sf::st_buffer(dist = 2 * terra::xres(mat))
+
+    }
+    sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
   }
 
-  if(is.null(clim_poly)){
-    # make polygon boundary from raster data
-    inform_prog("Creating clim_poly from raster data", quiet, n)
-
-    mat <- terra::rast(file.path(out_folder,
-                                    paste0("MAT_reclass", scenario_name, ".tif")))
-    mat <- terra::extend(mat, c(100,100), snap = "out")
-
-    clim_bound <- terra::as.contour(is.na(mat), levels = 1)
-
-    clim_poly <- clim_bound %>% sf::st_as_sf() %>%
-      sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
-      sf::st_union() %>%
-      sf::st_buffer(dist = 2 * terra::xres(mat))
-
-  }
-  sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
-
-  inform_prog("Finished processing", quiet, n)
+  inform_prog("Finished processing", quiet, steps)
   return(invisible(lst(brks_mat, brks_cmd, brks_ccei = rcl_tbl_ccei)))
-
 }
 
 ccei_reclassify <- function(ccei, brks = NULL, out_folder, scenario_name,
