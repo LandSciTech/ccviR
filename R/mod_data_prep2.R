@@ -205,7 +205,15 @@ mod_data_prep_server <- function(id, input_files = NULL) {
                      paste0("ccei_pth", seq_len(input$scn_n))))
 
       # Create inputs
-      tabsetPanel(!!!purrr::map(seq_len(input$scn_n), ~ui_scn(id, .x)))
+      tabsetPanel(id = session$ns("scenario_tabs"),
+                  !!!purrr::map(seq_len(input$scn_n), ~ui_scn(id, .x, input)))
+    })
+
+    # Switch to new scenario tab
+    observeEvent(input[[paste0("clim_scn_nm", input$scn_n)]], {
+      req(input$scenario_tabs != paste0("scenario", input$scn_n))
+      updateTabsetPanel(inputId = "scenario_tabs",
+                        selected = paste0("scenario",  input$scn_n))
     })
 
 
@@ -340,32 +348,33 @@ mod_data_prep_server <- function(id, input_files = NULL) {
     # Prepare Climate Data --------------------------
 
     prep_values <- reactive({
-
-      list("prep_data" =
-             list("mat_norm" = file_pths$mat_norm_pth,
-                  "mat_fut" = collect_inputs(file_pths, "mat_fut_pth"),
-                  "cmd_norm" = file_pths$cmd_norm_pth,
-                  "cmd_fut" = collect_inputs(file_pths, "cmd_fut_pth"),
-                  "ccei" = collect_inputs(file_pths, "ccei_pth"),
-                  "map" = file_pths$map_norm_pth,
-                  "mwmt" = file_pths$mwmt_norm_pth,
-                  "mcmt" = file_pths$mcmt_norm_pth,
-                  "clim_poly" = file_pths$assess_pth,
-                  "in_folder" = NULL,
-                  "out_folder" = out_folder(),
-                  "reproject" = FALSE,
-                  "overwrite" = input$allow_over,
-                  "scenario_name" = collect_inputs(input, "clim_scn_nm")
-             ),
-           "prep_readme" = list(
-             "scenario_name" = collect_inputs(input, "clim_scn_nm"),
-             "gcm_ensemble" = collect_inputs(input, "clim_scn_gcm"),
-             "hist_period" = input$clim_norm_period,
-             "fut_period" = collect_inputs(input, "clim_scn_period"),
-             "emissions_scenario" = collect_inputs(input, "clim_scn_em"),
-             "url" = collect_inputs(input, "clim_scn_url"),
-             "out_folder" = out_folder()
-           )
+      n <- input$scn_n
+      list(
+        "prep_data" =
+          list("mat_norm" = file_pths$mat_norm_pth,
+               "mat_fut" = collect_inputs(file_pths, "mat_fut_pth", n),
+               "cmd_norm" = file_pths$cmd_norm_pth,
+               "cmd_fut" = collect_inputs(file_pths, "cmd_fut_pth", n),
+               "ccei" = collect_inputs(file_pths, "ccei_pth", n),
+               "map" = file_pths$map_norm_pth,
+               "mwmt" = file_pths$mwmt_norm_pth,
+               "mcmt" = file_pths$mcmt_norm_pth,
+               "clim_poly" = file_pths$assess_pth,
+               "in_folder" = NULL,
+               "out_folder" = out_folder(),
+               "reproject" = FALSE,
+               "overwrite" = input$allow_over,
+               "scenario_name" = collect_inputs(input, "clim_scn_nm", n)
+          ),
+        "prep_readme" = list(
+          "scenario_name" = collect_inputs(input, "clim_scn_nm", n),
+          "gcm_ensemble" = collect_inputs(input, "clim_scn_gcm", n),
+          "hist_period" = input$clim_norm_period,
+          "fut_period" = collect_inputs(input, "clim_scn_period", n),
+          "emissions_scenario" = collect_inputs(input, "clim_scn_em", n),
+          "url" = collect_inputs(input, "clim_scn_url", n),
+          "out_folder" = out_folder()
+        )
       )
     })
 
@@ -430,18 +439,23 @@ mod_data_prep_server <- function(id, input_files = NULL) {
 }
 
 
-ui_scn <- function(id, ui_id) {
+ui_scn <- function(id, ui_id, input) {
   ns <- NS(id)
 
-  tabPanel(
+  tabPanel(value = paste0("scenario", ui_id),
     title = paste0("Scenario ", ui_id),
     textInput(ns(paste0("clim_scn_nm", ui_id)),
-              labelMandatory(paste0("Scenario ", ui_id, " Name"))),
+              labelMandatory(paste0("Scenario ", ui_id, " Name")),
+              value = isolate(input[[paste0("clim_scn_nm", ui_id)]])),
     em("This will be used as a suffix to the saved output data and to identify the scenario"),
-    textInput(ns(paste0("clim_scn_gcm", ui_id)), labelMandatory("GCM or Ensemble Name")),
-    textInput(ns(paste0("clim_scn_period", ui_id)), labelMandatory("Future period")),
-    textInput(ns(paste0("clim_scn_em", ui_id)), labelMandatory("Emissions scenario")),
-    textInput(ns(paste0("clim_scn_url", ui_id)), labelMandatory("Link to Source")),
+    textInput(ns(paste0("clim_scn_gcm", ui_id)), labelMandatory("GCM or Ensemble Name"),
+              value = isolate(input[[paste0("clim_scn_gcm", ui_id)]])),
+    textInput(ns(paste0("clim_scn_period", ui_id)), labelMandatory("Future period"),
+              value = isolate(input[[paste0("clim_scn_period", ui_id)]])),
+    textInput(ns(paste0("clim_scn_em", ui_id)), labelMandatory("Emissions scenario"),
+              value = isolate(input[[paste0("clim_scn_em", ui_id)]])),
+    textInput(ns(paste0("clim_scn_url", ui_id)), labelMandatory("Link to Source"),
+              value = isolate(input[[paste0("clim_scn_url", ui_id)]])),
 
     get_file_ui2(
       id, paste0("mat_fut_pth", ui_id), mandatory = TRUE,
@@ -453,8 +467,11 @@ ui_scn <- function(id, ui_id) {
   )
 }
 
-collect_inputs <- function(input, name) {
-  purrr::map_chr(stringr::str_subset(names(isolate(input)), name), ~input[[.x]])
+# Collect all the scenario inputs, but keep only as many as there are
+# scenarios defined.
+collect_inputs <- function(i, name, n) {
+  scn_n <- seq_len(n)
+  purrr::map_chr(stringr::str_subset(names(isolate(i)), name), ~i[[.x]])[scn_n]
 }
 
 list_equal <- function(l1, l2) {
