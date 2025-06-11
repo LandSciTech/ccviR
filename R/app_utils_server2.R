@@ -336,17 +336,24 @@ widen_vuln_coms2 <- function(questions) {
   comments <- bind_elements(questions, "comments")
   evidence <- bind_elements(questions, "evidence")
 
+  scn_n <- purrr::map_dbl(bind_elements(questions, "questions")$Value1, length) |>
+    max()
+
+  # Keep scenarios as separate rows
   vuln_df <- bind_elements(questions, "questions") %>%
     select("Code", matches("Value\\d")) %>%
     filter(!.data$Code %in% c("Z2", "Z3")) %>%
     arrange(.data$Code) %>%
-    mutate_all(as.character) %>%
+    mutate(n = list(seq_len(scn_n))) %>%
+    tidyr::unnest(c("Value1", "n")) %>%
     tidyr::unite("Value", "Value1":"Value4", na.rm = TRUE, sep = ", ") %>%
     left_join(comments, by = "Code") %>%
     left_join(evidence, by = "Code") %>%
-    tidyr::pivot_wider(names_from = "Code",
+    tidyr::pivot_wider(id_cols = "n",
+                       names_from = "Code",
                        values_from = c("com", "evi", "Value")) %>%
-    rename_all(~stringr::str_remove(.x, "Value_"))
+    rename_all(~stringr::str_remove(.x, "Value_")) %>%
+    select(-"n")
 
   select(vuln_df, order(colnames(vuln_df)))
 }
@@ -365,7 +372,7 @@ combine_outdata2 <- function(species_data, questions, spat_run, spat_res, index)
 
   # If there is no index OR the index questions don't match the answered
   # questions, don't save the index.
-  if(!is.null(index) && index_match_qs(questions, index, spat_res)) {
+  if(!is.null(index) && index_match_qs(questions, index)) {
     # Get the comments and evidence from the actual questions
     index <- select(index, -starts_with("com_"), -starts_with("evi_"))
     out_dat <- select(out_dat, -any_of(colnames(index))) %>%

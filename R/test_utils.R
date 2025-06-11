@@ -318,23 +318,31 @@ test_species <- function(file = "full_run") {
 
 test_questions <- function(file = "full_run", as_reactive = TRUE) {
 
+  d <- load_previous(test_files()$saved[[file]])[, c("D2", "D3", "D4")] %>%
+    summarize(across(everything(), ~list(.x))) %>%
+    tidyr::pivot_longer(everything(), names_to = "Code", values_to = "Value1")
+
   q <- load_previous(test_files()$saved[[file]]) %>%
+    as_tibble() %>%
     select(matches("^(com_|evi_)?(B|C|D)\\d+")) %>%
+    select(-"D2", -"D3", -"D4") %>%
+    distinct() %>%
     rename_with(.cols = matches("^(B|C|D)\\d+"), ~paste0("que_", .x)) %>%
     tidyr::pivot_longer(
       everything(), names_to = c("type", "Code"),
       names_pattern = "(com|evi|que)_(.+)",
       values_to = "value",
       values_transform = as.character) %>%
-    summarize(value = paste0(.data$value, collapse = ","), .by = c("type", "Code"))
+    summarize(value = paste0(.data$value, collapse = ","), .by = c("type", "Code")) %>%
+    mutate(value = if_else(value == "NA", NA_character_, value))
 
   qs <- filter(q, .data$type == "que") %>%
     select("Code", "value") %>%
-    slice(1, .by = "Code")  %>%# Questions ignore scenarios, so just take the first (if has multiple answers, it's based on spatial and cannot be supplied manually.).
     tidyr::separate("value", into = c("Value1", "Value2", "Value3", "Value4"),
                     fill = "right", sep = ", ?", convert = TRUE) %>%
+    mutate(Value1 = as.list(Value1)) %>%
+    bind_rows(d) %>%
     split(tolower(stringr::str_extract(.$Code, "^\\w")))
-
 
   coms <- filter(q, .data$type == "com") %>%
     select("Code", "com" = "value") %>%
@@ -343,6 +351,9 @@ test_questions <- function(file = "full_run", as_reactive = TRUE) {
 
   evi <- filter(q, .data$type == "evi") %>%
     select("Code", "evi" = "value") %>%
+    mutate(evi = purrr::map(evi, ~{
+      if(!is.na(.x)) stringr::str_split_1(.x, ", ?") else NULL
+    })) %>%
     split(f = tolower(stringr::str_extract(.$Code, "^\\w")))
 
   # If as_reactive == TRUE, return `reactive(x)`, else return `x`

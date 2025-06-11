@@ -501,7 +501,7 @@ show_guidelines <- function(input) {
              }, ignoreInit = TRUE))
 }
 
-collect_questions <- function(input, section, tax_grp = NULL) {
+collect_questions <- function(input, section, tax_grp = NULL, spatial = NULL) {
 
   # Use a predefined list so we update as changes added
   # - if we use names(input) - invalidates constantly
@@ -518,6 +518,15 @@ collect_questions <- function(input, section, tax_grp = NULL) {
   if(type == "C") { # Where taxa influences questions
     q <- filter_qs(q, tax_grp, c("Vascular Plant", "Nonvascular Plant"))
   }
+
+  # Add in the spatial D questions which can only come spatial data
+  # Only applies if multiple scenarios (i.e. rows > 1)
+  if(type == "D" && !is.null(spatial) &&
+     any(!is.null(spatial[, c("D2", "D3", "D4")]) & spatial[, c("D2", "D3", "D4")] != -1) &&
+     nrow(spatial) > 1) {
+    for(i in c("D2", "D3", "D4")) q$Value1[q$Code == i] <- list(spatial[[i]])
+  }
+  q$Value1 <- as.list(q$Value1)
 
   c <- purrr::map_df(paste0("com_", qs), ~{
     data.frame(Code = stringr::str_remove(.x, "com_"),
@@ -538,6 +547,7 @@ bind_elements <- function(questions, type) {
   out <- questions %>%
     purrr::map(~.x()[[type]]) %>%
     purrr::list_rbind()
+
   if(!is.na(col)) {
     out <- dplyr::mutate(
       out, !!col := purrr::map_chr(.data[[col]], ~paste(sort(.x), collapse = ", ")))
@@ -545,7 +555,7 @@ bind_elements <- function(questions, type) {
   out
 }
 
-answered_n <- function(questions, spatial = NULL) {
+answered_n <- function(questions) {
 
   type <- stringr::str_sub(questions$questions$Code[1], 1, 1)
 
@@ -560,16 +570,6 @@ answered_n <- function(questions, spatial = NULL) {
   if(type == "C") {
     q$c5 <- sum(!is.na(q$score[q$Code %in% c("C5a", "C5b", "C5c")])) - 1
   } else q$c5 <- 0
-
-  if(type == "D" & !is.null(spatial)) { # Where spatial isn't captured because possibly multiple scenarios
-    sp <- spatial %>%
-      dplyr::select(dplyr::any_of(c("D2", "D3", "D4"))) %>%
-      dplyr::mutate(dplyr::across(dplyr::everything(), ~any(.x >= 0, na.rm = TRUE))) %>%
-      dplyr::distinct() %>%
-      tidyr::pivot_longer(dplyr::everything(), names_to = "Code", values_to = "score") %>%
-      dplyr::filter(.data$score)
-    q <- dplyr::rows_update(q, sp, by = "Code")
-  }
 
   # Get evidence after having resolved questions
   e <- questions$evidence %>%
@@ -594,9 +594,9 @@ count_n <- function(questions) {
                      by = "sec")
 }
 
-report_n <- function(questions, spatial = NULL) {
+report_n <- function(questions) {
 
-  q <- answered_n(questions, spatial) %>%
+  q <- answered_n(questions) %>%
     count_n()
 
   q_txt <- paste0(q$q_txt, " questions answered")
@@ -624,19 +624,15 @@ report_n <- function(questions, spatial = NULL) {
 
 # Compare Questions in the index to questions in the app to see if they
 # are in synchrony.
-index_match_qs <- function(questions, index, spatial) {
+index_match_qs <- function(questions_wide, index) {
 
-  # Which D questions answered spatially?
-  #  splice in if they were to catch changes in spatial data run
-  sp <- select(spatial, matches("D{1}\\d")) %>%
-    select(where(~any(.x != -1)))
-
-  qs <- select(questions, -contains("com_"), -contains("evi_")) %>%
-    select(-where(~all(.x == "")), -any_of(names(sp))) %>%
-    bind_cols(sp)
+  qs <- questions_wide %>%
+    dplyr::select(-dplyr::contains("com_"), -dplyr::contains("evi_")) %>%
+    # Omit removed questions (not the same as unanswered)
+    dplyr::select(-dplyr::where(~all(.x == "") | all(.x == -1)))
 
   index <- select(index, matches("^[BCD]{1}\\d{1}[a-z]{0,3}")) %>%
-    select(-where(~all(.x == ""))) %>%
+    dplyr::select(-dplyr::where(~all(.x == "") | all(.x == -1))) %>%
     distinct()
 
   # If they match TRUE else FALSE

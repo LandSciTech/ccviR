@@ -211,11 +211,12 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
     })
 
     # Questions --------------
-    questions <- reactive(collect_questions(input, "D"))
+    questions <- reactive({
+      collect_questions(input, "D", spatial = spat_res())})
 
     # Data Completeness -----------
     output$completeness <- renderUI({ # Use UI when rendering HTML
-      report_n(questions(), spatial = spat_res())
+      report_n(questions())
     })
 
     # Return -------------------------------------------------

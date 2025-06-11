@@ -177,6 +177,13 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
     # Gather all the form inputs
     vuln_df <- reactive({
       bind_elements(questions, "questions") %>%
+        # If multiple answers provided, replace with -1
+        mutate(
+          n = purrr::map_dbl(.data$Value1, length),
+          Value1 = dplyr::if_else(
+            .data$n > 1, list(-1), .data$Value1)) %>%
+        tidyr::unnest("Value1") %>%
+        # Add in other codes
         rows_append(data.frame(Code = "Z2", Value1 = species_data()$cave)) %>%
         rows_append(data.frame(Code = "Z3", Value1 = species_data()$mig)) %>%
         mutate(Species = species_data()$species_name)
@@ -226,11 +233,11 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
 
     # Plots and Tables ----------------------------------
 
-    # Get a list of answers and evidence
+    # Get a list of which questions answered and evidence
     answers <- reactive({
       purrr::map(
         questions,
-        ~answered_n(.x(), spatial$spat_res()))
+        ~answered_n(.x()))
     })
 
 
