@@ -64,8 +64,8 @@ index_labs <- tribble(
 value_labs <- index_labs %>%
   filter(code != "NA") %>%
   select(col, text_col) %>%
-  mutate(value = c("Unknown", ccviR:::valueNms),
-         opts = c(-1, ccviR:::valueOpts))
+  mutate(value = c("Unknown", rev(ccviR:::valueNms)),
+         opts = c(-1, rev(ccviR:::valueOpts)))
 
 
 # Custom boxes - bootstrap 5
