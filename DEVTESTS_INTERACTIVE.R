@@ -42,17 +42,17 @@ ccvi_app2()
 
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run.csv")),
-  read.csv(fs::path_package("ccviR", "extdata", "test_comp.csv"))
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv"))
 )
 
-
+# Launch App - Reload File - Re-calculate index - Save file - Compare
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run.csv")),
-  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run2.csv"))
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp2.csv"))
 )
 
 # ✔ Check saved data - With manually changing spatial scores -------------------
-# Test1 -> Reload test_full_run.csv  - Make change to spatial questions - Save as test_sp_changes.csv - Compare
+# Test1 -> Reload test_full_run.csv  - Make change to spatial questions Save as test_sp_changes.csv - Compare (expect no index now)
 # Test2 -> Reload test_sp_changes.csv - Check results - Save as test_comp.csv - Compare
 
 ccvi_app2()
@@ -77,21 +77,31 @@ waldo::compare(
 
 # ✔ Check that can reload a different file in the same session  -----------------
 
-# Check that can save/reload a questions from optional spatial data -----------------
-# This data has no protected areas
+# ✔ Check that can save/reload a questions from optional spatial data -----------------
+# This data has no spatial
 mod_D_test(df_loaded = test_df_loaded("questions_only"),
            input_files = test_files(min_req = TRUE))
 
+ccvi_app2()
+
+# ✔ Check that can run with min spatial requirements  -----------------
+ccvi_app2()
+
+
+
 # Varieties of conditions ----------------------------------------------
 
-## ✔ Migratory & CCEI --------------------
+## ✔ Non-migratory --------------------
 
-# Choose Mammal, Bird, or Invert-Insect
+# Choose anything BUT Mammal, Bird, or Invert-Insect
+# Expect no Migratory Exposure index - In results, in report, in saved files
 ccvi_app2()
 ccvi_app2(input_files = test_files())
-mod_results_test(species_data = test_species("full_run_migratory"),
+
+
+mod_results_test(species_data = test_species("full_run_non_migratory"),
                  spatial = test_spatial(),
-                 questions = test_questions("full_run_migratory"))
+                 questions = test_questions("full_run_non_migratory"))
 
 
 ## Obligate caves --------------------------
@@ -122,6 +132,8 @@ mod_C_test(tax_grp = "Lichen")
 
 
 ## Only one range change but multiple scenarios ---------------------------
+
+## Only one scenario, section D works as expected ---------------------------
 
 ## Empty range change matrix values (should not be NA in matrix) ----------
 

@@ -1,6 +1,7 @@
 test_that("A overall", {
   testServer(mod_A_server, args = list(
-    spatial = suppressMessages(test_spatial())), {
+    spatial = suppressMessages(test_spatial()),
+    species = reactive(test_species())), {
 
       # Maps
       #expect_message(output$map_texp, "projecting raster") %>%
@@ -26,7 +27,7 @@ test_that("A min spatial", {  # NO CCEI
     test_spatial(quiet = TRUE)
 
   testServer(mod_A_server, args = list(
-    spatial = sp), {
+    spatial = sp, species = reactive(test_species())), {
 
       expect_s3_class(output$map_texp, "json") %>%
         expect_message("Projecting raster") %>%

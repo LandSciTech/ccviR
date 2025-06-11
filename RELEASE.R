@@ -50,6 +50,8 @@ system("cd ..; R CMD check ccviR_0.1.0.tar.gz --as-cran") # Update version
 
 # - Check GH Actions on GitHub
 
+# Update documentation -------------------------------
+pkgdown::build_site()
 
 # Release! ------------------------------------------------------
 
