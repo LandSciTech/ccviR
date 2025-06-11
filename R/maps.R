@@ -170,7 +170,7 @@ map_range <- function(poly1, poly2, rast, rng_chg_mat, max_cell = 5000000) {
 #' @noRd
 #'
 #' @examples
-#' d <- test_data(protected = TRUE)
+#' d <- test_data()
 #'
 #' r <- terra::classify(d$rng_chg_rast, rcl = d$rng_chg_mat, right = NA)
 #' map_protected(poly1 = d$assess_poly, poly2 = d$protected_poly,
@@ -192,12 +192,19 @@ map_protected <- function(poly1, poly2, rast, max_cell = 5000000) {
   if(terra::nlyr(rast) > 1) rast_grp <- names(rast) else rast_grp <- character(0)
 
   # Base Map
+  # Layer order follows:
+  # - https://github.com/rstudio/leaflet/pull/549
+  # - https://github.com/rstudio/leaflet/issues/427
+
   out <- layer_base() %>%
-    layer_raster(rast, rast_nm, rast_lbl, "#FFC125", rast_grp) %>%
+    leaflet::addMapPane("range", zIndex = 420) %>%
+    leaflet::addMapPane("protected_areas", zIndex = 410) %>%
     leaflet::addPolylines(data = sf::st_transform(poly1, 4326), color = "black") %>%
     leaflet::addPolygons(data = sf::st_transform(poly2, 4326), color = NA,
                          fillColor = "darkgreen", fillOpacity = 0.8) %>%
-    layer_extras(c("black", "darkgreen"), nms = c(poly1_nm, poly2_nm), rast_grp)
+    layer_extras(c("black", "darkgreen"), nms = c(poly1_nm, poly2_nm), rast_grp) %>%
+    layer_raster(rast, rast_nm, rast_lbl, "#FFC125", rast_grp, opacity = 0.5,
+                 options = leaflet::gridOptions(pane = "range"))
 
   return(out)
 }
@@ -244,11 +251,13 @@ layer_extras <- function(out, cols, nms, rast_grp = character(0)) {
     )
 }
 
-layer_raster <- function(out, rast, rast_nm, rast_lbl, pal, rast_grp, rng_val = NULL) {
+layer_raster <- function(out, rast, rast_nm, rast_lbl, pal, rast_grp, rng_val = NULL,
+                         opacity = 1, options = leaflet::gridOptions()) {
   for(l in 1:terra::nlyr(rast)){
     out <- leaflet::addRasterImage(out, x = rast[[l]], method = "ngb",
                                    colors = pal,
-                                   group = rast_grp[l], opacity = 1)
+                                   group = rast_grp[l], opacity = opacity,
+                                   options = options)
   }
 
   if(is.character(pal)) { # If character palette (categorical)
