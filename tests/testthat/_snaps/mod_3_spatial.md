@@ -233,7 +233,7 @@
         {
           "type": "character",
           "attributes": {},
-          "value": ["rng_chg_45.tif", "rng_chg_85.tif"]
+          "value": ["rng_chg_45.tif", "rng_chg_45.tif"]
         }
       ]
     }

@@ -297,6 +297,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
           paste0("Require climate readme to proceed: ",
                  "Please select a valid Climate data folder above")
         ))
+
         # Track rng_chg_pth inputs
         rng_ids(paste0("rng_chg_pth_", seq_along(clim_readme()$Scenario_Name)))
         # Create inputs
@@ -649,6 +650,21 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
       spat_fnms <- reactiveValuesToList(file_pths) %>%
         purrr::map(~ifelse(is.null(.x), "", .x))
+
+      # Remove any _clear names (TODO: figure out why this happens)
+      clear_nms <- stringr::str_detect(names(spat_fnms), "clear")
+      spat_fnms <- spat_fnms[!clear_nms]
+
+      # Clean up lingering range change rasters if change what to inlude after
+      if(input$rng_chg_used == "no") {
+        rng_chg_nms <- stringr::str_detect(names(spat_fnms), "rng_chg_pth")
+        spat_fnms <- spat_fnms[!rng_chg_nms]
+      }
+      if(input$rng_chg_used == "one") {
+        rng_chg_nms <- stringr::str_subset(names(spat_fnms), "rng_chg_pth_") %>%
+          stringr::str_subset("_1", negate = TRUE)
+        spat_fnms <- spat_fnms[!names(spat_fnms) %in% rng_chg_nms]
+      }
 
       # Combine rng_chg_pth into a single column
       r <- stringr::str_subset(names(spat_fnms), "rng_chg_pth")
