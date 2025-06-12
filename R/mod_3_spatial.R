@@ -457,6 +457,9 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
     output$clim_var_dir_error <- renderText({
       pth <- fs::path(clim_dir_pth(), "climate_data_readme.csv")
       req(pth)
+
+      validate(need(fs::dir_exists(clim_dir_pth()), "Directory does not exist"))
+
       validate(need(
         fs::file_exists(pth),
         "The climate folder is missing the required 'climate_data_readme.csv' file"))
@@ -468,7 +471,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
       validate(need(isTruthy(clim_readme()$brks_cmd),
                     paste("Missing CMD breaks in the clim_readme.csv file")))
 
-      if(species()$mig && !is.null(nonbreed_poly())) {
+      if(species()$mig && tryCatch(!is.null(nonbreed_poly()), error = function(e) FALSE)) {
         validate(need(isTruthy(clim_readme()$brks_ccei),
                       paste("Missing CCEI breaks in the clim_readme.csv file")))
       }
