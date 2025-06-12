@@ -225,8 +225,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
         doSpatial(doSpatial() + 1) # Mark as if spatial analysis run
         doSpatialRestore(doSpatial()) # Match doSpatial so can check and avoid updating spat_thresh in observer below
 
-        showNotification("Re-running spatial analysis from loaded file.",
-                         duration = NULL, id = ns("spat_restore_note"))
+        showNotification(
+          paste0(
+            "Attempting to re-run spatial analysis from loaded file ",
+            "(Message disappears when complete: Check spatial page for status)"),
+          duration = NULL, id = ns("spat_restore_note"))
       }
 
       # Get previous path locations
