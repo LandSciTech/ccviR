@@ -629,7 +629,8 @@ index_match_qs <- function(questions_wide, index) {
   qs <- questions_wide %>%
     dplyr::select(-dplyr::contains("com_"), -dplyr::contains("evi_")) %>%
     # Omit removed questions (not the same as unanswered)
-    dplyr::select(-dplyr::where(~all(.x == "") | all(.x == -1)))
+    dplyr::select(-dplyr::where(~all(.x == "") | all(.x == -1))) %>%
+    distinct()
 
   index <- select(index, matches("^[BCD]{1}\\d{1}[a-z]{0,3}")) %>%
     dplyr::select(-dplyr::where(~all(.x == "") | all(.x == -1))) %>%
