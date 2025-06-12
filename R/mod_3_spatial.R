@@ -463,6 +463,17 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
 
       validate(need(!inherits(clim_vars(), "try-error"), "Could not load climatic variables"))
 
+      validate(need(isTruthy(clim_readme()$brks_mat),
+                    paste("Missing MAT breaks in the clim_readme.csv file")))
+      validate(need(isTruthy(clim_readme()$brks_cmd),
+                    paste("Missing CMD breaks in the clim_readme.csv file")))
+
+      if(species()$mig && !is.null(nonbreed_poly())) {
+        validate(need(isTruthy(clim_readme()$brks_ccei),
+                      paste("Missing CCEI breaks in the clim_readme.csv file")))
+      }
+
+
       if(inherits(clim_vars(), "try-error")){
         stop(conditionMessage(attr(clim_vars(), "condition")))
       }

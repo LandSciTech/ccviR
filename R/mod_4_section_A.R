@@ -11,6 +11,12 @@
 #'
 #' # Test with non-migratory
 #' mod_A_test(species = test_species() %>% mutate(mig = FALSE))
+#'
+#' # Test missing breaks (CCEI in this case)
+#' sp <- test_data()
+#' sp$clim_readme$brks_ccei <- ""
+#' sp <- test_spatial(d = sp)
+#' mod_A_test(spatial = sp)
 
 mod_A_test <- function(spatial = test_spatial(), species = test_species()) {
 
@@ -139,7 +145,8 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
     output$tbl_ccei <- gt::render_gt({
       req(species()$mig)
-      get_exposure_table(spat_res(), "CCEI", clim_readme(), clim_readme()$brks_ccei)
+      get_exposure_table(spat_res(), "CCEI", clim_readme(),
+                         clim_readme()$brks_ccei)
     })
 
   })

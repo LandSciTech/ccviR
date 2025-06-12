@@ -33,6 +33,10 @@ mod_results_test(spatial = test_spatial(min_req = TRUE),
 mod_C_test(df_loaded = test_df_loaded())
 mod_C_test(input_files = test_files(min_req = TRUE)) # Min-required only
 
+# Big test ----------------------------------
+# Use big local data and full sized CCEI
+shinyOptions("file_dir" = ".")
+ccvi_app2()
 
 # Specific checks --------------------------------------
 # ✔ Check saved data -----------------------------
@@ -87,7 +91,10 @@ ccvi_app2()
 # ✔ Check that can run with min spatial requirements  -----------------
 ccvi_app2()
 
-
+# ✔ Check that get sensible error when missing CCEI (etc.) breaks  ------------
+# Use misc/clim full/processed_no_ccei_brks for the Clim files
+shinyOptions("file_dir" = ".")
+ccvi_app2()
 
 # Varieties of conditions ----------------------------------------------
 
@@ -139,5 +146,8 @@ mod_C_test(tax_grp = "Lichen")
 
 # Troubleshooting -------------------------------------------------------
 # Testing a particular set of files
-shinyOptions("file_dir" = "misc/external_test_files/tundra_example/")
+shinyOptions("file_dir" = "misc/")
+ccvi_app2()
+
+shinyOptions("file_dir" = ".")
 ccvi_app2()

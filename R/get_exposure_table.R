@@ -1,6 +1,9 @@
 get_exposure_table <- function(spattbl, varname, clim_readme, brks) {
 
   validate(need(!is.null(spattbl), "Need to load spatial data"))
+  validate(need(
+    !is.null(brks) && all(!is.na(brks)) && all(brks != ""),
+    paste("Missing", varname, "breaks in the clim_readme.csv file")))
 
   if(varname == "MAT"){
     exp_val <- "temp_exp_cave"
