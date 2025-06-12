@@ -2,9 +2,15 @@
   "input": {
     "save-downloadData": 0,
     "tabset": "B",
-    "test-B1": "2",
+    "test-B1": [
+      "3",
+      "2"
+    ],
     "test-B2a": "1",
-    "test-B2b": "3",
+    "test-B2b": [
+      "3",
+      "2"
+    ],
     "test-B3": null,
     "test-com_B1": "",
     "test-com_B2a": "",

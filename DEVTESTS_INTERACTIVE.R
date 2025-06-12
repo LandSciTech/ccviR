@@ -39,8 +39,8 @@ shinyOptions("file_dir" = ".")
 ccvi_app2()
 
 # Specific checks --------------------------------------
-# ✔ Check saved data -----------------------------
-# Launch App - Reload File - Save file - Compare
+# ✔ Check saved data - Full Run-----------------------------
+# Launch App - Reload File - Save file - Re-calculate index - Save file - Compare
 
 ccvi_app2()
 
@@ -49,10 +49,32 @@ waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv"))
 )
 
-# Launch App - Reload File - Re-calculate index - Save file - Compare
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run.csv")),
   read.csv(fs::path_package("ccviR", "extdata", "test_comp2.csv"))
+)
+
+# Launch App - Reload File - Re-calculate index - Save file - Compare
+waldo::compare(
+  read.csv("misc/test_save_protected_areas2.csv"),
+  read.csv("misc/test_save_protected_areas2_comp.csv"), max_diffs = Inf
+)
+
+# ✔ Check saved data - Min Spatial Run-----------------------------
+# Launch App - Reload File - Save file - Re-calculate index - Save file - Compare
+
+ccvi_app2()
+
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_min_spatial.csv")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv")),
+  list_as_map = TRUE
+)
+
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_min_spatial.csv")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp2.csv")),
+  list_as_map = TRUE
 )
 
 # ✔ Check saved data - With manually changing spatial scores -------------------
@@ -75,11 +97,39 @@ waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_comp.csv"))
 )
 
+# ✔ Check saved data - Do not lose manually answered spatial questions when no spatial data to answer them -------------------
+# Test1 -> Reload test_min_spatial.csv  - Make change to spatial questions Save as test_comp1.csv - Compare (expect no index now)
+# Test2 -> Reload test_comp1.csv - Check results - Save as test_comp2.csv - Compare
+
+ccvi_app2()
+
+# Expect differences in the questions
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_min_spatial.csv")) %>%
+    select(matches("[A-D]{1}\\d")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv"))  %>%
+    select(matches("[A-D]{1}\\d"))
+)
+
+# Expect NO differences
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp2.csv"))
+)
+
 # ✔ Check that when re-run spatial, don't loose comments -----------------
 
 # ✔ Check that when only comments/evidence updated gets saved and included in reports -----------------
 
-# ✔ Check that can reload a different file in the same session  -----------------
+# Check that can reload a different file in the same session  -----------------
+# - No errors
+# - All questions are replaced
+#
+# Launch - Fill in only a few file paths - Save file as test_mini_run.csv
+# Launch - Load test_full_run.csv - Load test_mini_run.csv and check that file paths have been removed
+ccvi_app2()
+
+# TRICKY, consider just asking users not to do this?
 
 # ✔ Check that can save/reload a questions from optional spatial data -----------------
 # This data has no spatial

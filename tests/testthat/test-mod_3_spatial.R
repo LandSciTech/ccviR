@@ -28,7 +28,7 @@ test_that("spatial data created", {
   testServer(mod_spatial_server, args = list(
     volumes,
     df_loaded = reactive(NULL),
-    cave = reactive(FALSE),
+    species = reactive(test_species()),
     # Use Testing files
     input_files = input_files), {
 
@@ -86,7 +86,7 @@ test_that("1 range with mult scenarios", {
   testServer(mod_spatial_server, args = list(
     volumes,
     df_loaded = reactive(NULL),
-    cave = reactive(FALSE),
+    species = reactive(test_species()),
     # Use Testing files
     input_files = input_files), {
 
