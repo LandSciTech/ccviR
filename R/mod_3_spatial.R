@@ -230,18 +230,22 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
       }
 
       # Get previous path locations
-
-      rng_chg_pth <- df_loaded$rng_chg_pth
-      rng_chg_pth <- stats::setNames(
-        rng_chg_pth,
-        paste0("rng_chg_pth_", seq_along(rng_chg_pth)))
-      rng_ids(names(rng_chg_pth))
-
       loaded_pths <- df_loaded %>%
         slice(1) %>%
         select(contains("pth"), -any_of("clim_dir_pth"), -"rng_chg_pth") %>%
-        as.list() %>%
-        append(rng_chg_pth) # Add rng_chg_pth back in the correct format
+        as.list()
+
+      # Get rng_chg_pths IF specified
+      if(any(!is.na(df_loaded$rng_chg_pth))) {
+        rng_chg_pth <- df_loaded$rng_chg_pth
+        rng_chg_pth <- stats::setNames(
+          rng_chg_pth,
+          paste0("rng_chg_pth_", seq_along(rng_chg_pth)))
+        rng_ids(names(rng_chg_pth))
+
+        # Add rng_chg_pth back in the correct format
+        loaded_pths <- append(loaded_pths, rng_chg_pth)
+      }
 
       # Set file paths
       if(length(loaded_pths) > 0) {
