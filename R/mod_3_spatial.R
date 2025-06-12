@@ -655,7 +655,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       clear_nms <- stringr::str_detect(names(spat_fnms), "clear")
       spat_fnms <- spat_fnms[!clear_nms]
 
-      # Clean up lingering range change rasters if change what to inlude after
+      # Clean up lingering range change rasters if change what to include after
       if(input$rng_chg_used == "no") {
         rng_chg_nms <- stringr::str_detect(names(spat_fnms), "rng_chg_pth")
         spat_fnms <- spat_fnms[!rng_chg_nms]

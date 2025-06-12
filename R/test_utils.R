@@ -334,13 +334,13 @@ test_questions <- function(file = "full_run", as_reactive = TRUE) {
       values_to = "value",
       values_transform = as.character) %>%
     summarize(value = paste0(.data$value, collapse = ","), .by = c("type", "Code")) %>%
-    mutate(value = if_else(value == "NA", NA_character_, value))
+    mutate(value = if_else(.data$value == "NA", NA_character_, value))
 
   qs <- filter(q, .data$type == "que") %>%
     select("Code", "value") %>%
     tidyr::separate("value", into = c("Value1", "Value2", "Value3", "Value4"),
                     fill = "right", sep = ", ?", convert = TRUE) %>%
-    mutate(Value1 = as.list(Value1)) %>%
+    mutate(Value1 = as.list(.data$Value1)) %>%
     bind_rows(d) %>%
     split(tolower(stringr::str_extract(.$Code, "^\\w")))
 

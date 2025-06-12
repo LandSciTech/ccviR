@@ -564,7 +564,7 @@ answered_n <- function(questions) {
     # Here score = answered/not answered (NOT ACTUAL SCORE)
     dplyr::mutate(score = any(dplyr::pick(-"Code") >= 0, na.rm = TRUE)) %>%
     dplyr::ungroup() %>%
-    dplyr::filter(!is.na(Value1))
+    dplyr::filter(!is.na(.data$Value1))
 
   # How many Q5's to omit from count?
   if(type == "C") {
