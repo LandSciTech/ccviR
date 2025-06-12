@@ -264,10 +264,14 @@ update_restored2 <- function(df, session, section = NULL){
 
   df2 <- select(df2, -"section")
 
+  # If empty values, reset the inputs
+  df_reset <- filter(df2, is.na(value) | value == "")
+  purrr::walk(df_reset$input, shinyjs::reset)
+
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
-
-  purrr::pwalk(df2, update_call2, session = session)
+  df2 <- anti_join(df2, df_reset, by = "input")
+  if(nrow(df2) > 0) purrr::pwalk(df2, update_call2, session = session)
 }
 
 # build the call to update function from the inputs
