@@ -15,7 +15,8 @@
 #'   df_loaded = test_df_loaded("min"), # As if re-loading from specific run
 #'   input_files = NULL)
 
-mod_spatial_test <- function(df_loaded = NULL, input_files = test_files()) {
+mod_spatial_test <- function(df_loaded = NULL, input_files = test_files(),
+                             species = test_species()) {
 
   ui <- ui_setup(mod_spatial_ui(id = "test"))
   server <- function(input, output, session) {
@@ -25,7 +26,7 @@ mod_spatial_test <- function(df_loaded = NULL, input_files = test_files()) {
 
     mod_spatial_server(id = "test", volumes,
                        reactive(df_loaded),
-                       cave = reactive(FALSE),
+                       species = reactive(species),
                        parent_session = session, input_files)
   }
 
@@ -62,8 +63,9 @@ mod_spatial_ui <- function(id) {
           get_file_ui2(id, "rng_poly_pth", "Range polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
           get_file_ui2(id, "ptn_poly_pth", "Physiological thermal niche file"),
-          get_file_ui2(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile",
-                       note = "Only necessary if calculating migratory CCEI for Birds, Mammals and Invert-Insects"),
+          shinyjs::disabled(
+            get_file_ui2(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile",
+                         note = "Only necessary if calculating migratory CCEI for Birds, Mammals and Invert-Insects")),
           get_file_ui2(id, "protected_poly_pth", "Protected Area polygon shapefile"),
           selectInput(ns("rng_chg_used"), "Will a projected range change raster be supplied?",
                       c("No" = "no",
@@ -122,11 +124,11 @@ mod_spatial_ui <- function(id) {
 
 }
 
-mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
+mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
                                input_files = NULL) {
 
   stopifnot(is.reactive(df_loaded))
-  stopifnot(is.reactive(cave))
+  stopifnot(is.reactive(species))
 
   is_shiny_testing()
   if(is.null(input_files) & is_shiny_testing()) {
@@ -271,6 +273,11 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
 
 
     # UI -------------------------
+
+    # Enable non-breeding if migratory
+    observeEvent(species(), {
+      shinyjs::toggleState("nonbreed_poly_pth", condition = species()$mig)
+    })
 
     # use readme to render scenario names for rng chg rasters
     output$rng_chg_sel_ui <- renderUI({
@@ -546,7 +553,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, cave, parent_session,
       # If restoring data, thresholds have already been updated
       req(doSpatial() != doSpatialRestore())
       message("Applying thresholds variables")
-      t <- apply_spat_tholds(spat_res()$spat_table, cave())
+      t <- apply_spat_tholds(spat_res()$spat_table, species()$cave)
 
       # Assign to reactiveVal
       spat_thresh(t)

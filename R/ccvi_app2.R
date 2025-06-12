@@ -43,7 +43,7 @@ ccvi_app2 <- function(input_files = NULL, ...){
     spatial <- mod_spatial_server(
       id = "spatial", volumes,
       df_loaded = restore$df_loaded,
-      cave = sp$cave,
+      species = sp$species_data,
       parent_session = session,
       input_files = input_files)
 
