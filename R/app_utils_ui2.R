@@ -229,11 +229,11 @@ spat_vuln_ui2 <- function(
                class = "shiny-output-error-validation"))
       } else {
         chk_label <- div(
-          span("These Vulnerability Responses cannot be edited when multiple scenarios are provided",
+          span("Vulnerability Responses cannot be edited when multiple scenarios are provided",
                class = "shiny-output-error-validation"),
           p(HTML(paste0(spat_df$scenario_name, ": ", valueNms[4 - spat_df[[ui_id]]]) %>%
                    paste0(collapse = "<br>"))),
-          style = "margin-top: 1.75em; margin-bottom: 2.5em;"
+          style = "margin-top: 1.75em;"
         )
       }
     } else {
