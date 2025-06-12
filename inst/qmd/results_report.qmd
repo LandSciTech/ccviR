@@ -231,7 +231,10 @@ ggplot() +
 #| fig-width: 7
 #| fig-cap: "Map of exposure based on both change in temperature and change in moisture regime."
 
-bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess_poly, range_poly)
+# Suppress progress messages (not message(), but likely stdout or similar)
+invisible(capture.output(
+  bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess_poly, range_poly)
+))
 
 gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot),
                                      ggplot2::ggplotGrob(bivar_exp_plot$legend)),

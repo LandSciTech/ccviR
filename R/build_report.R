@@ -16,6 +16,13 @@
 #' @examples
 #' build_report(test_df_loaded())
 #' build_report(test_df_loaded(), debug = TRUE)
+#'
+#' \donttest{
+#' # Works with relative file paths
+#' t <- test_df_loaded()
+#' t$clim_dir_pth <- "inst/extdata/clim_files/processed"
+#' build_report(t)
+#' }
 
 build_report <- function(saved, file_loc = ".", include_about = TRUE,
                          overwrite = TRUE, quiet = FALSE, debug = FALSE) {
@@ -43,6 +50,12 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
 
   # Create HTML report
   inform_prog("Rendering HTML report", quiet, 4)
+
+  # Force all relative paths to absolute (otherwise Quarto can't find them)
+  saved <- mutate(
+    saved,
+    across(contains("pth"), ~fs::path_abs(.x))
+  )
 
   # Force all NAs to ".na" before sending
   # Otherwise:
