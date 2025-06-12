@@ -306,7 +306,7 @@ spat_vuln_hide2 <- function(id, ...) {
 
 # TODO: Move to app_utils_ui.R? Isn't this a UI creator?
 render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
-                                  multi_stop = FALSE) {
+                                  multi_stop = FALSE, is_spatial = FALSE) {
 
   com_id <- paste0("com_", ui_id)
   evi_id <- paste0("evi_", ui_id)
@@ -318,12 +318,15 @@ render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
   prevEvi <- if(is.null(prevEvi)) "" else prevEvi # Permits lengths > 1
 
   # If have spatial analysis AND have data for this Question
-  if(isTruthy(spat_df) && all(!is.na(spat_df[[ui_id]]) & spat_df[[ui_id]] > -1)) {
+  # is_spatial is only true if we definitely have a spatial contribution here
+  # (i.e. not just previously answered questions in teh spat_df)
+  if(is_spatial && isTruthy(spat_df) && all(!is.na(spat_df[[ui_id]]) & spat_df[[ui_id]] > -1)) {
     box_val <- spat_df[[ui_id]] %>% unique()
     if(is.character(box_val)) box_val <- stringr::str_split_1(box_val, ", ?")
     if(all(prevEvi == "")) prevEvi <- "Spatial Analysis - ccviR"
   } else {
-    box_val <- NULL
+    # If no current spatial values, use previous values (either manually entered, or missing)
+    box_val <- input[[ui_id]]
   }
 
   check_comment_ui2(id, ui_id, label = NULL, chk_label = chk_label,

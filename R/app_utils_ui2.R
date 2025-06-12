@@ -244,7 +244,7 @@ spat_vuln_ui2 <- function(
 
 
     box <- render_spat_vuln_box2(id, ui_id, spat_df, input, chk_label,
-                                 multi_stop = multi_stop)
+                                 multi_stop = multi_stop, is_spatial = ready)
 
     if(!ready && !optional) box <- shinyjs::hidden(box)
 
