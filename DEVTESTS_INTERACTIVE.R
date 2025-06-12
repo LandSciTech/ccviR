@@ -188,9 +188,28 @@ mod_C_test(tax_grp = "Nonvascular Plant")
 mod_C_test(tax_grp = "Lichen")
 
 
-## Only one range change but multiple scenarios ---------------------------
+## ✔ Only one range change but multiple scenarios ---------------------------
+# Launch, migratory bird, all spatial except only ONE range change scenario
+# - Expect that cannot edit D because multiple scenarios... correct?
+shinyOptions("file_dir" = "inst/extdata")
+ccvi_app2()
 
-## Only one scenario, section D works as expected ---------------------------
+# Expect NO differences
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp.csv")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv"))
+)
+
+## ✔ Only one scenario, section D works as expected ---------------------------
+# Use misc/clim full/processed_single_scenario with only 4.5 (and README has only one row for 4.5)
+shinyOptions("file_dir" = ".")
+ccvi_app2()
+
+# Expect NO differences
+waldo::compare(
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp.csv")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv"))
+)
 
 ## Empty range change matrix values (should not be NA in matrix) ----------
 
