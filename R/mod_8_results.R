@@ -166,10 +166,12 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
 
     # Setup --------------------
     index_res <- reactiveVal()
+    index_qs <- reactiveVal()
 
     # Restore data ----------------
     observeEvent(df_loaded(), {
       index_res(recreate_index_res(df_loaded()))
+      index_qs(select(df_loaded(), matches("^(B|C|D)\\d+")))
     })
 
     # Calculate Index value #================================
@@ -201,8 +203,15 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
         req(FALSE)
       }
 
-      calc_vulnerability(spat_res(), vuln_df(), species_data()$tax_grp) %>%
-        index_res()
+      # Keep track of the (wide) questions used to calculate vulnerability
+      # this will returned with the index() and used by the save module to
+      # ensure the questions in the app match the questions used in the index.
+
+      qs <- widen_vuln_coms(questions)
+      index_qs(qs)
+
+      i <- calc_vulnerability(spat_res(), vuln_df(), species_data()$tax_grp)
+      index_res(i)
     })
 
     output$species_name <- renderText(species_data()$species_name)
@@ -347,33 +356,30 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
 
 
     index <- eventReactive(index_res(), {
-       req(index_res())
-       #message("index out_data")
-       vuln_df <- purrr::map_dfr(index_res()$vuln_df, widen_vuln_coms,
-                                 coms_df = coms_df())
+      req(index_res())
 
-       conf_df <- index_res() %>%
-         select("scenario_name", "mc_results") %>%
-         mutate(mc_results = purrr::map(
-           .data$mc_results, ~.x$index %>%
-             factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
-             table() %>%
-             prop.table() %>%
-             as.data.frame(stringsAsFactors = FALSE) %>%
-             `names<-`(c("index", "frequency")))) %>%
-         pull(.data$mc_results) %>%
-         purrr::map_dfr(
-           ~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
-             tidyr::pivot_wider(names_from = "index",
-                                values_from = "frequency"))
+      conf_df <- index_res() %>%
+        select("scenario_name", "mc_results") %>%
+        mutate(mc_results = purrr::map(
+          .data$mc_results, ~.x$index %>%
+            factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
+            table() %>%
+            prop.table() %>%
+            as.data.frame(stringsAsFactors = FALSE) %>%
+            `names<-`(c("index", "frequency")))) %>%
+        pull(.data$mc_results) %>%
+        purrr::map_dfr(
+          ~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
+            tidyr::pivot_wider(names_from = "index",
+                               values_from = "frequency"))
 
-       ind_df <- data.frame(CCVI_index = index_res()$index,
-                            CCVI_conf_index = index_res()$conf_index,
-                            mig_exposure = index_res()$mig_exp,
-                            b_c_score = index_res()$b_c_score,
-                            d_score = index_res()$d_score)
+      ind_df <- data.frame(CCVI_index = index_res()$index,
+                           CCVI_conf_index = index_res()$conf_index,
+                           mig_exposure = index_res()$mig_exp,
+                           b_c_score = index_res()$b_c_score,
+                           d_score = index_res()$d_score)
 
-       bind_cols(ind_df, conf_df, vuln_df)
+      bind_cols(ind_df, conf_df, index_qs())
      })
 
     # Reports -----------------------------------

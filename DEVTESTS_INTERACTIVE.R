@@ -40,7 +40,7 @@ ccvi_app()
 
 # Specific checks --------------------------------------
 # ✔ Check saved data - Full Run-----------------------------
-# Launch App - Reload File - Save file - Re-calculate index - Save file - Compare
+# Launch App - Reload File - Save file - Generate Report - Re-calculate index - Save file - Compare
 
 ccvi_app()
 
