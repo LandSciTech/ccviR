@@ -1,3 +1,175 @@
+#' Create leaflet map
+#'
+#' Function to make maps
+#'
+#' @param poly1 Sf Polygon. Primary polygon to plot.
+#' @param rast1 SpatRaster. Primary raster to plot.
+#' @param poly2 Sf Polygon. Secondary polygon to plot.
+#' @param rast2 SpatRaster. Secondary raster to plot.
+#' @param poly1_nm Character. Identifier.
+#' @param poly2_nm Character. Identifier.
+#' @param rast1_nm Character. Identifier.
+#' @param rast2_nm Character. Identifier.
+#' @param rast1_lbl Character. Raster layer labels. Only for primary raster.
+#' @param rast_grp Character. Raster layer groups.
+#' @param max_cell Numeric. Maximum number of cells in a raster before
+#'   aggregating for plotting.
+#'
+#' @returns Leaflet map
+#' @noRd
+
+make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
+                     poly1_nm = "Current Range", poly2_nm = NULL,
+                     rast1_nm = NULL, rast2_nm = NULL,
+                     rast1_lbl = NULL,
+                     rast_grp = NULL, max_cell = 5000000) {
+
+  # Name of input data layers for mapping
+  rast_nms <- list(`Temperature exposure class` = "mat",
+                   `Historical precipitation (mm)` = "map",
+                   `Moisture class` = "cmd",
+                   `Climate change exposure index` = "ccei",
+                   `Historical thermal niche` = "htn",
+                   `Modeled range change` = "hs_rast",
+                   `Protected areas` = "protected_rast")
+
+  poly_nms <- list(`Assessment area`= "assess_poly",
+                   `Non-breeding range` = "nonbreed_poly",
+                   `Physiological thermal niche` = "ptn")
+
+  if(!is.null(rast1_nm)) {
+    if(rast1_nm == "hs_rast"){
+      pal1 = c("grey", "#FF0000", "#FFC125", "#008000")
+      brks = 0:3
+      rast_vals <- terra::unique(rast1, incomparables = TRUE) %>% unlist() %>%
+        unique()
+      rast1_lbl <- bind_cols(rast1_lbl, pal = pal1) %>%
+        filter(.data$value %in% rast_vals)
+      pal1 <- rast1_lbl$pal
+      col_tbl <- data.frame(value = rast1_lbl$value, col = pal1)
+      for(l in 1:terra::nlyr(rast1)){
+        terra::coltab(rast1, layer = l) <- col_tbl
+      }
+      rast1_lbl <- pull(rast1_lbl, .data$label)
+    } else if(rast1_nm %in% c("cmd", "mat")) {
+      pal1 = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
+      rast1_lbl <- as.character(1:6)
+      col_tbl <- data.frame(value = 1:6, col = pal1)
+      for(l in 1:terra::nlyr(rast1)){
+        terra::coltab(rast1, layer = l) <- col_tbl
+      }
+      # add descriptor to class label
+      rast1_lbl[1] <- paste0(rast1_lbl[1], " - Low")
+      rast1_lbl[length(rast1_lbl)] <- paste0(rast1_lbl[length(rast1_lbl)], " - High")
+    } else if(rast1_nm %in% c("ccei", "htn")) {
+      pal1 <- c("#FFF7BD", "#FECF66", "#F88B22", "#CC4C02")
+      rast1_lbl <- as.character(1:4)
+      # add descriptor to class label
+      rast1_lbl[1] <- paste0(rast1_lbl[1], " - Low")
+      rast1_lbl[length(rast1_lbl)] <- paste0(rast1_lbl[length(rast1_lbl)], " - High")
+      col_tbl <- data.frame(value = 1:4, col = pal1)
+      for(l in 1:terra::nlyr(rast1)){
+        terra::coltab(rast1, layer = l) <- col_tbl
+      }
+    } else if(rast1_nm == "protected_rast") {
+      if(rast2_nm != "hs_rast" || is.null(rast2)) {
+        stop("need future ranges for plotting protected areas", call. = FALSE)
+      }
+      pal1 <- c("#3C7F3C")
+      pal2 <- "#410E48"
+      rast2 <- terra::subst(rast2, c(0, 1), NA) # Remove non-range values
+    } else if(rast1_nm == "map"){
+      rng_val <- terra::minmax(rast1)[,1]
+      pal1 <- leaflet::colorNumeric("Blues", domain = rng_val, na.color = "#00000000")
+    } else {
+      stop("no match for rast1_nm")
+    }
+  } else{
+    if(!is.null(rast1)){
+      stop("rast1_nm must be provided if rast1 is not NULL", call. = FALSE)
+    }
+  }
+
+  # tried adding a line break to legend but doesn't work in interactive map
+  poly2_nm <- names(poly_nms)[which(poly_nms == poly2_nm)]
+  rast1_nm <- names(rast_nms)[which(rast_nms == rast1_nm)]
+  rast2_nm <- names(rast_nms)[which(rast_nms == rast2_nm)]
+
+  rast1 <- prep_raster_map(rast1, rast1_nm, max_cell)
+  rast2 <- prep_raster_map(rast2, rast2_nm, max_cell)
+
+  rast_grp <- character(0)
+  if(!is.null(rast1) && terra::nlyr(rast1) > 1) rast_grp <- names(rast1)
+  if(!is.null(rast2) && terra::nlyr(rast2) > 1) rast_grp <- names(rast2)
+
+  extra_pal <- NULL
+  extra_labs <- NULL
+
+  out <- leaflet::leaflet() %>%
+    # Tiles first to go under rasters
+    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap, group = "OpenStreetMap") %>%
+    leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron, group = "CartoDB")
+
+  # Add second Raster
+  if(!is.null(rast2)) {
+    for(l in 1:terra::nlyr(rast2)){
+      out <- leaflet::addRasterImage(out, x = rast2[[l]], method = "ngb",
+                                     colors = pal2,
+                                     group = rast_grp[l], opacity = 1)
+    }
+    extra_pal <- c(extra_pal, pal2)
+    extra_labs <- c(extra_labs, rast2_nm)
+  }
+
+  # Add primary Raster
+  if(!is.null(rast1)) {
+    for(l in 1:terra::nlyr(rast1)){
+      out <- leaflet::addRasterImage(out, x = rast1[[l]], method = "ngb",
+                                     colors = pal1,
+                                     group = rast_grp[l], opacity = 1)
+    }
+
+    if(is.character(pal1)) { # If character palette (categorical)
+      # If just one colour add to existing legend
+      if(length(pal1) == 1) {
+        if(is.null(rast1_lbl)) rast1_lbl <- rast1_nm
+        extra_pal <- c(extra_pal, pal1)
+        extra_labs <- c(extra_labs, rast1_lbl)
+      } else {
+        out <- leaflet::addLegend(out, colors = pal1, labels = rast1_lbl,
+                                  title = rast1_nm, opacity = 1)
+      }
+    } else { # If palette function (continuous)
+      out <- leaflet::addLegend(out, pal = pal1, values = rng_val[1]:rng_val[2],
+                                title = rast1_nm, opacity = 1)
+    }
+  }
+
+  # Add second polygon
+  if(!is.null(poly2)) {
+    out <- out %>%
+      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red")
+    extra_pal <- c(extra_pal, "red")
+    extra_labs <- c(extra_labs, poly2_nm)
+  }
+
+  # Add primary polygon and one-off legend elements
+  extra_pal <- c(extra_pal, "black")
+  extra_labs <- c(extra_labs, poly1_nm)
+  out <- out %>%
+    leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
+    leaflet::addLegend(colors = extra_pal, labels = extra_labs, opacity = 1)
+
+  out <- out %>%
+    leaflet::addLayersControl(
+      baseGroups = c("CartoDB", "OpenStreetMap"),
+      overlayGroups = rast_grp,
+      options = leaflet::layersControlOptions(collapsed = FALSE)
+    )
+
+  return(out)
+}
+
 #' Make raster map
 #'
 #' Used for MAP, MAT, and historical thermal and hydrological niches
