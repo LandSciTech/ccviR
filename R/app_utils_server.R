@@ -429,7 +429,8 @@ collect_questions <- function(input, section, tax_grp = NULL, spatial = NULL) {
   # Only applies if multiple scenarios (i.e. rows > 1)
   if(type == "D" && !is.null(spatial) &&
      any(!is.null(spatial[, c("D2", "D3", "D4")]) & spatial[, c("D2", "D3", "D4")] != -1) &&
-     nrow(spatial) > 1) {
+     nrow(spatial) > 1 &&
+     all(is.na(q$Value2[q$Code %in% c("D2", "D3", "D4")]))) {
     for(i in c("D2", "D3", "D4")) q$Value1[q$Code == i] <- list(spatial[[i]])
   }
   q$Value1 <- as.list(q$Value1)
