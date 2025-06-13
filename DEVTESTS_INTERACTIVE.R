@@ -6,9 +6,9 @@
 # Use extdata for interactive testing
 shinyOptions("file_dir" = fs::path_package("extdata/", package = "ccviR"))
 
-ccvi_app2()  # Basic, no files
-ccvi_app2(input_files = test_files()) # With test paths pre-filled
-ccvi_app2(input_files = test_files(min_req = TRUE)) # Min-required only
+ccvi_app()  # Basic, no files
+ccvi_app(input_files = test_files()) # With test paths pre-filled
+ccvi_app(input_files = test_files(min_req = TRUE)) # Min-required only
 
 # Module tests ------------------------------
 mod_home_test()
@@ -36,13 +36,13 @@ mod_C_test(input_files = test_files(min_req = TRUE)) # Min-required only
 # Big test ----------------------------------
 # Use big local data and full sized CCEI
 shinyOptions("file_dir" = ".")
-ccvi_app2()
+ccvi_app()
 
 # Specific checks --------------------------------------
 # ✔ Check saved data - Full Run-----------------------------
 # Launch App - Reload File - Save file - Re-calculate index - Save file - Compare
 
-ccvi_app2()
+ccvi_app()
 
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run.csv")),
@@ -63,7 +63,7 @@ waldo::compare(
 # ✔ Check saved data - Min Spatial Run-----------------------------
 # Launch App - Reload File - Save file - Re-calculate index - Save file - Compare
 
-ccvi_app2()
+ccvi_app()
 
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_min_spatial.csv")),
@@ -81,7 +81,7 @@ waldo::compare(
 # Test1 -> Reload test_full_run.csv  - Make change to spatial questions Save as test_sp_changes.csv - Compare (expect no index now)
 # Test2 -> Reload test_sp_changes.csv - Check results - Save as test_comp.csv - Compare
 
-ccvi_app2()
+ccvi_app()
 
 # Expect differences in the questions
 waldo::compare(
@@ -101,7 +101,7 @@ waldo::compare(
 # Test1 -> Reload test_min_spatial.csv  - Make change to spatial questions Save as test_comp1.csv - Compare (expect no index now)
 # Test2 -> Reload test_comp1.csv - Check results - Save as test_comp2.csv - Compare
 
-ccvi_app2()
+ccvi_app()
 
 # Expect differences in the questions
 waldo::compare(
@@ -127,7 +127,7 @@ waldo::compare(
 #
 # Launch - Fill in only a few file paths - Save file as test_mini_run.csv
 # Launch - Load test_full_run.csv - Load test_mini_run.csv and check that file paths have been removed
-ccvi_app2()
+ccvi_app()
 
 # TRICKY, consider just asking users not to do this?
 
@@ -136,15 +136,15 @@ ccvi_app2()
 mod_D_test(df_loaded = test_df_loaded("questions_only"),
            input_files = test_files(min_req = TRUE))
 
-ccvi_app2()
+ccvi_app()
 
 # ✔ Check that can run with min spatial requirements  -----------------
-ccvi_app2()
+ccvi_app()
 
 # ✔ Check that get sensible error when missing CCEI (etc.) breaks  ------------
 # Use misc/clim full/processed_no_ccei_brks for the Clim files
 shinyOptions("file_dir" = ".")
-ccvi_app2()
+ccvi_app()
 
 # Varieties of conditions ----------------------------------------------
 
@@ -152,8 +152,8 @@ ccvi_app2()
 
 # Choose anything BUT Mammal, Bird, or Invert-Insect
 # Expect no Migratory Exposure index - In results, in report, in saved files
-ccvi_app2()
-ccvi_app2(input_files = test_files())
+ccvi_app()
+ccvi_app(input_files = test_files())
 
 
 mod_results_test(species_data = test_species("full_run_non_migratory"),
@@ -192,7 +192,7 @@ mod_C_test(tax_grp = "Lichen")
 # Launch, migratory bird, all spatial except only ONE range change scenario
 # - Expect that cannot edit D because multiple scenarios... correct?
 shinyOptions("file_dir" = "inst/extdata")
-ccvi_app2()
+ccvi_app()
 
 # Expect NO differences
 waldo::compare(
@@ -203,7 +203,7 @@ waldo::compare(
 ## ✔ Only one scenario, section D works as expected ---------------------------
 # Use misc/clim full/processed_single_scenario with only 4.5 (and README has only one row for 4.5)
 shinyOptions("file_dir" = ".")
-ccvi_app2()
+ccvi_app()
 
 # Expect NO differences
 waldo::compare(
@@ -216,7 +216,7 @@ waldo::compare(
 # Troubleshooting -------------------------------------------------------
 # Testing a particular set of files
 shinyOptions("file_dir" = "misc/")
-ccvi_app2()
+ccvi_app()
 
 shinyOptions("file_dir" = ".")
-ccvi_app2()
+ccvi_app()

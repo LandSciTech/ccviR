@@ -7,7 +7,7 @@ library(shinytest2)
 test_that("Full app", {
   skip_on_ci()
 
-  shiny_app <- ccvi_app2(input_files = test_files())
+  shiny_app <- ccvi_app(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 

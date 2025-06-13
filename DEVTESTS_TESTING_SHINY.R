@@ -12,7 +12,7 @@
 record_test(mod_home_test())
 record_test(mod_species_test())
 
-shinytest2::record_test(ccvi_app2())
+shinytest2::record_test(ccvi_app())
 
 # Reviewing any test --------------------------
 # NOTE: Often "cannot find bottom of stack" (or similar) for testServer()

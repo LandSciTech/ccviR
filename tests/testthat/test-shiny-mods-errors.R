@@ -8,7 +8,7 @@ library(shinytest2)
 test_that("Full app - No errors", {
   skip_on_ci()
 
-  shiny_app <- ccvi_app2(input_files = test_files())
+  shiny_app <- ccvi_app(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 
@@ -49,7 +49,7 @@ test_that("Full app - No errors with missing spatial", {
 
   f <- test_files(min_req = TRUE)
 
-  shiny_app <- ccvi_app2(input_files = f)
+  shiny_app <- ccvi_app(input_files = f)
   app <- shinytest2::AppDriver$new(shiny_app, variant = shinytest2::platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
 

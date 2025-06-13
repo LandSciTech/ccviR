@@ -297,7 +297,7 @@ test_species <- function(file = "full_run") {
 
 #' Create test questions for use in Results Shiny module
 #'
-#' Imitates the behaviour of `ccvir_app2()` which takes the reactive questions
+#' Imitates the behaviour of `ccvi_app()` which takes the reactive questions
 #' returned by each module and sends a list of question reactives to the final
 #' results module.
 #'
