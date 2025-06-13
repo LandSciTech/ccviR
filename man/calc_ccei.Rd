@@ -37,7 +37,7 @@ Writes final CCEI rasters (one for each scenario) to \code{path_ccei}.
 Caculate CCEI from prepared rasters
 }
 \examples{
-\donttest{
+\dontrun{
 calc_ccei(scenario = "ssp245")
 calc_ccei(scenario = "ssp585")
 calc_ccei(scenario = "ssp245",

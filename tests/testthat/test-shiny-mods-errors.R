@@ -7,6 +7,7 @@ library(shinytest2)
 
 test_that("Full app - No errors", {
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- ccvi_app(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
@@ -46,6 +47,7 @@ test_that("Full app - No errors", {
 # Remember to re-build/install package before running tests! Ctrl-Shift-B
 test_that("Full app - No errors with missing spatial", {
   skip_on_ci()
+  skip_on_covr()
 
   f <- test_files(min_req = TRUE)
 

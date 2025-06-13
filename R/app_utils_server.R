@@ -256,9 +256,6 @@ update_restored <- function(df, session, section = NULL){
       value = ifelse(is.na(.data$value) & stringr::str_detect(.data$input, "pth"),
                      "", .data$value)) %>%
     rowwise() %>%
-    # TODO: Get rid of this when merging all versions
-    mutate(update_fun = if_else(stringr::str_detect(.data$update_fun, "_"),
-                                paste0(.data$update_fun, "2"), .data$update_fun)) %>%
     mutate(arg_name = intersect(c("selected", "value"),
                                 methods::formalArgs(.data$update_fun)))
 
@@ -276,7 +273,7 @@ update_restored <- function(df, session, section = NULL){
   df2 <- select(df2, -"section")
 
   # If empty values, reset the inputs
-  df_reset <- filter(df2, is.na(value) | value == "")
+  df_reset <- filter(df2, is.na(.data$value) | .data$value == "")
   purrr::walk(df_reset$input, shinyjs::reset)
 
   # run the appropriate update function for each input

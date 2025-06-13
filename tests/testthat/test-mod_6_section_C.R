@@ -8,6 +8,7 @@ library(shinytest2)
 
 test_that("Section C", {
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- mod_C_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
@@ -22,6 +23,7 @@ test_that("Section C", {
 # Optional spatial
 test_that("Section C - min required", {
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- mod_C_test(input_files = test_files(min_req = TRUE))
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))

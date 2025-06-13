@@ -8,6 +8,7 @@ library(shinytest2)
 
 test_that("Data Prep app - inputs", {
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- mod_data_prep_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
@@ -44,6 +45,7 @@ test_that("Data Prep app - inputs", {
 
 test_that("Data Prep app - run", {
   skip_on_ci()
+  skip_on_covr()
 
   unlink(test_path("TESTING DATA UI OUTPUTS"), recursive = TRUE)
 

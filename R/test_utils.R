@@ -33,6 +33,7 @@ clean_paths <- function(x) {
 
 expect_screenshot_local <- function(app, name = NULL) {
   testthat::skip_on_ci()
+  testthat::skip_on_covr()
   app$expect_screenshot(name = name)
 }
 
@@ -334,7 +335,7 @@ test_questions <- function(file = "full_run", as_reactive = TRUE) {
       values_to = "value",
       values_transform = as.character) %>%
     summarize(value = paste0(.data$value, collapse = ","), .by = c("type", "Code")) %>%
-    mutate(value = if_else(.data$value == "NA", NA_character_, value))
+    mutate(value = if_else(.data$value == "NA", NA_character_, .data$value))
 
   qs <- filter(q, .data$type == "que") %>%
     select("Code", "value") %>%

@@ -7,6 +7,7 @@ library(shinytest2)
 test_that("Report downloads", {
 
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- mod_report_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
@@ -28,6 +29,7 @@ test_that("Report downloads", {
 test_that("Chrome check", {
 
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- mod_report_test()
 

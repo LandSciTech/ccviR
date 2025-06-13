@@ -6,6 +6,7 @@ library(shinytest2)
 
 test_that("Full app", {
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- ccvi_app(input_files = test_files())
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))

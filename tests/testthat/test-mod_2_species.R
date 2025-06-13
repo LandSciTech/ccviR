@@ -5,6 +5,7 @@ library(shinytest2)
 test_that("Species Fills in previous data", {
 
   skip_on_ci()
+  skip_on_covr()
 
   shiny_app <- mod_species_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
