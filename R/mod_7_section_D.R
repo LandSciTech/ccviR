@@ -57,7 +57,7 @@ mod_D_ui <- function(id) {
           h3("Questions"),
           h5("(Optional - May apply across the range of a species)"),
 
-          check_comment_ui2(id, "D1", "D1) Documented response to recent climate change",
+          check_comment_ui(id, "D1", "D1) Documented response to recent climate change",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
@@ -121,7 +121,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
     ## D2 and D3 ------
     output$ui_D2D3 <- renderUI({
-      spat_vuln_ui2(
+      spat_vuln_ui(
         range_poly(), hs_rast2(), assess_poly(),
         id = id, ui_id = "D2D3",
         desc = "\"Projected Range Changes\"",
@@ -158,7 +158,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
     ## D2 ------
     output$ui_D2 <- renderUI({
-      spat_vuln_ui2(
+      spat_vuln_ui(
         range_poly(), hs_rast2(), assess_poly(),
         id = id, ui_id = "D2",
         spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
@@ -169,7 +169,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
     ## D3 ------
     output$ui_D3 <- renderUI({
-      spat_vuln_ui2(
+      spat_vuln_ui(
         range_poly(), hs_rast2(), assess_poly(),
         id = id, ui_id = "D3",
         spat_df = spat_res(), input = input, q = TRUE, map_table = FALSE,
@@ -181,7 +181,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
     # UI Inputs
     output$ui_D4 <- renderUI({
-      spat_vuln_ui2(
+      spat_vuln_ui(
         range_poly(), hs_rast2(), protected_poly(), assess_poly(),
         id = id, ui_id = "D4",
         desc = "\"Projected Range Changes\" and \"Protected Areas\"",

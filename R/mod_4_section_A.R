@@ -95,7 +95,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
     # Temperature Exposure ----------------------------
 
     output$ui_texp <- renderUI({
-      spat_vuln_ui2(range_poly(), clim_vars(),
+      spat_vuln_ui(range_poly(), clim_vars(),
                     id = id, ui_id = "texp",
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"")
     })
@@ -112,7 +112,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
     # Moisture Exposure ------------------------
     output$ui_cmd <- renderUI({
-      spat_vuln_ui2(range_poly(), clim_vars(),
+      spat_vuln_ui(range_poly(), clim_vars(),
                     id = id, ui_id = "cmd",
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"")
     })
@@ -131,7 +131,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
       validate(need(
         species()$mig, "No migratory exposure for non-migratory species"),
         errorClass = "alert")
-      spat_vuln_ui2(clim_vars()$ccei, nonbreed_poly(),
+      spat_vuln_ui(clim_vars()$ccei, nonbreed_poly(),
                     id = id, ui_id = "ccei",
                     desc = "\"CCEI\" and \"Non-Breeding Range\"",
                     optional = TRUE)

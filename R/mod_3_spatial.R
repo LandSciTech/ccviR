@@ -57,16 +57,16 @@ mod_spatial_ui <- function(id) {
             "the CCEI raster (if used), and the predicted changes in breeding range rasters (if used).",
             "Therefore these spatial data files should ideally be projected with a projection appropriate",
             "for preserving area in calculations (Equal Area projections, for example)."),
-          get_file_ui2(id, "clim_var_dir", "Folder location of prepared climate data",
+          get_file_ui(id, "clim_var_dir", "Folder location of prepared climate data",
                       type = "dir", mandatory = TRUE, spinner = TRUE),
           br(),
-          get_file_ui2(id, "rng_poly_pth", "Range polygon shapefile", mandatory = TRUE),
-          get_file_ui2(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
-          get_file_ui2(id, "ptn_poly_pth", "Physiological thermal niche file"),
+          get_file_ui(id, "rng_poly_pth", "Range polygon shapefile", mandatory = TRUE),
+          get_file_ui(id, "assess_poly_pth", "Assessment area polygon shapefile", mandatory = TRUE),
+          get_file_ui(id, "ptn_poly_pth", "Physiological thermal niche file"),
           shinyjs::disabled(
-            get_file_ui2(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile",
+            get_file_ui(id, "nonbreed_poly_pth", "Non-breeding Range polygon shapefile",
                          note = "Only necessary if calculating migratory CCEI for Birds, Mammals and Invert-Insects")),
-          get_file_ui2(id, "protected_poly_pth", "Protected Area polygon shapefile"),
+          get_file_ui(id, "protected_poly_pth", "Protected Area polygon shapefile"),
           selectInput(ns("rng_chg_used"), "Will a projected range change raster be supplied?",
                       c("No" = "no",
                         "Yes, one range change raster will be supplied for all scenarios" = "one",
@@ -79,10 +79,10 @@ mod_spatial_ui <- function(id) {
             p("Enter the range of values in the raster corresponding to ",
               "lost, maintained, gained and not suitable."),
             # TODO: Replace with sliders?
-            from_to_ui2(id, "lost", "Lost:",  c(-1, -1)),
-            from_to_ui2(id, "maint", "Maintained:", c(0, 0)),
-            from_to_ui2(id, "gain", "Gained:", c(1,1)),
-            from_to_ui2(id, "ns", "Not Suitable:", c(99, 99)),
+            from_to_ui(id, "lost", "Lost:",  c(-1, -1)),
+            from_to_ui(id, "maint", "Maintained:", c(0, 0)),
+            from_to_ui(id, "gain", "Gained:", c(1,1)),
+            from_to_ui(id, "ns", "Not Suitable:", c(99, 99)),
             br(),
             strong("Gain modifier"),
             p("Range gains predicted based on future climate projections should be ",
@@ -304,7 +304,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
         return(NULL)
       } else if(input$rng_chg_used == "one"){
         rng_ids("rng_chg_pth_1")
-        get_file_ui2(id, "rng_chg_pth_1", "Projected range change raster")
+        get_file_ui(id, "rng_chg_pth_1", "Projected range change raster")
       } else if (input$rng_chg_used == "multiple"){
         validate(need(
           is_ready(clim_readme()),
@@ -318,7 +318,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
         tagList(
           strong("Select a projected range change raster for each scenario"),
           purrr::imap(clim_readme()$Scenario_Name,
-                      ~get_file_ui2(id, paste0("rng_chg_pth_", .y), .x))
+                      ~get_file_ui(id, paste0("rng_chg_pth_", .y), .x))
         )
 
       }

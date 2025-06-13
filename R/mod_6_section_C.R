@@ -56,7 +56,7 @@ mod_C_ui <- function(id) {
         div(
           id = "secC",
           h3("Questions"),
-          check_comment_ui2(id, "C1", "C1) Dispersal and movements",
+          check_comment_ui(id, "C1", "C1) Dispersal and movements",
                            choiceNames = valueNms,
                            choiceValues = valueOpts),
 
@@ -74,30 +74,30 @@ mod_C_ui <- function(id) {
               q5("C2 bi) Historical hydrological niche"),
               uiOutput(ns("ui_C2bi")),
 
-              check_comment_ui2(id, "C2bii", "C2 bii) Physiological hydrological niche",
+              check_comment_ui(id, "C2bii", "C2 bii) Physiological hydrological niche",
                                 choiceNames = valueNms,
                                 choiceValues = valueOpts)
           ),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C2c",
             "C2 c) Dependence on a specific disturbance regime likely to be impacted by climate change",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C2d",
             "C2 d) Dependence on ice, ice-edge, or snow-cover habitats",
             choiceNames = valueNms,
             choiceValues = valueOpts),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C3",
             "C3) Restriction to uncommon landscape/geological features or derivatives",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C4a",
             "C4 a) Dependence on other species to generate required habitat",
             choiceNames = valueNms[2:4],
@@ -106,7 +106,7 @@ mod_C_ui <- function(id) {
           shinyjs::hidden(
             div(
               id = ns("animal_only"),
-              check_comment_ui2(
+              check_comment_ui(
                 id, "C4b",
                 "C4 b) Dietary versatility (animals only)",
                 choiceNames = valueNms[2:4],
@@ -117,7 +117,7 @@ mod_C_ui <- function(id) {
           shinyjs::hidden(
             div(
               id = ns("plant_only"),
-              check_comment_ui2(
+              check_comment_ui(
                 id, "C4c",
                 "C4 c) Pollinator versatility (plants only)",
                 choiceNames = valueNms[2:4],
@@ -125,37 +125,37 @@ mod_C_ui <- function(id) {
             )
           ),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C4d",
             "C4 d) Dependence on other species for propagule dispersal",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C4e",
             "C4 e) Sensitivity to pathogens or natural enemies",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C4f",
             "C4 f) Sensitivity to competition from native or non-native species",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C4g",
             "C4 g) Forms part of an interspecific interaction not covered by 4a-f",
             choiceNames = valueNms[2:4],
             choiceValues = valueOpts[2:4]),
 
-          check_comment_ui2(id, "C5a", "C5 a) Measured genetic variation",
+          check_comment_ui(id, "C5a", "C5 a) Measured genetic variation",
                            choiceNames = valueNms[2:4],
                            choiceValues = valueOpts[2:4]),
 
           conditionalPanel(
             "input.C5a == ''",
-            check_comment_ui2(
+            check_comment_ui(
               id, "C5b",
               "C5 b) Occurrence of bottlenecks in recent evolutionary history (use only if 5a is unknown)",
               choiceNames = valueNms[2:4],
@@ -168,7 +168,7 @@ mod_C_ui <- function(id) {
             shinyjs::hidden(
               div(
                 id = ns("plant_only2"),
-                check_comment_ui2(
+                check_comment_ui(
                   id, "C5c",
                   "C5 c) Reproductive system (plants only; use only if C5a and C5b are unknown)",
                   choiceNames = valueNms[2:4],
@@ -178,7 +178,7 @@ mod_C_ui <- function(id) {
             ns = NS(id)
           ),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "C6",
             "C6) Phenological response to changing seasonal temperature and precipitation dynamics",
             choiceNames = valueNms[2:4],
@@ -232,7 +232,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
 
     ## C2 ai ------------
     output$ui_C2ai <- renderUI({
-      spat_vuln_ui2(range_poly(), clim_vars(),
+      spat_vuln_ui(range_poly(), clim_vars(),
                     id = id, ui_id = "C2ai",
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"",
                     spat_df = spat_res(), input = input, q = TRUE)
@@ -281,7 +281,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
 
     ## C2 aii ----
     output$ui_C2aii <- renderUI({
-      spat_vuln_ui2(range_poly(), ptn_poly(),
+      spat_vuln_ui(range_poly(), ptn_poly(),
                     id = id, ui_id = "C2aii",
                     desc = "\"Physiological Thermal Niche\"",
                     spat_df = spat_res(), input = input, q = TRUE, optional = TRUE)
@@ -311,7 +311,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
 
     ## C2 bi ---------
     output$ui_C2bi <- renderUI({
-      spat_vuln_ui2(range_poly(), clim_vars(),
+      spat_vuln_ui(range_poly(), clim_vars(),
                     id = id, ui_id = "C2bi",
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"",
                     spat_df = spat_res(), input = input, q = TRUE)

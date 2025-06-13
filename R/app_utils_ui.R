@@ -158,10 +158,10 @@ updateCheck_comment_ui <- function(inputId, value, com, evi, session) {
 #'
 #' @details
 #' Uses `render_spat_vuln_box2()` to create and pre-fill the questions (which in
-#' turn uses `check_comment_ui2()` to create the UI.
+#' turn uses `check_comment_ui()` to create the UI.
 #'
 #' Where several questions share the same map/table output (e.g., D2 and D3),
-#' use several calls to `spat_vuln_ui2()`, the first with `map_table = TRUE`,
+#' use several calls to `spat_vuln_ui()`, the first with `map_table = TRUE`,
 #' but `q = FALSE`, with a joint id (e.g., "D2D3"). Then as many calls as
 #' questions, each with `map_table = FALSE` but `q = TRUE`, and using the
 #' correct id for that question (e.g., "D2").

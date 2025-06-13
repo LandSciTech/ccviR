@@ -77,7 +77,7 @@ mod_data_prep_ui <- function(id) {
 
     h3("Setup"),
 
-    get_file_ui2(id, "out_folder", "Output folder", mandatory = TRUE,
+    get_file_ui(id, "out_folder", "Output folder", mandatory = TRUE,
                  type = "dir"),
     checkboxInput(ns("allow_over"), "Overwrite existing files?"),
 
@@ -86,15 +86,15 @@ mod_data_prep_ui <- function(id) {
     textInput(ns("clim_norm_period"), labelMandatory("Historical normal period")),
     textInput(ns("clim_norm_url"), labelMandatory("Link to Source")),
 
-    get_file_ui2(id, "mat_norm_pth", "Historical mean annual temperature (MAT)", TRUE),
-    get_file_ui2(id, "cmd_norm_pth", "Historical climatic mositure deficit (CMD)", TRUE),
-    get_file_ui2(id, "map_norm_pth", "Historical mean annual precipitation (MAP)"),
-    get_file_ui2(id, "mwmt_norm_pth", "Historical mean warmest month temperature (MWMT)"),
-    get_file_ui2(id, "mcmt_norm_pth", "Historical mean coldest month temperature (MCMT)"),
+    get_file_ui(id, "mat_norm_pth", "Historical mean annual temperature (MAT)", TRUE),
+    get_file_ui(id, "cmd_norm_pth", "Historical climatic mositure deficit (CMD)", TRUE),
+    get_file_ui(id, "map_norm_pth", "Historical mean annual precipitation (MAP)"),
+    get_file_ui(id, "mwmt_norm_pth", "Historical mean warmest month temperature (MWMT)"),
+    get_file_ui(id, "mcmt_norm_pth", "Historical mean coldest month temperature (MCMT)"),
 
     h3("Supporting data"),
     # TODO: Assessment area?
-    get_file_ui2(id, "assess_pth", "Assessment area (Climate data extent polygon)"),
+    get_file_ui(id, "assess_pth", "Assessment area (Climate data extent polygon)"),
 
     h3("Future scenario data"),
     numericInput(ns("scn_n"), label = "How many future scenarios?",
@@ -456,13 +456,13 @@ ui_scn <- function(id, ui_id, input) {
     textInput(ns(paste0("clim_scn_url", ui_id)), labelMandatory("Link to Source"),
               value = isolate(input[[paste0("clim_scn_url", ui_id)]])),
 
-    get_file_ui2(
+    get_file_ui(
       id, paste0("mat_fut_pth", ui_id), mandatory = TRUE,
       title = paste0("Future mean annual temperature (MAT; Scenario ", ui_id, ")")),
-    get_file_ui2(
+    get_file_ui(
       id, paste0("cmd_fut_pth", ui_id), mandatory = TRUE,
       title = paste0("Future climatic mositure deficit (CMD; Scenario ", ui_id, ")")),
-    get_file_ui2(id, paste0("ccei_pth", ui_id), "Climate change exposure index"),
+    get_file_ui(id, paste0("ccei_pth", ui_id), "Climate change exposure index"),
   )
 }
 

@@ -94,7 +94,7 @@ using `renderUI()`, not required for anything else going to/from `output` or `in
 - We only need to use `ns(my_id)` in the server if creating our own UI elements
   i.e. with `renderUI()`
 - In functions which dynamically create UIs, use `NS(id, ui_id)` *inside* the 
-  function, cf `get_file_ui2()`
+  function, cf `get_file_ui()`
 - `conditionalPanel()` has a `ns` argument we should use (https://stackoverflow.com/a/76905697)
 - `NS()` (or `ns`) is *not* required for shinyjs (mainly because always called 
   within an observer, I believe)

@@ -49,20 +49,20 @@ mod_B_ui <- function(id) {
 
           h3("Questions"),
           h5("Evaluate for assessment area under consideration"),
-          check_comment_ui2(
+          check_comment_ui(
             id, "B1", "B1) Exposure to sea level rise",
             choiceNames = valueNms,
             choiceValues = valueOpts),
-          check_comment_ui2(
+          check_comment_ui(
             id, "B2a", "B2 a) Distribution relative to natural barriers",
             choiceNames = valueNms,
             choiceValues = valueOpts),
-          check_comment_ui2(
+          check_comment_ui(
             id, "B2b", "B2 b) Distribution relative to anthropogenic barriers",
             choiceNames = valueNms,
             choiceValues = valueOpts),
 
-          check_comment_ui2(
+          check_comment_ui(
             id, "B3",
             "B3) Predicted impact of land use changes resulting from human responses to climate change",
             choiceNames = valueNms[2:4],

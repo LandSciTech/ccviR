@@ -329,7 +329,7 @@ render_spat_vuln_box2 <- function(id, ui_id, spat_df, input, chk_label = NULL,
     box_val <- input[[ui_id]]
   }
 
-  check_comment_ui2(id, ui_id, label = NULL, chk_label = chk_label,
+  check_comment_ui(id, ui_id, label = NULL, chk_label = chk_label,
                     choiceNames = valueNms,
                     choiceValues = valueOpts,
                     selected = box_val,
