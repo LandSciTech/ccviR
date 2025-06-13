@@ -85,7 +85,7 @@ mod_species_server <- function(id, df_loaded, parent_session) {
 
     # Restore data -----------------
     observeEvent(df_loaded(), {
-      update_restored2(df_loaded(), section = "sp_info", session)
+      update_restored(df_loaded(), section = "sp_info", session)
     })
 
 

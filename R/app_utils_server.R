@@ -282,7 +282,7 @@ update_restored <- function(df, session, section = NULL){
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
   df2 <- anti_join(df2, df_reset, by = "input")
-  if(nrow(df2) > 0) purrr::pwalk(df2, update_call2, session = session)
+  if(nrow(df2) > 0) purrr::pwalk(df2, update_call, session = session)
 }
 
 # build the call to update function from the inputs

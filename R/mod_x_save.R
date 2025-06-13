@@ -30,13 +30,13 @@ mod_save_server <- function(id, volumes, species_data, spatial, questions,
 
     # Make out_data #========================================================
 
-    qs <- reactive(widen_vuln_coms2(questions))
+    qs <- reactive(widen_vuln_coms(questions))
 
     out_data <- reactive({
       ind <- if(is_ready(index())) index() else NULL
       spat1 <- if(is_ready(spatial$spat_run())) spatial$spat_run() else NULL
       spat2 <- if(is_ready(spatial$spat_res())) spatial$spat_res() else NULL
-      combine_outdata2(species_data(), qs(), spat1, spat2, ind)
+      combine_outdata(species_data(), qs(), spat1, spat2, ind)
     })
 
     output$status <- renderUI({ # Use UI when rendering HTML

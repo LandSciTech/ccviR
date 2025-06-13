@@ -195,7 +195,7 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
 
     # Restore data ----------------
     observeEvent(df_loaded(), {
-      update_restored2(df_loaded(), section = "spatial", session)
+      update_restored(df_loaded(), section = "spatial", session)
     })
 
     restored_spatial <- eventReactive({

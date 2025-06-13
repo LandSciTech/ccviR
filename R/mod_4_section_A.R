@@ -102,7 +102,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
     output$map_texp <- leaflet::renderLeaflet({
       # Don't require checks because UI not present if no spatial
-      make_map2(range_poly(), clim_vars()$mat, rast1_nm = "mat",
+      make_map(range_poly(), clim_vars()$mat, rast1_nm = "mat",
                 rast1_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
@@ -117,7 +117,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
                     desc = "\"Range Polygon\" and \"Prepared Climate Data\"")
     })
     output$map_cmd <- leaflet::renderLeaflet({
-      make_map2(range_poly(), clim_vars()$cmd, rast1_nm = "cmd",
+      make_map(range_poly(), clim_vars()$cmd, rast1_nm = "cmd",
                 rast1_lbl = c("1 High", "2", "3","4", "5", "6 Low"))
     })
 
@@ -139,7 +139,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
     output$map_ccei <- leaflet::renderLeaflet({
       req(nonbreed_poly(), clim_vars()$ccei)
-      make_map2(nonbreed_poly(), clim_vars()$ccei, rast1_nm = "ccei",
+      make_map(nonbreed_poly(), clim_vars()$ccei, rast1_nm = "ccei",
                 rast1_lbl = c("1 Low", "2", "3", "4 High"))
     })
 

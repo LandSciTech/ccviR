@@ -8,15 +8,15 @@ expect_silent({
 })
 
 
-test_that("make_map2", {
+test_that("make_map", {
 
   expect_message({
-    map2 <- make_map2(d$rng_poly, d$clim_vars$mat[[1]], rast1_nm = "mat",
+    map2 <- make_map(d$rng_poly, d$clim_vars$mat[[1]], rast1_nm = "mat",
                    poly2 = d$assess_poly, poly2_nm = "assess_poly")
   }, "Projecting raster")
 
   expect_message({
-    map4 <- make_map2(
+    map4 <- make_map(
       d$rng_poly, rng_chg_cls, rast1_nm = "hs_rast",
       poly2 = d$assess_poly, poly2_nm = "assess_poly",
       rast1_lbl = data.frame(label = c("Not suitable", "Lost", "Maintained", "Gained"),
@@ -24,17 +24,17 @@ test_that("make_map2", {
   }, "Projecting raster")
 
   expect_message({
-    map1 <- make_map2(d$rng_poly, d$clim_vars$mat,
+    map1 <- make_map(d$rng_poly, d$clim_vars$mat,
                      rast1_nm = "mat", poly2 = d$assess_poly,
                      poly2_nm = "assess_poly")
   }, "Projecting raster")
 
   expect_silent({
-    map3 <- make_map2(d$rng_poly, poly2 = d$assess_poly, poly2_nm = "assess_poly")
+    map3 <- make_map(d$rng_poly, poly2 = d$assess_poly, poly2_nm = "assess_poly")
   })
 
   expect_message({
-    map5 <- make_map2(d$rng_poly, d$clim_vars$map, rast1_nm = "map")
+    map5 <- make_map(d$rng_poly, d$clim_vars$map, rast1_nm = "map")
   }, "Projecting raster")
 
   # Expect created
@@ -74,10 +74,10 @@ if(FALSE){
   clim_vars2 <- get_clim_vars("../CCVI_analysis/data/CMIP5_ENSEMBLE_rcp45_rcp85_2050_NORM_6190/",
                              scn_nms)
 
-  map2b <- make_map2(d$rng_poly, clim_vars2$mat[[1]], rast_nm = "mat", poly2 = d$assess_poly,
+  map2b <- make_map(d$rng_poly, clim_vars2$mat[[1]], rast_nm = "mat", poly2 = d$assess_poly,
                    poly2_nm = "assess_poly")
 
-  map3b <- make_map2(d$rng_poly, clim_vars2$mat, rast_nm = "mat", poly2 = d$assess_poly,
+  map3b <- make_map(d$rng_poly, clim_vars2$mat, rast_nm = "mat", poly2 = d$assess_poly,
                     poly2_nm = "assess_poly")
 
 }

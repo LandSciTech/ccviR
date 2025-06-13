@@ -157,7 +157,7 @@ updateCheck_comment_ui <- function(inputId, value, com, evi, session) {
 #'   multiple scenarios.
 #'
 #' @details
-#' Uses `render_spat_vuln_box2()` to create and pre-fill the questions (which in
+#' Uses `render_spat_vuln_box()` to create and pre-fill the questions (which in
 #' turn uses `check_comment_ui()` to create the UI.
 #'
 #' Where several questions share the same map/table output (e.g., D2 and D3),

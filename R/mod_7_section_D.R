@@ -108,7 +108,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
     # Restore data ----------------
     observeEvent(df_loaded(), {
 
-      update_restored2(df_loaded(), section = "vuln_qs_D", session)
+      update_restored(df_loaded(), section = "vuln_qs_D", session)
     })
 
     # reclassify raster
@@ -132,7 +132,7 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
 
 
     output$map_D2D3 <- leaflet::renderLeaflet({
-      make_map2(
+      make_map(
         poly1 = range_poly(), rast1 = hs_rast2(),
         poly2 = assess_poly(), poly2_nm = "assess_poly",
         rast1_nm = "hs_rast",
