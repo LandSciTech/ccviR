@@ -220,10 +220,10 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
     # Create UIs and Outputs - Looping over nested modules
     # NOTE: Require ns() in UI (I think) because UIs inside another UI.
     output$all_index_results <- renderUI({
-      purrr::map(seq_along(scenarios()), ~indexOutUI2(ns(.x)))
+      purrr::map(seq_along(scenarios()), ~indexOutUI(ns(.x)))
     })
     observeEvent(scenarios(), {
-      purrr::map(seq_along(scenarios()), ~indexOutServer2(.x, scenarios()[[.x]]))
+      purrr::map(seq_along(scenarios()), ~indexOutServer(.x, scenarios()[[.x]]))
     })
 
     # a flag to hide results until calculated
