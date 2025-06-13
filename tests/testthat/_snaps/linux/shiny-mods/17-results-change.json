@@ -33,6 +33,46 @@
         false,
         false
       ],
+      "CCVI_index": [
+        "EV",
+        "EV"
+      ],
+      "CCVI_conf_index": [
+        "Very High",
+        "Very High"
+      ],
+      "mig_exposure": [
+        "N/A",
+        "N/A"
+      ],
+      "b_c_score": [
+        32,
+        40
+      ],
+      "d_score": [
+        8,
+        9
+      ],
+      "MC_freq_EV": [
+        1,
+        1
+      ],
+      "MC_freq_HV": [
+        0,
+        0
+      ],
+      "MC_freq_MV": [
+        0,
+        0
+      ],
+      "MC_freq_LV": [
+        0,
+        0
+      ],
+      "MC_freq_IE": [
+        0,
+        0
+      ],
       "MAT_1": [
         0,
         0
@@ -556,46 +596,6 @@
           1,
           1
         ]
-      ],
-      "CCVI_index": [
-        null,
-        null
-      ],
-      "CCVI_conf_index": [
-        null,
-        null
-      ],
-      "mig_exposure": [
-        null,
-        null
-      ],
-      "b_c_score": [
-        null,
-        null
-      ],
-      "d_score": [
-        null,
-        null
-      ],
-      "MC_freq_EV": [
-        null,
-        null
-      ],
-      "MC_freq_HV": [
-        null,
-        null
-      ],
-      "MC_freq_MV": [
-        null,
-        null
-      ],
-      "MC_freq_LV": [
-        null,
-        null
-      ],
-      "MC_freq_IE": [
-        null,
-        null
       ]
     },
     "species-cave": false,

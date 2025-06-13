@@ -78,8 +78,8 @@ waldo::compare(
 )
 
 # ✔ Check saved data - With manually changing spatial scores -------------------
-# Test1 -> Reload test_full_run.csv  - Make change to spatial questions Save as test_sp_changes.csv - Compare (expect no index now)
-# Test2 -> Reload test_sp_changes.csv - Check results - Save as test_comp.csv - Compare
+# Test1 -> Reload test_full_run.csv  - Make change to spatial questions - Compare (expect no index now)
+# Test2 -> Reload - Check results - Save - Compare
 
 ccvi_app()
 
@@ -87,18 +87,20 @@ ccvi_app()
 waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_full_run.csv")) %>%
     select(matches("[A-D]{1}\\d")),
-  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_sp_changes.csv"))  %>%
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv"))  %>%
     select(matches("[A-D]{1}\\d"))
 )
 
 # Expect NO differences
 waldo::compare(
-  read.csv(fs::path_package("ccviR", "extdata", "test_files", "test_sp_changes.csv")),
-  read.csv(fs::path_package("ccviR", "extdata", "test_comp.csv"))
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp1.csv")) %>%
+    select(matches("[A-D]{1}\\d")),
+  read.csv(fs::path_package("ccviR", "extdata", "test_comp2.csv")) %>%
+    select(matches("[A-D]{1}\\d"))
 )
 
 # ✔ Check saved data - Do not lose manually answered spatial questions when no spatial data to answer them -------------------
-# Test1 -> Reload test_min_spatial.csv  - Make change to spatial questions Save as test_comp1.csv - Compare (expect no index now)
+# Test1 -> Reload test_min_spatial.csv  - Make change to spatial questions (D, make several) - Save as test_comp1.csv - Compare (expect no index now)
 # Test2 -> Reload test_comp1.csv - Check results - Save as test_comp2.csv - Compare
 
 ccvi_app()
@@ -120,6 +122,7 @@ waldo::compare(
 # ✔ Check that when re-run spatial, don't loose comments -----------------
 
 # ✔ Check that when only comments/evidence updated gets saved and included in reports -----------------
+# (even if the index is NOT rerun)
 
 # Check that can reload a different file in the same session  -----------------
 # - No errors

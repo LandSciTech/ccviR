@@ -121,7 +121,7 @@ widen_vuln_coms <- function(questions) {
   comments <- bind_elements(questions, "comments")
   evidence <- bind_elements(questions, "evidence")
 
-  scn_n <- purrr::map_dbl(bind_elements(questions, "questions")$Value1, length) |>
+  scn_n <- purrr::map_dbl(bind_elements(questions, "questions")$Value1, length) %>%
     max()
 
   # Keep scenarios as separate rows

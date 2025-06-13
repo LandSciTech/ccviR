@@ -105,7 +105,7 @@ test_that("Full app", {
 
   # Modify and rerun
   app$set_inputs(`section_d-D1` = "3")
-  expect_screenshot_local(app, name = "16-results-sync")
+  expect_screenshot_local(app, name = "16-results-async")
 
   app$set_inputs(`section_b-B1` = "3")
   app$set_inputs(`section_b-B2a` = "3")

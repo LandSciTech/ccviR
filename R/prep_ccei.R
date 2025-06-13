@@ -285,7 +285,7 @@ ccei_vars <- function(prec_files, tmin_files, tmax_files, clip, quiet = FALSE) {
   cells <- terra::ncell(sample)
   vals_cmd <- vals_tmean <- matrix(nrow = cells, ncol = 12)
   lat <- stats::setNames(terra::init(sample, "y"), "latitude") %>%
-    terra::values(mat = FALSE) |>
+    terra::values(mat = FALSE) %>%
     abs() # climr::calc_Eref() might treat negative latitudes incorrectly
           # - https://github.com/LandSciTech/ccviR/issues/209
 
