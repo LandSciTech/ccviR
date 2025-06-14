@@ -17,8 +17,10 @@ source("data-raw/lookup_tbls.R")
 
 
 # Test coverage --------------------------------------------
-# Check for the entire suite, Actions only test non-shiny components
-covr::package_coverage()
+# Check as if on CI to prevent testing shiny mods
+# Note that terra sometimes seems to fail (but not always with the ccei functions... temp dir issues?)
+withr::with_envvar(c(CI = "true"), covr::package_coverage(
+  clean = FALSE))
 
 
 # Documentation --------------------------------
@@ -41,8 +43,8 @@ file.edit("DESCRIPTION")
 
 # Final checks --------------------------------------------------
 
-# - Checks
-devtools::check(run_dont_test = TRUE)   # With local, run long-running examples
+# - Checks (avoid issues when installed to a temp location)
+withr::with_envvar(c(CI = "true"), devtools::check())
 
 # - Run in console - (Only if trying to be very persnickity)
 system("cd ..; R CMD build ccviR")

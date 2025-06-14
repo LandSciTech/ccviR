@@ -78,7 +78,7 @@ test_that("ccei_reclassify()", {
 })
 
 test_that("prep_clim_data() - no ccei", {
-
+  skip_on_covr() # Has problems with the tempdir?
   out <- fs::path(tempdir(), "processed")
   fs::dir_create(out)
 
@@ -284,9 +284,9 @@ test_that("prep_clim_data() - ccei", {
 test_that("prep_clim_data_multi() breaks", {
 
   skip_if_not(all(fs::file_exists(c(f["ccei_pth1"], f["ccei_pth2"]))))
+  skip_on_covr() # Has problems with the tempdir?
 
   out <- fs::path(tempdir(), "processed")
-
 
   # Always use first set of breaks
   fs::dir_create(out)

@@ -28,9 +28,9 @@ test_that("combine_xxx()", {
 
 
 test_that("ccei_vars() - historical", {
-
+  skip_on_covr() # Has problems with the tempdir?
   r <- combine_historical(path_ccei) %>%
-    dplyr::filter(group == 1960)
+    dplyr::filter(.data$group == 1960)
 
   v1 <- ccei_by_hand(r, 1, 1)  # cell (1,1)
   v2 <- ccei_by_hand(r, 2, 2)  # cell (2,2)
@@ -59,7 +59,7 @@ test_that("ccei_vars() - historical", {
 test_that("ccei_vars() - future", {
 
   r <- combine_future(path_ccei, quiet = TRUE) %>%
-    dplyr::filter(group == "ACCESS-ESM1-5-ssp585")
+    dplyr::filter(.data$group == "ACCESS-ESM1-5-ssp585")
 
   v1 <- ccei_by_hand(r, 1, 1)  # cell (1,1)
   v2 <- ccei_by_hand(r, 2, 2)  # cell (2,2)
@@ -86,11 +86,13 @@ test_that("ccei_vars() - future", {
 })
 
 test_that("ccei_values()", {
+  skip_on_covr() # Has problems with the tempdir?
 
   # Test historical (~15s to run)
   r <- combine_historical(path_ccei)
   expect_silent(o <- prep_out(path_ccei, "intermediate", "hist"))
-  expect_message(ccei_values(filter(r, group == "1989"), o, aggregate = TRUE, overwrite = TRUE),
+  expect_message(ccei_values(dplyr::filter(r, .data$group == "1989"),
+                             o, aggregate = TRUE, overwrite = TRUE),
                  paste0("1989 - ", Sys.Date())) %>%
     expect_message("Combining and Saving rasters with annual data") %>%
     expect_message("Final calculations") %>%
