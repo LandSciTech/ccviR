@@ -19,9 +19,12 @@ prep_clim_data(
   reproject = FALSE,
   overwrite = FALSE,
   scenario_name = "",
+  brks = NULL,
   brks_mat = NULL,
   brks_cmd = NULL,
-  brks_ccei = NULL
+  brks_ccei = NULL,
+  quiet = FALSE,
+  n = c(1, 1)
 )
 }
 \arguments{
@@ -30,20 +33,28 @@ prep_clim_data(
 \item{in_folder}{file path where files are stored. Files must be named
 according to the convention described in details}
 
-\item{out_folder}{file path where the processed files will be saved}
+\item{out_folder}{Character. Path where the processed files will be saved.}
 
 \item{reproject}{should the data be re-projected to lat/long? Not recommended.}
 
-\item{overwrite}{should existing files in out_folder be overwritten?}
+\item{overwrite}{Logical. Whether to overwrite existing file(s)}
 
-\item{scenario_name}{a string identifying the climate change scenario that
-will be used as a suffix for the output files.}
+\item{scenario_name}{Character. A string identifying the climate change
+scenario(s) that will be used as a suffix for the output files.}
+
+\item{brks}{List. Optionally supply \code{brks_mat}, \code{brks_cmd} and \code{brks_ccei}
+as a list.}
 
 \item{brks_mat, brks_cmd, brks_ccei}{a matrix containing breaks to use for
 classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
 \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
 the default, the breaks will be determined using the median and half the
 interquartile range}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
+
+\item{n}{Numeric vector. Only for use by \code{prep_clim_data_multi()} for progresses
+messages and to skip unnecessary steps. Do not change.}
 }
 \value{
 Returns a list of matrices with the breaks used to classify mat, cmd
@@ -74,12 +85,13 @@ normal period}
 climate data. It will be created from the climate data if it is missing
 but it is faster to provide it.}
 }
-Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
+
+Accepted raster file types are ".asc", ".tif", ".nc", ".grd", ".img", ".bil"
+and ".gpkg" (see \code{spatial_file_raster()}).
 }
 \examples{
 in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
-
-pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
+pth_out <- fs::dir_create("processed_temp")
 
 # use first scenario to set breaks
 brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
@@ -106,6 +118,8 @@ prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
                scenario_name = "RCP 8.5",
                brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
                brks_ccei = brks_out$brks_ccei)
+
+fs::dir_delete(pth_out)
 }
 \seealso{
 \code{\link{get_clim_vars}} for loading the processed data.

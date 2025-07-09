@@ -29,6 +29,7 @@ Authors:
 
 Other contributors:
 \itemize{
+  \item Steffi LaZerte (\href{https://orcid.org/0000-0002-7690-8360}{ORCID}) [contributor]
   \item His Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change [copyright holder]
 }
 

@@ -92,7 +92,8 @@ if(FALSE){
 
   exp_facts <- bind_cols(mat, cmd, ccei)
 
-  vuln_facts <- map_dfc(vuln_value_table, ~sample(na.omit(.x), N, replace = TRUE))
+  vuln_facts <- map_dfc(vuln_value_table,
+                        ~sample(stats::na.omit(.x), N, replace = TRUE))
 
   # other factors
   cave <- sample(c(0,0,0,0,1), N, replace = TRUE)

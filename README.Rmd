@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/LandSciTech/ccviR/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.07150/status.svg)](https://doi.org/10.21105/joss.07150)
+[![R-CMD-check](https://github.com/steffilazerte/ccviR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/steffilazerte/ccviR/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/steffilazerte/ccviR/graph/badge.svg)](https://app.codecov.io/gh/steffilazerte/ccviR)
 <!-- badges: end -->
 
 The ccviR package implements the [NatureServe Climate Change Vulnerability Index (CCVI) version 3.02](https://www.natureserve.org/conservation-tools/climate-change-vulnerability-index) in an R package and Shiny App. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. The app provides an interactive application designed to offer a user-friendly and simple interface for calculating the NatureServe CCVI. 

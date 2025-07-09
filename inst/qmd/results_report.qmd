@@ -1,0 +1,373 @@
+---
+params: 
+  saved: none
+  species: Test Species Name
+  assessor_name: Dr. Curious
+  geo_location: Earth
+  include_about: true
+  debug: true
+title: "`r params$species`"
+subtitle: Climate Change Vulnerability Index Report
+abstract: "`r params$geo_location`"
+abstract-title: "Geographic Location"
+date: today
+published-title: "Date"
+author: "`r params$assessor_name`"
+format: 
+  html:
+    page-layout: full
+    theme: 
+      - default
+      - styles.scss
+keep-md: false
+fig-responsive: false
+---
+<!-- Notes 
+fig-responsive: false (above) is required to keep the spacing around the 
+plotly dials appropriate.
+
+For debugging, `keep-md: true` and compile this script directly (don't use `build_report()`)
+Then check inst/qmd/results_report.html.md for intermediate problems
+-->
+
+
+## Overview
+
+```{r setup}
+#| include: false
+
+library(purrr)
+library(dplyr)
+library(ggplot2)
+library(ccviR)
+library(sf)
+library(htmltools)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = FALSE)
+
+saved <- params$saved
+species <- params$species
+include_about <- as.logical(params$include_about)
+debug <- params$debug
+
+# defined as latex colors below
+#cols <- c("gray", "green", "yellow", "orange", "red")
+index_labs <- tribble(
+  ~code, ~label,                 ~col,      ~text_col,
+  "IE", "Insufficient Evidence", "#808080", "black",
+  "LV", "Less Vulnerable",       "#008000", "white",
+  "MV", "Moderately Vulnerable", "#FFC125", "black",
+  "HV", "Highly Vulnerable",     "#FF8C00", "black",
+  "EV", "Extremely Vulnerable",  "#FF0000", "white",
+  "NA", "Not Applicable",        "white",   "black")
+
+value_labs <- index_labs %>%
+  filter(code != "NA") %>%
+  select(col, text_col) %>%
+  mutate(value = c("Unknown", rev(ccviR:::valueNms)),
+         opts = c(-1, rev(ccviR:::valueOpts)))
+
+
+# Custom boxes - bootstrap 5
+# cards 
+#  - https://getbootstrap.com/docs/5.3/components/card/#horizontal
+#  - https://getbootstrap.com/docs/5.3/components/card/#background-and-color
+# Quarto uses new grid system https://getbootstrap.com/docs/5.3/layout/css-grid/
+# mb-3 - https://getbootstrap.com/docs/5.3/utilities/spacing/#margin-and-padding
+# 
+# TODO: Not currently used
+results_box <- function(s, column) {
+  map(seq_len(nrow(s)), ~ {
+    div(
+      class = c("card mb-2", paste0("card-", tolower(s[[column]][.x]))),
+      div(class="card-header", s[["scenario_name"]][[.x]]),
+      div( 
+        class = "card-body",
+        h4(class = "card-title", 
+           index_labs$label[index_labs$code == s[[column]][.x]]), 
+      )
+    )
+  })
+}
+
+vuln_box <- function(tbl) {
+  split(tbl, tbl$Code) %>%
+    map(~{
+      div(class = "card mb-3",   # mb-2 means Margin-Bottom 2 (can change 2)
+          div(class = "card-header", 
+              h4(strong(.x$Code[1], .noWS = "after"), ": ", .x$Question[1])),
+          div(class = "card-body", 
+              div(class = "card-title", 
+                  map2(.x$scenario_name, .x$Value, 
+                       ~ tagList(strong(.x), .y))),
+              strong("Comments:"), .x$com[1], br(),
+              strong("Evidence:"), .x$evi[1]
+          )
+      )
+    })
+}
+```
+
+
+```{r set_saved}
+#| include: false
+# If testing use test saved data
+if(length(saved) == 1 && saved == "none") {
+  saved <- ccviR:::test_files()$saved$full_run %>%
+    ccviR:::load_previous()
+} else {
+  # Otherwise remember that Quarto isn't R! So can handle lists, but not data.frames
+  # So convert lists back to df.
+  saved <- as.data.frame(saved) %>%
+    readr::type_convert(na = ".na")
+  
+  # Debugging: 
+  if(debug) writeLines(capture.output(saved), "test.txt")
+}
+```
+
+```{r load_spatial}
+#| include: false
+range_poly <- read_sf(saved$rng_poly_pth[1])
+assess_poly <- read_sf(saved$assess_poly_pth[1])
+clim_vars <- get_clim_vars(saved$clim_dir_pth[1], scenario_names = saved$scenario_name, quiet = TRUE)
+clim_readme <- fs::path(saved$clim_dir_pth[1], "climate_data_readme.csv") %>%
+  utils::read.csv(check.names = FALSE)
+spat_tbl <- ccviR:::apply_spat_tholds(saved, saved$cave)
+```
+
+
+
+
+<!-- ::::{.grid} -->
+
+<!-- :::{.g-col-6} -->
+
+<!-- #### Climate Change Vulnerability Index -->
+
+<!-- ```{r} -->
+<!-- #| output: asis -->
+<!-- # TODO: Keep these? Or just the dials? -->
+<!-- b <- results_box(saved, "CCVI_index") -->
+<!-- tagList(!!!b) -->
+<!-- ``` -->
+<!-- ::: -->
+
+<!-- :::{.g-col-6} -->
+
+<!-- #### Migratory Exposure Index -->
+
+<!-- ```{r} -->
+<!-- #| output: asis -->
+<!-- b <- results_box(saved, "mig_exposure") -->
+<!-- tagList(!!!b) -->
+<!-- ``` -->
+<!-- ::: -->
+
+<!-- :::: -->
+
+
+#### Climate Change Vulnerability Index
+```{r}
+dials_index <- purrr::map2(saved$CCVI_index, saved$scenario_name, ~ {
+  ccviR:::plot_index_gauge(.x, type = "index", ttl = .y)
+})
+# break-inside etc. forces page breaks around the figures
+# margin: auto centres the figures
+div(style = "break-inside: avoid; break-after: auto",
+    div(class = "grid", 
+        !!!purrr::map(dials_index,
+                      ~div(class = "g-col-6", .x, style = "margin: auto"))
+    )
+)
+```
+
+#### Migratory Exposure Index
+```{r}
+dials_mig_exp <- purrr::map2(saved$mig_exposure, saved$scenario_name, ~ {
+  ccviR:::plot_index_gauge(.x, type = "mig_exp", ttl = .y)
+})
+# break-inside etc. forces page breaks around the figures
+# margin: auto centres the figures
+div(style = "break-inside: avoid; break-after: auto",
+    div(class = "grid", 
+        !!!purrr::map(dials_mig_exp, 
+                      ~div(class = "g-col-6", .x, style = "margin: auto"))
+    )
+)
+```
+
+### Species range
+```{r range_map}
+#| fig-cap: "Map of the species range (red) and the assessment area (black)."
+
+# TODO: should add a context polygon that is North America to state/prov level as
+# background then choose the map extent as whichever is bigger between range and assessment area
+
+comb_ext <- sf::st_union(sf::st_bbox(range_poly) %>% sf::st_as_sfc(),
+                         sf::st_bbox(assess_poly) %>% sf::st_as_sfc() %>%
+                         sf::st_transform(sf::st_crs(range_poly))) %>%
+  sf::st_transform(4326)
+
+ggplot() +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  geom_sf(data = st_crop(context_North_Am, comb_ext), fill = "grey90", colour = "grey80") +
+  geom_sf(data = assess_poly, aes(colour = "Assessment Area"), fill = NA, linewidth = 0.5, 
+          show.legend = "line") +
+  geom_sf(data = range_poly, aes(colour = "Range"), linewidth = 0.5, fill = NA, 
+          show.legend = "line") +
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_colour_manual(name = NULL, values = c("Assessment Area" = "black", "Range" = "red"))
+```
+
+## Vulnerability Factors
+
+### Section A. Exposure to Local Climate Change
+
+```{r bivar_exp}
+#| fig-height: 3
+#| fig-width: 7
+#| fig-cap: "Map of exposure based on both change in temperature and change in moisture regime."
+
+# Suppress progress messages (not message(), but likely stdout or similar)
+invisible(capture.output(
+  bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess_poly, range_poly)
+))
+
+gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot),
+                                     ggplot2::ggplotGrob(bivar_exp_plot$legend)),
+                        layout_matrix = rbind(c(1,1,1,1,1,2),
+                                              c(1,1,1,1,1,2),
+                                              c(1,1,1,1,1,2)))
+```
+
+#### Temperature
+```{r temp_tbl}
+#| output: "asis"
+ccviR:::get_exposure_table(spat_tbl, "MAT", clim_readme, clim_readme$brks_mat)
+```
+
+#### Moisture
+```{r moist_tbl}
+#| output: "asis"
+ccviR:::get_exposure_table(spat_tbl, "CMD", clim_readme, clim_readme$brks_cmd)
+```
+
+#### CCEI
+```{r ccei_tbl}
+#| output: "asis"
+if(any(!is.na(select(saved, contains("CCEI_"))))) {
+  ccviR:::get_exposure_table(spat_tbl, "CCEI", clim_readme, clim_readme$brks_ccei)
+} else {
+  div("No Migratory Exposure based on the Climate Change Exposure Index availble")
+}
+```
+
+
+
+```{r vuln_tbl}
+#| output: "asis"
+coms <- saved %>%
+  select(scenario_name, matches("(evi|com)_[B,C,D]\\d.*")) %>%
+  tidyr::pivot_longer(-scenario_name, 
+                      names_to = c(".value", "Code"),
+                      names_pattern = "(evi|com)_(.+)") %>%
+  mutate(com = as.character(com), evi = as.character(evi),
+         com = tidyr::replace_na(com, ""),
+         evi = tidyr::replace_na(evi, ""))
+
+vuln_qs <- saved %>%
+  select(scenario_name, matches("^[B,C,D]\\d.*")) %>%
+  mutate(across(everything(), as.character)) %>%
+  tidyr::pivot_longer(-scenario_name, names_to = "Code", values_to = "Score") %>%
+  tidyr::separate(Score, into = paste0("Value", 1:4), fill = "right", sep = ", ",
+                  convert = TRUE) %>%
+  mutate(Value1 = tidyr::replace_na(Value1, -1)) %>%
+  mutate(score = 1) 
+
+vuln_qs <- vuln_qs %>%
+  ccviR:::filter_applicable_qs(saved$tax_grp, 
+                               c("Vascular Plant", "Nonvascular Plant")) %>%
+  tidyr::pivot_longer(cols = contains("Value"), values_to = "opts") %>%
+  left_join(value_labs, by = "opts") %>%
+  mutate(value = factor(value, levels = value_labs$value)) %>%
+  filter(opts == min(opts, na.rm = TRUE) | opts == max(opts, na.rm = TRUE),
+         .by = c("scenario_name", "Code")) %>%
+  filter(!is.na(score))
+
+# Debugging
+if(debug) writeLines(capture.output(vuln_qs), "test_vuln_intermediate.txt")
+
+vuln_qs <- vuln_qs %>%
+  mutate(
+    Value = pmap(
+      list(value, col, text_col),
+      ~span(..1, style = paste("padding: 2px; font-size: 90%; ",
+                               "background-color:", ..2, "; ",
+                               "color:", ..3)))) %>%
+  summarize(Value = tagList(Value), .by = c("scenario_name", "Code"))
+#mutate(Value = stringr::str_replace_all(
+#  Value, stats::setNames(value_labs$value, as.character(value_labs$opts))))
+
+
+vuln_tbl <- left_join(vuln_qs, coms, by = join_by(scenario_name, Code)) %>%
+  left_join(vulnq_code_lu_tbl, by = join_by(Code)) %>%
+  select(scenario_name, Question, Code, Value, com, evi)
+  #left_join(select(value_labs, -"opts"), by = c("Value" = "value"))
+
+# Debugging
+if(debug) writeLines(capture.output(vuln_tbl), "test_vuln.txt")
+```
+
+### Section B. Indirect Exposure to Climate Change
+```{r section_b}
+#| output: asis
+b <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^B")))
+tagList(!!!b)
+```
+
+### Section C. Sensitivity and Adaptive Capacity
+```{r section_c}
+#| output: asis
+c <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^C")))
+tagList(!!!c)
+```
+
+### Section D. Documented or Modeled Response to Climate Change
+```{r section_d}
+#| output: asis
+d <- vuln_box(filter(vuln_tbl, stringr::str_detect(Code, "^D")))
+tagList(!!!d)
+```
+
+
+## Version Note
+This report was generated `r Sys.Date()` using version `r utils::packageVersion("ccviR")` of the ccviR package.
+
+
+
+<!-- 
+https://quarto.org/docs/authoring/includes.html#computations
+Cannot create the {{< include _about.qmd >}} short code through an R block, 
+because then the _about.qmd won't itself be executed (just copy/pasted, which is
+fine if md, but not if qmd.
+
+Fix from: https://stackoverflow.com/a/74301258 
+-->
+`r if (!include_about) "::: {.content-hidden}"`
+
+:::{style="page-break-before: always"}
+<!-- Add page break -->
+:::
+  
+{{< include _about.qmd >}}
+
+`r if (!include_about) ":::"`
+
+
+
+
+
+

@@ -8,6 +8,8 @@ Authors@R: c(person(given = "Sarah",
   email = "sarah.endicott@canada.ca",
   comment = c(ORCID = "0000-0001-9644-5343")),
   person(given = "Ilona", family = "Naujokaitis-Lewis", role = "aut"),
+  person(given = "Steffi", family = "LaZerte", role = "ctb",
+  comment = c(ORCID = "0000-0002-7690-8360")),
   person(given="His Majesty the King in Right of Canada, as represented by the Minister of Environment and Climate Change",
          role = "cph"))
 Description: The ccviR package implements the 
@@ -25,47 +27,49 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     dplyr,
-    sf,
-    purrr,
-    tidyr,
-    shiny,
-    stringr,
-    units,
     exactextractr,
+    fs,
+    ggplot2,
+    gt,
+    leaflet (>= 2.1.2.9000),
+    methods,
+    pagedown,
+    plotly,
+    purrr,
+    R.utils,
+    rlang (>= 1.1.6),
+    scales,
+    sf (>= 1.0.19),
+    shiny,
+    shinycssloaders,
     shinyFiles,
     shinyjs,
-    tmap,
-    ggplot2,
-    shinycssloaders,
-    R.utils,
-    kableExtra,
-    fs,
-    plotly,
-    stats,
-    utils,
-    scales,
+    stringr,
     terra,
-    methods,
-    leaflet (>= 2.1.2.9000),
-    gt
+    tidyr,
+    units
 Suggests: 
     testthat (>= 3.0.0),
+    climr (>= 0.2.0),
     knitr,
-    rmarkdown,
+    quarto,
     future,
+    gridExtra,
     stringi,
     furrr,
     readxl,
     raster,
-    shinytest2
+    rnaturalearth,
+    shinytest2,
+    withr
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 URL: https://github.com/see24/ccviR,
-    https://landscitech.github.io/ccviR/
+     https://landscitech.github.io/ccviR/
 BugReports: https://github.com/see24/ccviR/issues
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Remotes: 
-    rstudio/leaflet
+    bcgov/climr

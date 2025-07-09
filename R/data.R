@@ -22,3 +22,13 @@
 #'
 #' Data used to build context map in pdf report.
 "context_North_Am"
+
+#' Lists of spatial file types for rasters
+"spatial_file_raster"
+
+#' Lists of spatial file types for polygons
+"spatial_file_poly"
+
+#' Lists of spatial file types for all spatial files
+"spatial_file_types"
+

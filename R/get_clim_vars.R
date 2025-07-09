@@ -15,6 +15,8 @@
 #'   should be "RCP 4.5" and "RCP 8.5". This will happen automatically if the
 #'   scenario name is provided to \code{\link{prep_clim_data}}.
 #'
+#' @inheritParams common_docs
+#'
 #' @return A list of climate variables with names "mat", "cmd", "map", "ccei",
 #'   "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
 #'   be SpatRasters with one layer per scenario.
@@ -29,7 +31,7 @@
 #'
 #' get_clim_vars(pth, scn_nms)
 
-get_clim_vars <- function(root_pth, scenario_names = "scn1"){
+get_clim_vars <- function(root_pth, scenario_names = "scn1", quiet = FALSE){
   if(!dir.exists(root_pth)){
     stop("directory ", root_pth," does not exist", call. = FALSE)
   }
@@ -41,14 +43,16 @@ get_clim_vars <- function(root_pth, scenario_names = "scn1"){
             "MWMT.*\\.tif|HTN.*\\.tif", "clim_poly.*\\.shp")
   err <- c(T, T, F, F, F, T)
 
-  clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y, scenario_names)) %>%
-    purrr::map(load_clim, scenario_names) %>%
+  clim_vars <- purrr::map2(
+    pats, err,
+    ~check_clim(root_pth, .x, .y, scenario_names)) %>%
+    purrr::map(~load_clim(.x, scenario_names, quiet = quiet)) %>%
     purrr::set_names(c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
 
   return(clim_vars)
 }
 
-check_clim <- function(root_pth, pattern, error, scenario_names = "scn1"){
+check_clim <- function(root_pth, pattern, error, scenario_names = "scn1") {
   pth <- list.files(root_pth, pattern = pattern, full.names = TRUE)
 
   if(length(pth) == 0){
@@ -73,7 +77,7 @@ check_clim <- function(root_pth, pattern, error, scenario_names = "scn1"){
   pth
 }
 
-load_clim <- function(pth, scenario_names = "scn1"){
+load_clim <- function(pth, scenario_names = "scn1", quiet = FALSE) {
 
   if(length(pth) > 1){
     # make sure the order of pth matches scenario_names
@@ -90,7 +94,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
 
     out <- terra::rast(out)
 
-    out <- check_trim(out)
+    out <- check_trim(out, quiet = quiet)
 
     return(out)
   }
@@ -98,6 +102,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
   if(is.null(pth)){
     return(NULL)
   }
+
   out <- tryCatch({
     if(fs::path_ext(pth) == "shp"){
       out <- st_read(pth, agr = "constant", quiet = TRUE)
@@ -161,10 +166,10 @@ load_clim <- function(pth, scenario_names = "scn1"){
 # fast but not memory safe
 # trim_ras <- utils::getFromNamespace(".memtrimlayer", ns = "raster")
 
-check_trim <- function(ras){
+check_trim <- function(ras, quiet = FALSE){
   do_trim <- sum(!is.na(ras[1:10,]))
   if(do_trim == 0){
-    message("doing trim")
+    if(!quiet) message("doing trim")
     ras <- terra::trim(ras)
   }
   return(ras)
