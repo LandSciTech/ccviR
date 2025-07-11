@@ -136,9 +136,9 @@ raster::writeRaster(clim_nb, "inst/extdata/clim_files/raw/NB",
 
 # Species data #================================================================
 # get ecoregions to use as demo range
-unzip("../Climate_data/data/ecoregion_shp.zip")
+unzip("../Climate_data/data/ecoregion_shp.zip", exdir = "misc")
 
-ecoreg<- read_sf("Ecoregions/ecoregions.shp")
+ecoreg<- read_sf("misc/Ecoregions/ecoregions.shp")
 
 rng_poly <- filter(ecoreg, ECOREGION %in% c(118, 119)) %>%
   st_transform(st_crs(clim_na[[1]])) %>%
