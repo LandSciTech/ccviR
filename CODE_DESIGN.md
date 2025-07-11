@@ -79,6 +79,16 @@ spatial data is available. This way they can have the comments and evidence
 restored when re-loading data, and then it will be show after the spatial 
 analyses rerun. 
 
+## Adding new inputs
+This is a bit complicated with the saving and restoring process. 
+ - Make sure the the new input is included in the output of the module it is part of.
+ - Add the new input name to the column_definitions_results.csv
+ - Add the new input and the input_fun to shell.exec(here::here("data-raw/ui_build_table.csv"))
+ - If the input_fun is a custom function create an update function of the form updateInput_fun. 
+   See updateCheck_comment_ui as an example. 
+ - Run all of data-raw/lookup_tbls.R 
+ - Test that the input is saved in the csv and updated on reloading
+
 ## Shiny Modules
 
 ### Namespacing
@@ -111,7 +121,7 @@ using `renderUI()`, not required for anything else going to/from `output` or `in
 - The results and the save module are somewhat circular in that the index from
  results is passed to save and the output of save is used by results to create 
  the report. This isn't ideal, but allows us to keep both ui and server
- of the report module fully contained in the results moduel.
+ of the report module fully contained in the results module.
  
 
 ### Checking inputs and messages

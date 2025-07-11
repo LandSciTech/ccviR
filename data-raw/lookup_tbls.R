@@ -63,5 +63,5 @@ usethis::use_data(spatial_file_raster, spatial_file_poly, spatial_file_types, ov
 
 # need to include all object for internal because they are saved together.
 usethis::use_data(vulnq_code_lu_tbl, comb_index_tbl, ui_build_table, guideline_lu_tbl,
-                  valueNms, valueOpts, valueEvi, spatial_files_types,
+                  valueNms, valueOpts, valueEvi, spatial_file_types,
                   overwrite = TRUE, internal = TRUE)

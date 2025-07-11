@@ -4,6 +4,7 @@ species_name,Scientific name of the species
 common_name,Common name of the species
 geo_location,Geographic area assessed
 assessor_name,Name of the assessor
+assessment_notes,Notes about the assessment process
 tax_grp,Taxonomic group of the species
 mig,Whether the species is migratory and exposure data for the migratory range that lies outside of the assessment area was provided
 cave,Whether the species is an obligate of caves or groundwater systems

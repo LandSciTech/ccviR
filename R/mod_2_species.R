@@ -25,20 +25,29 @@ mod_species_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    "Species Information", value = "species",
+    "Assessment and Species Information", value = "species",
     fluidRow(
       column(
         12,
-        h2("Species Information"),
+
+        h2("Assessment and Species Information"),
         p("The basic details input in this section will be used in the generated",
           "report. The selected taxonomic group will determine which taxa specific",
           "vulnerability factors (Section C) are displayed."),
 
+        h3("Assessment Information"),
+        textInput(ns("assessor_name"), labelMandatory("Assessor Name"), ""),
+        textInput(ns("geo_location"), labelMandatory("Geographic Area Assessed")),
+        textAreaInput(ns("assessment_notes"), "Assessment Notes",
+                      placeholder = "Describe the overall assessment process and any information needed to reproduce the assessment that is not recorded elsewhere.",
+                      width = "100%"),
+
+        h3("Species Information"),
+
         div(
           id = "form_sp_info",
 
-          textInput(ns("assessor_name"), labelMandatory("Assessor Name"), ""),
-          textInput(ns("geo_location"), labelMandatory("Geographic Area Assessed")),
+
           selectInput(ns("tax_grp"), labelMandatory("Major Taxonomic Group"),
                       c("Vascular Plant", "Nonvascular Plant", "Lichen",
                         "Invert-Insect", "Invert-Mollusk", "Invert-Other",
@@ -47,7 +56,7 @@ mod_species_ui <- function(id) {
           textInput(ns("common_name"), "Common Name"),
           br(),
 
-          h3("Special kinds of species"),
+          h4("Special kinds of species"),
           p("If the assessed species falls under one of the special cases below,",
             "check the appropriate box. Checking these boxes will tailor the",
             "calculation of the index to these special cases. See the ",
@@ -124,6 +133,7 @@ mod_species_server <- function(id, df_loaded, parent_session) {
                  common_name = input$common_name,
                  geo_location = input$geo_location,
                  assessor_name = input$assessor_name,
+                 assessment_notes = input$assessment_notes,
                  tax_grp = input$tax_grp,
                  mig = input$mig,
                  cave = input$cave)
