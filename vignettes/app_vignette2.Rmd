@@ -1,0 +1,100 @@
+---
+title: "Using the ccviR App"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using the ccviR App}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ccviR)
+```
+
+## Welcome
+
+### What is the ccviR app? 
+
+An app to determine the climate change vulnerability index of a species (aquatic, terrestrial, migratory) in North America (Canada and USA).
+
+List categories of vulnerability here.
+
+Built off the Nature Serve App but allows for climate change layers to be incorporated into the calculations.
+
+Designed for assessors to undertake analyses of species on their own computer (no central repository)
+
+Rapid- Time expectation.
+
+### Benefits compared to NatureServe’s CCVI:
+
+What the Shiny app adds compared to Nature Serve. 
+
+### What can it be used for?
+
+Uses as listed in Section 1, and Young et al., (2016)).
+
+Notes about the spatial scale of assessment.
+
+Quick overview of its use for recovery strategies and COSEWIC (with a link to more information on this topic). See Section 3, of this report for more information.
+
+### Overview of outputs:
+
+Index results, graphs and maps that are provided during the assessment could be explained here.
+
+### What are the current known limitations:
+
+Not for use outside of North America.
+
+Assumes a spatial scale of a National Park / Province.
+
+Assumes a temporal scale to 2050.
+
+Not designed for marine species and is limited for aquatic species.
+
+Does not provide probabilistic information on species decline but rather a relative rank.
+
+Has mismatches in temporal and spatial scale for COSEWIC / IUCN assessments.
+
+## Requirements to Run the ccviR
+
+Software: Download of R.
+
+Technical skills to run R, familiarity with NatureServe CCVI guidelines. Some familiarity with spatial information, knowledge of species sensitivity and adaptive capacity categories.
+
+Spatial information: list essential layers first, and then additional layers (see Section 2.1 for an example of how we propose to structure this information). Provide links to data sources that could be used. Link to Stephy’s checklist for spatial data.
+46
+
+Species vulnerability information: A checklist of Information required (be clear of exactly which questions need to be answered (Table 3 could be useful here). This information would be improved by employing methods from structured expert elicitation (link to advice contained in Section 2.3)
+
+## Running the Vignette
+
+Instructions specifically for running the vignette.
+
+## Understanding the Outputs
+
+Interpreting the feedback and graphs.
+
+Types of questions you might ask with the ccviR (outlined in Section 1).
+
+## Applying the ccviR App to Your Case Study
+
+Details on how to apply the index to any species. Eg considerations for choosing range data, how to interpret vulnerability questions including recommendations from the expert judgment and uncertainty/ data gaps sections of this report.
+
+Migratory species: additional layers and considerations.
+
+Rapid assessment for Multiple species: how to enter information for comparison multiple species.
+
+## Storing Data
+
+Highlight importance of saving report, csv and data used in assessment to encourage reproducibility
+
+# Appendices
+## Scoring for the ccviR (explanation provided in Section 3.1 could be built upon)
+## Connection to COSEWIC

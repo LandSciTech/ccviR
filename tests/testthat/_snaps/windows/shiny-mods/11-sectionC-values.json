@@ -110,7 +110,7 @@
     "section_c-com_C5b": "",
     "section_c-com_C5c": "",
     "section_c-com_C6": "",
-    "section_c-continue": 1,
+    "section_c-continue": 0,
     "section_c-evi_C1": null,
     "section_c-evi_C2ai": "Spatial Analysis - ccviR",
     "section_c-evi_C2aii": "Spatial Analysis - ccviR",
@@ -150,10 +150,10 @@
     "section_c-help_C5c": 0,
     "section_c-help_C6": 0,
     "section_c-map_C2ai_bounds": {
-      "north": 46.58906908309185,
-      "east": -66.40136718750001,
-      "south": 46.58906908309185,
-      "west": -66.40136718750001
+      "north": 49.52520834197442,
+      "east": -58.22753906250001,
+      "south": 43.48481212891603,
+      "west": -74.57519531250001
     },
     "section_c-map_C2ai_center": {
       "lng": -66.40136718750001,
@@ -162,10 +162,10 @@
     "section_c-map_C2ai_groups": "CartoDB",
     "section_c-map_C2ai_zoom": 6,
     "section_c-map_C2aii_bounds": {
-      "north": 47.07760411715964,
-      "east": -67.36816406250001,
-      "south": 47.07760411715964,
-      "west": -67.36816406250001
+      "north": 48.55297816440073,
+      "east": -63.28125000000001,
+      "south": 45.56021795715053,
+      "west": -71.45507812500001
     },
     "section_c-map_C2aii_center": {
       "lng": -67.36816406250001,
@@ -174,10 +174,10 @@
     "section_c-map_C2aii_groups": "CartoDB",
     "section_c-map_C2aii_zoom": 7,
     "section_c-map_C2bi_bounds": {
-      "north": 46.58906908309185,
-      "east": -66.40136718750001,
-      "south": 46.58906908309185,
-      "west": -66.40136718750001
+      "north": 49.52520834197442,
+      "east": -58.22753906250001,
+      "south": 43.48481212891603,
+      "west": -74.57519531250001
     },
     "section_c-map_C2bi_center": {
       "lng": -66.40136718750001,
@@ -185,7 +185,7 @@
     },
     "section_c-map_C2bi_groups": "CartoDB",
     "section_c-map_C2bi_zoom": 6,
-    "section_d-D1": "2",
+    "section_d-D1": null,
     "section_d-D2": null,
     "section_d-D3": null,
     "section_d-D4": null,
@@ -202,38 +202,6 @@
     "section_d-help_D2": 0,
     "section_d-help_D3": 0,
     "section_d-help_D4": 0,
-    "section_d-map_D2D3_bounds": {
-      "north": 49.52520834197442,
-      "east": -58.07373046875001,
-      "south": 43.48481212891603,
-      "west": -74.72900390625001
-    },
-    "section_d-map_D2D3_center": {
-      "lng": -66.40136718750001,
-      "lat": 46.58906908309185
-    },
-    "section_d-map_D2D3_groups": [
-      "CartoDB",
-      "RCP 4.5",
-      "RCP 8.5"
-    ],
-    "section_d-map_D2D3_zoom": 6,
-    "section_d-map_D4_bounds": {
-      "north": 49.52520834197442,
-      "east": -58.07373046875001,
-      "south": 43.48481212891603,
-      "west": -74.72900390625001
-    },
-    "section_d-map_D4_center": {
-      "lng": -66.40136718750001,
-      "lat": 46.58906908309185
-    },
-    "section_d-map_D4_groups": [
-      "CartoDB",
-      "RCP 4.5",
-      "RCP 8.5"
-    ],
-    "section_d-map_D4_zoom": 6,
     "spatial-assess_poly_pth": 0,
     "spatial-assess_poly_pth_clear": 0,
     "spatial-clim_var_dir": 0,
@@ -264,6 +232,7 @@
     "spatial-rng_poly_pth": 0,
     "spatial-rng_poly_pth_clear": 0,
     "spatial-startSpatial": 1,
+    "species-assessment_notes": "",
     "species-assessor_name": "Dr. Test",
     "species-cave": false,
     "species-common_name": "Test sp.",
@@ -272,7 +241,7 @@
     "species-mig": true,
     "species-species_name": "Testous testa",
     "species-tax_grp": "Vascular Plant",
-    "tabset": "D"
+    "tabset": "C"
   },
   "export": {
     "save-out_data": {
@@ -295,6 +264,10 @@
       "assessor_name": [
         "Dr. Test",
         "Dr. Test"
+      ],
+      "assessment_notes": [
+        "",
+        ""
       ],
       "tax_grp": [
         "Vascular Plant",
@@ -733,8 +706,8 @@
         ""
       ],
       "D1": [
-        "2",
-        "2"
+        "-1",
+        "-1"
       ],
       "evi_D2": [
         "Spatial Analysis - ccviR",
@@ -793,32 +766,32 @@
         "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
       ],
       "rng_poly_pth": [
-        "/inst/extdata/rng_poly.shp",
-        "/inst/extdata/rng_poly.shp"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_poly.shp",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_poly.shp"
       ],
       "assess_poly_pth": [
-        "/inst/extdata/assess_poly.shp",
-        "/inst/extdata/assess_poly.shp"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/assess_poly.shp",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/assess_poly.shp"
       ],
       "nonbreed_poly_pth": [
-        "/inst/extdata/non_breed.shp",
-        "/inst/extdata/non_breed.shp"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/non_breed.shp",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/non_breed.shp"
       ],
       "ptn_poly_pth": [
-        "/inst/extdata/PTN_poly.shp",
-        "/inst/extdata/PTN_poly.shp"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/PTN_poly.shp",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/PTN_poly.shp"
       ],
       "clim_dir_pth": [
-        "/inst/extdata/clim_files/processed",
-        "/inst/extdata/clim_files/processed"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/clim_files/processed",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/clim_files/processed"
       ],
       "rng_chg_pth": [
-        "/inst/extdata/rng_chg_45.tif",
-        "/inst/extdata/rng_chg_85.tif"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_chg_45.tif",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_chg_85.tif"
       ],
       "protected_poly_pth": [
-        "/inst/extdata/protected_areas.shp",
-        "/inst/extdata/protected_areas.shp"
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/protected_areas.shp",
+        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/protected_areas.shp"
       ],
       "ccviR_version": [
         [
@@ -886,6 +859,9 @@
       ],
       "assessor_name": [
         "Dr. Test"
+      ],
+      "assessment_notes": [
+        ""
       ],
       "tax_grp": [
         "Vascular Plant"

@@ -30,6 +30,7 @@ Imports:
     exactextractr,
     fs,
     ggplot2,
+    gridExtra,
     gt,
     leaflet (>= 2.1.2.9000),
     methods,
@@ -54,14 +55,14 @@ Suggests:
     knitr,
     quarto,
     future,
-    gridExtra,
     stringi,
     furrr,
     readxl,
     raster,
     rnaturalearth,
     shinytest2,
-    withr
+    withr,
+    rmarkdown
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 Depends: 

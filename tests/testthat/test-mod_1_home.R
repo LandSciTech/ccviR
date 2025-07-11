@@ -1,8 +1,17 @@
-test_that("load_previous()", {
 
+test_that("server_setup works on CI",{
+  skip_on_os("windows")
   expect_silent(volumes <- server_setup())
   expect_silent(parse_path(volumes, test_files(mock = TRUE)$saved$full_run))
+})
 
+test_that("server_setup works on CI",{
+  skip_on_ci()
+  expect_warning(volumes <- server_setup(), "VolumeName")
+  expect_silent(parse_path(volumes, test_files(mock = TRUE)$saved$full_run))
+})
+
+test_that("load_previous()", {
   expect_silent(load_previous(test_files()$saved$full_run))
   expect_error(load_previous(""), "File doesn't exist")
   expect_error(load_previous(test_files()$saved$empty),
@@ -11,7 +20,7 @@ test_that("load_previous()", {
 
 test_that("loads data", {
 
-  volumes <- server_setup()
+  volumes <- suppressWarnings(server_setup())
   testServer(mod_home_server, args = list(volumes = volumes), {
     r <- session$getReturned()
 

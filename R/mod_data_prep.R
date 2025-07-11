@@ -120,9 +120,14 @@ mod_data_prep_server <- function(id, input_files = NULL) {
           # Used in shinytest2/testthat testing only
           # So we can find the folder and test that it prepared the data
           d <- getOption("ccviR.test_data_prep")
-        } else d <- "TESTING DATA UI OUTPUTS"
+          warning("using option")
+        } else {
+          d <- "TESTING DATA UI OUTPUTS"
+          warning("using default")
+        }
         out_folder(d)
         fs::dir_create(out_folder())
+        warning(out_folder())
       }
     })
 

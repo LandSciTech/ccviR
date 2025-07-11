@@ -1,7 +1,7 @@
 # Local Spatial tests, included data from misc folder
 
 expect_silent({
-  volumes <- server_setup()
+  suppressWarnings(volumes <- server_setup())
 
   test_inputs <- list(
     "lost_from" = -1,

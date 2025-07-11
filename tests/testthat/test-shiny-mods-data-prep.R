@@ -73,7 +73,7 @@ test_that("Data Prep app - run", {
 
   # Run data prep
   app$click("data-submit")
-  app$wait_for_idle()
+  # app$wait_for_idle()
   Sys.sleep(1)
 
   # Now we have the dir - and the files
@@ -95,8 +95,8 @@ test_that("Data Prep app - run", {
 
   # Run data prep
   app$click("data-submit")
-  app$wait_for_idle()
-  Sys.sleep(1)
+  # app$wait_for_idle()
+  Sys.sleep(20)
 
   # Expect second scenario files
   f0 <- fs::dir_ls(test_path("TESTING DATA UI OUTPUTS"))

@@ -2,6 +2,7 @@
   "input": {
     "save-downloadData": 0,
     "tabset": "species",
+    "test-assessment_notes": "",
     "test-assessor_name": "",
     "test-cave": false,
     "test-common_name": "",
@@ -27,6 +28,9 @@
         ""
       ],
       "assessor_name": [
+        ""
+      ],
+      "assessment_notes": [
         ""
       ],
       "tax_grp": [
