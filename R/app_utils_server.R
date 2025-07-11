@@ -275,7 +275,7 @@ update_restored <- function(df, session, section = NULL){
   # If empty values, reset the inputs
   df_reset <- filter(df2, is.na(.data$value) | .data$value == "")
   purrr::walk(df_reset$input, shinyjs::reset)
-browser()
+
   # run the appropriate update function for each input
   # tricky part is supplying the right argument name for the update fun
   df2 <- anti_join(df2, df_reset, by = "input")
