@@ -14,7 +14,7 @@ test_that("Full app", {
   Sys.sleep(1)
 
   # Home
-  app$expect_values(name = "01-home-values")#, transform = clean_paths) # Expect no spatial outputs
+  app$expect_values(name = "01-home-values", transform = clean_paths) # Expect no spatial outputs
   app$click("home-continue")
 
   # Species
@@ -62,7 +62,7 @@ test_that("Full app", {
   app$set_inputs(`section_b-B2a` = "0")
   app$set_inputs(`section_b-B2b` = "0")
   app$set_inputs(`section_b-B3` = "0")
-  app$expect_values(input = TRUE, export = TRUE, name = "08-sectionB-values") #, transform = clean_paths)
+  app$expect_values(input = TRUE, export = TRUE, name = "08-sectionB-values", transform = clean_paths)
   app$click("section_b-continue")
 
   # Section C
@@ -84,7 +84,7 @@ test_that("Full app", {
   app$set_inputs(`section_c-C6` = "0")
   app$wait_for_idle()
   Sys.sleep(1)
-  app$expect_values(input = TRUE, export = TRUE, name = "11-sectionC-values")#, transform = clean_paths)
+  app$expect_values(input = TRUE, export = TRUE, name = "11-sectionC-values", transform = clean_paths)
   app$click("section_c-continue")
 
   # Section D
@@ -93,7 +93,7 @@ test_that("Full app", {
   expect_screenshot_local(app, name = "12-sectionD-ready")
 
   app$set_inputs(`section_d-D1` = "2")
-  app$expect_values(input = TRUE, export = TRUE, name = "13-sectionD-set")#, transform = clean_paths)
+  app$expect_values(input = TRUE, export = TRUE, name = "13-sectionD-set", transform = clean_paths)
   app$click("section_d-continue")
   Sys.sleep(2)
 
@@ -121,7 +121,7 @@ test_that("Full app", {
   app$set_inputs(`section_c-C2d` = "3")
   app$click("results-calcIndex")
   app$wait_for_idle()
-  app$expect_values(export = TRUE, name = "17-results-change")#, transform = clean_paths)
+  app$expect_values(export = TRUE, name = "17-results-change", transform = clean_paths)
 
 #
 #   # Save Data

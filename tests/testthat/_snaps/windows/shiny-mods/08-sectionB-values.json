@@ -730,32 +730,32 @@
         "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/"
       ],
       "rng_poly_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_poly.shp",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_poly.shp"
+        "/inst/extdata/rng_poly.shp",
+        "/inst/extdata/rng_poly.shp"
       ],
       "assess_poly_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/assess_poly.shp",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/assess_poly.shp"
+        "/inst/extdata/assess_poly.shp",
+        "/inst/extdata/assess_poly.shp"
       ],
       "nonbreed_poly_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/non_breed.shp",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/non_breed.shp"
+        "/inst/extdata/non_breed.shp",
+        "/inst/extdata/non_breed.shp"
       ],
       "ptn_poly_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/PTN_poly.shp",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/PTN_poly.shp"
+        "/inst/extdata/PTN_poly.shp",
+        "/inst/extdata/PTN_poly.shp"
       ],
       "clim_dir_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/clim_files/processed",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/clim_files/processed"
+        "/inst/extdata/clim_files/processed",
+        "/inst/extdata/clim_files/processed"
       ],
       "rng_chg_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_chg_45.tif",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/rng_chg_85.tif"
+        "/inst/extdata/rng_chg_45.tif",
+        "/inst/extdata/rng_chg_85.tif"
       ],
       "protected_poly_pth": [
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/protected_areas.shp",
-        "C:/Users/EndicottS/Documents/Ilona/ccviR/inst/extdata/protected_areas.shp"
+        "/inst/extdata/protected_areas.shp",
+        "/inst/extdata/protected_areas.shp"
       ],
       "ccviR_version": [
         [
