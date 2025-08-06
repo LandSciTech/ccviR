@@ -39,7 +39,7 @@ The first time you use the app you will need to acquire a climate data set that 
 
 - Predicted future change in mean annual temperature (MAT)
 - Predicted future change in climate moisture deficit (CMD)
-- Historical mean annual precipitation (MAT)
+- Historical mean annual precipitation (MAP)
 - Difference between historical maximum warmest month temperature (MWMT) and minimum coldest month temperature (MCMT)
 
 The data is classified based on the median and interquartile range for the future change in MAT and CMD and based on thresholds defined by the NatureServe Guidelines for MAP and MWMT-MCMT. 
