@@ -77,12 +77,4 @@ Some possible sources of range polygons are:
 * [IUCN Red List](https://www.iucnredlist.org/resources/spatial-data-download)
 * (Please log a GitHub issue if there is a good source you think we should add here)
 
-## Tips for using the app
-
-### Launching the app
-The app is launched by calling the `run_ccvi_app()` function, which will launch the app in the user's default internet browser. All file selection windows will start in the current working directory. To run the app with data stored in a different folder you can call `run_ccvi_app()` with the folder path as the first argument. For example, if all of my data is stored in a subdirectory of the working directory named "data", I would call `run_ccvi_app("data")` to avoid having to open the data folder every time I select a file. Alternatively, the complete path to the data folder can be supplied e.g. "C:/Users/username/Documents/path/to/folder" (Note that paths in R must be supplied using forward slashes). 
-
-
-### Multiple related assessments
-You can use a saved partially completed assessment as a template for running multiple related assessments. For example, to assess multiple populations of a species that are in different locations and may have different stressors, fill in the app with all the information that will not change between populations and save the state of the app in a csv by clicking "Save Progress". Then for each population launch a new assessment, click "Load from a previous assessment" and select your template csv. Then modify it for the specific population and save the completed assessment in a new csv file. You may also wish to complete multiple assessments for a species if you want to enter different answers for vulnerability questions depending on the climate change scenario used. Multiple climate scenarios can be included in a single assessment and will affect the exposure multiplier and optionally the modelled response to climate change. However, all other vulnerability questions are assumed to be constant across scenarios. For example, if sea level rise was expected to have a different impact under RCP 8.5 than 4.5 you would need to perform two separate assessments to reflect this.    
 

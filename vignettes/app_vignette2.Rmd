@@ -8,6 +8,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
+pkgdown:
+  as_is: true
+link-citations: yes
 ---
 
 ```{r, include = FALSE}
@@ -23,17 +26,17 @@ library(ccviR)
 
 # Introduction
 
-## What is the ccviR app?
+## What is the ccviR app? {#what-is}
 
 The ccviR R package and Shiny app was developed by Environment and Climate Change Canada (ECCC) to implement the [NatureServe Climate Change Vulnerability Index (CCVI) version 3.02](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) [@young2016; @endicott2024]. It is designed to assist land managers to rapidly assess the relative climate change vulnerability of terrestrial and aquatic plant and animal species, as well as lichens across North America [@endicott2024]. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. The app provides an interactive application designed to offer a user-friendly and simple interface for calculating the NatureServe CCVI.
 
 The NatureServe CCVI is a rapid assessment tool designed to allow a relative grouping of unrelated taxa by vulnerability to climate change and to highlight which factors contribute to the climate change vulnerability of individual species or groups of taxa. Outputs of the NatureServe CCVI can inform conservation decisions and identify actions to increase species' resilience to climate change. See [Young et. al (2012)](https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html), [Young et. al. (2015)](https://doi.org/10.1002/wsb.478) and the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) for more detailed descriptions of the index and how it was created.
 
+Recently NatureServe has produced a new version of the CCVI, Version 4.0. The new version builds off Version 3.02 but significantly changes the vulnerability questions, exposure calculation and scoring algorithm. This version of the CCVI is available as an Excel Spreadsheet or an interactive webpage but does not have a version released for Canada. While there are improvements in Version 4.0, many of the changes have not yet been peer-reviewed and the tool has not been widely used so far. On the other hand, the previous version of the NatureServe CCVI has been used extensively in State Wildlife Action Plans in the US and has been reviewed in several peer-reviewed papers [@young2015; @young2012]. Therefore, we continue to use Version 3.02 but will consider adopting improvements from Version 4.0 in the future.
+
 Like the NatureServe CCVI, the ccviR is designed to assess the climate change vulnerability of terrestrial and aquatic plants, animals (including migratory species), and lichens, within a defined geographic area of the USA and Canada (i.e., North America). The index contemplates vulnerability based on the projected change in climate from a baseline of 1961-1990 to the year 2050.
 
-The NatureServe CCVI combines several components that contribute to a species' vulnerability to climate change, including exposure to changes in temperature and moisture (Section A), indirect exposure to other changes brought on by climate change (e.g. sea level rise; Section B), and traits related to species' sensitivity or ability to adapt to climate change (Section C; \autoref{fig:NS-alg}). It also optionally incorporates the results of documented or modeled responses to climate change [Section D; @young2012; @young2016]. The resulting CCVI ranks include: 'Less Vulnerable', 'Moderately Vulnerable', 'Highly Vulnerable', 'Extremely Vulnerable' or 'Insufficient Evidence'. Exposure is assessed by determining the proportion of the species' range that falls into six classes of temperature and moisture change, which is used to assign an exposure multiplier. The vulnerability factors in Sections B, C and optionally D are each scored on a scale from ‘neutral’ (score: 0) to ‘greatly increases vulnerability’ (score: 3). The indirect exposure, sensitivity and adaptive capacity scores are multiplied by the exposure multiplier and summed. The final CCVI value is a result of applying thresholds to the total scores and balancing the sensitivity and adaptive capacity rank with the documented or modeled response rank (\autoref{fig:NS-alg}). See section X for a more detailed explanation of the scoring algorithm.
-
-![Algorithm for calculating the NatureServe Climate Change Vulnerability Index.\\label{fig:NS-alg}](NS_CCVI_alg_diagram.png)
+The NatureServe CCVI combines several components that contribute to a species' vulnerability to climate change, including exposure to changes in temperature and moisture (Section A), indirect exposure to other changes brought on by climate change (e.g. sea level rise; Section B), and traits related to species' sensitivity or ability to adapt to climate change (Section C). It also optionally incorporates the results of documented or modeled responses to climate change [Section D; @young2012; @young2016]. The resulting CCVI ranks include: 'Less Vulnerable', 'Moderately Vulnerable', 'Highly Vulnerable', 'Extremely Vulnerable' or 'Insufficient Evidence'. Exposure is assessed by determining the proportion of the species' range that falls into six classes of temperature and moisture change, which is used to assign an exposure multiplier. The vulnerability factors in Sections B, C and optionally D are each scored on a scale from ‘neutral’ (score: 0) to ‘greatly increases vulnerability’ (score: 3). The indirect exposure, sensitivity and adaptive capacity scores are multiplied by the exposure multiplier and summed. The final CCVI value is a result of applying thresholds to the total scores and balancing the sensitivity and adaptive capacity rank with the documented or modeled response rank. See Section \@ref(scoring-appendix) for a more detailed explanation of the scoring algorithm.
 
 The ccviR application is run locally on the users own computer and is not currently hosted online. Results can be saved as a csv file and a pdf report can be generated to summarise the results.
 
@@ -85,15 +88,24 @@ In addition, the results of the CCVI can be used to help inform risk assessments
 
 # Information you need to get started
 
-The ccviR requires assessors to provide spatial information and a series of judgements to inform questions about exposure, sensitivity and adaptive capacity. In this section we outline some key requirements and minimum information needs. More information on these factors and the rationale for their consideration is provided in the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) [@young2016].
+The ccviR requires assessors to provide spatial information and a series of judgements to inform questions about exposure, sensitivity and adaptive capacity. In this section we outline some key requirements and minimum information needs. More information on these factors and the rationale for their consideration is provided in the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) [@young2016]. See Section \@ref(new-assessment) for tips on how to organize this information.
 
-## Installing R
+## Installing R and the ccviR package
 
 The ccviR Application is launched from an open source software application called R. You will need to [download R and optionally RStudio](https://rstudio-education.github.io/hopr/starting.html) to use the app. Instructions to launch the app are shown below. Users do not need to know how to code in R, however, familiarity with R can be helpful.
 
+Next your will need to install the ccviR package by copying the following into the R Console and pressing Enter. The R Console is the window located in the bottom left of RStudio. A "\>" at the start of a line indicates that the console is ready for input.
+
+``` r
+install.packages("remotes")
+remotes::install_github("LandSciTech/ccviR@dev", type = "binary", upgrade = TRUE)
+```
+
+This will take several minutes the first time it is installed because it will also install other packages that ccviR depends on. You can ignore the text that is printed, this is just reporting on the installation progress.
+
 ## Spatial data
 
-Below are the required and optional data layers for a ccviR analysis. Appendix A provides information on sourcing species ranges, assessment area polygons, and climate data. It also provides definitions of some common GIS concepts. The ccviR assumes that users have an introductory level of knowledge and experience relevant to reviewing spatial data. If this is not the case, then we recommend finding someone who has some GIS experience to help find, review, and upload data layers for your first analysis. All polygon data should be provided as a shapefile while raster data can be in any common raster format but ".tif" files are recommended.
+Below are the required and optional data layers for a ccviR analysis. Section \@ref(apply-index) provides information on sourcing species ranges, assessment area polygons, and climate data. The ccviR assumes that users have an introductory level of knowledge and experience relevant to reviewing spatial data. If this is not the case, then we recommend finding someone who has some GIS experience to help find and review data layers for your first analysis. All polygon data should be provided as a [shapefile](https://en.wikipedia.org/wiki/Shapefile) while [raster data](https://en.wikipedia.org/wiki/GIS_file_format#Raster_formats) can be in any common raster format but the [GeoTiff (".tif")](https://en.wikipedia.org/wiki/GeoTIFF) format is recommended.
 
 **Required** spatial datasets are as follows (Refer to Appendix A for additional information):
 
@@ -121,7 +133,7 @@ Assessors are required to provide estimates for at least 13 factors in the vulne
 
 -   10 factors in Section C.
 
-Additional questions related to documented or modeled response (Section D) are optional (Table \@ref(tab:d-questions)).
+Additional questions related to documented or modeled response (Section D) are optional (Table \@ref(tab:d-questions)). Questions may be left blank if there is not enough information available to answer them but they will be given a score of 0 meaning they will have no impact on the index value. Assessors should expect many questions to be scored as 'neutral' since only a few vulnerability factors will be relevant to each species. The index can reach the 'Extremely Vulnerable' level with only 1-2 factors scored as 'greatly increases vulnerability' if exposure is high.
 
 To better understand the information required refer to the [NatureServe CCVI Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf) [@young2016].
 
@@ -197,13 +209,13 @@ To better understand the information required refer to the [NatureServe CCVI Gui
 
 # Run a demonstration
 
-Before using the app to assess a real species follow along with this tutorial that walks through the app with a demo data that is included in the ccviR package. The tutorial explains how to navigate through the app and how to interpret the outputs created by the app.
+Before using the app to assess a real species follow along with this tutorial that walks through the app with a demo dataset that is included in the ccviR package. The tutorial explains how to navigate through the app and how to interpret the outputs created by the app.
 
 If you have not already installed ccviR, begin by installing the ccviR package from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("LandSciTech/ccviR")
+install.packages("remotes")
+remotes::install_github("LandSciTech/ccviR@dev", type = "binary", upgrade = TRUE)
 ```
 
 Then, run the code below to launch the app in your browser with the demo data:
@@ -213,7 +225,7 @@ library(ccviR)
 run_ccvi_app("demo")
 ```
 
-### Getting started
+## Getting started
 
 Upon launching the app, you are greeted with the Welcome Tab which provides information on the Index and the data needed to calculate it. Data needed to calculate the Index includes a climate data set, species-specific spatial data sets, and species-specific sensitivity and life history data.
 
@@ -221,7 +233,7 @@ For this demonstration, all of the data is provided in the package. This include
 
 Press "Start" to begin calculating the index.
 
-### Assessment and Species Information
+## Assessment and Species Information
 
 On this page, you will provide some basic details about the assessment and species. The "Assessment Notes" text box should be used to capture any details about the assessment process that are not recorded elsewhere. This should include the strategy used to gather evidence to inform the assessment, links to data sets used, etc.
 
@@ -229,7 +241,7 @@ Make sure to select the appropriate taxonomic group since some aspects of the in
 
 For this demonstration select "Bird" from the Major Taxonomic Group drop down and check the box for migratory species. Input any text for the remaining boxes. Click "Next".
 
-### Spatial Data Analysis
+## Spatial Data Analysis
 
 On this page, you will load the spatial data used by the index and run the spatial analysis for exposure to climate change. For the "Folder location of prepared climate data" you need to tell the app where you stored the climate data that it should use. For a real assessment this will either be the folder that you unzipped the downloaded climate data into or the output folder you selected in the data preparation app. For this demonstration the prepared climate data can be found under "clim_files \> processed". Click on the processed folder then click Select in the bottom right of the pop-up.
 
@@ -249,7 +261,7 @@ The the gain multiplier allows you to ignore gains by setting it to 0 but we wil
 
 Then, click "Run Spatial Analysis". A loading symbol will appear while the data is being processed. When the "Complete" message appears, click "Next".
 
-### Section A - Exposure Results
+## Section A - Exposure Results
 
 The Exposure Results page displays the results of the spatial data analysis as interactive maps of climate change exposure. Exposure is determined by the change in temperature or moisture that is expected to occur in the future within the species range in the assessment area.
 
@@ -267,7 +279,7 @@ The non-breeding range of the species is used to determine the migratory exposur
 
 Once you have finished exploring the maps click "Next".
 
-### Sections B, C, D - Vulnerability Questions
+## Sections B, C, D - Vulnerability Questions
 
 Vulnerability questions are detailed questions that the index uses to score the species' indirect exposure, sensitivity, adaptive capacity and modeled or documented responses to climate change. Descriptions of how to interpret and score the questions are available in the NatureServe guidelines which are included as a pop-up if you click the "i" button next to each question. To ensure the index is consistently applied **you must read the guidelines for each question before answering it.**
 
@@ -291,7 +303,7 @@ Note that if a check box for a spatial question is changed and then the "Run Spa
 
 Click "Next" when you have answered the questions in each section.
 
-### Index Results
+## Index Results
 
 On the Index Results page, the first section highlights Data Completeness: how many questions were answered in each section, whether a sufficient number have been answered, and how many are did not specify the type of evidence used. The index is more reliable when more questions are answered. You can return to specific Sections to add more evidence or answer more questions if there is insufficient Data Completeness.
 
@@ -315,13 +327,13 @@ The last graph shows the scores for each vulnerability factor in each scenario. 
 
 If you go back and change the answer to a vulnerability question you will need to click the "Calculate CCVI" button again to see the updated results.
 
-### Render a report
+## Render a report
 
 You can generate a pdf report summarizing the results of the assessment by clicking the "Generate report" button at the bottom of the results page. The report produced will include the index value, a map of the range, a map of the combined moisture and temperature exposure, and the response to each vulnerability question including the types of evidence used and the text from the comment section. Once rendered, the report will appear in your downloads. Rendering this report requires that you have Chrome, Chromium, or Edge installed on your computer. If you are missing this, a message will appear to let you know.
 
 ![](./report.png){width="70%" fig-align="center"}
 
-### Saving the app
+## Saving the app
 
 The state of the app can be saved by clicking the "Save progress" button at the bottom of the app at any point in the assessment. Choose a name and location to save a csv file with all the app content that is easy to remember, you will need to find it again to load the saved app. To load the app from a saved csv file click "Select file" under "Load data from a previous assessment" at the bottom of the Welcome page and select the saved csv file.
 
@@ -333,17 +345,34 @@ To interpret the names of the columns in the saved csv file you can download the
 
 If you have made changes to the questions *after* running the Index calculations you will get a message indicating that the Index scores will not be saved. This is to prevent saving index scores which do not match the questions answered. To save Index scores, re-calculate the Index and then "Save progress".
 
+# Tips for using the app
+
+## Starting a new ccviR assessment {#new-assessment}
+
+Organizing the files used in your assessment within one folder will make it easier to find your files in the app. Follow these steps to setup a new project: 1. Open RStudio 2. Click File \> New Project... 3. Select New Directory, then New Project 4. Give your new directory (aka folder) a meaningful name and use the Browse button to choose where to store it in your existing files. 5. Click Create Project. This will open the new project in RStudio. 6. Navigate to the directory you created in Step 4. In the Windows File Explorer you will see that a new folder has been created with the name you chose and it will contain a ".Rproj" file. 7. This is the folder where you should store all the information related to the assessment. You can add any sub-folders that make sense for your assessment. For example, you could add a folder for each species you will assess, or separate folders for input data and saved results from the app.\
+8. This folder is also where you should unzip the climate data package, which can be downloaded [here](https://drive.google.com/file/d/1hAVMW5VBDOVHhMItm7U-whsqPgb6bn5C/view?usp=drive_link).
+
+Now you are ready to start your assessment!
+
+## Launching the app
+
+The app is launched by typing `run_ccvi_app()` in the R Console and hitting Enter. The R Console is the window located in the bottom left of RStudio. A "\>" at the start of a line indicates that the console is ready for input. This will launch the app in the user's default internet browser. All file selection windows will start in the current working directory. To run the app with data stored in a different folder you can call `run_ccvi_app()` with the folder path as the first argument. For example, if all of my data is stored in a subdirectory of the working directory named "data", I would call `run_ccvi_app("data")` to avoid having to open the data folder every time I select a file. Alternatively, the complete path to the data folder can be supplied e.g. "C:/Users/username/Documents/path/to/folder" (Note that paths in R must be supplied using forward slashes).
+
+## Multiple related assessments
+
+You can use a saved partially completed assessment as a template for running multiple related assessments. For example, to assess multiple populations of a species that are in different locations and may have different stressors, fill in the app with all the information that will not change between populations and save the state of the app in a csv by clicking "Save Progress". Then for each population launch a new assessment, click "Load from a previous assessment" and select your template csv. Then modify it for the specific population and save the completed assessment in a new csv file. You may also wish to complete multiple assessments for a species if you want to enter different answers for vulnerability questions depending on the climate change scenario used. Multiple climate scenarios can be included in a single assessment and will affect the exposure multiplier and optionally the modelled response to climate change. However, all other vulnerability questions are assumed to be constant across scenarios. For example, if sea level rise was expected to have a different impact under RCP 8.5 than 4.5 you would need to perform two separate assessments to reflect this.
+
 ## Troubleshooting
 
-If you have a problem in the app you can look at the output in the R console for a clue about what is going wrong. The output will include messages, warnings and any error messages that are produced. You can ignore warnings unless something else has gone wrong. Most errors will show in the app but in some situations the app will go grey and the error message can be found in the R console.
+If you have a problem in the app you can look at the output in the R Console for a clue about what is going wrong. The output will include messages, warnings and any error messages that are produced. You can ignore warnings unless something else has gone wrong. Most errors will show in the app but in some situations the app will go grey and the error message can be found in the R console. If the problem is realated to spatial data inputs it may be necessary to open the spatial files in a GIS application (e.g, QGIS or ArcGIS) to investigate the problem.
 
-If you have persistent problems with the app you can do the same analysis using the ccviR package. You will often be able to figure out what is causing the problem and return to the app. See `vignette("package_vignette", package = "ccviR")` for a tutorial on how to use the package. Or you can ask a question or report an issue through the package GitHub [page](https://github.com/LandSciTech/ccviR/issues).
+If you are unable to solve a problem on you own, you can ask a question or report an issue through the package GitHub [page](https://github.com/LandSciTech/ccviR/issues). When submitting an issue be sure to include enough information so the app developers can recreate the problem you are experiencing. This should include screenshots of any error messages received, links to the data that produced the error and a description of the steps needed to reproduce the error.
 
-# Scientific considerations for applying the index
+# Scientific considerations for applying the index {#apply-index}
 
 In this section we explore the details of how the index is calculated and how that should inform decisions made about the data and evidence that should be used.
 
-### Climate data {#climate-data}
+## Climate data {#climate-data}
 
 The climate data used in the app contains five raster files that summarise different aspects of climate used in the index.
 
@@ -359,7 +388,7 @@ If you wish to create your own climate data set for use with the index based on 
 
 When using the app to assess multiple different species the same climate data set should be used for all species because the index is relative so the results cannot be compared across different species if different data sets are used.
 
-### Species range
+## Species range
 
 Ideally the range polygon is the complete area occupied by the species in North America. The full range is used to determine the range of climate conditions that the species can tolerate to answer the questions about historical thermal niche (C2ai) and historical hydrological niche (C2bi). The portion of the range that is within the assessment area (see below) is used to determine the species exposure to climate change.
 
@@ -383,7 +412,7 @@ Existing range polygons can be found online for many species (Table \@ref(tab:ra
 
 : (#tab:range-sources) Potential data sources for species range polygons
 
-### Assessment area
+## Assessment area
 
 The assessment area is the area within which the species vulnerability is being assessed. For example, a country, province, state, or protected area. This polygon is intersected with the species range to create the polygon used to determine the exposure to climate change. To calculate exposure the range within the assessment area is overlain on the exposure raster and the proportion of the range covered by each class is determined and used to calculate exposure multipliers for temperature, moisture and a combined multiplier. These exposure multipliers are used to modify the scores from the sensitivity questions in order to reach the total score. The assessment area is also used in Section D to determine the portion of the assessment area that will be part of the projected future range.
 
@@ -393,13 +422,13 @@ The NatureServe CCVI was designed to be applied to wildlife within a national pa
 
 The spatial scale for an assessment area should be chosen to reflect the scale at which the results of the assessment will be applied. It is also important to consider the assumptions that are created by the choice of scale and if they are not met address them. 1) the species’ vulnerability inside the assessment area is not affected by its vulnerability in other parts of its range; 2) the species’ vulnerability is constant across the assessment area; 3) The species' traits are the same across the range and assessment area. To address these assumptions assessments can be performed separately for different sub-populations and for the full species range.
 
-### Migratory species {#migratory}
+## Migratory species {#migratory}
 
 The CCVI includes a Migratory Exposure Index that was added to account for the exposure of species to climate change while in their migratory range. It uses a Climate Change Exposure Index (CCEI) map overlapped with the species non-breeding range to determine an exposure index value of Low, Moderate or High. This can be used along side the CCVI index value for the assessment area.
 
-The CCEI is created by calculating the standard Euclidean distance between the historical MAT and CMD and the projected future MAT and CMD. The CCEI is broken into four categories of exposure and the proportion of the non-breeding range overlapping each category is used to determine the migratory exposure index value.
+The CCEI is created by calculating the standard Euclidean distance between the historical MAT and CMD and the projected future MAT and CMD. The CCEI is broken into four categories of exposure and the proportion of the non-breeding range overlapping each category is used to determine the migratory exposure index value. The categories are based on thresholds defined in the NatureServe Guidelines.
 
-### Uncertainty
+## Uncertainty
 
 As mentioned above, multiple values can be selected for each vulnerability question to represent uncertainty. When assessors select more than one category their uncertainty is treated in two ways:
 
@@ -408,7 +437,7 @@ As mentioned above, multiple values can be selected for each vulnerability quest
 
 For example, if an expert believes there is a 50% chance that the correct value is "Greatly Increase", a 35% chance that it is "Increase" and a 15% chance that it is "Somewhat increase" selecting all three boxes will treat it as if there is an equal chance of each answer and will use "Increase vulnerability" to determine the index, since it is the mean value. Choosing how to address this situation will depend on the goals of the assessment and whether over or under-estimating uncertainty in the index is preferable. One option would be to remove any option with less than a 10% likelihood and remove any option that is significantly less likely than the rest (e.g. more than 20% less likely). Whatever strategy is used, the overall approach should be described in the assessment comments and the way it was implemented for each question should be described in the question comments.
 
-### Gathering evidence
+## Gathering evidence
 
 To answer the questions in the vulnerability section you will most likely need to use a combination of existing data and expert judgement. This may be your own judgement, or that of another person / group.
 
@@ -436,9 +465,6 @@ The following checklist will help to ensure the judgements of individuals are ac
     -   **Embrace counterfactual thinking.** To overcome overconfidence and bias, you are encouraged to embrace counterfactual thinking. Two simple tricks include: 1) imagining the most optimistic and pessimistic scenarios before providing your best estimate; or 2) providing your best estimate and then asking yourself why your judgement could be wrong, allowing yourself to revise your estimate.
 
     -   **Review and update your estimates.** Have your assessment reviewed by at least one other expert. Update estimates accordingly.
-
-<!-- -->
-
 4.  Document
     -   Update the "Assessment Notes". Ensure the capture all the information needed to understand and interpret your assessment. Useful information includes:
 
@@ -457,7 +483,7 @@ The expert judgement literature convincingly shows that eliciting the judgement 
 1.  Prepare
     -   **Assemble a diverse group of knowledgeable individuals.** Around 5-8 experts will produce the most accurate judgements but two experts are better than one.
 2.  Investigate
-    -   **Allow experts to individually answer the questions**. Follow steps 1 to 3 for individual judgements (Section @ref(individual).
+    -   **Allow experts to individually answer the questions**. Follow steps 1 to 3 for individual judgements (Section \@ref(individual)).
 
     -   **Ask experts not to communicate with one another until the discussion stage**.
 
@@ -471,7 +497,7 @@ The expert judgement literature convincingly shows that eliciting the judgement 
 4.  Estimate
     -   **Allow experts to update their responses** based on the information from the discussion step. Experts are not required to update their estimates, but should do so if they believe there is a good reason.
 5.  Aggregate
-    -   **Transform and aggregate individual judgements** (Refer to Section 2.2.2.1 and Box 2).
+    -   **Aggregate individual judgements** (Refer to Section 2.2.2.1 and Box 2).
 6.  Review
     -   **Review the aggregated results with experts** to ensure the final response and level of uncertainty represented is appropriate.
 7.  Document
@@ -484,15 +510,15 @@ The expert judgement literature convincingly shows that eliciting the judgement 
 |                                                                                                                                                                                                                                                                        |
 | **Estimates:** *Below are the categories selected for this question*                                                                                                                                                                                                   |
 |                                                                                                                                                                                                                                                                        |
-| +------------------+-----------+-----------+-----------+-----------+                                                                                                                                                                                                   |
-| |                  | **GI**    | **I**     | **SI**    | **N**     |                                                                                                                                                                                                   |
-| +------------------+-----------+-----------+-----------+-----------+                                                                                                                                                                                                   |
-| | **Expert 1**     | X         |           |           |           |                                                                                                                                                                                                   |
-| +------------------+-----------+-----------+-----------+-----------+                                                                                                                                                                                                   |
-| | **Expert 2**     | X         | X         |           |           |                                                                                                                                                                                                   |
-| +------------------+-----------+-----------+-----------+-----------+                                                                                                                                                                                                   |
-| | **Expert 3**     | X         | X         | X         |           |                                                                                                                                                                                                   |
-| +------------------+-----------+-----------+-----------+-----------+                                                                                                                                                                                                   |
+| +--------------+------------+------------+------------+------------+                                                                                                                                                                                                   |
+| |              | **GI**     | **I**      | **SI**     | **N**      |                                                                                                                                                                                                   |
+| +--------------+------------+------------+------------+------------+                                                                                                                                                                                                   |
+| | **Expert 1** | X          |            |            |            |                                                                                                                                                                                                   |
+| +--------------+------------+------------+------------+------------+                                                                                                                                                                                                   |
+| | **Expert 2** | X          | X          |            |            |                                                                                                                                                                                                   |
+| +--------------+------------+------------+------------+------------+                                                                                                                                                                                                   |
+| | **Expert 3** | X          | X          | X          |            |                                                                                                                                                                                                   |
+| +--------------+------------+------------+------------+------------+                                                                                                                                                                                                   |
 |                                                                                                                                                                                                                                                                        |
 | **Rationales:** *Below are the rationales and comments provided for these responses*                                                                                                                                                                                   |
 |                                                                                                                                                                                                                                                                        |
@@ -509,38 +535,139 @@ The expert judgement literature convincingly shows that eliciting the judgement 
 
 #### Aggregating group judgements
 
-TODO: Does this even make sense? The advice should probably just be to have the experts record their selections for each question, either in the app or not and then have the expert group evaluate the range of values presented and decide which should be kept to show uncertainty.
-
-To combine the judgements of multiple experts for the ccviR a small transformation must be made to individual judgements. In the ccviR, when more than one category is selected, the Monte Carlo simulations treat these categories as equally likely (refer to Section \@ref(uncertainty) for more information). Therefore, it should be assumed that for each question assessors are equally distributing one point across the selected categories. For example, if three categories were selected, then the one point is distributed across those three categories (0.33, 0.33, 0.33). If only one category is selected, then the point is entirely allocated to that category. Before aggregating judgements, the distribution of points should be calculated for each expert. The points per category across the experts can then be summed (refer to [Box 2](#box-2). Aggregated judgements combine the uncertainties expressed by individuals and are therefore typically less informative than individual judgements. Aggregated judgements may therefore result in all categories being selected, which is not informative. If analysts would like to improve the informativeness of judgements, then only the categories which are approximately equally likely could be entered. There are no definitive rules on how to do this, but one approach could be to select any category that has \>10% chance of occurring and is within 20% likelihood of another category. For example, in Box 2, the category ‘GI’ (‘Greatly Increases’) receives 0.61 of the group vote, the next highest is category ‘I’ (‘Increases) which receives 0.28 of a vote but is 33% less likely than GI. Under the rules specified here only category ‘GI’ would be selected.
+To combine the judgements of multiple experts for the ccviR a small transformation must be made to individual judgements. In the ccviR, when more than one category is selected, the Monte Carlo simulations treat these categories as equally likely (refer to Section \@ref(uncertainty) for more information). Therefore, it should be assumed that for each question assessors are equally distributing one point across the selected categories. For example, if three categories were selected, then the one point is distributed across those three categories (0.33, 0.33, 0.33). If only one category is selected, then the point is entirely allocated to that category. Before aggregating judgements, the distribution of points should be calculated for each expert. The points per category across the experts can then be summed (refer to [Box 2](#box-2)). Aggregated judgements combine the uncertainties expressed by individuals and may overestimate the uncertainty of the group. To avoid this the aggregated judgements should be discussed by the group of experts, keeping in mind the the Monte Carlo will treat all selections as equally likely. The final value(s) selected by the group should reflect the
 
 ##### Box 2 Steps involved in aggregating expert judgements for the ccviR {#box-2 .unnumbered}
 
-+-------------------------------------------------------------------------------------------------------------------------------------------------------+
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-| |                  | GI                     | I                                          | SI                                        | N            | |
-| +==================+========================+============================================+===========================================+==============+ |
-| | Expert 1         | 1                      | 0                                          | 0                                         | 0            | |
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-| | Expert 2         | 0.5                    | 0.5                                        | 0                                         | 0            | |
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-| | Expert 3         | 0.33                   | 0.33                                       | 0.33                                      | 0            | |
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-| | Aggregate score  | 1.83/3                 | 0.83/3                                     | 0.33/3                                    | 0            | |
-| |                  |                        |                                            |                                           |              | |
-| |                  | = 0.61                 | = 0.28                                     | = 0.11                                    |              | |
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-| | Removal criteria | Highest score -\> kept | 0.33 points lower than highest -\> removed | 0.5 points lower than highest -\> removed | Not selected | |
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-| | Final selection  | GI                     |                                            |                                           |              | |
-| +------------------+------------------------+--------------------------------------------+-------------------------------------------+--------------+ |
-+-------------------------------------------------------------------------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------------------------------+
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
+| |                   | GI                           | I                             | SI                      | N            | |
+| +===================+==============================+===============================+=========================+==============+ |
+| | Expert 1          | 1                            | 0                             | 0                       | 0            | |
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
+| | Expert 2          | 0.5                          | 0.5                           | 0                       | 0            | |
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
+| | Expert 3          | 0.33                         | 0.33                          | 0.33                    | 0            | |
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
+| | Aggregate score   | 1.83/3                       | 0.83/3                        | 0.33/3                  | 0            | |
+| |                   |                              |                               |                         |              | |
+| |                   | = 0.61                       | = 0.28                        | = 0.11                  |              | |
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
+| | Removal rationale | kept, was chosen by everyone | kept to represent uncertainty | removed after discusson | Not selected | |
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
+| | Final selection   | GI                           | I                             |                         |              | |
+| +-------------------+------------------------------+-------------------------------+-------------------------+--------------+ |
++-------------------------------------------------------------------------------------------------------------------------------+
 
 # Communicating assessment results
 
-Highlight importance of saving report, csv and data used in assessment to encourage reproducibility
+Once an assessment is complete, the next step is to store the results and communicate the outcome of the assessment. The contents of the app can be saved in a csv file which stores all the inputs and can be used to re-load the app and make changes to the assessment. The human readable csv format ensures that comments and assessment values can be used independent of the ccviR package which facilitates transparent and reproducible assessments. These csv files can also be used to compile data from multiple assessments for further analysis and synthesis.
+
+A pdf report summarizing all the inputs to the CCVI, the results and maps of the spatial outputs can be generated within the app to preserve the results in a user friendly format.
+
+The NatureServe CCVI provides descriptions of the Index values returned by the CCVI assessment which are shown in Table \@ref(tab:index-values). These descriptions provide context for the level of concern that should be associated with each index value but the developers of the ccviR package recommend interpreting them with caution since the exact outcome of a particular combination of sensitivity factors and exposure may vary across species. The best way to understand the meaning of the index value for a particular species is to review the guidelines for factors that received high scores in order to determine how the species vulnerability might be realized over time. 
+
+If multiple species have been assessed the CCVI results can be used to rank the species by vulnerability, and potentially other factors such as conservation status, to prioritize management actions. The factors driving the vulnerability of individual or multiple species can be explored to determine which management actions could be effective in assisting the species
+
+We recommend reading the "Interpreting Your Results" section in the NatureServe Guidelines for more details on how the CCVI should be interpreted alongside Conservation Status.
+
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Vulnerability rating    | Interpretation                                                                                                                                                                                             |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Extremely Vulnerable    | Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.                                                                           |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Highly Vulnerable       | Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050                                                                                                   |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Moderately Vulnerable   | Abundance and/or range extent within geographical area assessed likely to decrease by 2050                                                                                                                 |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Less Vulnerable         | Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change     |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Insufficient Evidence   | Information entered about a species' vulnerability is inadequate to calculate an Index score                                                                                                               |
++-------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+: (#tab:index-values)Descriptions of index values provided by NatureServe
 
 # Appendices
 
-## Scoring for the ccviR (explanation provided in Section 3.1 could be built upon)
+## CCVI Scoring {#scoring-appendix}
+
+As described in Section \@ref(what-is), the ccviR app is designed to assess the relative vulnerability of a species to climate change within a defined assessment area. The final outputs are a qualitative ranking from ‘Extremely Vulnerable’ to ‘Less Vulnerable’ depending on exposure, sensitivity and adaptive capacity as well as documetned and modelled responses to climate change. To obtain these rankings the ccviR performs the following steps (Figure \@ref(fig:fig-NS-alg)):
+
+1.  **Direct exposure is calculated**. The spatial extent of the assessment area and the species range are overlaid with projected changes in temperature and moisture to determine the percentage of the species range within the assessment area that is distributed across six classes of exposure. This percentage is used to assign a temperature exposure multiplier and a moisture exposure multiplier according to the thresholds in Tables \@ref(tab:temp-exp) and \@ref(tab:moist-exp). Then a combined exposure multiplier is calculated by taking the average of the temperature and moisture exposure multipliers. These multipliers are used to adjust the vulnerability factors with most factors being multiplied by the combined exposure multiplier but the thermal and hydrological niche questions being multiplied by the temperature and moisture multipliers, respectively (Figure \@ref(fig:fig-NS-alg)).
+
++-------------------+---------------------+---------------------+
+| Classes           | Percentage of range | Exposure multiplier |
++===================+=====================+=====================+
+| 6                 | \> 50%              | 2.4                 |
++-------------------+---------------------+---------------------+
+| 5-6               | \> 75%              | 2                   |
++-------------------+---------------------+---------------------+
+| 4-6               | \> 60%              | 1.6                 |
++-------------------+---------------------+---------------------+
+| 3-6               | \> 40%              | 1.2                 |
++-------------------+---------------------+---------------------+
+| 2-6               | \> 20%              | 0.8                 |
++-------------------+---------------------+---------------------+
+| 1                 | \> 80%              | 0.4                 |
++-------------------+---------------------+---------------------+
+
+: (#tab:temp-exp)Temperature exposure multiplier table
+
++-------------------+---------------------+---------------------+
+| Classes           | Percentage of range | Exposure multiplier |
++===================+=====================+=====================+
+| 6                 | \> 80%              | 2                   |
++-------------------+---------------------+---------------------+
+| 5-6               | \> 64%              | 1.67                |
++-------------------+---------------------+---------------------+
+| 4-6               | \> 48%              | 1.33                |
++-------------------+---------------------+---------------------+
+| 3-6               | \> 32%              | 1                   |
++-------------------+---------------------+---------------------+
+| 2-6               | \> 16%              | 0.67                |
++-------------------+---------------------+---------------------+
+| 1                 | \> 80%              | 0.33                |
++-------------------+---------------------+---------------------+
+
+: (#tab:moist-exp)Moisture exposure multiplier table
+
+2.  **Calculate B/C Index (Indirect exposure, sensitivity and adaptive capacity)**. Assessors use the best available information to assess factors related to indirect exposure, sensitivity, and adaptive capacity (Table \@ref(tab:c-b-questions)). The factors are scored on a qualitative scale from 'Neutral' (0 points), to 'Greatly Increases vulnerability' (3 points). At least three questions must be answered from Section B, and 10 from Section C. Questions left blank are scored the same as neutral (0 points). This means that the maximum score that can be achieved is lower if fewer questions are answered. Answering fewer questions can also reduce the confidence in the score. If multiple categories are selected, the average of those categories is taken. For each question, the points for vulnerability are multiplied by the appropriate exposure modifier and summed over the questions to produce the B/C score. The B/C score is converted to an index value as follows: EV =\>10, HV = 7-10, MV = 4-7, LV = 0-4 (Figure \@ref(fig:fig-NS-alg)).
+
+3.  **Calculate D-Index (documented of modeled response).** If the Section D factors are scored (Table \@ref(tab:d-questions)), the a D score is determined by summing the score for all the section D questions. The D score is converted to an index value as follows: EV =\> 6, HV = 4-6, MV = 2-4, LV = 0-2, IE = -2-0 (Figure \@ref(fig:fig-NS-alg)).
+
+4.  **Determine Nature Serve Climate Change Vulnerability Rank:** The assigned vulnerability assessment is based on a confusion matrix combining scores of the B/C and D Indices (Figure \@ref(fig:fig-NS-alg)).
+
+5.  **Calculate Migratory Exposure if applicable:** For migratory species the non-breeding range is overlaid on the CCEI raster to determine the percentage of the range that is distributed across four predefined classes of exposure. Then the proportion in each class is multiplied by a weighting factor and then summed to get a migratory exposure score which is converted to an index value according to the thresholds in Table \@ref(tab:mig-exp)
+
++-------------------+--------------------+
+| Class             | Weighting factor   |
++===================+====================+
+| 4                 | 7                  |
++-------------------+--------------------+
+| 3                 | 5                  |
++-------------------+--------------------+
+| 2                 | 3                  |
++-------------------+--------------------+
+| 1                 | 1                  |
++-------------------+--------------------+
+
+: (#tab:mig-weight)Migratory exposure weighting factors.
+
++---------------------------+--------------------------+
+| Migratory exposure score  | Migratory exposure index |
++---------------------------+--------------------------+
+| \>= 4                     | High                     |
++---------------------------+--------------------------+
+| 2-4                       | Moderate                 |
++---------------------------+--------------------------+
+| 0-2                       | Low                      |
++---------------------------+--------------------------+
+
+: (#tab:mig-exp)Migratory exposure thresholds.
+
+```{r fig-NS-alg, fig.cap= "Steps to calculate the CCVI. 1) Temperature and moisture spatial layers are used to assign exposure multipliers; 2) Indirect exposure, sensitivity, and adaptive capacity (vulnerability factors) are scored and combined with exposure multipliers to create subscores. These subscores are summed for all questions to calculate the B/C Index score; 3) if available, modeled response is calculated to create the D-Index score; 4) A confusion matrix is used to determine the final ccviR ranking.", out.width="100%", echo=FALSE}
+knitr::include_graphics(here::here("vignettes/NS-alg.png"))
+```
 
 ## Connection to COSEWIC
+
+# References
