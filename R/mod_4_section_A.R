@@ -48,7 +48,7 @@ mod_A_ui <- function(id) {
           "1/2 the interquartile range. Thus, negative values for temperature",
           "indicate warmer conditions (\u00B0C) and negative values for moisture",
           "(mm) indicate drier conditions",
-          "(see the", a("user guidance", href = "https://landscitech.github.io/ccviR/articles/app_vignette2.html#scoring-appendix", target="_blank"),
+          "(see the", a("app website", href = "https://landscitech.github.io/ccviR/articles/app_vignette2.html#scoring-appendix", target="_blank"),
           " for more details)."),
         p("The tables below the maps outline the classes and the proportion",
           "of the species range in each class. The exposure multiplier is",
