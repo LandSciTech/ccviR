@@ -70,7 +70,7 @@ According to Young et al., (2016), the outputs can be used to:
 
 -   Identify where information gaps are impeding assessment and management of species relevant to climate change vulnerability and management to help prioritise subsequent research efforts.
 
-In addition, the results of the CCVI can be used to help inform risk assessments and recovery planning for species. While the scoring criteria and thresholds do not directly link to other assessment frameworks (e.g. the IUCN-CMP threat classification system), the information gathered for the CCVI assessment and presented in the results can be applied and re-interpreted to inform other assessments. See Section X for a detailed explanation of how the ccviR outputs can inform COSEWIC Status Reports and the creation of Recovery Strategies.
+In addition, the results of the CCVI can be used to help inform risk assessments and recovery planning for species. While the scoring criteria and thresholds do not directly link to other assessment frameworks (e.g. the IUCN-CMP threat classification system), the information gathered for the CCVI assessment and presented in the results can be applied and re-interpreted to inform other assessments. See [Appendix A](https://github.com/LandSciTech/ccviR/tree/master/inst/appendices/Vignette_appendices.pdf) for a detailed explanation of how the ccviR outputs can inform COSEWIC Status Reports and the creation of Recovery Strategies.
 
 ## Known limitations
 
@@ -460,9 +460,7 @@ For example, if an expert believes there is a 50% chance that the correct value 
 
 To answer the questions in the vulnerability section you will most likely need to use a combination of existing data and expert judgement. This may be your own judgement, or that of another person / group.
 
-In Section \@ref(individual) we provide a quick checklist to help individuals provide more accurate and repeatable judgements. In Section \@ref(group) we identify steps to further improve the accuracy of judgements by eliciting the judgements of a group.
-
-<!--# Add this back when appendices are ready: Both checklists are informed by the extensive expert judgement literature (Appendix B), and the risk analysis literature (Appendix C). -->
+In Section \@ref(individual) we provide a quick checklist to help individuals provide more accurate and repeatable judgements. In Section \@ref(group) we identify steps to further improve the accuracy of judgements by eliciting the judgements of a group. Both checklists are informed by the extensive expert judgement and the risk analysis literature (See [Appendix B and Appendix C](https://github.com/LandSciTech/ccviR/tree/master/inst/appendices/Vignette_appendices.pdf).
 
 ### Individual judgements {#individual}
 
@@ -499,7 +497,7 @@ The following checklist will help to ensure the judgements of individuals are ac
 
 ### Group judgements {#group}
 
-The expert judgement literature convincingly shows that eliciting the judgement of more than one individual produces more reliable judgements than a single well credentialed expert. However, interactions and group biases need to be managed to maximise the performance of the group (Appendix C). Below are the key steps for eliciting group judgements (more information can be found in Appendix B):
+The expert judgement literature convincingly shows that eliciting the judgement of more than one individual produces more reliable judgements than a single well credentialed expert. However, interactions and group biases need to be managed to maximise the performance of the group ([Appendix C](https://github.com/LandSciTech/ccviR/tree/master/inst/appendices/Vignette_appendices.pdf)). Below are the key steps for eliciting group judgements (more information can be found in [Appendix B](https://github.com/LandSciTech/ccviR/tree/master/inst/appendices/Vignette_appendices.pdf)):
 
 1.  Prepare
     -   **Assemble a diverse group of knowledgeable individuals.** Around 5-8 experts will produce the most accurate judgements but two experts are better than one.
@@ -608,9 +606,8 @@ We recommend reading the "Interpreting Your Results" section in the [NatureServe
 
 : (#tab:index-values)Descriptions of index values provided by NatureServe
 
-# Appendices
 
-## CCVI Scoring {#scoring-appendix}
+# Scoring the CCVI {#scoring-appendix}
 
 As described in Section \@ref(what-is), the ccviR app is designed to assess the relative vulnerability of a species to climate change within a defined assessment area. The final outputs are a qualitative ranking from ‘Extremely Vulnerable’ to ‘Less Vulnerable’ depending on exposure, sensitivity and adaptive capacity as well as documetned and modelled responses to climate change. To obtain these rankings the ccviR performs the following steps (Figure \@ref(fig:fig-NS-alg)):
 
@@ -690,6 +687,6 @@ As described in Section \@ref(what-is), the ccviR app is designed to assess the 
 knitr::include_graphics(here::here("vignettes/NS-alg.png"))
 ```
 
-## Connection to COSEWIC
+
 
 # References
