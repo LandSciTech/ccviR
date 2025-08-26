@@ -319,7 +319,7 @@ To account for uncertainty in the vulnerability questions you can provide more t
 
 ![](./results_variation.png){width="70%" fig-align="center"}
 
-The next graph shows how the scores based on the exposure and the sensitivity and adaptive capacity (Sections A, B and C) are combined with the scores based on the documented or modeled response to climate change (Section D), to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations. More details on the scoring algorithm can be found in Appendix \@ref(scoring-appendix).
+The next graph shows how the scores based on the exposure and the sensitivity and adaptive capacity (Sections A, B and C) are combined with the scores based on the documented or modeled response to climate change (Section D), to produce the qualitative index value. The colours show the location of the thresholds used to determine the index, the points show the score for each scenario and the lines show the range of scores produced by the Monte Carlo simulations. More details on the scoring algorithm can be found in Section \@ref(scoring-appendix).
 
 ![](./comb_ind_plot.png){width="70%" fig-align="center"}
 
@@ -460,7 +460,9 @@ For example, if an expert believes there is a 50% chance that the correct value 
 
 To answer the questions in the vulnerability section you will most likely need to use a combination of existing data and expert judgement. This may be your own judgement, or that of another person / group.
 
-In Section \@ref(individual) we provide a quick checklist to help individuals provide more accurate and repeatable judgements. In Section \@ref(group) we identify steps to further improve the accuracy of judgements by eliciting the judgements of a group. Both checklists are informed by the extensive expert judgement literature (Appendix B), and the risk analysis literature (Appendix C).
+In Section \@ref(individual) we provide a quick checklist to help individuals provide more accurate and repeatable judgements. In Section \@ref(group) we identify steps to further improve the accuracy of judgements by eliciting the judgements of a group.
+
+<!--# Add this back when appendices are ready: Both checklists are informed by the extensive expert judgement literature (Appendix B), and the risk analysis literature (Appendix C). -->
 
 ### Individual judgements {#individual}
 
