@@ -1,12 +1,13 @@
 ---
 params: 
   saved: none
+  common_name: Test Common Name
   species: Test Species Name
   assessor_name: Dr. Curious
   geo_location: Earth
   include_about: true
   debug: true
-title: "`r params$species`"
+title: "`r paste0(params$common_name, ' (', params$species, ')')`"
 subtitle: Climate Change Vulnerability Index Report
 abstract: "`r params$geo_location`"
 abstract-title: "Geographic Location"
@@ -119,7 +120,7 @@ if(length(saved) == 1 && saved == "none") {
   # Otherwise remember that Quarto isn't R! So can handle lists, but not data.frames
   # So convert lists back to df.
   saved <- as.data.frame(saved) %>%
-    readr::type_convert(na = ".na")
+    readr::type_convert(na = "N/A")
   
   # Debugging: 
   if(debug) writeLines(capture.output(saved), "test.txt")
@@ -183,8 +184,11 @@ div(style = "break-inside: avoid; break-after: auto",
 ```
 
 #### Migratory Exposure Index
-```{r}
-dials_mig_exp <- purrr::map2(saved$mig_exposure, saved$scenario_name, ~ {
+```{r results='asis'}
+if(any(saved$mig == "FALSE")){
+  cat("Non-migratory species")
+} else {
+  dials_mig_exp <- purrr::map2(saved$mig_exposure, saved$scenario_name, ~ {
   ccviR:::plot_index_gauge(.x, type = "mig_exp", ttl = .y)
 })
 # break-inside etc. forces page breaks around the figures
@@ -195,7 +199,17 @@ div(style = "break-inside: avoid; break-after: auto",
                       ~div(class = "g-col-6", .x, style = "margin: auto"))
     )
 )
+}
+
 ```
+
+### Assessment information
+
+```{r results='asis'}
+cat(saved$assessment_notes[1])
+```
+
+
 
 ### Species range
 ```{r range_map}

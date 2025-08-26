@@ -48,14 +48,24 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
 
   if(debug) cat(t)
 
-  # Create HTML report
-  inform_prog("Rendering HTML report", quiet, 4)
-
   # Force all relative paths to absolute (otherwise Quarto can't find them)
   saved <- mutate(
     saved,
     across(contains("pth"), ~fs::path_abs(.x))
   )
+
+  if(is.na(saved$rng_poly_pth[1])){
+    showNotification("Spatial data is not provided but it is needed to generate the report.",
+                     type = "error")
+    req(FALSE)
+  } else if(!file.exists(saved$rng_poly_pth[1])){
+    showNotification("Spatial data is not provided but it is needed to generate the report.",
+                     type = "error")
+    req(FALSE)
+  }
+
+  # Create HTML report
+  inform_prog("Rendering HTML report", quiet, 4)
 
   # Force all NAs to ".na" before sending
   # Otherwise:
@@ -63,14 +73,15 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
   #  - If we let quarto_render() convert, they use more than one 'na' type
   #     which is harder to recover from (.na.real .na.character, etc.)
   saved <- as.list(saved) %>%
-    purrr::map(~if_else(is.na(.x), ".na", as.character(.x)))
+    purrr::map(~if_else(is.na(.x), "N/A", as.character(.x)))
 
   quarto::quarto_render(
     fs::path(t, "results_report.qmd"),
     execute_params = list(
       saved = saved,
       # Pass these in as separate variables so they can be used in the header
-      species = saved$common_name[1],
+      common_name = saved$common_name[1],
+      species = saved$species_name[1],
       assessor_name = saved$assessor_name[1],
       geo_location = saved$geo_location[1],
       include_about = include_about,
@@ -81,6 +92,8 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
   # Print to PDF via Chrome
   inform_prog("Converting to PDF", quiet, 4)
   pagedown::chrome_print(fs::path(t, "results_report.html"))
+
+  #shell.exec(fs::path(t, "results_report.pdf"))
 
   # Move pdf
 

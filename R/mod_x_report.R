@@ -67,6 +67,11 @@ mod_report_server <- function(id, saved) {
     output$validate <- renderUI({
       req(saved())
       check_chrome()
+      if(is.na(saved()$rng_poly_pth[1])){
+        validate("Spatial data is not provided but it is needed to generate the report.")
+      } else if(!file.exists(saved()$rng_poly_pth[1])){
+        validate("Spatial data is not provided but it is needed to generate the report.")
+      }
     })
 
     # Report download -------------------------------------------------------

@@ -133,6 +133,15 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks) {
                 values = "Exposure Multiplier", targets = "row")
   }
 
+  if(varname != "CCEI"){
+    if(any(spattbl[[exp_val]] != spattbl[[stringr::str_remove(exp_val, "_cave")]])){
+      exp_res_tbl <- exp_res_tbl %>% gt::tab_footnote(
+        footnote = "Divided by three since the species is an obligate of caves or groundwater systems",
+        locations = gt::cells_body(columns = "breaks", rows = nrow(exp_res_df))
+      )
+    }
+  }
+
   exp_res_tbl
 
 }

@@ -64,6 +64,10 @@ mod_A_ui <- function(id) {
         h3("Moisture exposure"),
         uiOutput(ns("ui_cmd")),
 
+        h3("Combined exposure multiplier"),
+        p("The combined exposure multiplier is the average of the temperature and moisture exposure multipliers."),
+        gt::gt_output(ns("comb_exp_tbl")),
+
         h3("Migratory exposure (Climate Change Exposure Index)"),
         p("The Climate Change Exposure Index (CCEI) map is created by calculating ",
           "the standard Euclidean distance between the historical temperature and moisture ",
@@ -130,6 +134,29 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
     output$tbl_cmd <- gt::render_gt({
       get_exposure_table(spat_res(), "CMD", clim_readme(), clim_readme()$brks_cmd)
+    })
+
+    # Combined Exposure -------------------------------
+    output$comb_exp_tbl <- gt::render_gt({
+      exp_df <- spat_res() %>% select(scenario_name, comb_exp_cave) %>%
+        tidyr::pivot_wider(names_from = "scenario_name",
+                           values_from = "comb_exp_cave") %>%
+        mutate(.before = everything(), exp = "Exposure Multiplier")
+      exp_tbl <- gt::gt(exp_df) %>% gt::cols_label(exp = "") %>%
+        gt::tab_options(table.width = 600,
+                        table.font.size = 14,
+                        column_labels.padding.horizontal = 10,
+                        column_labels.padding = 2,
+                        data_row.padding = 2) %>%
+        gt::cols_align(align = "center", columns = everything()) %>%
+        gt::tab_style_body(style = gt::cell_text(weight = "bold"),
+                           values = "Exposure Multiplier") %>%
+        gt::tab_style_body(style = list(gt::cell_fill(color = "#F8F8F8"),
+                                        gt::cell_borders(side = c("top", "bottom"),
+                                                         weight = gt::px(2), color = "lightgray")),
+                           values = "Exposure Multiplier", targets = "row")
+      exp_tbl
+
     })
 
 
