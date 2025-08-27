@@ -39,7 +39,7 @@ data_pth <- system.file("extdata", package = "ccviR")
 
 
 ## Preparing the climate data
-This step is only necessary if you want to use custom climate data. You can skip this section if you are using pre-prepared climate data which is available for download [here](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link).
+This step is only necessary if you want to use custom climate data. You can skip this section if you are using pre-prepared climate data which is available for download [here](https://drive.google.com/file/d/1znRcuIukvuAu7YAoL4WfxLulcszv4Dkq/view?usp=drive_link).
 
 Step 1: Acquire climate data. We recommend the climate data for North America from [AdaptWest](https://adaptwest.databasin.org/pages/adaptwest-climatena/) but any data set that includes at least the mean annual temperature and climate moisture deficit (or a similar moisture metric) can be used. For AdaptWest select the bioclimatic variables for the normal period and the desired future climate scenario. We recommend using the 1961-1990 normal period and the ensemble data for SSP2-4.5 and SSP5-8.5 for the 2050s for the future. Accepted raster file types are `r paste0(ccviR::spatial_file_raster, collapse = ", ")`. Save the downloaded data in a folder you can easily find. 
 

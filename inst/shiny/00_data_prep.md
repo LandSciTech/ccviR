@@ -1,5 +1,5 @@
 
-*Running this app is only necessary if you want to run the CCVI app with custom climate data. To use the pre-prepared climate data download a [zip file](https://drive.google.com/drive/folders/18mO5GDUmwi-nswhIAC36bmtYsvmqNQkH?usp=share_link) unzip it and save the folder in a convenient location.*
+*Running this app is only necessary if you want to run the CCVI app with custom climate data. To use the pre-prepared climate data download a [zip file](https://drive.google.com/file/d/1znRcuIukvuAu7YAoL4WfxLulcszv4Dkq/view?usp=drive_link) unzip it and save the folder in a convenient location.*
 
  <span style='color:red'>*</span> Indicates Required Data and Inputs</span>
 
@@ -21,7 +21,11 @@
 See the [tutorial](https://landscitech.github.io/ccviR/articles/data_prep_vignette.html) for recommended data sources.
   
 **Supporting data**: 
-To calculate a migratory exposure index you'll need a Climate Change Exposure Index (CCEI) raster for the migratory region. You can obtain one from [NatureServe](https://www.natureserve.org/ccvi-species) for Central and South America or use the [one included with ccviR](https://drive.google.com/drive/folders/175eBmxN1KIcqVvHLC3PcJIvvUP67BzPG) which covers all the Americas. 
+To calculate a migratory exposure index you'll need a Climate Change Exposure Index (CCEI)
+raster for the migratory region. You can obtain one from
+[NatureServe](https://www.natureserve.org/ccvi-species) for Central and South America or use the
+[one included with ccviR](https://drive.google.com/drive/folders/175eBmxN1KIcqVvHLC3PcJIvvUP67BzPG)
+which covers all the Americas. 
 
 Save all downloaded data in a folder you can easily find.
 

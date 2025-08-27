@@ -35,7 +35,7 @@ mod_C_test(input_files = test_files(min_req = TRUE)) # Min-required only
 
 # Big test ----------------------------------
 # Use big local data and full sized CCEI
-shinyOptions("file_dir" = ".")
+shinyOptions("file_dir" = "misc")
 ccvi_app()
 
 # Specific checks --------------------------------------
