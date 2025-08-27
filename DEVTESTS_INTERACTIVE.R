@@ -54,6 +54,7 @@ waldo::compare(
   read.csv(fs::path_package("ccviR", "extdata", "test_comp2.csv"))
 )
 
+
 # Launch App - Reload File - Re-calculate index - Save file - Compare
 waldo::compare(
   read.csv("misc/test_save_protected_areas2.csv"),
@@ -223,3 +224,9 @@ ccvi_app()
 
 shinyOptions("file_dir" = ".")
 ccvi_app()
+
+
+# Clean up ----------------------------------------------------------------
+
+file.remove(fs::path_package("ccviR", "extdata", "test_comp1.csv"))
+file.remove(fs::path_package("ccviR", "extdata", "test_comp2.csv"))
