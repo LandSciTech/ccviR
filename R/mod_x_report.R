@@ -39,9 +39,9 @@ mod_report_ui <- function(id) {
 
   div(
     br(), br(),
-
-    radioButtons(ns("include_about"), label = "Report: Include Interpretation Guide",
-                 choices = c("Yes" = TRUE, "No" = FALSE), inline = TRUE),
+    # TODO: Finish the interpretation guide, then uncomment and use input below
+    # radioButtons(ns("include_about"), label = "Report: Include Interpretation Guide",
+    #              choices = c("Yes" = TRUE, "No" = FALSE), inline = TRUE),
     div(style = "display:flex; align-items: center",
       div(style = "flex: 1",
           downloadButton(ns("report"), "Generate report", class = "btn-primary")),
@@ -61,7 +61,7 @@ mod_report_server <- function(id, saved) {
     observe({
       shinyjs::toggleState(
         id = "report",
-        condition = have_chrome() == TRUE & isTruthy(input$include_about))
+        condition = have_chrome() == TRUE)
     })
 
     output$validate <- renderUI({
@@ -87,7 +87,7 @@ mod_report_server <- function(id, saved) {
       },
       content = function(file) {
         withProgress(message = 'Creating report...', {
-          build_report(saved(), file, include_about = input$include_about)
+          build_report(saved(), file, include_about = FALSE)
         })
       }
     )
