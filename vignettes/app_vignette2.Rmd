@@ -347,7 +347,7 @@ The state of the app can be saved by clicking the "Save progress" button at the 
 
 Note, only the path to the spatial data is stored, not the data itself, so the app will not be able to load if data is moved or its name is changed. If the data has moved, you will get an error message but you can go back to the Spatial Analysis tab and select the new file location and then press "Run Spatial Analysis" which will re-run the spatial analysis (including any spatial questions you manually specified) but will keep the answers to the non-spatial vulnerability questions from the saved file.
 
-Be sure to save your progress throughout the assessment to prevent the loss of data. Refreshing the app or timing out will result in your progress being lost. It is recommended that you save your progress before you step away from the assessment for an extended period of time or after you input data that would be difficult/time consuming to reproduce (e.g. filling out Vulnerability Questions).
+Be sure to save your progress throughout the assessment to prevent the loss of data. Refreshing the app or closing R/RStudio will result in your progress being lost. It is recommended that you save your progress before you step away from the assessment for an extended period of time or after you input data that would be difficult/time consuming to reproduce (e.g. filling out Vulnerability Questions).
 
 When the app is closed in the browser a temporary csv file is stored in the users "Temp" folder in case the app was closed unintentionally. To find this file, copy and paste the path shown in the R Console after the app closes into your File Explorer and save the file to a permanent location.
 

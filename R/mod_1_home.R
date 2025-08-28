@@ -52,7 +52,7 @@ mod_home_ui <- function(id) {
               data loss. The state of the app can be saved by clicking the
               \"Save progress\" button at the bottom of the app at any point during
               the assessment and saving the csv file that is generated.
-              Refreshing the app or timing out will result in
+              Refreshing the app or closing R will result in
               progress being lost. See the app ",
           a("website", href = "https://landscitech.github.io/ccviR/articles/app_vignette2.html#saving-the-app", target="_blank"),
           " for more details."),
