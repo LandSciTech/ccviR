@@ -310,8 +310,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
         return(NULL)
       }
       scn_slr <- filter(index_res(), .data$slr_vuln) %>% pull(.data$scenario_name)
-      paste0("The index value for this species in scenario ",
-             paste0(scn_slr, collapse = ", "), " was increased to ",
+      paste0("The index value for this species was increased to ",
              "'Extremely Vulnerable' because it is vulnerable to rising ",
              "sea levels and has significant dispersal barriers")
     })

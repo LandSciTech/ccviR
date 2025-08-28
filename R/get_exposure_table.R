@@ -17,6 +17,28 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks) {
     breaks_col <- gt::html("Moisture change (mm)")
   }
 
+  if(varname == "combined"){
+    exp_df <- spattbl %>% select(scenario_name, comb_exp_cave) %>%
+      tidyr::pivot_wider(names_from = "scenario_name",
+                         values_from = "comb_exp_cave") %>%
+      mutate(.before = everything(), exp = "Exposure Multiplier")
+
+    exp_tbl <- gt::gt(exp_df) %>% gt::cols_label(exp = "") %>%
+      gt::tab_options(table.width = 600,
+                      table.font.size = 14,
+                      column_labels.padding.horizontal = 10,
+                      column_labels.padding = 2,
+                      data_row.padding = 2) %>%
+      gt::cols_align(align = "center", columns = everything()) %>%
+      gt::tab_style_body(style = gt::cell_text(weight = "bold"),
+                         values = "Exposure Multiplier") %>%
+      gt::tab_style_body(style = list(gt::cell_fill(color = "#F8F8F8"),
+                                      gt::cell_borders(side = c("top", "bottom"),
+                                                       weight = gt::px(2), color = "lightgray")),
+                         values = "Exposure Multiplier", targets = "row")
+    return(exp_tbl)
+  }
+
   if(varname == "CCEI"){
     exp_val <- "NA"
     class_col <- gt::html("CCEI class")
