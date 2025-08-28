@@ -588,6 +588,22 @@ read_poly <- function(pth, name, req = FALSE) {
   req(pth)
   validate(need(fs::file_exists(pth), "File does not exist"))
 
+  # Check for all parts of .shp
+  if(fs::path_ext(pth) == "shp"){
+    ext_in_dir <- fs::dir_ls(fs::path_dir(pth), recurse = FALSE,
+                             regexp = fs::path_file(pth) %>%
+                               fs::path_ext_remove()) %>%
+      fs::path_ext()
+
+    req_ext_shp <- c("shp", "shx", "dbf")
+
+    missing <- setdiff(req_ext_shp, ext_in_dir)
+
+    if(length(missing) > 0){
+      validate("Invalid shapefile. The .shx and .dbf files must be in the same folder as the .shp file")
+    }
+  }
+
   # Read file
   notify(paste("Loading", name))
   s <- try(sf::st_read(pth, agr = "constant", quiet = TRUE), silent = TRUE)

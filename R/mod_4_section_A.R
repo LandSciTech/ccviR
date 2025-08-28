@@ -138,6 +138,7 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
     # Combined Exposure -------------------------------
     output$comb_exp_tbl <- gt::render_gt({
+      req(spat_res())
       exp_df <- spat_res() %>% select(scenario_name, comb_exp_cave) %>%
         tidyr::pivot_wider(names_from = "scenario_name",
                            values_from = "comb_exp_cave") %>%
