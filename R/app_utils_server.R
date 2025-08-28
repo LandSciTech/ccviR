@@ -364,7 +364,8 @@ recreate_index_res <- function(df){
     tidyr::separate(.data$Value, into = (paste0("Value", 1:4)), fill = "right",
                     sep = ", ", convert = TRUE) %>%
     tidyr::nest(vuln_df = c(.data$Code, contains("Value"))) %>%
-    mutate(vuln_df = purrr::map2(.data$vuln_df, spat_res, ~calc_vuln_score(.x, .y))) %>%
+    mutate(vuln_df = purrr::map2(.data$vuln_df, spat_res, ~calc_vuln_score(.x, .y)),
+           slr_vuln = purrr::map_lgl(.data$vuln_df, is_slr_vuln)) %>%
     tidyr::pivot_longer(contains("MC_freq"), names_to = "mc_index",
                         names_prefix = "MC_freq_",
                         values_to = "prop") %>%
