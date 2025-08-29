@@ -339,7 +339,7 @@ p("The score for each vulnerability factor is determined by the ",
 index_res %>%
   select("scenario_name", "vuln_df") %>%
   tidyr::unnest(.data$vuln_df) %>%
-  plot_q_score()
+  plot_q_score(tax_grp = saved$tax_grp)
 ```
 
 ## Vulnerability Factors

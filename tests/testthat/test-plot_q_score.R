@@ -14,8 +14,12 @@ test_that("single plot works", {
 test_that("multi plot works", {
   exp_df2 <- bind_rows(test_exp_tbl(1), test_exp_tbl(2))
   exp_df2[2,1] <- "Scn2"
+  vuln_df2 <- make_vuln_df("nm", 1, use_spatial = FALSE)
+  vuln_df2 <- mutate(vuln_df2, Value1 = case_when(.data$Code == "C1" ~ -1,
+                                        .data$Code == "C4g" ~ 0,
+                                        .default = .data$Value1))
   v <- calc_vulnerability(exp_df2,
-                          make_vuln_df("nm", 2, use_spatial = FALSE),
+                          vuln_df2,
                           tax_grp = "Bird") %>%
     suppressMessages() %>%
     select(scenario_name, vuln_df) %>%

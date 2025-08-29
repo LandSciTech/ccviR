@@ -337,7 +337,7 @@ mod_results_server <- function(id, df_loaded, species_data, spatial,
       index_res() %>%
         select("scenario_name", "vuln_df") %>%
         tidyr::unnest(.data$vuln_df) %>%
-        plot_q_score()
+        plot_q_score(tax_grp = species_data()$tax_grp)
     })
 
     ## Plot - Summary of data evidence ------

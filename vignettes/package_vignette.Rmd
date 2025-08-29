@@ -284,7 +284,7 @@ The second graph is produced by `plot_q_score()`. It is a plotly graph of the sc
 ```{r fig.height=4, fig.width=8}
 q_score <- bind_rows(index_res$vuln_df %>% `names<-`(index_res$scenario_name), 
             .id = "scenario_name") %>%
-  plot_q_score()
+  plot_q_score(tax_grp = "Bird")
 
 q_score
 ```
