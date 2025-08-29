@@ -4,12 +4,12 @@
 \alias{get_clim_vars}
 \title{Load climate variables}
 \usage{
-get_clim_vars(root_pth, scenario_names = "scn1")
+get_clim_vars(root_pth, scenario_names = "scn1", quiet = FALSE)
 }
 \arguments{
 \item{root_pth}{A folder location where all the climate data is stored. The
-names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
-  "MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
+names must match one of \code{c("MAT.*tif", "CMD.*tif", "clim_poly.*shp",
+  "MAP.*tif", "ccei.*tif|CCEI.*tif","MWMT.*tif|HTN.*tif")} and the first
 three are required.}
 
 \item{scenario_names}{character vector with names that identify multiple
@@ -18,6 +18,8 @@ the scenario name as a suffix to the pattern mentioned above eg. if there
 are two MAT files "MAT_RCP 4.5.tif" and "MAT_RCP 8.5.tif" the scenario names
 should be "RCP 4.5" and "RCP 8.5". This will happen automatically if the
 scenario name is provided to \code{\link{prep_clim_data}}.}
+
+\item{quiet}{Logical. Whether to suppress progress messages.}
 }
 \value{
 A list of climate variables with names "mat", "cmd", "map", "ccei",

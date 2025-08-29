@@ -1,0 +1,859 @@
+{
+  "input": {
+    "home-continue": 0,
+    "home-loadcsv": 0,
+    "results-calcIndex": 0,
+    "results-restart": 0,
+    "save-downloadData": 0,
+    "section_a-continue": 0,
+    "section_b-B1": null,
+    "section_b-B2a": null,
+    "section_b-B2b": null,
+    "section_b-B3": null,
+    "section_b-com_B1": "",
+    "section_b-com_B2a": "",
+    "section_b-com_B2b": "",
+    "section_b-com_B3": "",
+    "section_b-continue": 0,
+    "section_b-evi_B1": null,
+    "section_b-evi_B2a": null,
+    "section_b-evi_B2b": null,
+    "section_b-evi_B3": null,
+    "section_b-help_B1": 0,
+    "section_b-help_B2a": 0,
+    "section_b-help_B2b": 0,
+    "section_b-help_B3": 0,
+    "section_c-C1": null,
+    "section_c-C2bii": null,
+    "section_c-C2c": null,
+    "section_c-C2d": null,
+    "section_c-C3": null,
+    "section_c-C4a": null,
+    "section_c-C4b": null,
+    "section_c-C4c": null,
+    "section_c-C4d": null,
+    "section_c-C4e": null,
+    "section_c-C4f": null,
+    "section_c-C4g": null,
+    "section_c-C5a": null,
+    "section_c-C5b": null,
+    "section_c-C5c": null,
+    "section_c-C6": null,
+    "section_c-com_C1": "",
+    "section_c-com_C2bii": "",
+    "section_c-com_C2c": "",
+    "section_c-com_C2d": "",
+    "section_c-com_C3": "",
+    "section_c-com_C4a": "",
+    "section_c-com_C4b": "",
+    "section_c-com_C4c": "",
+    "section_c-com_C4d": "",
+    "section_c-com_C4e": "",
+    "section_c-com_C4f": "",
+    "section_c-com_C4g": "",
+    "section_c-com_C5a": "",
+    "section_c-com_C5b": "",
+    "section_c-com_C5c": "",
+    "section_c-com_C6": "",
+    "section_c-continue": 0,
+    "section_c-evi_C1": null,
+    "section_c-evi_C2bii": null,
+    "section_c-evi_C2c": null,
+    "section_c-evi_C2d": null,
+    "section_c-evi_C3": null,
+    "section_c-evi_C4a": null,
+    "section_c-evi_C4b": null,
+    "section_c-evi_C4c": null,
+    "section_c-evi_C4d": null,
+    "section_c-evi_C4e": null,
+    "section_c-evi_C4f": null,
+    "section_c-evi_C4g": null,
+    "section_c-evi_C5a": null,
+    "section_c-evi_C5b": null,
+    "section_c-evi_C5c": null,
+    "section_c-evi_C6": null,
+    "section_c-help_C1": 0,
+    "section_c-help_C2bii": 0,
+    "section_c-help_C2c": 0,
+    "section_c-help_C2d": 0,
+    "section_c-help_C3": 0,
+    "section_c-help_C4a": 0,
+    "section_c-help_C4b": 0,
+    "section_c-help_C4c": 0,
+    "section_c-help_C4d": 0,
+    "section_c-help_C4e": 0,
+    "section_c-help_C4f": 0,
+    "section_c-help_C4g": 0,
+    "section_c-help_C5a": 0,
+    "section_c-help_C5b": 0,
+    "section_c-help_C5c": 0,
+    "section_c-help_C6": 0,
+    "section_d-D1": null,
+    "section_d-com_D1": "",
+    "section_d-continue": 0,
+    "section_d-evi_D1": null,
+    "section_d-help_D1": 0,
+    "spatial-assess_poly_pth": 0,
+    "spatial-assess_poly_pth_clear": 0,
+    "spatial-clim_var_dir": 0,
+    "spatial-clim_var_dir_clear": 0,
+    "spatial-continue": 0,
+    "spatial-gain_from": 1,
+    "spatial-gain_mod": 1,
+    "spatial-gain_mod_comm": "",
+    "spatial-gain_to": 1,
+    "spatial-hidden": "",
+    "spatial-lost_from": -1,
+    "spatial-lost_to": -1,
+    "spatial-maint_from": 0,
+    "spatial-maint_to": 0,
+    "spatial-nonbreed_poly_pth": 0,
+    "spatial-nonbreed_poly_pth_clear": 0,
+    "spatial-ns_from": 99,
+    "spatial-ns_to": 99,
+    "spatial-protected_poly_pth": 0,
+    "spatial-protected_poly_pth_clear": 0,
+    "spatial-ptn_poly_pth": 0,
+    "spatial-ptn_poly_pth_clear": 0,
+    "spatial-rng_chg_used": "no",
+    "spatial-rng_poly_pth": 0,
+    "spatial-rng_poly_pth_clear": 0,
+    "spatial-startSpatial": 0,
+    "species-assessment_notes": "",
+    "species-assessor_name": "",
+    "species-cave": false,
+    "species-common_name": "",
+    "species-continue": 0,
+    "species-geo_location": "",
+    "species-mig": false,
+    "species-species_name": "",
+    "species-tax_grp": "Vascular Plant",
+    "tabset": "home"
+  },
+  "output": {
+    "home-ui_loaded": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "results-calcFlag": false,
+    "save-status": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "section_c-ui_C2ai": {
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"shiny-output-error-validation\">Required Spatial Data not provided.<\/span>\n  <br/>\n  <span>\n    Run Spatial Data Analysis with \n    \"Range Polygon\" and \"Prepared Climate Data\"\n     first\n  <\/span>\n<\/div>\n<div class=\"shinyjs-hide\">\n  <div id=\"section_c-C2aidiv\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_c-C2ai\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2ai-label\">\n          <label class=\"control-label\" id=\"section_c-C2ai-label\" for=\"section_c-C2ai\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2ai\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_c-help_C2ai\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-evi_C2ai\" id=\"section_c-evi_C2ai-label\"><\/label>\n        <div>\n          <select id=\"section_c-evi_C2ai\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_c-evi_C2ai\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"shiny-input-textarea form-group shiny-input-container\" style=\"width:100%;\">\n          <label class=\"control-label shiny-label-null\" for=\"section_c-com_C2ai\" id=\"section_c-com_C2ai-label\"><\/label>\n          <textarea id=\"section_c-com_C2ai\" class=\"form-control\" placeholder=\"Comments\" style=\"width:100%;height:150px;\" data-update-on=\"change\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_c-ui_C2aii": {
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"optional-spatial\">Optional Spatial Data not provided<\/span>\n  <br/>\n  <span>\n    To calculate, provide \n    \"Physiological Thermal Niche\"\n     on the Spatial Data Analysis page\n  <\/span>\n<\/div>\n<div>\n  <div id=\"section_c-C2aiidiv\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_c-C2aii\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2aii-label\">\n          <label class=\"control-label\" id=\"section_c-C2aii-label\" for=\"section_c-C2aii\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2aii\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_c-help_C2aii\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-evi_C2aii\" id=\"section_c-evi_C2aii-label\"><\/label>\n        <div>\n          <select id=\"section_c-evi_C2aii\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_c-evi_C2aii\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"shiny-input-textarea form-group shiny-input-container\" style=\"width:100%;\">\n          <label class=\"control-label shiny-label-null\" for=\"section_c-com_C2aii\" id=\"section_c-com_C2aii-label\"><\/label>\n          <textarea id=\"section_c-com_C2aii\" class=\"form-control\" placeholder=\"Comments\" style=\"width:100%;height:150px;\" data-update-on=\"change\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_c-ui_C2bi": {
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"shiny-output-error-validation\">Required Spatial Data not provided.<\/span>\n  <br/>\n  <span>\n    Run Spatial Data Analysis with \n    \"Range Polygon\" and \"Prepared Climate Data\"\n     first\n  <\/span>\n<\/div>\n<div class=\"shinyjs-hide\">\n  <div id=\"section_c-C2bidiv\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_c-C2bi\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_c-C2bi-label\">\n          <label class=\"control-label\" id=\"section_c-C2bi-label\" for=\"section_c-C2bi\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_c-C2bi\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_c-help_C2bi\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_c-evi_C2bi\" id=\"section_c-evi_C2bi-label\"><\/label>\n        <div>\n          <select id=\"section_c-evi_C2bi\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_c-evi_C2bi\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"shiny-input-textarea form-group shiny-input-container\" style=\"width:100%;\">\n          <label class=\"control-label shiny-label-null\" for=\"section_c-com_C2bi\" id=\"section_c-com_C2bi-label\"><\/label>\n          <textarea id=\"section_c-com_C2bi\" class=\"form-control\" placeholder=\"Comments\" style=\"width:100%;height:150px;\" data-update-on=\"change\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_d-ui_D2": {
+      "html": "<div>\n  <div id=\"section_d-D2div\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_d-D2\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_d-D2-label\">\n          <label class=\"control-label\" id=\"section_d-D2-label\" for=\"section_d-D2\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D2\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D2\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D2\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D2\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_d-help_D2\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_d-evi_D2\" id=\"section_d-evi_D2-label\"><\/label>\n        <div>\n          <select id=\"section_d-evi_D2\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_d-evi_D2\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"shiny-input-textarea form-group shiny-input-container\" style=\"width:100%;\">\n          <label class=\"control-label shiny-label-null\" for=\"section_d-com_D2\" id=\"section_d-com_D2-label\"><\/label>\n          <textarea id=\"section_d-com_D2\" class=\"form-control\" placeholder=\"Comments\" style=\"width:100%;height:150px;\" data-update-on=\"change\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_d-ui_D2D3": {
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"optional-spatial\">Optional Spatial Data not provided<\/span>\n  <br/>\n  <span>\n    To calculate, provide \n    \"Projected Range Changes\"\n     on the Spatial Data Analysis page\n  <\/span>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "section_d-ui_D3": {
+      "html": "<div>\n  <div id=\"section_d-D3div\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_d-D3\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_d-D3-label\">\n          <label class=\"control-label\" id=\"section_d-D3-label\" for=\"section_d-D3\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D3\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D3\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D3\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D3\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_d-help_D3\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_d-evi_D3\" id=\"section_d-evi_D3-label\"><\/label>\n        <div>\n          <select id=\"section_d-evi_D3\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_d-evi_D3\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"shiny-input-textarea form-group shiny-input-container\" style=\"width:100%;\">\n          <label class=\"control-label shiny-label-null\" for=\"section_d-com_D3\" id=\"section_d-com_D3-label\"><\/label>\n          <textarea id=\"section_d-com_D3\" class=\"form-control\" placeholder=\"Comments\" style=\"width:100%;height:150px;\" data-update-on=\"change\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "section_d-ui_D4": {
+      "html": "<div style=\"margin-left: 1em; margin-bottom: 1em;\">\n  <span class=\"optional-spatial\">Optional Spatial Data not provided<\/span>\n  <br/>\n  <span>\n    To calculate, provide \n    \"Projected Range Changes\" and \"Protected Areas\"\n     on the Spatial Data Analysis page\n  <\/span>\n<\/div>\n<div>\n  <div id=\"section_d-D4div\" style=\"margin-left: 1em; margin-top: -1.5em\">\n    <div class=\"row\">\n      <div class=\"col-sm-9\">\n        <div id=\"section_d-D4\" class=\"form-group shiny-input-checkboxgroup shiny-input-container shiny-input-container-inline\" role=\"group\" aria-labelledby=\"section_d-D4-label\">\n          <label class=\"control-label\" id=\"section_d-D4-label\" for=\"section_d-D4\">\n            <span style=\"color:dimgray;\">Spatial data not provided, answer based on other evidence or leave blank for unknown<\/span>\n          <\/label>\n          <div class=\"shiny-options-group\">\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D4\" value=\"3\"/>\n              <span>Greatly increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D4\" value=\"2\"/>\n              <span>Increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D4\" value=\"1\"/>\n              <span>Somewhat increase<\/span>\n            <\/label>\n            <label class=\"checkbox-inline\">\n              <input type=\"checkbox\" name=\"section_d-D4\" value=\"0\"/>\n              <span>Neutral<\/span>\n            <\/label>\n          <\/div>\n        <\/div>\n      <\/div>\n      <div class=\"col-sm-1\">\n        <div style=\"position: absolute;top: 15px;\">\n          <button id=\"section_d-help_D4\" type=\"button\" class=\"btn btn-default action-button\">\n            <i class=\"fas fa-info\" role=\"presentation\" aria-label=\"info icon\"><\/i>\n            \n          <\/button>\n        <\/div>\n      <\/div>\n    <\/div>\n    <div style=\"margin-top: -1.5em\">\n      <div class=\"form-group shiny-input-container\">\n        <label class=\"control-label shiny-label-null\" for=\"section_d-evi_D4\" id=\"section_d-evi_D4-label\"><\/label>\n        <div>\n          <select id=\"section_d-evi_D4\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"\" selected>Type of Evidence<\/option>\n<option value=\"Literature\">Literature<\/option>\n<option value=\"Expert Opinion\">Expert Opinion<\/option>\n<option value=\"Spatial Analysis\">Spatial Analysis<\/option>\n<option value=\"Spatial Analysis - ccviR\">Spatial Analysis - ccviR<\/option>\n<option value=\"Other\">Other<\/option><\/select>\n          <script type=\"application/json\" data-for=\"section_d-evi_D4\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n        <\/div>\n      <\/div>\n      <div style=\"margin-top: -1em\">\n        <div class=\"shiny-input-textarea form-group shiny-input-container\" style=\"width:100%;\">\n          <label class=\"control-label shiny-label-null\" for=\"section_d-com_D4\" id=\"section_d-com_D4-label\"><\/label>\n          <textarea id=\"section_d-com_D4\" class=\"form-control\" placeholder=\"Comments\" style=\"width:100%;height:150px;\" data-update-on=\"change\"><\/textarea>\n        <\/div>\n      <\/div>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.5.2",
+          "src": {
+            "href": "font-awesome-6.5.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "js/selectize.min.js",
+            "accessibility/js/selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "css/selectize.bootstrap3.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    }
+  },
+  "export": {
+    "save-out_data": {
+      "species_name": [
+        ""
+      ],
+      "common_name": [
+        ""
+      ],
+      "geo_location": [
+        ""
+      ],
+      "assessor_name": [
+        ""
+      ],
+      "assessment_notes": [
+        ""
+      ],
+      "tax_grp": [
+        "Vascular Plant"
+      ],
+      "mig": [
+        false
+      ],
+      "cave": [
+        false
+      ],
+      "evi_B1": [
+        ""
+      ],
+      "com_B1": [
+        ""
+      ],
+      "B1": [
+        "-1"
+      ],
+      "evi_B2a": [
+        ""
+      ],
+      "com_B2a": [
+        ""
+      ],
+      "B2a": [
+        "-1"
+      ],
+      "evi_B2b": [
+        ""
+      ],
+      "com_B2b": [
+        ""
+      ],
+      "B2b": [
+        "-1"
+      ],
+      "evi_B3": [
+        ""
+      ],
+      "com_B3": [
+        ""
+      ],
+      "B3": [
+        "-1"
+      ],
+      "evi_C1": [
+        ""
+      ],
+      "com_C1": [
+        ""
+      ],
+      "C1": [
+        "-1"
+      ],
+      "evi_C2ai": [
+        ""
+      ],
+      "com_C2ai": [
+        ""
+      ],
+      "C2ai": [
+        "-1"
+      ],
+      "evi_C2aii": [
+        ""
+      ],
+      "com_C2aii": [
+        ""
+      ],
+      "C2aii": [
+        "-1"
+      ],
+      "evi_C2bi": [
+        ""
+      ],
+      "com_C2bi": [
+        ""
+      ],
+      "C2bi": [
+        "-1"
+      ],
+      "evi_C2bii": [
+        ""
+      ],
+      "com_C2bii": [
+        ""
+      ],
+      "C2bii": [
+        "-1"
+      ],
+      "evi_C2c": [
+        ""
+      ],
+      "com_C2c": [
+        ""
+      ],
+      "C2c": [
+        "-1"
+      ],
+      "evi_C2d": [
+        ""
+      ],
+      "com_C2d": [
+        ""
+      ],
+      "C2d": [
+        "-1"
+      ],
+      "evi_C3": [
+        ""
+      ],
+      "com_C3": [
+        ""
+      ],
+      "C3": [
+        "-1"
+      ],
+      "evi_C4a": [
+        ""
+      ],
+      "com_C4a": [
+        ""
+      ],
+      "C4a": [
+        "-1"
+      ],
+      "evi_C4b": [
+        ""
+      ],
+      "com_C4b": [
+        ""
+      ],
+      "C4b": [
+        ""
+      ],
+      "evi_C4c": [
+        ""
+      ],
+      "com_C4c": [
+        ""
+      ],
+      "C4c": [
+        "-1"
+      ],
+      "evi_C4d": [
+        ""
+      ],
+      "com_C4d": [
+        ""
+      ],
+      "C4d": [
+        "-1"
+      ],
+      "evi_C4e": [
+        ""
+      ],
+      "com_C4e": [
+        ""
+      ],
+      "C4e": [
+        "-1"
+      ],
+      "evi_C4f": [
+        ""
+      ],
+      "com_C4f": [
+        ""
+      ],
+      "C4f": [
+        "-1"
+      ],
+      "evi_C4g": [
+        ""
+      ],
+      "com_C4g": [
+        ""
+      ],
+      "C4g": [
+        "-1"
+      ],
+      "evi_C5a": [
+        ""
+      ],
+      "com_C5a": [
+        ""
+      ],
+      "C5a": [
+        "-1"
+      ],
+      "evi_C5b": [
+        ""
+      ],
+      "com_C5b": [
+        ""
+      ],
+      "C5b": [
+        "-1"
+      ],
+      "evi_C5c": [
+        ""
+      ],
+      "com_C5c": [
+        ""
+      ],
+      "C5c": [
+        "-1"
+      ],
+      "evi_C6": [
+        ""
+      ],
+      "com_C6": [
+        ""
+      ],
+      "C6": [
+        "-1"
+      ],
+      "evi_D1": [
+        ""
+      ],
+      "com_D1": [
+        ""
+      ],
+      "D1": [
+        "-1"
+      ],
+      "evi_D2": [
+        ""
+      ],
+      "com_D2": [
+        ""
+      ],
+      "D2": [
+        "-1"
+      ],
+      "evi_D3": [
+        ""
+      ],
+      "com_D3": [
+        ""
+      ],
+      "D3": [
+        "-1"
+      ],
+      "evi_D4": [
+        ""
+      ],
+      "com_D4": [
+        ""
+      ],
+      "D4": [
+        "-1"
+      ],
+      "ccviR_version": [
+        [
+          0,
+          1,
+          1
+        ]
+      ],
+      "scenario_name": [
+        null
+      ],
+      "CCVI_index": [
+        null
+      ],
+      "CCVI_conf_index": [
+        null
+      ],
+      "mig_exposure": [
+        null
+      ],
+      "b_c_score": [
+        null
+      ],
+      "d_score": [
+        null
+      ],
+      "MC_freq_EV": [
+        null
+      ],
+      "MC_freq_HV": [
+        null
+      ],
+      "MC_freq_MV": [
+        null
+      ],
+      "MC_freq_LV": [
+        null
+      ],
+      "MC_freq_IE": [
+        null
+      ],
+      "MAT_1": [
+        null
+      ],
+      "MAT_2": [
+        null
+      ],
+      "MAT_3": [
+        null
+      ],
+      "MAT_4": [
+        null
+      ],
+      "MAT_5": [
+        null
+      ],
+      "MAT_6": [
+        null
+      ],
+      "CMD_1": [
+        null
+      ],
+      "CMD_2": [
+        null
+      ],
+      "CMD_3": [
+        null
+      ],
+      "CMD_4": [
+        null
+      ],
+      "CMD_5": [
+        null
+      ],
+      "CMD_6": [
+        null
+      ],
+      "CCEI_1": [
+        null
+      ],
+      "CCEI_2": [
+        null
+      ],
+      "CCEI_3": [
+        null
+      ],
+      "CCEI_4": [
+        null
+      ],
+      "prop_non_breed_over_ccei": [
+        null
+      ],
+      "HTN_1": [
+        null
+      ],
+      "HTN_2": [
+        null
+      ],
+      "HTN_3": [
+        null
+      ],
+      "HTN_4": [
+        null
+      ],
+      "PTN": [
+        null
+      ],
+      "MAP_max": [
+        null
+      ],
+      "MAP_min": [
+        null
+      ],
+      "range_change": [
+        null
+      ],
+      "range_overlap": [
+        null
+      ],
+      "range_size": [
+        null
+      ],
+      "protected": [
+        null
+      ],
+      "gain_mod": [
+        null
+      ],
+      "gain_mod_comm": [
+        null
+      ],
+      "lost": [
+        null
+      ],
+      "maint": [
+        null
+      ],
+      "gain": [
+        null
+      ],
+      "ns": [
+        null
+      ],
+      "rng_chg_used": [
+        null
+      ],
+      "GCM_or_Ensemble_name": [
+        null
+      ],
+      "Historical_normal_period": [
+        null
+      ],
+      "Future_period": [
+        null
+      ],
+      "Emissions_scenario": [
+        null
+      ],
+      "Link_to_source": [
+        null
+      ],
+      "rng_poly_pth": [
+        null
+      ],
+      "assess_poly_pth": [
+        null
+      ],
+      "nonbreed_poly_pth": [
+        null
+      ],
+      "ptn_poly_pth": [
+        null
+      ],
+      "clim_dir_pth": [
+        null
+      ],
+      "rng_chg_pth": [
+        null
+      ],
+      "protected_poly_pth": [
+        null
+      ]
+    },
+    "species-cave": false,
+    "species-species_data": {
+      "species_name": [
+        ""
+      ],
+      "common_name": [
+        ""
+      ],
+      "geo_location": [
+        ""
+      ],
+      "assessor_name": [
+        ""
+      ],
+      "assessment_notes": [
+        ""
+      ],
+      "tax_grp": [
+        "Vascular Plant"
+      ],
+      "mig": [
+        false
+      ],
+      "cave": [
+        false
+      ]
+    }
+  }
+}

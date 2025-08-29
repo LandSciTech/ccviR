@@ -5,8 +5,8 @@
 #' using \code{\link{prep_clim_data}}.
 #'
 #' @param root_pth A folder location where all the climate data is stored. The
-#'   names must match one of \code{c("MAT.*tif$", "CMD.*tif$", "clim_poly.*shp",
-#'   "MAP.*tif$", "ccei.*tif$|CCEI.*tif$","MWMT.*tif$|HTN.*tif$")} and the first
+#'   names must match one of \code{c("MAT.*tif", "CMD.*tif", "clim_poly.*shp",
+#'   "MAP.*tif", "ccei.*tif|CCEI.*tif","MWMT.*tif|HTN.*tif")} and the first
 #'   three are required.
 #' @param scenario_names character vector with names that identify multiple
 #'   future climate scenarios. If this is supplied the raster file must include
@@ -14,6 +14,8 @@
 #'   are two MAT files "MAT_RCP 4.5.tif" and "MAT_RCP 8.5.tif" the scenario names
 #'   should be "RCP 4.5" and "RCP 8.5". This will happen automatically if the
 #'   scenario name is provided to \code{\link{prep_clim_data}}.
+#'
+#' @inheritParams common_docs
 #'
 #' @return A list of climate variables with names "mat", "cmd", "map", "ccei",
 #'   "htn", "clim_poly". If multiple scenarios are used mat, cmd and ccei will
@@ -29,7 +31,7 @@
 #'
 #' get_clim_vars(pth, scn_nms)
 
-get_clim_vars <- function(root_pth, scenario_names = "scn1"){
+get_clim_vars <- function(root_pth, scenario_names = "scn1", quiet = FALSE){
   if(!dir.exists(root_pth)){
     stop("directory ", root_pth," does not exist", call. = FALSE)
   }
@@ -37,18 +39,20 @@ get_clim_vars <- function(root_pth, scenario_names = "scn1"){
   # remove spaces from scenario_names
   scenario_names <- stringr::str_replace_all(scenario_names, "\\s", "_")
 
-  pats <- c("MAT.*tif$", "CMD.*tif$", "MAP.*tif$", "ccei.*tif$|CCEI.*tif$",
-            "MWMT.*tif$|HTN.*tif$", "clim_poly.*shp")
+  pats <- c("MAT.*\\.tif", "CMD.*\\.tif", "MAP.*\\.tif", "ccei.*\\.tif|CCEI.*\\.tif",
+            "MWMT.*\\.tif|HTN.*\\.tif", "clim_poly.*\\.shp")
   err <- c(T, T, F, F, F, T)
 
-  clim_vars <- purrr::map2(pats, err, ~check_clim(root_pth, .x, .y, scenario_names)) %>%
-    purrr::map(load_clim, scenario_names) %>%
+  clim_vars <- purrr::map2(
+    pats, err,
+    ~check_clim(root_pth, .x, .y, scenario_names)) %>%
+    purrr::map(~load_clim(.x, scenario_names, quiet = quiet)) %>%
     purrr::set_names(c("mat", "cmd", "map", "ccei", "htn", "clim_poly"))
 
   return(clim_vars)
 }
 
-check_clim <- function(root_pth, pattern, error, scenario_names = "scn1"){
+check_clim <- function(root_pth, pattern, error, scenario_names = "scn1") {
   pth <- list.files(root_pth, pattern = pattern, full.names = TRUE)
 
   if(length(pth) == 0){
@@ -73,7 +77,7 @@ check_clim <- function(root_pth, pattern, error, scenario_names = "scn1"){
   pth
 }
 
-load_clim <- function(pth, scenario_names = "scn1"){
+load_clim <- function(pth, scenario_names = "scn1", quiet = FALSE) {
 
   if(length(pth) > 1){
     # make sure the order of pth matches scenario_names
@@ -90,7 +94,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
 
     out <- terra::rast(out)
 
-    out <- check_trim(out)
+    out <- check_trim(out, quiet = quiet)
 
     return(out)
   }
@@ -98,6 +102,7 @@ load_clim <- function(pth, scenario_names = "scn1"){
   if(is.null(pth)){
     return(NULL)
   }
+
   out <- tryCatch({
     if(fs::path_ext(pth) == "shp"){
       out <- st_read(pth, agr = "constant", quiet = TRUE)
@@ -161,10 +166,10 @@ load_clim <- function(pth, scenario_names = "scn1"){
 # fast but not memory safe
 # trim_ras <- utils::getFromNamespace(".memtrimlayer", ns = "raster")
 
-check_trim <- function(ras){
+check_trim <- function(ras, quiet = FALSE){
   do_trim <- sum(!is.na(ras[1:10,]))
   if(do_trim == 0){
-    message("doing trim")
+    if(!quiet) message("doing trim")
     ras <- terra::trim(ras)
   }
   return(ras)

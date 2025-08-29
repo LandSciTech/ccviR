@@ -1,2 +1,5 @@
 url: https://landscitech.github.io/ccviR/
+template:
+  bootstrap: 5
+  toc_depth: 4
 

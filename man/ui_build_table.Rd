@@ -5,7 +5,7 @@
 \alias{ui_build_table}
 \title{Table to build the UI}
 \format{
-An object of class \code{data.frame} with 47 rows and 12 columns.
+An object of class \code{data.frame} with 48 rows and 12 columns.
 }
 \usage{
 ui_build_table

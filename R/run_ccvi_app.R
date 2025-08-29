@@ -11,21 +11,14 @@
 #' @param test.mode Should the app be launched using shiny test.mode. Only set
 #'   to TRUE for debugging.
 #'
-#' @import shiny
-#' @import dplyr
-#' @import sf
-#' @import shinyFiles
-#' @importFrom tmap tmap_leaflet
-#' @importFrom terra has.RGB
-#'
 #' @export
 #'
 #' @returns A shiny app.
 #'
-#' @examples
-#' if(interactive()){
+#' @examplesIf interactive()
 #'  run_ccvi_app("demo")
-#' }
+#'  run_ccvi_app(file_dir = "../")
+
 run_ccvi_app <- function(file_dir = getwd(),
                          launch.browser = TRUE,
                          port = getOption("shiny.port"),

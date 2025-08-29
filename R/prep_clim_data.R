@@ -1,3 +1,252 @@
+#' Prepare climate data for multiple scenarios
+#'
+#' Prepare data from raw to form needed for calculating the index. See the
+#' NatureServe Guidelines for details on how the data is prepared.
+#' This processes multiple scenarios with the same set of breaks.
+#'
+#' Definition of input data sets and file names required in in_folder:
+#' \describe{
+#'   \item{mat_norm:}{"MAT" mean annual temperature for the historical normal period}
+#'   \item{mat_fut:}{"MAT_2050" mean annual temperature for the future under
+#'   climate change it can be any number eg 2050, 2100}
+#'   \item{cmd_norm:}{"CMD" climate moisture deficit for the historical normal period}
+#'   \item{cmd_fut:}{"CMD_2050" climate moisture deficit for the future under
+#'   climate change it can be any number eg 2050, 2100}
+#'   \item{ccei:}{"CCEI" Climate Change Exposure Index from NatureServe website}
+#'   \item{map:}{"MAP" mean annual precipitation for the historical normal period}
+#'   \item{mwmt:}{"MWMT" mean warmest month temperature for the historical
+#'   normal period}
+#'   \item{mcmt:}{"MCMT" mean coldest month temperature for the historical
+#'   normal period}
+#'   \item{clim_poly:}{An optional shapefile with a polygon of the range of the
+#'   climate data. It will be created from the climate data if it is missing
+#'   but it is faster to provide it.}
+#' }
+#'
+#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd", ".img", ".bil"
+#' and ".gpkg" (see `spatial_file_raster()`).
+#'
+#' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt,clim_poly
+#'   file paths to find data if in_folder is not given
+#' @param in_folder file path where files are stored. Files must be named
+#'   according to the convention described in details
+#' @param reproject should the data be re-projected to lat/long? Not recommended.
+#'
+#' @inheritParams common_docs
+#'
+#' @return Returns a list of matrices with the breaks used to classify mat, cmd
+#'   and ccei. Processed data is saved in \code{out_folder}
+#'
+#' @seealso \code{\link{get_clim_vars}} for loading the processed data.
+#'
+#' @export
+#'
+#' @examples
+#' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
+#' pth_out <- fs::dir_create("processed_temp")
+#'
+#' # Process both scenarios at once with the same set of breaks
+#'
+#' prep_clim_data_multi(
+#'   mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+#'   mat_fut = file.path(in_folder, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
+#'   cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+#'   cmd_fut = file.path(in_folder, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif")),
+#'   map = file.path(in_folder, "NB_norm_MAP.tif"),
+#'   mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+#'   mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+#'   out_folder = pth_out,
+#'   clim_poly = file.path(system.file("extdata", package = "ccviR"),
+#'                         "assess_poly.shp"),
+#'   scenario_name = c("RCP 4.5", "RCP 8.5"))
+#'
+#' # Clean up
+#' fs::dir_delete(pth_out)
+#'
+#'
+#' # Process both scenarios at with CCEI
+#' pth_out <- fs::dir_create("processed_temp")
+#'
+#' prep_clim_data_multi(
+#'   mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+#'   mat_fut = file.path(in_folder, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
+#'   cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+#'   cmd_fut = file.path(in_folder, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif")),
+#'   ccei = file.path(in_folder, c("ccei_ssp245_fl.tif", "ccei_ssp585_fl.tif")),
+#'   map = file.path(in_folder, "NB_norm_MAP.tif"),
+#'   mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+#'   mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+#'   out_folder = pth_out,
+#'   clim_poly = file.path(system.file("extdata", package = "ccviR"),
+#'                         "assess_poly.shp"),
+#'   scenario_name = c("RCP 4.5", "RCP 8.5"))
+#'
+#' # Clean up
+#' fs::dir_delete(pth_out)
+
+prep_clim_data_multi <- function(
+    mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
+    map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
+    in_folder = NULL, out_folder,
+    reproject = FALSE, overwrite = FALSE,
+    scenario_name = "", brks = NULL, brks_mat = NULL,
+    brks_cmd = NULL, brks_ccei = NULL, quiet = FALSE) {
+
+  n_scn <- length(scenario_name)
+
+  if(length(ccei) != n_scn && length(ccei) == 1) {
+    warning("Mismatch between scenarios and CCEI, using the same CCEI for all scenarios",
+            call. = FALSE)
+    ccei <- rep(ccei, n_scn)
+  }
+
+  if(n_scn != length(mat_fut) | n_scn != length(cmd_fut)) {
+    stop("Mismatch between scenarios and future MAT or CMD\n",
+         "Provide the same number of each", call. = FALSE)
+  }
+
+  if(!overwrite && length(fs::dir_ls(out_folder)) > 0) {
+    stop("out_folder is not empty and overwrite is FALSE, ",
+         "either use overwrite, or an empty directory", call. = FALSE)
+  }
+  overwrite <- TRUE # Because either empty, so okay, or overwrite is already TRUE
+
+  i <- 1
+  if(is.null(brks)) {
+    brks <- list("brks_cmd" = brks_cmd,
+                 "brks_mat" = brks_mat,
+                 "brks_ccei" = brks_ccei)
+  }
+
+  while(i <= n_scn) {
+    inform_prog(paste0("Preparing Scenario ", i), quiet, (i-1)/n_scn, set = TRUE)
+    b <- prep_clim_data(
+      mat_norm = mat_norm,
+      mat_fut = mat_fut[i],
+      cmd_norm = cmd_norm,
+      cmd_fut = cmd_fut[i],
+      ccei = ccei[i],
+      map = map,
+      mwmt = mwmt,
+      mcmt = mcmt,
+      clim_poly = clim_poly,
+      out_folder = out_folder,
+      overwrite = overwrite,
+      scenario_name = scenario_name[i],
+      brks = brks,
+      quiet = quiet,
+      n = c(i, n_scn)
+    )
+
+    # Always use the breaks provided OR the first breaks calculated
+    if(i == 1) {
+      # Supply any which are missing
+      for(m in c("brks_mat", "brks_cmd", "brks_ccei")) {
+        if(is.null(brks[[m]]) & !is.null(b[[m]])) brks[[m]] <- b[[m]]
+      }
+    }
+    i <- i + 1
+  }
+  brks
+}
+
+
+#' Prepare README for climate data
+#'
+#' @param gcm_ensemble Character vector. GCM ensemble names
+#' @param hist_period Character vector. Historical periods used.
+#' @param fut_period Character vector. Future periods used.
+#' @param emissions_scenario Character vector. Emissions scenarios.
+#' @param url Character vector. Source link
+#'
+#' @inheritParams common_docs
+#'
+#' @returns Nothing, but writes the readme to the `out_folder`
+#' @export
+#'
+#' @examples
+#' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
+#' pth_out <- fs::dir_create("processed_temp")
+#'
+#' # Process both scenarios at once with the same set of breaks
+#' brks <- prep_clim_data_multi(
+#'   mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
+#'   mat_fut = file.path(in_folder, c("NB_RCP.4.5_MAT.tif", "NB_RCP.8.5_MAT.tif")),
+#'   cmd_norm = file.path(in_folder, "NB_norm_CMD.tif"),
+#'   cmd_fut = file.path(in_folder, c("NB_RCP.4.5_CMD.tif", "NB_RCP.8.5_CMD.tif")),
+#'   map = file.path(in_folder, "NB_norm_MAP.tif"),
+#'   mwmt = file.path(in_folder, "NB_norm_MWMT.tif"),
+#'   mcmt = file.path(in_folder, "NB_norm_MCMT.tif"),
+#'   out_folder = pth_out,
+#'   clim_poly = file.path(system.file("extdata", package = "ccviR"),
+#'                         "assess_poly.shp"),
+#'   scenario_name = c("RCP 4.5", "RCP 8.5"))
+#'
+#' # Add README
+#' prep_clim_readme(
+#'   scenario_name = c("RCP 4.5", "RCP 8.5"),
+#'   gcm_ensemble = "AdaptWest 15 CMIP5 AOGCM Ensemble",
+#'   hist_period = "1961-1990",
+#'   fut_period = "2050s",
+#'   emissions_scenario = c("RCP 4.5", "RCP 8.5"),
+#'   url = "https://adaptwest.databasin.org/pages/adaptwest-climatena-cmip5/",
+#'   out_folder = pth_out,
+#'   brks = brks)
+#'
+#' # Clean up
+#' fs::dir_delete(pth_out)
+
+prep_clim_readme <- function(
+    scenario_name, gcm_ensemble, hist_period,
+    fut_period, emissions_scenario, url,
+    out_folder, brks = NULL,
+    brks_mat = NULL, brks_cmd = NULL, brks_ccei = NULL) {
+
+  if(is.null(brks)) {
+    brks <- list("brks_mat" = brks_mat,
+                 "brks_cmd" = brks_cmd,
+                 "brks_ccei" = brks_ccei)
+  }
+  brks <- purrr::map(brks, brks_to_txt)
+
+  clim_readme <- tibble(Scenario_Name = scenario_name,
+                        GCM_or_Ensemble_name = gcm_ensemble,
+                        Historical_normal_period = hist_period,
+                        Future_period = fut_period,
+                        Emissions_scenario = emissions_scenario,
+                        Link_to_source = url,
+                        !!!brks)
+
+  # if(fs::file_exists(fs::path(out_dir, "climate_data_readme.csv"))) {
+  #   clim_readme_cur <- utils::read.csv(fs::path(out_dir, "climate_data_readme.csv")) %>%
+  #     mutate(across(everything(), as.character))
+  #
+  #   clim_readme <- bind_rows(clim_readme_cur, clim_readme) %>%
+  #     distinct(.data$Scenario_Name, .keep_all = TRUE)
+  #
+  #   # set lower and upper bounds based on min and max across all scenarios
+  #   clim_readme <- clim_readme %>%
+  #     mutate(across(contains("brks_") & where(~!all(is.na(.x)|.x == "")), \(b){
+  #       list(b %>% unique() %>% stringr::str_split(";") %>% unlist() %>%
+  #              as_tibble() %>%
+  #              tidyr::separate(.data$value, into = c("class", "min", "max"),
+  #                              sep = ": | - ", ) %>%
+  #              mutate(across(everything(),
+  #                            \(x) stringr::str_remove(x, "\\(|\\)") %>%
+  #                              as.numeric())) %>%
+  #              group_by(class) %>%
+  #              summarise(min = min(min), max = max(max)) %>%
+  #              select(min, max, class) %>% as.matrix() %>% brks_to_txt())
+  #     }))
+  # }
+
+  utils::write.csv(clim_readme, fs::path(out_folder, "climate_data_readme.csv"),
+                   row.names = FALSE)
+}
+
+
+
+
 #' Prepare climate data
 #'
 #' Prepare data from raw to form needed for calculating the index. See the
@@ -21,22 +270,19 @@
 #'   climate data. It will be created from the climate data if it is missing
 #'   but it is faster to provide it.}
 #' }
-#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd" and ".img"
+#'
+#' Accepted raster file types are ".asc", ".tif", ".nc", ".grd", ".img", ".bil"
+#' and ".gpkg" (see `spatial_file_raster()`).
 
 #' @param mat_norm,mat_fut,cmd_norm,cmd_fut,ccei,map,mwmt,mcmt,clim_poly
 #'   file paths to find data if in_folder is not given
 #' @param in_folder file path where files are stored. Files must be named
 #'   according to the convention described in details
-#' @param out_folder file path where the processed files will be saved
 #' @param reproject should the data be re-projected to lat/long? Not recommended.
-#' @param overwrite should existing files in out_folder be overwritten?
-#' @param scenario_name a string identifying the climate change scenario that
-#'   will be used as a suffix for the output files.
-#' @param brks_mat,brks_cmd,brks_ccei a matrix containing breaks to use for
-#'   classifying mat, cmd and ccei into 6, 6 and 4 classes, respectively. See
-#'   \code{\link[raster]{reclassify}} for details on the matrix format. If NULL,
-#'   the default, the breaks will be determined using the median and half the
-#'   interquartile range
+#' @param n Numeric vector. Only for use by `prep_clim_data_multi()` for progresses
+#'   messages and to skip unnecessary steps. Do not change.
+#'
+#' @inheritParams common_docs
 #'
 #' @return Returns a list of matrices with the breaks used to classify mat, cmd
 #'   and ccei. This list can be supplied to a future call to
@@ -49,8 +295,7 @@
 #'
 #' @examples
 #' in_folder <- system.file("extdata/clim_files/raw", package = "ccviR")
-#'
-#' pth_out <- system.file("extdata/clim_files/processed", package = "ccviR")
+#' pth_out <- fs::dir_create("processed_temp")
 #'
 #' # use first scenario to set breaks
 #' brks_out <- prep_clim_data(mat_norm = file.path(in_folder, "NB_norm_MAT.tif"),
@@ -77,26 +322,41 @@
 #'                scenario_name = "RCP 8.5",
 #'                brks_mat = brks_out$brks_mat, brks_cmd = brks_out$brks_cmd,
 #'                brks_ccei = brks_out$brks_ccei)
+#'
+#' fs::dir_delete(pth_out)
 
 prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
-                          map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
-                          in_folder = NULL, out_folder,
-                          reproject = FALSE, overwrite = FALSE,
-                          scenario_name = "", brks_mat = NULL,
-                          brks_cmd = NULL, brks_ccei = NULL){
+                           map = NULL, mwmt = NULL, mcmt = NULL, clim_poly = NULL,
+                           in_folder = NULL, out_folder,
+                           reproject = FALSE, overwrite = FALSE,
+                           scenario_name = "", brks = NULL,
+                           brks_mat = NULL,
+                           brks_cmd = NULL, brks_ccei = NULL, quiet = FALSE,
+                           n = c(1, 1)) {
+
+  if(!is.null(brks)) {
+    brks_mat <- brks$brks_mat
+    brks_cmd <- brks$brks_cmd
+    brks_ccei <- brks$brk_ccei
+  }
 
   # remove spaces from scenario_name
   scenario_name <- stringr::str_replace_all(scenario_name, "\\s", "_")
 
   if(length(out_folder) == 0 || missing(out_folder)){
-    stop("out_folder is missing with no default")
+    stop("out_folder is missing with no default", call. = FALSE)
   }
 
   if(!dir.exists(out_folder)){
     stop("out_folder does not exist", call. = FALSE)
   }
 
-  ext_accept <- c(".asc", ".tif", ".nc", ".grd", ".img")
+  # Get total steps for the process for messages
+  steps <- as.logical(!is.null(ccei)) + as.logical(!is.null(map)) +
+    as.logical(!is.null(mwmt) | !is.null(mcmt)) + 3
+  steps <- steps * n[2]
+
+  ext_accept <- ccviR::spatial_file_raster
 
   make_pat <- function(x, ext_accept){
     paste0(x, ext_accept, "$", collapse = "|")
@@ -116,9 +376,9 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
                           pattern = make_pat("MAT_\\d.*", ext_accept),
                           full.names = TRUE)
 
-    cmd_norm <-list.files(in_folder,
-                          pattern = make_pat("CMD", ext_accept),
-                          full.names = TRUE)
+    cmd_norm <- list.files(in_folder,
+                           pattern = make_pat("CMD", ext_accept),
+                           full.names = TRUE)
 
     cmd_fut <- list.files(in_folder,
                           pattern = make_pat("CMD_\\d.*", ext_accept),
@@ -171,28 +431,32 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   cmd_fut <- terra::rast(cmd_fut)
 
-  if(!is.null(ccei) && length(ccei) > 0){
+  if(isTruthy(ccei)){
     ccei <- terra::rast(ccei)
   } else {
     ccei <- NULL
   }
 
-  if(!is.null(map) && length(map) > 0){
+  if(isTruthy(map)){
     map_pth <- map
   } else {
     map_pth <- NULL
   }
 
-  if(!is.null(mwmt) && length(mwmt) > 0){
+  if(isTruthy(mwmt)){
     mwmt <- terra::rast(mwmt)
   } else {
     mwmt <- NULL
   }
 
-  if(!is.null(mcmt) && length(mcmt) > 0){
+  if(isTruthy(mcmt)){
     mcmt <- terra::rast(mcmt)
   } else {
     mcmt <- NULL
+  }
+
+  if(!sum(is.null(mwmt), is.null(mcmt)) %in% c(0, 2)) {
+    stop("Must provide both MCMT and MWMT or neither", call. = FALSE)
   }
 
   if(!is.null(clim_poly) && length(clim_poly) > 0){
@@ -205,52 +469,43 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   purrr::map(purrr::compact(list(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei,
                                  mwmt, mcmt)), check_crs)
 
-  message("processing MAT")
+  inform_prog("Processing MAT", quiet, steps)
 
-  brks_mat <- prep_exp(mat_norm, mat_fut,
-                       file.path(out_folder, paste0("MAT_reclass", scenario_name, ".tif")),
-                       reproject = reproject, overwrite = overwrite,
-                       brs = brks_mat)
+  brks_mat <- prep_exp(
+    mat_norm, mat_fut,
+    file.path(out_folder, paste0("MAT_reclass", scenario_name, ".tif")),
+    reproject = reproject, overwrite = overwrite,
+    brs = brks_mat)
 
   rm(mat_fut, mat_norm)
 
-  message("processing CMD")
+  inform_prog("Processing CMD", quiet, steps)
 
-  brks_cmd <- prep_exp(cmd_norm, cmd_fut,
-                       file.path(out_folder, paste0("CMD_reclass", scenario_name, ".tif")),
-                       reproject = reproject, overwrite = overwrite,
-                       brs = brks_cmd)
+  brks_cmd <- prep_exp(
+    cmd_norm, cmd_fut,
+    file.path(out_folder, paste0("CMD_reclass", scenario_name, ".tif")),
+    reproject = reproject, overwrite = overwrite,
+    brs = brks_cmd)
 
   rm(cmd_fut, cmd_norm)
 
   # Prepare other climate variables
   if(!is.null(ccei)){
     # CCEI
-    message("processing CCEI")
-    if(is.null(brks_ccei)){
-      brks_ccei <- c(0, 4, 5, 7, 25)
+    inform_prog("Processing CCEI", quiet, steps)
 
-      rcl_tbl_ccei <- matrix(c(brks_ccei[1:4], brks_ccei[2:5], 1:4), ncol = 3)
-    } else {
-      rcl_tbl_ccei <- brks_ccei
-    }
+    rcl_tbl_ccei <- ccei_reclassify(
+      ccei, brks_ccei, out_folder, scenario_name, overwrite)
 
-    ccei_reclass <- terra::classify(ccei, rcl_tbl_ccei, right = NA)
-
-    terra::writeRaster(ccei_reclass,
-                        file.path(out_folder,
-                                  paste0("CCEI_reclass", scenario_name, ".tif")),
-                        overwrite = overwrite, datatype = "INT2U")
-
-    rm(ccei_reclass, ccei, brks_ccei)
+    rm(ccei, brks_ccei)
   } else {
     rcl_tbl_ccei <- NULL
   }
 
 
   # MAP
-  if(!is.null(map_pth)){
-    message("processing MAP")
+  if(!is.null(map_pth) &&  n[1] == 1){
+    inform_prog("Processing MAP", quiet, n)
 
     if(reproject){
       ref_crs <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
@@ -269,8 +524,8 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
   }
 
   # MWMT - MCMT
-  if(!is.null(mwmt) && !is.null(mcmt)){
-    message("processing MWMT and MCMT")
+  if(!is.null(mwmt) && !is.null(mcmt) && n[1] == 1){
+    inform_prog("Processing MWMT and MCMT", quiet, n)
     dif_mt <- mwmt-mcmt
 
     rm(mwmt, mcmt)
@@ -304,32 +559,59 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 
   # Climate data polygon boundary
   #does a clim_poly already exist in output folder
-  clim_exists <- list.files(out_folder, pattern = "clim_poly.shp")
-  if(length(clim_exists) > 0 && !overwrite){
-    stop("A clim_poly already exists in out_folder. Set overwrite = TRUE or",
-         " clim_poly = path/to/existing/climpoly", call. = FALSE)
+
+  if(n[1] == 1) {
+    clim_exists <- list.files(out_folder, pattern = "clim_poly.shp")
+    if(length(clim_exists) > 0 && !overwrite){
+      stop("A clim_poly already exists in out_folder. Set overwrite = TRUE or",
+           " clim_poly = path/to/existing/climpoly", call. = FALSE)
+    }
+
+    if(is.null(clim_poly)){
+      # make polygon boundary from raster data
+      inform_prog("Creating clim_poly from raster data", quiet, n)
+
+      mat <- terra::rast(file.path(out_folder,
+                                   paste0("MAT_reclass", scenario_name, ".tif")))
+      mat <- terra::extend(mat, c(100,100), snap = "out")
+
+      clim_bound <- terra::as.contour(is.na(mat), levels = 1)
+
+      clim_poly <- clim_bound %>% sf::st_as_sf() %>%
+        sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
+        sf::st_union() %>%
+        sf::st_buffer(dist = 2 * terra::xres(mat))
+
+    }
+    sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
   }
 
-  if(is.null(clim_poly)){
-    # make polygon boundary from raster data
-    message("creating clim_poly from raster data")
-    mat <- terra::rast(file.path(out_folder,
-                                    paste0("MAT_reclass", scenario_name, ".tif")))
-    mat <- terra::extend(mat, c(100,100), snap = "out")
-
-    clim_bound <- terra::as.contour(is.na(mat), levels = 1)
-
-    clim_poly <- clim_bound %>% sf::st_as_sf() %>%
-      sf::st_polygonize() %>% sf::st_collection_extract("POLYGON") %>%
-      sf::st_union() %>%
-      sf::st_buffer(dist = 2 * terra::xres(mat))
-
-  }
-  sf::write_sf(clim_poly, file.path(out_folder, "clim_poly.shp"))
-
-  message("finished processing")
+  inform_prog("Finished processing", quiet, steps)
   return(invisible(lst(brks_mat, brks_cmd, brks_ccei = rcl_tbl_ccei)))
+}
 
+ccei_reclassify <- function(ccei, brks = NULL, out_folder, scenario_name,
+                            overwrite = TRUE) {
+
+  if(is.null(brks)) {
+    brks <- c(0, 4, 5, 7, Inf)
+    rcl_tbl <- matrix(c(brks[1:4], brks[2:5], 1:4), ncol = 3)
+  } else {
+    rcl_tbl <- brks
+  }
+
+  # 0 <= x <= 4 -> 1st  # because include.lowest = TRUE
+  # 4 < x <= 5 <- 2nd
+  # 5 < x <= 7 -> 3rd
+  # 7 < x <= Inf -> 4th
+  ccei_reclass <- terra::classify(ccei, rcl_tbl, include.lowest = TRUE)
+
+  terra::writeRaster(
+    ccei_reclass,
+    fs::path(out_folder, paste0("CCEI_reclass", scenario_name, ".tif")),
+    overwrite = overwrite, datatype = "INT2U")
+
+  return(rcl_tbl)
 }
 
 
@@ -341,13 +623,13 @@ prep_clim_data <- function(mat_norm, mat_fut, cmd_norm, cmd_fut, ccei = NULL,
 #' @param rast_fut raster for future period
 #' @param file_nm filename
 #' @param reproject Should the raster be projected to longlat?
-#' @param overwrite option passed to \code{writeRaster}
 #' @param type one of "halfIQR" or "sd"
 #' @param brs breaks matrix to use. If not NULL type is ignored
 #'
 #' @noRd
 prep_exp <- function(rast_norm, rast_fut, file_nm, reproject = FALSE,
-                     overwrite = FALSE, type = "halfIQR", brs = NULL){
+                     overwrite = FALSE, type = "halfIQR", brs = NULL) {
+
   rast_delta <-  rast_norm - rast_fut
 
   if(reproject){
@@ -429,7 +711,7 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
                med_delta, med_delta + iqr_delta, med_delta + 2*iqr_delta,
                med_delta + 3*iqr_delta, max_delta)
     } else if(type == "quantile"){
-      brs <- terra::global(rast_delta, fun = quantile, na.rm = T,
+      brs <- terra::global(rast_delta, fun = stats::quantile, na.rm = T,
                            probs = seq(0, 1, 1/6)) %>%
         unlist()
       # make sure min and max included
@@ -470,12 +752,4 @@ prep_from_delta <- function(rast_delta, sd_div = 1, shift = 0, type = "sd",
                      overwrite = overwrite, datatype = "INT2U")
 
   return(rcl_tbl)
-}
-
-check_crs <- function(rast){
-  if(is.na(terra::crs(rast))||terra::crs(rast) == ""){
-    stop("The raster ", terra::sources(rast), " does not have a CRS.",
-         " \nPlease load a file with a valid Coordinate Reference System",
-         call. = FALSE)
-  }
 }

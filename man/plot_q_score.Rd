@@ -4,12 +4,14 @@
 \alias{plot_q_score}
 \title{Plot scores for each vulnerability question}
 \usage{
-plot_q_score(vuln_df)
+plot_q_score(vuln_df, tax_grp = "Bird")
 }
 \arguments{
 \item{vuln_df}{the \code{vuln_df} element of the result from
 \code{\link{calc_vulnerability}} with an added column for the
 scenario_name. See examples.}
+
+\item{tax_grp}{Taxonomic group}
 }
 \value{
 plotly graph
@@ -46,10 +48,11 @@ spat_res <- analyze_spatial(
 # vulnerability factor table with score 1 (somewhat increase vulnerability)
 # for all factors
 vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+vuln$Value1[vuln$Code == "D4"] <- 1
 
 index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 
 bind_rows(index_vuln$vuln_df \%>\% `names<-`(index_vuln$scenario_name),
           .id = "scenario_name") \%>\%
-  plot_q_score()
+  plot_q_score(tax_grp = "Bird")
 }

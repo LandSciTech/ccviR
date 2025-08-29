@@ -1,0 +1,14 @@
+## How to interpret this report
+
+We can interpret this report in various ways. 
+
+For example, 
+
+**Moderately Vulnerable** - Abundance and/or range extent within geographical area assessed likely to decrease by 2050
+
+
+```{r}
+ggplot(data = ccviR::context_North_Am) +
+  geom_sf()
+```
+

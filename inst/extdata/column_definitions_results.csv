@@ -4,6 +4,7 @@ species_name,Scientific name of the species
 common_name,Common name of the species
 geo_location,Geographic area assessed
 assessor_name,Name of the assessor
+assessment_notes,Notes about the assessment process
 tax_grp,Taxonomic group of the species
 mig,Whether the species is migratory and exposure data for the migratory range that lies outside of the assessment area was provided
 cave,Whether the species is an obligate of caves or groundwater systems
@@ -23,6 +24,7 @@ MAP_max/min,The maximum and minimum historical mean annual precipitation in the 
 range_change,The projected decrease in range size as a percentage of current range size. Negative numbers indicate an increase in range size
 range_overlap,The percentage of the current range that is projected to remain in the future range.
 range_size,The area of the species' range in m2
+protected,The percentage of the future range that overlaps protected areas.
 gain_mod, Gain modifier. Used to down-weight modelled range gains
 gain_mod_comm, Explaination for gain modifier choice
 lost,"lower, upper bounds for raster values interpreted as range lost under climate change"
@@ -64,10 +66,11 @@ Historical_normal_period, Time period for the historical data
 Future_period, Time period for the future climate projections
 Emissions_scenario, Emissions scenario used for climate projections
 Link_to_source, Url for where the climate data was downloaded from
-range_poly_pth,Path to range polygon shapefile
+rng_poly_pth,Path to range polygon shapefile
 assess_poly_pth,Path to assessment area polygon shapefile
 nonbreed_poly_pth,Path to nonbreeding range polygon shapefile
 ptn_poly_pth,Path to physiological thermal niche polygon shapefile
 clim_dir_pth,Path to folder of climate data
-rng_chg_pth,Path to range change raster (for each scenario if multiple provided)
+rng_chg_pth,Path(s) to range change raster (for each scenario if multiple provided)
+protected_poly_pth,Path to protected areas polygon
 ccviR_version,The version number of the ccviR package used to complete the assessment

@@ -25,4 +25,4 @@ C6,  6) Phenological response to changing seasonal temperature and precipitation
 D1,  1) Documented response to recent climate change ,3,0
 D2,  2) Modeled future (2050) change in population or range size ,3,1
 D3,  3) Overlap of modeled future (2050) range with current range,3,1
-D4,  4) Occurrence of protected areas in modeled future (2050) distribution,2,0
+D4,  4) Occurrence of protected areas in modeled future (2050) distribution,2,1

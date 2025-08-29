@@ -1,4 +1,9 @@
-get_exposure_table <- function(spattbl, varname, clim_readme, brks){
+get_exposure_table <- function(spattbl, varname, clim_readme, brks) {
+
+  validate(need(!is.null(spattbl), "Need to load spatial data"))
+  validate(need(
+    !is.null(brks) && all(!is.na(brks)) && all(brks != ""),
+    paste("Missing", varname, "breaks in the clim_readme.csv file")))
 
   if(varname == "MAT"){
     exp_val <- "temp_exp_cave"
@@ -10,6 +15,28 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
     exp_val <- "moist_exp_cave"
     class_col <- gt::html("Moisture class")
     breaks_col <- gt::html("Moisture change (mm)")
+  }
+
+  if(varname == "combined"){
+    exp_df <- spattbl %>% select(scenario_name, comb_exp_cave) %>%
+      tidyr::pivot_wider(names_from = "scenario_name",
+                         values_from = "comb_exp_cave") %>%
+      mutate(.before = everything(), exp = "Exposure Multiplier")
+
+    exp_tbl <- gt::gt(exp_df) %>% gt::cols_label(exp = "") %>%
+      gt::tab_options(table.width = 600,
+                      table.font.size = 14,
+                      column_labels.padding.horizontal = 10,
+                      column_labels.padding = 2,
+                      data_row.padding = 2) %>%
+      gt::cols_align(align = "center", columns = everything()) %>%
+      gt::tab_style_body(style = gt::cell_text(weight = "bold"),
+                         values = "Exposure Multiplier") %>%
+      gt::tab_style_body(style = list(gt::cell_fill(color = "#F8F8F8"),
+                                      gt::cell_borders(side = c("top", "bottom"),
+                                                       weight = gt::px(2), color = "lightgray")),
+                         values = "Exposure Multiplier", targets = "row")
+    return(exp_tbl)
   }
 
   if(varname == "CCEI"){
@@ -36,7 +63,7 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
       tidyr::separate("class_brks", into = c("class", "breaks"), sep = ": ") %>%
       mutate(breaks = stringr::str_replace_all(.data$breaks, "[()]", "")) %>%
       mutate(breaks = stringr::str_replace_all(.data$breaks, " - ", " to ")) %>%
-      select("class", "breaks", scenario_cols)
+      select("class", "breaks", all_of(scenario_cols))
 
     # create df with exposure multipliers
     exp_df <- spattbl %>% select("scenario_name", contains("exp_cave")) %>%
@@ -126,6 +153,15 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks){
                                       gt::cell_borders(side = c("top", "bottom"),
                                           weight = gt::px(2), color = "lightgray")),
                 values = "Exposure Multiplier", targets = "row")
+  }
+
+  if(varname != "CCEI"){
+    if(any(spattbl[[exp_val]] != spattbl[[stringr::str_remove(exp_val, "_cave")]])){
+      exp_res_tbl <- exp_res_tbl %>% gt::tab_footnote(
+        footnote = "Divided by three since the species is an obligate of caves or groundwater systems",
+        locations = gt::cells_body(columns = "breaks", rows = nrow(exp_res_df))
+      )
+    }
   }
 
   exp_res_tbl

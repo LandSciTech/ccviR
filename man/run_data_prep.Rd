@@ -7,8 +7,7 @@
 run_data_prep(
   file_dir = getwd(),
   launch.browser = TRUE,
-  port = getOption("shiny.port"),
-  test.mode = FALSE
+  port = getOption("shiny.port")
 )
 }
 \arguments{
@@ -18,9 +17,6 @@ data included in the package.}
 \item{launch.browser}{logical. Run app in browser?}
 
 \item{port}{If launch.browser is FALSE, specify port to run CCVI app.}
-
-\item{test.mode}{Should the app be launched using shiny test.mode. Only set
-to TRUE for debugging.}
 }
 \value{
 A shiny app.
@@ -31,7 +27,7 @@ Launch the data preparation app for the ccviR package. See
 the app.
 }
 \examples{
-if(interactive()){
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
  run_data_prep("demo")
-}
+\dontshow{\}) # examplesIf}
 }

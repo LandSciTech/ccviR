@@ -2,6 +2,10 @@
 #'
 #' @noRd
 calc_overlap_poly <- function(poly1, poly2, var_name){
+
+  poly1 <- st_set_agr(poly1, "constant")
+  poly2 <- st_set_agr(poly2, "constant")
+
   int1_2 <- st_intersection(poly1, poly2)
 
   int1_2 <- st_set_agr(int1_2, "constant")

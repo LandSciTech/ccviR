@@ -9,6 +9,7 @@
 #' @param vuln_df the \code{vuln_df} element of the result from
 #'   \code{\link{calc_vulnerability}} with an added column for the
 #'   scenario_name. See examples.
+#' @param tax_grp Taxonomic group
 #'
 #' @export
 #'
@@ -39,14 +40,15 @@
 #' # vulnerability factor table with score 1 (somewhat increase vulnerability)
 #' # for all factors
 #' vuln <- make_vuln_df("test_species", val1 = 1, mig = 1)
+#' vuln$Value1[vuln$Code == "D4"] <- 1
 #'
 #' index_vuln <- calc_vulnerability(spat_res$spat_table, vuln, "Bird")
 #'
 #' bind_rows(index_vuln$vuln_df %>% `names<-`(index_vuln$scenario_name),
 #'           .id = "scenario_name") %>%
-#'   plot_q_score()
+#'   plot_q_score(tax_grp = "Bird")
 
-plot_q_score <- function(vuln_df){
+plot_q_score <- function(vuln_df, tax_grp = "Bird"){
 
   if(!"Question" %in% names(vuln_df)){
     vuln_df <- left_join(vuln_df, vulnq_code_lu_tbl, by = "Code")
@@ -55,11 +57,13 @@ plot_q_score <- function(vuln_df){
       rename(Question = "Question.y")
   }
 
+  vuln_df <- filter_applicable_qs(vuln_df, tax_grp)
+
   vuln_df <- mutate(vuln_df,
                     score = ifelse(.data$score <= 0, 0.001, .data$score),
                     custom_tooltip = paste0(.data$Question, ":\n",
                                             "Exposure Multiplier: ", round(.data$exp, 2), "\n",
-                                            "Score: ", round(.data$score, 2))) %>%
+                                            "Score: ", ifelse(.data$Value1 == -1, "Unknown", round(.data$score, 2)))) %>%
     filter(!is.na(.data$score)) %>%
     mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"))
 
@@ -69,6 +73,7 @@ plot_q_score <- function(vuln_df){
     calc_vuln_score(spat_df = data.frame(temp_exp_cave = 2.4,
                                          moist_exp_cave = 2,
                                          comb_exp_cave = mean(c(2.4, 2)))) %>%
+    filter_applicable_qs(tax_grp) %>%
     filter(!is.na(.data$score)) %>%
     mutate(sub_index = ifelse(startsWith(.data$Code, "D"), "D index", "B/C index"),
            section = stringr::str_extract(.data$Code, "^.") %>% as.factor())
@@ -110,8 +115,9 @@ plot_q_score <- function(vuln_df){
           ggplot2::aes(x = .data$Code, y = .data$score, text = .data$custom_tooltip,
                        fill = .data$section)
         )+
+          ccvir_gg_theme() +
           # added to make hover text work see https://github.com/plotly/plotly.R/issues/2114
-          ggplot2::geom_point(size = 0.1, color = "grey35")+
+          ggplot2::geom_point(size = 0.5, color = "grey35")+
           ggplot2::geom_col(color = "grey35")+
           ggplot2::scale_fill_discrete(type = cols_use, drop = FALSE)+
           ggplot2::geom_col(ggplot2::aes(x = .data$Code, y = .data$score, fill = .data$section),

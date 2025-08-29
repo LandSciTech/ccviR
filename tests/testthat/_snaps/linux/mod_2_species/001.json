@@ -1,0 +1,43 @@
+{
+  "input": {
+    "save-downloadData": 0,
+    "tabset": "species",
+    "test-assessor_name": "",
+    "test-cave": false,
+    "test-common_name": "",
+    "test-continue": 0,
+    "test-geo_location": "",
+    "test-mig": false,
+    "test-species_name": "",
+    "test-tax_grp": "Vascular Plant"
+  },
+  "output": {
+
+  },
+  "export": {
+    "test-cave": false,
+    "test-species_data": {
+      "species_name": [
+        ""
+      ],
+      "common_name": [
+        ""
+      ],
+      "geo_location": [
+        ""
+      ],
+      "assessor_name": [
+        ""
+      ],
+      "tax_grp": [
+        "Vascular Plant"
+      ],
+      "mig": [
+        false
+      ],
+      "cave": [
+        false
+      ]
+    }
+  }
+}

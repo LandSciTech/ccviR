@@ -1,0 +1,5 @@
+    .table caption {
+      caption-side: top; /* or top, left, right */
+      /*text-align: center;  Adjust text alignment as needed */
+      /* Add other styling properties like padding, color, font-size */
+    }

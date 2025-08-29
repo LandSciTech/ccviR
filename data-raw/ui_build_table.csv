@@ -1,5 +1,6 @@
 section,,input_fun,id,label,mandatory,options,label2,hidden,restore,with_spinner,update_fun
 sp_info,,textInput,assessor_name,Assessor Name,TRUE,,,,,,
+sp_info,,textAreaInput,assessment_notes,Assessment Notes,FALSE,,,,,,
 sp_info,"textInput(""geo_location"", labelMandatory(""Geographic Area Assessed"")),",textInput,geo_location,Geographic Area Assessed,TRUE,,,,,,
 sp_info,"selectInput(""tax_grp"", labelMandatory(""Major Taxonomic Group""), c(""Vascular Plant"", ""Nonvascular Plant"", ""Lichen"", ""Invert-Insect"", ""Invert-Mollusk"", ""Invert-Other"", ""Fish"", ""Amphibian"", ""Reptile"", ""Mammal"", ""Bird"")),",selectInput,tax_grp,Major Taxonomic Group,TRUE,"c(""Vascular Plant"", ""Nonvascular Plant"", ""Lichen"", ""Invert-Insect"", ""Invert-Mollusk"", ""Invert-Other"", ""Fish"", ""Amphibian"", ""Reptile"", ""Mammal"", ""Bird"")),",,,,,
 sp_info,"textInput(""species_name"", labelMandatory(""Species Scientific Name"")),",textInput,species_name,Species Scientific Name,TRUE,,,,,,
