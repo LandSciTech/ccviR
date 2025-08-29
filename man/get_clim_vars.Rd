@@ -9,7 +9,7 @@ get_clim_vars(root_pth, scenario_names = "scn1", quiet = FALSE)
 \arguments{
 \item{root_pth}{A folder location where all the climate data is stored. The
 names must match one of \code{c("MAT.*tif", "CMD.*tif", "clim_poly.*shp",
-  "MAP.*tif", "ccei.*tif|CCEI.*tif,"MWMT.*tif|HTN.*tif")} and the first
+  "MAP.*tif", "ccei.*tif|CCEI.*tif","MWMT.*tif|HTN.*tif")} and the first
 three are required.}
 
 \item{scenario_names}{character vector with names that identify multiple

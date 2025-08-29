@@ -6,7 +6,7 @@
 #'
 #' @param root_pth A folder location where all the climate data is stored. The
 #'   names must match one of \code{c("MAT.*tif", "CMD.*tif", "clim_poly.*shp",
-#'   "MAP.*tif", "ccei.*tif|CCEI.*tif,"MWMT.*tif|HTN.*tif")} and the first
+#'   "MAP.*tif", "ccei.*tif|CCEI.*tif","MWMT.*tif|HTN.*tif")} and the first
 #'   three are required.
 #' @param scenario_names character vector with names that identify multiple
 #'   future climate scenarios. If this is supplied the raster file must include
