@@ -14,7 +14,7 @@
 #'
 #' @noRd
 calc_gain_loss <- function(rast, poly, gain_mod){
-  out <- calc_prop_raster(rast, poly, var = "range change (HS)", var_name = "HS", val_range = 0:3,
+  out <- calc_prop_raster(rast, poly, var = "range change", var_name = "HS", val_range = 0:3,
                           digits = 10)
   if(!is.null(out[["HS_NA"]])){
     if(any(out$HS_NA > 10)) {

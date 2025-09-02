@@ -89,13 +89,19 @@ mod_D_server <- function(id, df_loaded, spatial, parent_session) {
   purrr::map(spatial, ~stopifnot(is.reactive(.x)))
 
   # Split up reactives
-  spat_res <- spatial$spat_res
-  hs_rast <- spatial$hs_rast
-  clim_readme <- spatial$clim_readme
-  range_poly <- spatial$range_poly
-  assess_poly <- spatial$assess_poly
-  protected_poly <- spatial$protected_poly
+
+  hs_rast <- reactive({spatial$mapping_layers()$rng_chg_rast})
+  assess_poly <- reactive({spatial$mapping_layers()$assess_poly})
   hs_rcl_mat <- spatial$hs_rcl_mat
+
+  spat_res <- spatial$spat_res
+  clim_vars <- reactive({spatial$mapping_layers()$clim_vars})
+  clim_readme <- spatial$clim_readme
+  range_poly <- reactive({spatial$mapping_layers()$range_poly_assess})
+  range_poly_clim <- reactive({spatial$mapping_layers()$range_poly_clim})
+  ptn_poly <- reactive({spatial$mapping_layers()$ptn_poly})
+  nonbreed_poly <- reactive({spatial$mapping_layers()$nonbreed_poly})
+  protected_poly <- reactive({spatial$mapping_layers()$protected_poly})
 
   moduleServer(id, function(input, output, session) {
 

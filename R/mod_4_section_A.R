@@ -89,10 +89,10 @@ mod_A_server <- function(id, spatial, species, parent_session) {
 
   # Split up reactives
   spat_res <- spatial$spat_res
-  clim_vars <- spatial$clim_vars
+  clim_vars <- reactive({spatial$mapping_layers()$clim_vars})
   clim_readme <- spatial$clim_readme
-  range_poly <- spatial$range_poly
-  nonbreed_poly <- spatial$nonbreed_poly
+  range_poly <- reactive({spatial$mapping_layers()$range_poly_assess})
+  nonbreed_poly <- reactive({spatial$mapping_layers()$nonbreed_poly})
 
   moduleServer(id, function(input, output, session) {
 

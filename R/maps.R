@@ -95,9 +95,6 @@ make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
   rast1_nm <- names(rast_nms)[which(rast_nms == rast1_nm)]
   rast2_nm <- names(rast_nms)[which(rast_nms == rast2_nm)]
 
-  rast1 <- prep_raster_map(rast1, rast1_nm, max_cell)
-  rast2 <- prep_raster_map(rast2, rast2_nm, max_cell)
-
   rast_grp <- character(0)
   if(!is.null(rast1) && terra::nlyr(rast1) > 1) rast_grp <- names(rast1)
   if(!is.null(rast2) && terra::nlyr(rast2) > 1) rast_grp <- names(rast2)
@@ -148,7 +145,7 @@ make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
   # Add second polygon
   if(!is.null(poly2)) {
     out <- out %>%
-      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red")
+      leaflet::addPolylines(data = poly2, color = "red")
     extra_pal <- c(extra_pal, "red")
     extra_labs <- c(extra_labs, poly2_nm)
   }
@@ -157,7 +154,7 @@ make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
   extra_pal <- c(extra_pal, "black")
   extra_labs <- c(extra_labs, poly1_nm)
   out <- out %>%
-    leaflet::addPolylines(data = poly1 %>% sf::st_transform(4326), color = "black") %>%
+    leaflet::addPolylines(data = poly1, color = "black") %>%
     leaflet::addLegend(colors = extra_pal, labels = extra_labs, opacity = 1)
 
   out <- out %>%
@@ -225,14 +222,12 @@ map_rasters <- function(poly, rast, rast_nm, max_cell = 5000000) {
   rast_nm <- pretty_names(rast_nm)
   poly_nm <- pretty_names("range_poly")
 
-  rast <- prep_raster_map(rast, rast_nm, max_cell)
-
   if(terra::nlyr(rast) > 1) rast_grp <- names(rast) else rast_grp <- character(0)
 
   # Map
   out <- layer_base() %>%
     layer_raster(rast, rast_nm, rast_lbl, pal, rast_grp, rng_val) %>%
-    leaflet::addPolylines(data = sf::st_transform(poly, 4326), color = "black") %>%
+    leaflet::addPolylines(data = poly, color = "black") %>%
     layer_extras("black", poly_nm, rast_grp)
 
   return(out)
@@ -260,8 +255,8 @@ map_poly <- function(poly1, poly2) {
 
   # Base Map
   out <- layer_base() %>%
-    leaflet::addPolylines(data = sf::st_transform(poly1, 4326), color = "black") %>%
-    leaflet::addPolylines(data = sf::st_transform(poly2, 4326), color = "red") %>%
+    leaflet::addPolylines(data = poly1, color = "black") %>%
+    leaflet::addPolylines(data = poly2, color = "red") %>%
     layer_extras(cols = c("black", "red"), nms = c(poly1_nm, poly2_nm))
 
   return(out)
@@ -316,14 +311,13 @@ map_range <- function(poly1, poly2, rast, rng_chg_mat, max_cell = 5000000) {
   poly1_nm <- pretty_names("range_poly")
   poly2_nm <- pretty_names("assess_poly")
 
-  rast <- prep_raster_map(rast, rast_nm, max_cell)
   if(terra::nlyr(rast) > 1) rast_grp <- names(rast) else rast_grp <- character(0)
 
   # Base Map
   out <- layer_base() %>%
     layer_raster(rast, rast_nm, rast_lbl, pal, rast_grp) %>%
-    leaflet::addPolylines(data = sf::st_transform(poly1, 4326), color = "black") %>%
-    leaflet::addPolylines(data = sf::st_transform(poly2, 4326), color = "red") %>%
+    leaflet::addPolylines(data = poly1, color = "black") %>%
+    leaflet::addPolylines(data = poly2, color = "red") %>%
     layer_extras(c("black", "red"), nms = c(poly1_nm, poly2_nm), rast_grp)
 
   return(out)
@@ -360,7 +354,6 @@ map_protected <- function(poly1, poly2, rast, max_cell = 5000000) {
   poly1_nm <- pretty_names("assess_poly")
   poly2_nm <- pretty_names("protected_poly")
 
-  rast <- prep_raster_map(rast, rast_nm, max_cell)
   if(terra::nlyr(rast) > 1) rast_grp <- names(rast) else rast_grp <- character(0)
 
   # Base Map
@@ -371,8 +364,8 @@ map_protected <- function(poly1, poly2, rast, max_cell = 5000000) {
   out <- layer_base() %>%
     leaflet::addMapPane("range", zIndex = 420) %>%
     leaflet::addMapPane("protected_areas", zIndex = 410) %>%
-    leaflet::addPolylines(data = sf::st_transform(poly1, 4326), color = "black") %>%
-    leaflet::addPolygons(data = sf::st_transform(poly2, 4326), color = NA,
+    leaflet::addPolylines(data = poly1, color = "black") %>%
+    leaflet::addPolygons(data = poly2, color = NA,
                          fillColor = "darkgreen", fillOpacity = 0.8) %>%
     layer_extras(c("black", "darkgreen"), nms = c(poly1_nm, poly2_nm), rast_grp) %>%
     layer_raster(rast, rast_nm, rast_lbl, "#FFC125", rast_grp, opacity = 0.5,
@@ -440,4 +433,43 @@ layer_raster <- function(out, rast, rast_nm, rast_lbl, pal, rast_grp, rng_val = 
                               title = rast_nm, opacity = 1)
   }
   out
+}
+
+prep_raster_map <- function(r, r_nm, max_cell, quiet = FALSE) {
+
+  if(!is.null(r)){
+    rast_ncell <- terra::ncell(r)
+    with_progress(message = paste("Preparing Raster:", r_nm), {
+      if(rast_ncell > max_cell) {
+        inform_prog("Aggregating raster for faster plotting", quiet = quiet)
+        fct <- ceiling(sqrt(rast_ncell/max_cell))
+        r <- terra::aggregate(r, fact = fct, fun = "modal", na.rm = TRUE)
+      }
+      if(!terra::same.crs(r, "EPSG:3857")){
+        # Problem with re-projecting some maps, NAs become numbers?
+        # https://github.com/rspatial/terra/issues/1356
+        # Only problem is a warning... (suppressed for now)
+        #
+        # A workaround seems to be converting to in memory
+        # (but this may result in long computational times)
+        #
+        # Uncomment this section if required
+        #inform_prog("Converting raster to in-memory for re-projection", quiet)
+        #r <- terra::toMemory(r)
+        inform_prog("Projecting raster")
+        r <- terra::project(r, "EPSG:3857", method = "near")
+      }
+
+      names(r) <- stringr::str_replace_all(names(r), "_", " ")
+    })
+  }
+  return(r)
+}
+
+prep_map_files <- function(layer_lst, map_crs, max_cell = 5000000, quiet = FALSE){
+  layer_lst <- purrr::map_if(layer_lst, ~is(.x, "SpatRaster"),
+                             ~prep_raster_map(.x, r_nm = "", max_cell, quiet))
+  layer_lst <- purrr::map_if(layer_lst, ~is(.x, "sf"), ~sf::st_transform(.x, 4326))
+
+  layer_lst
 }

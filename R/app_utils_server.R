@@ -41,40 +41,6 @@ getMultValues <- function(x, nm){
 
 
 
-
-
-prep_raster_map <- function(r, r_nm, max_cell, quiet = FALSE) {
-
-  if(!is.null(r)){
-    rast_ncell <- terra::ncell(r)
-    with_progress(message = paste("Preparing Raster:", r_nm), {
-      if(rast_ncell > max_cell) {
-        fct <- ceiling(sqrt(rast_ncell/max_cell))
-        r <- terra::aggregate(r, fact = fct, fun = "modal", na.rm = TRUE)
-        inform_prog("Aggregating raster for faster plotting", quiet = quiet)
-      }
-      if(!terra::same.crs(r, "EPSG:3857")){
-        # Problem with re-projecting some maps, NAs become numbers?
-        # https://github.com/rspatial/terra/issues/1356
-        # Only problem is a warning... (suppressed for now)
-        #
-        # A workaround seems to be converting to in memory
-        # (but this may result in long computational times)
-        #
-        # Uncomment this section if required
-        #inform_prog("Converting raster to in-memory for re-projection", quiet)
-        #r <- terra::toMemory(r)
-        inform_prog("Projecting raster")
-        r <- terra::project(r, "EPSG:3857", method = "near")
-      }
-
-      names(r) <- stringr::str_replace_all(names(r), "_", " ")
-    })
-  }
-  return(r)
-}
-
-
 # create html text for index result for multi scenario
 index_res_text <- function(ind_freq){
 

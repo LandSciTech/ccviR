@@ -557,6 +557,28 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
 
     }, ignoreInit = TRUE)
 
+    mapping_layers <- eventReactive(spat_res(), {
+      req(spat_res())
+      req(clim_vars())
+
+      # prepare files for mapping
+      withProgress(message = "Prepare files for mapping", {
+        clim_maps <- prep_map_files(clim_vars() %>%
+                                       purrr::keep_at(c("mat", "cmd", "htn", "map", "ccei")))
+        polys <- prep_map_files(spat_res() %>%
+                                purrr::keep_at(~stringr::str_detect(.x,"poly")))
+        others <- prep_map_files(list(rng_chg_rast = rng_chg_rast(),
+                                      nonbreed_poly = nonbreed_poly(),
+                                      assess_poly = assess_poly(),
+                                      ptn_poly = ptn_poly()))
+      })
+
+      out <- c(polys, others)
+      out$clim_vars <- clim_maps
+
+      return(out)
+    })
+
     output$spatial_done <- renderUI({ # Use UI when rendering HTML
       req(spat_res())
       # For snapshot tests
@@ -730,9 +752,9 @@ mod_spatial_server <- function(id, volumes, df_loaded, species, parent_session,
       "ptn_poly" = ptn_poly,
       "nonbreed_poly" = nonbreed_poly,
       "assess_poly" = assess_poly,
-      "protected_poly" = protected_poly_clip,
       "hs_rast" = rng_chg_rast,
-      "hs_rcl_mat" = rng_mat
+      "hs_rcl_mat" = rng_mat,
+      "mapping_layers" = mapping_layers
     )
   })
 

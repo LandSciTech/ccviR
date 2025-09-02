@@ -131,9 +131,25 @@ index_res <- ccviR:::recreate_index_res(saved)
 
 ```{r load_spatial}
 #| include: false
-range_poly <- read_sf(saved$rng_poly_pth[1])
-assess_poly <- read_sf(saved$assess_poly_pth[1])
 clim_vars <- get_clim_vars(saved$clim_dir_pth[1], scenario_names = saved$scenario_name, quiet = TRUE)
+crs_use <- sf::st_crs(clim_vars[["mat"]])
+range_poly <- read_sf(saved$rng_poly_pth[1])
+
+assess_poly <- read_sf(saved$assess_poly_pth[1]) %>% 
+  ccviR:::prep_polys(crs = crs_use, var_name = "Assessment area", 
+                     poly_clip = clim_vars$clim_poly,
+                     clip_name = "Climate polygon", 
+                     quiet = TRUE)
+
+range_poly <- range_poly %>% 
+  ccviR:::prep_polys(crs = crs_use, var_name = "Range", 
+                     poly_clip = clim_vars$clim_poly,
+                     clip_name = "Climate polygon", 
+                     quiet = TRUE)
+
+range_poly_assess <- ccviR:::clip_poly(range_poly, assess_poly, "Range", "Assessment area",
+                                       quiet = TRUE)
+
 clim_readme <- fs::path(saved$clim_dir_pth[1], "climate_data_readme.csv") %>%
   utils::read.csv(check.names = FALSE)
 spat_tbl <- ccviR:::apply_spat_tholds(saved, saved$cave)
@@ -244,14 +260,14 @@ cat(saved$assessment_notes[1])
 # background then choose the map extent as whichever is bigger between range and assessment area
 
 comb_ext <- sf::st_union(sf::st_bbox(range_poly) %>% sf::st_as_sfc(),
-                         sf::st_bbox(assess_poly) %>% sf::st_as_sfc() %>%
-                         sf::st_transform(sf::st_crs(range_poly))) %>%
-  sf::st_transform(4326)
+                         sf::st_bbox(assess_poly) %>% sf::st_as_sfc()) 
 
 ggplot() +
   theme_minimal() +
   theme(legend.position = "bottom") +
-  geom_sf(data = st_crop(context_North_Am, comb_ext), fill = "grey90", colour = "grey80") +
+  geom_sf(data = context_North_Am %>% st_transform(sf::st_crs(range_poly)) %>% 
+            st_crop(comb_ext), 
+          fill = "grey90", colour = "grey80") +
   geom_sf(data = assess_poly, aes(colour = "Assessment Area"), fill = NA, linewidth = 0.5, 
           show.legend = "line") +
   geom_sf(data = range_poly, aes(colour = "Range"), linewidth = 0.5, fill = NA, 
@@ -374,7 +390,7 @@ tagList(
 
 # Suppress progress messages (not message(), but likely stdout or similar)
 invisible(capture.output(
-  bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess_poly, range_poly)
+  bivar_exp_plot <- plot_bivar_exp(clim_vars$mat, clim_vars$cmd, assess_poly, range_poly_assess)
 ))
 
 gridExtra::grid.arrange(grobs = list(ggplot2::ggplotGrob(bivar_exp_plot$plot),
