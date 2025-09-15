@@ -18,7 +18,7 @@ get_exposure_table <- function(spattbl, varname, clim_readme, brks) {
   }
 
   if(varname == "combined"){
-    exp_df <- spattbl %>% select(scenario_name, comb_exp_cave) %>%
+    exp_df <- spattbl %>% select("scenario_name", "comb_exp_cave") %>%
       tidyr::pivot_wider(names_from = "scenario_name",
                          values_from = "comb_exp_cave") %>%
       mutate(.before = everything(), exp = "Exposure Multiplier")
