@@ -90,10 +90,8 @@ Monte Carlo uncertainty analysis produced are the same.
 
 ## Vignettes/tutorials available
 
-See `vignette("app_vignette", package = "ccviR")` for an introduction to
-how to use the app with a demo data set,
-`vignette("app_details_vignette", package = "ccviR")` for a more
-detailed look at how to use the app in practice,
+See `vignette("app_vignette2", package = "ccviR")` for an introduction
+to the index and how to use the app,
 `vignette("data_prep_vignette", package = "ccviR")` for how to use an
 app to prepare custom climate data sets, and
 `vignette("package_vignette", package = "ccviR")` for a tutorial on how
