@@ -125,7 +125,7 @@ Below are the required and optional data layers for a ccviR analysis. Section \@
 
 -   [Projected range change raster (Optional):]{.underline} The modeled change in the species range caused by climate change. The values of the raster cells should indicate whether the cell was lost, maintained, gained or was never included in the range. This dataset is used in the modeled response analysis to determine the proportion of habitat that will be lost, maintained, or gained within the assessment area.
 
--   [Protected area polygon (Optional):]{.underline} This is only relevant if a projected range change raster is supplied. Polygon data for all protected areas in Canada and the United States has already been prepared for use in the ccviR. You will need to [download the data](https://drive.google.com/file/d/1znRcuIukvuAu7YAoL4WfxLulcszv4Dkq/view?usp=drive_link) and unzip it to use it in the app. Note that because this is a large file running the spatial analysis and rendering maps will take longer when the protected areas polygons are supplied. 
+-   [Protected area polygon (Optional):]{.underline} This is only relevant if a projected range change raster is supplied. Polygon data for all protected areas in Canada and the United States has already been prepared for use in the ccviR. The data is included in the climate data package linked above. Note that because this is a large file running the spatial analysis and rendering maps will take longer when the protected areas polygons are supplied. 
 
 ## Vulnerability information
 
