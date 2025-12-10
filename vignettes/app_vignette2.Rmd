@@ -100,7 +100,7 @@ Next you will need to install the ccviR package by copying the following into th
 
 ``` r
 install.packages("remotes")
-remotes::install_github("LandSciTech/ccviR@dev", type = "binary", upgrade = TRUE)
+remotes::install_github("LandSciTech/ccviR", type = "binary", upgrade = TRUE)
 ```
 
 This will take several minutes the first time it is installed because it will also install other packages that ccviR depends on. You can ignore the text that is printed, this is just reporting on the installation progress.
