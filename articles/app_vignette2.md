@@ -267,11 +267,10 @@ specific analyses:
 - *Protected area polygon (Optional):* This is only relevant if a
   projected range change raster is supplied. Polygon data for all
   protected areas in Canada and the United States has already been
-  prepared for use in the ccviR. You will need to [download the
-  data](https://drive.google.com/file/d/1znRcuIukvuAu7YAoL4WfxLulcszv4Dkq/view?usp=drive_link)
-  and unzip it to use it in the app. Note that because this is a large
-  file running the spatial analysis and rendering maps will take longer
-  when the protected areas polygons are supplied.
+  prepared for use in the ccviR. The data is included in the climate
+  data package linked above. Note that because this is a large file
+  running the spatial analysis and rendering maps will take longer when
+  the protected areas polygons are supplied.
 
 ### 2.3 Vulnerability information
 
