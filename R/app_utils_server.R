@@ -22,6 +22,9 @@ load_previous <- function(path) {
     df <- rename(df, rng_poly_pth = range_poly_pth)
   }
 
+  validate(need(!(nrow(df) < 1 || !"scenario_name" %in% colnames(df)),
+                "CSV file is empty, cannot restore from file."))
+
   exp_nms <- get_exp_nms()
   missing_nms <- setdiff(exp_nms, colnames(df))
   if(length(missing_nms) > 0){
@@ -34,8 +37,6 @@ load_previous <- function(path) {
     df <- bind_cols(df, df_miss)
   }
 
-  validate(need(!(nrow(df) < 1 || !"scenario_name" %in% colnames(df)),
-                "CSV file is empty, cannot restore from file."))
   return(df)
 }
 
