@@ -194,7 +194,7 @@ indicates that the console is ready for input.
 
 ``` r
 install.packages("remotes")
-remotes::install_github("LandSciTech/ccviR@dev", type = "binary", upgrade = TRUE)
+remotes::install_github("LandSciTech/ccviR", type = "binary", upgrade = TRUE)
 ```
 
 This will take several minutes the first time it is installed because it
