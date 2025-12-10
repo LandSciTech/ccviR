@@ -18,6 +18,22 @@ load_previous <- function(path) {
   utils::read.csv(path, na.strings = c("", "NA")) # Only blanks are NA
   )
 
+  if("range_poly_pth" %in% colnames(df)){
+    df <- rename(df, rng_poly_pth = range_poly_pth)
+  }
+
+  exp_nms <- get_exp_nms()
+  missing_nms <- setdiff(exp_nms, colnames(df))
+  if(length(missing_nms) > 0){
+    message("adding blank values for missing columns in CSV:",
+            paste0(missing_nms, collapse = ", "))
+    n_add <- length(missing_nms)
+    df_miss <- matrix(rep(NA, n_add * nrow(df), nrow = nrow(df)), ncol = n_add) %>%
+      as.data.frame() %>%
+      setNames(missing_nms)
+    df <- bind_cols(df, df_miss)
+  }
+
   validate(need(!(nrow(df) < 1 || !"scenario_name" %in% colnames(df)),
                 "CSV file is empty, cannot restore from file."))
   return(df)
@@ -169,7 +185,25 @@ combine_outdata <- function(species_data, questions, spat_run, spat_res, index) 
     )
   }
 
+  exp_nms <- get_exp_nms()
 
+  out_dat <- select(out_dat, any_of(exp_nms), contains("rng_chg_pth"))
+
+  # add in missing column names
+  add_nms <- setdiff(exp_nms, colnames(out_dat))
+  if(length(add_nms) > 0){
+    template <- rep("", length.out = length(add_nms))
+    names(template) <- add_nms
+    template <- as.data.frame(as.list(template))
+
+    out_dat <- out_dat %>% bind_rows(template) %>%
+      slice(-n())
+  }
+
+  return(out_dat)
+}
+
+get_exp_nms <- function(){
   exp_cols <- fs::path_package("extdata", "column_definitions_results.csv",
                                package = "ccviR") %>%
     utils::read.csv()
@@ -195,21 +229,6 @@ combine_outdata <- function(species_data, questions, spat_run, spat_res, index) 
     )) %>%
     tidyr::separate_rows("names_exp", sep = ",") %>%
     pull(.data$names_exp)
-
-  out_dat <- select(out_dat, any_of(exp_nms), contains("rng_chg_pth"))
-
-  # add in missing column names
-  add_nms <- setdiff(exp_nms, colnames(out_dat))
-  if(length(add_nms) > 0){
-    template <- rep("", length.out = length(add_nms))
-    names(template) <- add_nms
-    template <- as.data.frame(as.list(template))
-
-    out_dat <- out_dat %>% bind_rows(template) %>%
-      slice(-n())
-  }
-
-  return(out_dat)
 }
 
 

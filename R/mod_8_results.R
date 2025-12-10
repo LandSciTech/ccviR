@@ -7,6 +7,10 @@
 #' mod_results_test()
 #' mod_results_test(df_loaded = test_df_loaded(),
 #'                  NULL, NULL, NULL)
+#' mod_results_test(df_loaded = test_df_loaded("vignette"),
+#'                  species_data = test_species("vignette"),
+#'                  spatial = test_spatial(),
+#'                  questions = test_questions("vignette"))
 
 mod_results_test <- function(df_loaded = NULL,
                              species_data = test_species(),
