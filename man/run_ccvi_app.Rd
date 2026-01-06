@@ -31,7 +31,7 @@ Vulnerability Index. See \code{vignette("app_vignette", package = "ccviR")}
 for details on how to use the app.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
  run_ccvi_app("demo")
  run_ccvi_app(file_dir = "../")
 \dontshow{\}) # examplesIf}

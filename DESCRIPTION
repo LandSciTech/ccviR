@@ -63,7 +63,7 @@ Suggests:
     shinytest2,
     withr,
     rmarkdown
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)

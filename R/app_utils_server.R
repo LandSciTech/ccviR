@@ -188,8 +188,6 @@ combine_outdata <- function(species_data, questions, spat_run, spat_res, index) 
 
   exp_nms <- get_exp_nms()
 
-  out_dat <- select(out_dat, any_of(exp_nms), contains("rng_chg_pth"))
-
   # add in missing column names
   add_nms <- setdiff(exp_nms, colnames(out_dat))
   if(length(add_nms) > 0){
@@ -201,7 +199,34 @@ combine_outdata <- function(species_data, questions, spat_run, spat_res, index) 
       slice(-n())
   }
 
+  out_dat <- select(out_dat, any_of(exp_nms), contains("rng_chg_pth"))
+
   return(out_dat)
+}
+
+summarise_index_res <- function(index_res, vuln_qs){
+  conf_df <- index_res %>%
+    select("scenario_name", "mc_results") %>%
+    mutate(mc_results = purrr::map(
+      .data$mc_results, ~.x$index %>%
+        factor(levels = c( "EV", "HV", "MV", "LV", "IE")) %>%
+        table() %>%
+        prop.table() %>%
+        as.data.frame(stringsAsFactors = FALSE) %>%
+        `names<-`(c("index", "frequency")))) %>%
+    pull(.data$mc_results) %>%
+    purrr::map_dfr(
+      ~ mutate(.x, index = paste0("MC_freq_", .data$index)) %>%
+        tidyr::pivot_wider(names_from = "index",
+                           values_from = "frequency"))
+
+  ind_df <- data.frame(CCVI_index = index_res$index,
+                       CCVI_conf_index = index_res$conf_index,
+                       mig_exposure = index_res$mig_exp,
+                       b_c_score = index_res$b_c_score,
+                       d_score = index_res$d_score)
+
+  bind_cols(ind_df, conf_df, vuln_qs)
 }
 
 get_exp_nms <- function(){
@@ -286,9 +311,13 @@ update_restored <- function(df, session, section = NULL){
   # Catch both "spatial" and "spatial_range_change" in "spatial" .env$section
   section2 <- stringr::str_extract(section, "[A-D]{1}$")
   section <- stringr::str_remove(section, "\\_[A-D]{1}$")
+
+  if(is.na(section2)){
+    section2 <- "."
+  }
   df2 <- filter(df2,
                 stringr::str_detect(.data$section, paste0("^", .env$section)),
-                is.na(.env$section2) | stringr::str_detect(.data$input, .env$section2))
+                stringr::str_detect(.data$input, .env$section2))
 
   df2 <- select(df2, -"section")
 

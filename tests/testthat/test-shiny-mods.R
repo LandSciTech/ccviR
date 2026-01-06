@@ -103,8 +103,8 @@ test_that("Full app", {
   expect_screenshot_local(app, name = "14-results-ready")
 
   app$click("results-calcIndex")
+  Sys.sleep(2)
   app$wait_for_idle()
-  Sys.sleep(1)
   expect_screenshot_local(app, name = "15-results-run")
 
   # Modify and rerun

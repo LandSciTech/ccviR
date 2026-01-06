@@ -27,7 +27,7 @@ Launch the data preparation app for the ccviR package. See
 the app.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
  run_data_prep("demo")
 \dontshow{\}) # examplesIf}
 }
