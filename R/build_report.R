@@ -31,6 +31,9 @@ build_report <- function(saved, file_loc = ".", include_about = TRUE,
   # Quarto Parameters: https://quarto.org/docs/computations/parameters.html
   # quarto R package: https://quarto-dev.github.io/quarto-r/
 
+  # including a readr call here so CMD CHK doesn't complain that the dependency is not used
+  readr::col_character()
+
   inform_prog("Preparing report template", quiet, 4)
 
   # If we're building directly with only a location, no file path

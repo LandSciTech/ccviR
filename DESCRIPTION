@@ -48,12 +48,13 @@ Imports:
     stringr,
     terra,
     tidyr,
-    units
+    units, 
+    quarto,
+    readr
 Suggests: 
     testthat (>= 3.0.0),
     climr (>= 0.2.0),
     knitr,
-    quarto,
     future,
     stringi,
     furrr,
