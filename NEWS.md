@@ -1,3 +1,7 @@
+# ccviR 1.0.0
+
+Changing to 1.0 to make it clear that the package is no longer in beta and is ready for use. 
+
 # ccviR 0.2.0
 
 Many significant changes to the UI, report, and data sets available for use with the app
