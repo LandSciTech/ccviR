@@ -16,7 +16,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/see24/ccviR/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/see24/ccviR/blob/v1.0.0/inst/CITATION)
 
 Endicott S, Naujokaitis-Lewis I (2023). *ccviR: Calculate the
 NatureServe Climate Change Vulnerability Index in R*. Environment and
