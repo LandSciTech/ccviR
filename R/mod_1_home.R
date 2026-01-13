@@ -70,7 +70,7 @@ mod_home_ui <- function(id) {
         br(),
         h3("Citation"),
         p('Endicott, Sarah, and Ilona Naujokaitis-Lewis. 2024. "ccviR: An R Package and Shiny App to Implement the NatureServe Climate Change Vulnerability Index." Journal of Open Source Software 9 (103): 7150. ',
-          a('https://doi.org/10.21105/joss.07150.', href = 'https://doi.org/10.21105/joss.07150.', target="_blank")),
+          a('https://doi.org/10.21105/joss.07150', href = 'https://doi.org/10.21105/joss.07150', target="_blank")),
         h3("References"),
         p("Young, B. E., K. R. Hall, E. Byers, K. Gravuer, G. Hammerson,",
           " A. Redder, and K. Szabo. 2012. Rapid assessment of plant and ",

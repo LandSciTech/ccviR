@@ -41,7 +41,7 @@ expected to increase in extent with a rising sea level.</p>
 
 <p><i>Tools</i>: For information about the sensitivity of the Canadian coast to
 potential sea level rise, see <a
-href=\"https://geoscan.nrcan.gc.ca/text/geoscan/fulltext/of_8551.pdf\"
+href=\"https://doi.org/10.4095/314669\"
 target=\"_blank\">CanCoast 2.0</a>.</p>
 
 
