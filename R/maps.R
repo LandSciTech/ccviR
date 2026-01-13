@@ -148,8 +148,8 @@ make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
   # Add second polygon
   if(!is.null(poly2)) {
     out <- out %>%
-      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "red")
-    extra_pal <- c(extra_pal, "red")
+      leaflet::addPolylines(data = poly2 %>% sf::st_transform(4326), color = "blue")
+    extra_pal <- c(extra_pal, "blue")
     extra_labs <- c(extra_labs, poly2_nm)
   }
 
