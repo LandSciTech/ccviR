@@ -243,22 +243,30 @@ cat(saved$assessment_notes[1])
 # TODO: should add a context polygon that is North America to state/prov level as
 # background then choose the map extent as whichever is bigger between range and assessment area
 
-comb_ext <- sf::st_union(sf::st_bbox(range_poly) %>% sf::st_as_sfc(),
-                         sf::st_bbox(assess_poly) %>% sf::st_as_sfc() %>%
-                         sf::st_transform(sf::st_crs(range_poly))) %>%
-  sf::st_transform(4326)
+comb_ext <- sf::st_union(range_poly %>%
+                           sf::st_transform(sf::st_crs(clim_vars$map)) %>% 
+                           sf::st_bbox() %>% sf::st_as_sfc(),
+                         assess_poly %>% 
+                           sf::st_transform(sf::st_crs(clim_vars$map)) %>% 
+                           sf::st_bbox() %>% sf::st_as_sfc())
 
 ggplot() +
   theme_minimal() +
   theme(legend.position = "bottom") +
-  geom_sf(data = st_crop(context_North_Am, comb_ext), fill = "grey90", colour = "grey80") +
+  geom_sf(data = st_crop(context_North_Am %>% 
+                           sf::st_transform(sf::st_crs(clim_vars$map)), 
+                         comb_ext), 
+          fill = "grey90", colour = "grey80") +
   geom_sf(data = assess_poly, aes(colour = "Assessment Area"), fill = NA, linewidth = 0.5, 
           show.legend = "line") +
   geom_sf(data = range_poly, aes(colour = "Range"), linewidth = 0.5, fill = NA, 
           show.legend = "line") +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_continuous(expand = c(0, 0)) +
-  scale_colour_manual(name = NULL, values = c("Assessment Area" = "black", "Range" = "red"))
+  scale_colour_manual(name = NULL, values = c("Assessment Area" = "black", "Range" = "red"))+
+  coord_sf(crs = 4326, 
+           # only show other side of dateline if range includes it
+           xlim = c(-179, max(-50, st_bbox(range_poly)["xmax"])))
 ```
 
 ## Index results
