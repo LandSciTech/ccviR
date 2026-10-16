@@ -260,7 +260,7 @@ mod_C_server <- function(id, df_loaded, spatial, tax_grp, parent_session) {
             stringr::str_remove("Class"), .data$`Proportion of Range`) %>%
         distinct() %>%
         mutate(`Historical Temperature Variation` =
-                 c("> 43.0", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
+                 c("> 31.8", "26.3 - 31.8", "20.8 - 26.3" ,"< 20.8")) %>%
         mutate_if(is.numeric, round, digits = 2) %>%
         select("Sensitivity Class", "Historical Temperature Variation",
                "Proportion of Range") %>%
