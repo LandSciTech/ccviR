@@ -51,8 +51,6 @@ spat_res <- analyze_spatial(
 #> Preparing polygon 'Climate Data Extext'
 #> Preparing polygon 'Assessment Area'
 #> Preparing polygon 'Range'
-#> Clipping 'Range' to 'Climate Data Extent'
-#> Clipping 'Range' to 'Assessment Area'
 #> Assessing local climate exposure
 #> Assessing thermal & hydrological niches
 #> Assessing modelled range response to climate change

@@ -39,10 +39,10 @@ While there are improvements in Version 4.0, many of the changes have
 not yet been peer-reviewed and the tool has not been widely used so far.
 On the other hand, the previous version of the NatureServe CCVI has been
 used extensively in State Wildlife Action Plans in the US and has been
-reviewed in several peer-reviewed papers ([Young, Dubois, and Rowland
-2015](#ref-young2015); [Young et al. 2012](#ref-young2012)). Therefore,
-we continue to use Version 3.02 but will consider adopting improvements
-from Version 4.0 in the future.
+reviewed in several peer-reviewed papers ([Young et al.
+2015](#ref-young2015), [2012](#ref-young2012)). Therefore, we continue
+to use Version 3.02 but will consider adopting improvements from Version
+4.0 in the future.
 
 The CCVI is designed to assess the climate change vulnerability of
 terrestrial and aquatic plants, animals (including migratory species),
@@ -193,6 +193,7 @@ located in the bottom left of RStudio. A “\>” at the start of a line
 indicates that the console is ready for input.
 
 ``` r
+
 install.packages("remotes")
 remotes::install_github("LandSciTech/ccviR", type = "binary", upgrade = TRUE)
 ```
@@ -297,33 +298,34 @@ to the [NatureServe CCVI
 Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf)
 ([Young et al. 2016](#ref-young2016)).
 
-| Question ID | Parameter                                                                         | Response categories[\[1\]](#id__ftn1) | Exposure Multiplier applied[\[2\]](#id__ftn2) |
-|-------------|-----------------------------------------------------------------------------------|---------------------------------------|-----------------------------------------------|
-| B1          | Proportion of range lost to sea level rise                                        | GI, I, SI, N                          | None                                          |
-| B2          | Natural barriers                                                                  | GI, I, SI, N                          | Combined                                      |
-| B2          | Anthropogenic barriers                                                            | GI, I, SI, N                          | Combined                                      |
-| B3          | Land use changes resulting from human responses to climate change                 | I, SI, N                              | Combined                                      |
-| C1          | Dispersal and movements                                                           | GI, I, SI, N                          | Combined                                      |
-| C2ai        | Predicted sensitivity to temperature changes (historical thermal niche)           | GI, I, SI, N                          | Temperature                                   |
-| C2aii       | Predicted sensitivity to temperature changes (physiological thermal niche)        | GI, I, SI, N                          | Temperature                                   |
-| C2bi        | Sensitivity to moisture changes (historical thermal niche)                        | GI, I, SI, N                          | Moisture                                      |
-| C2bii       | Sensitivity to moisture changes (physiological thermal niche)                     | GI, I, SI, N                          | Moisture                                      |
-| C2c         | Dependence on specific disturbance regimes impacted by climate change             | I, SI, N                              | Combined                                      |
-| C2d         | Dependence on ice, ice-edge, permafrost, snow habitats                            | GI, I, SI, N                          | Combined                                      |
-| C3          | Restriction to uncommon geological features and derivatives                       | I, SI, N                              | Combined                                      |
-| C4a         | Dependence on other species to generate habitat                                   | I, SI, N                              | Combined                                      |
-| C4b         | Dietary versatility **(animals)**                                                 | I, SI, N                              | Combined                                      |
-| C4c         | Pollinator versatility **(plants only)**                                          | I, SI, N                              | Combined                                      |
-| C4d         | Dependence on species for dispersal                                               | I, SI, N                              | Combined                                      |
-| C4e         | Sensitivity to pathogens or natural enemies                                       | I, SI, N                              | Combined                                      |
-| C4f         | Sensitivity to competition from native or non-native species                      | I, SI, N                              | Combined                                      |
-| C4g         | Other Interspecific interactions                                                  | I, SI, N                              | Combined                                      |
-| C5a         | Measured genetic variation                                                        | I, SI, N                              | Combined                                      |
-| C5b         | Occurrence of bottlenecks **(only answered if C5a not known)**                    | I, SI, N                              | Combined                                      |
-| C5c         | Reproductive system **(only answered if C5a and C5b not known)**                  | I, SI, N                              | Combined                                      |
-| C6          | Phenological response to changing seasonal temperature or precipitation dynamics. | I, SI, N                              | Combined                                      |
+| Question ID | Parameter | Response categories[\[1\]](#id__ftn1) | Exposure Multiplier applied[\[2\]](#id__ftn2) |
+|----|----|----|----|
+| B1 | Proportion of range lost to sea level rise | GI, I, SI, N | None |
+| B2 | Natural barriers | GI, I, SI, N | Combined |
+| B2 | Anthropogenic barriers | GI, I, SI, N | Combined |
+| B3 | Land use changes resulting from human responses to climate change | I, SI, N | Combined |
+| C1 | Dispersal and movements | GI, I, SI, N | Combined |
+| C2ai | Predicted sensitivity to temperature changes (historical thermal niche) | GI, I, SI, N | Temperature |
+| C2aii | Predicted sensitivity to temperature changes (physiological thermal niche) | GI, I, SI, N | Temperature |
+| C2bi | Sensitivity to moisture changes (historical thermal niche) | GI, I, SI, N | Moisture |
+| C2bii | Sensitivity to moisture changes (physiological thermal niche) | GI, I, SI, N | Moisture |
+| C2c | Dependence on specific disturbance regimes impacted by climate change | I, SI, N | Combined |
+| C2d | Dependence on ice, ice-edge, permafrost, snow habitats | GI, I, SI, N | Combined |
+| C3 | Restriction to uncommon geological features and derivatives | I, SI, N | Combined |
+| C4a | Dependence on other species to generate habitat | I, SI, N | Combined |
+| C4b | Dietary versatility **(animals)** | I, SI, N | Combined |
+| C4c | Pollinator versatility **(plants only)** | I, SI, N | Combined |
+| C4d | Dependence on species for dispersal | I, SI, N | Combined |
+| C4e | Sensitivity to pathogens or natural enemies | I, SI, N | Combined |
+| C4f | Sensitivity to competition from native or non-native species | I, SI, N | Combined |
+| C4g | Other Interspecific interactions | I, SI, N | Combined |
+| C5a | Measured genetic variation | I, SI, N | Combined |
+| C5b | Occurrence of bottlenecks **(only answered if C5a not known)** | I, SI, N | Combined |
+| C5c | Reproductive system **(only answered if C5a and C5b not known)** | I, SI, N | Combined |
+| C6 | Phenological response to changing seasonal temperature or precipitation dynamics. | I, SI, N | Combined |
 
-Table 2.1: Vulnerability factors assessed in the CCVI.
+Table 2.1: Vulnerability factors assessed in the CCVI. {.table
+style="width:99%;"}
 
 [\[1\]](#id__ftnref1) GI = Greatly increases (3), I= Increases (2), SI=
 Somewhat increases (1), N= Neutral (0).
@@ -332,16 +334,16 @@ Somewhat increases (1), N= Neutral (0).
 by an exposure multiplier determined by the climate data. See Section
 [7](#scoring-appendix) for more details on scoring.
 
-|             |                                                              |                                       |
-|-------------|--------------------------------------------------------------|---------------------------------------|
-| Question ID | Parameter                                                    | Response categories[\[1\]](#id__ftn1) |
-| D1          | Documented response to recent climate change                 | GI, I, SI, N                          |
-| D2          | Modeled future (2050) change in population or range size     | GI, I, SI, N                          |
-| D3          | Overlap of modeled future 2050 range with current range      | GI, I, SI, N                          |
-| D4          | Occurrence of protected areas in modeled future distribution | GI, I, SI, N                          |
+|  |  |  |
+|----|----|----|
+| Question ID | Parameter | Response categories[\[1\]](#id__ftn1) |
+| D1 | Documented response to recent climate change | GI, I, SI, N |
+| D2 | Modeled future (2050) change in population or range size | GI, I, SI, N |
+| D3 | Overlap of modeled future 2050 range with current range | GI, I, SI, N |
+| D4 | Occurrence of protected areas in modeled future distribution | GI, I, SI, N |
 
 Table 2.2: Documented or modeled responses to climate change assessed in
-the CCVI.
+the CCVI. {.table style="width:99%;"}
 
 [\[1\]](#id__ftnref1) GI = Greatly increases (3), I = Increases (2), SI
 = Somewhat increases (1), N = Neutral (0)
@@ -357,6 +359,7 @@ If you have not already installed ccviR, begin by installing the ccviR
 package from [GitHub](https://github.com/) with:
 
 ``` r
+
 install.packages("remotes")
 remotes::install_github("LandSciTech/ccviR@dev", type = "binary", upgrade = TRUE)
 ```
@@ -365,6 +368,7 @@ Then, run the code below to launch the app in your browser with the demo
 data:
 
 ``` r
+
 library(ccviR)
 run_ccvi_app("demo")
 ```
@@ -856,16 +860,17 @@ page select “Create from occurrence records”. You will need to move
 through all the steps but can skip the ones that are not relevant and
 then download a zip file containing the species range at the end.
 
-|                           |                                                                                                                                  |                          |                                                                                                                                                                               |
-|---------------------------|----------------------------------------------------------------------------------------------------------------------------------|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Name**                  | **About**                                                                                                                        | **Location**             | **URL**                                                                                                                                                                       |
-| SRedlist                  | Create range maps from global occurrence data.                                                                                   | Global and local         | <https://www.iucnredlist.org/resources/sredlist>                                                                                                                              |
-| NatureServe EBAR          | Accessible range maps and *shapefiles* for priority species. These are at a coarse scale and appropriate for screening purposes. | North America            | <https://www.natureserve.org/canada/ebar#downloads>                                                                                                                           |
-| IUCN                      | Range maps and *shapefiles* for a large number of IUCN listed species.                                                           | Global                   | <https://www.iucnredlist.org/resources/spatial-data-download>                                                                                                                 |
-| ECCC Data range map       | Range polygons for Species at Risk in Canada                                                                                     | Canadian                 | [https://catalogue.ec.gc.ca/geonetwork/srv/eng/catalog.search#/](https://catalogue.ec.gc.ca/geonetwork/srv/eng/catalog.search#/metadata/d00f8e8c-40c4-435a-b790-980339ce3121) |
-| USGS Gap Analysis Project | Range data and polygons for listed and common species in the USA.                                                                | United States of America | <https://www.usgs.gov/programs/gap-analysis-project>                                                                                                                          |
+|  |  |  |  |
+|----|----|----|----|
+| **Name** | **About** | **Location** | **URL** |
+| SRedlist | Create range maps from global occurrence data. | Global and local | <https://www.iucnredlist.org/resources/sredlist> |
+| NatureServe EBAR | Accessible range maps and *shapefiles* for priority species. These are at a coarse scale and appropriate for screening purposes. | North America | <https://www.natureserve.org/canada/ebar#downloads> |
+| IUCN | Range maps and *shapefiles* for a large number of IUCN listed species. | Global | <https://www.iucnredlist.org/resources/spatial-data-download> |
+| ECCC Data range map | Range polygons for Species at Risk in Canada | Canadian | [https://catalogue.ec.gc.ca/geonetwork/srv/eng/catalog.search#/](https://catalogue.ec.gc.ca/geonetwork/srv/eng/catalog.search#/metadata/d00f8e8c-40c4-435a-b790-980339ce3121) |
+| USGS Gap Analysis Project | Range data and polygons for listed and common species in the USA. | United States of America | <https://www.usgs.gov/programs/gap-analysis-project> |
 
-Table 5.1: Potential data sources for species range polygons
+Table 5.1: Potential data sources for species range polygons {.table
+style="width:99%;"}
 
 ### 5.3 Assessment area
 
@@ -1190,16 +1195,16 @@ Guidelines](https://www.natureserve.org/sites/default/files/guidelines_natureser
 for more details on how the CCVI should be interpreted alongside
 Conservation Status.
 
-|                       |                                                                                                                                                                                                        |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Vulnerability rating  | Interpretation                                                                                                                                                                                         |
-| Extremely Vulnerable  | Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050.                                                                       |
-| Highly Vulnerable     | Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050                                                                                               |
-| Moderately Vulnerable | Abundance and/or range extent within geographical area assessed likely to decrease by 2050                                                                                                             |
-| Less Vulnerable       | Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change |
-| Insufficient Evidence | Information entered about a species’ vulnerability is inadequate to calculate an Index score                                                                                                           |
+|  |  |
+|----|----|
+| Vulnerability rating | Interpretation |
+| Extremely Vulnerable | Abundance and/or range extent within geographical area assessed extremely likely to substantially decrease or disappear by 2050. |
+| Highly Vulnerable | Abundance and/or range extent within geographical area assessed likely to decrease significantly by 2050 |
+| Moderately Vulnerable | Abundance and/or range extent within geographical area assessed likely to decrease by 2050 |
+| Less Vulnerable | Available evidence does not suggest that abundance and/or range extent within the geographical area assessed will change (increase/decrease) substantially by 2050. Actual range boundaries may change |
+| Insufficient Evidence | Information entered about a species’ vulnerability is inadequate to calculate an Index score |
 
-Table 6.1: Descriptions of index values provided by NatureServe
+Table 6.1: Descriptions of index values provided by NatureServe {.table}
 
 ## 7 Scoring the CCVI
 
@@ -1236,7 +1241,8 @@ the following steps (Figure [7.1](#fig:fig-NS-alg)):
 | 2-6     | \> 20%              | 0.8                 |
 | 1       | \> 80%              | 0.4                 |
 
-Table 7.1: Temperature exposure multiplier table
+Table 7.1: Temperature exposure multiplier table {.table
+style="width:85%;"}
 
 | Classes | Percentage of range | Exposure multiplier |
 |---------|---------------------|---------------------|
@@ -1247,7 +1253,8 @@ Table 7.1: Temperature exposure multiplier table
 | 2-6     | \> 16%              | 0.67                |
 | 1       | \> 84%              | 0.33                |
 
-Table 7.2: Moisture exposure multiplier table
+Table 7.2: Moisture exposure multiplier table {.table
+style="width:85%;"}
 
 2.  **Calculate B/C Index (Indirect exposure, sensitivity and adaptive
     capacity)**. Assessors use the best available information to assess
@@ -1293,7 +1300,8 @@ Table 7.2: Moisture exposure multiplier table
 | 2     | 3                |
 | 1     | 1                |
 
-Table 7.3: Migratory exposure weighting factors.
+Table 7.3: Migratory exposure weighting factors. {.table
+style="width:50%;"}
 
 |                          |                          |
 |--------------------------|--------------------------|
@@ -1302,7 +1310,7 @@ Table 7.3: Migratory exposure weighting factors.
 | 2-4                      | Moderate                 |
 | 0-2                      | Low                      |
 
-Table 7.4: Migratory exposure thresholds.
+Table 7.4: Migratory exposure thresholds. {.table style="width:75%;"}
 
 ![Steps to calculate the CCVI. 1) Temperature and moisture spatial
 layers are used to assign exposure multipliers; 2) Indirect exposure,
@@ -1323,7 +1331,7 @@ score; 4) A confusion matrix is used to determine the final CCVI value.
 
 ## References
 
-Endicott, Sarah, and Ilona Naujokaitis-Lewis. 2024. “ccviR: An R Package
+Endicott, Sarah, and Ilona Naujokaitis-Lewis. 2024. “ccviR: An r Package
 and Shiny App to Implement the NatureServe Climate Change Vulnerability
 Index.” *Journal of Open Source Software* 9 (103): 7150.
 <https://doi.org/10.21105/joss.07150>.

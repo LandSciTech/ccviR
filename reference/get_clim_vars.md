@@ -50,62 +50,62 @@ scn_nms <- c("RCP 4.5", "RCP 8.5")
 
 get_clim_vars(pth, scn_nms)
 #> $mat
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 44, 43, 2  (nrow, ncol, nlyr)
 #> resolution  : 10000, 10000  (x, y)
 #> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)
-#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs 
-#> sources     : MAT_reclassRCP_4.5.tif  
-#>               MAT_reclassRCP_8.5.tif  
-#> names       : RCP_4.5, RCP_8.5 
-#> min values  :       1,       6 
-#> max values  :       5,       6 
+#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs
+#> sources     : MAT_reclassRCP_4.5.tif
+#>               MAT_reclassRCP_8.5.tif
+#> names       : RCP_4.5, RCP_8.5
+#> min values  :       1,       6
+#> max values  :       5,       6
 #> 
 #> $cmd
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 44, 43, 2  (nrow, ncol, nlyr)
 #> resolution  : 10000, 10000  (x, y)
 #> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)
-#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs 
-#> sources     : CMD_reclassRCP_4.5.tif  
-#>               CMD_reclassRCP_8.5.tif  
-#> names       : RCP_4.5, RCP_8.5 
-#> min values  :       1,       1 
-#> max values  :       6,       6 
+#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs
+#> sources     : CMD_reclassRCP_4.5.tif
+#>               CMD_reclassRCP_8.5.tif
+#> names       : RCP_4.5, RCP_8.5
+#> min values  :       1,       1
+#> max values  :       6,       6
 #> 
 #> $map
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 44, 43, 1  (nrow, ncol, nlyr)
 #> resolution  : 10000, 10000  (x, y)
 #> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)
-#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs 
-#> source      : MAP.tif 
-#> name        : NB_norm_MAP 
-#> min value   :         902 
-#> max value   :        1357 
+#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs
+#> source      : MAP.tif
+#> name        : NB_norm_MAP
+#> min value   :         902
+#> max value   :        1357
 #> 
 #> $ccei
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 168, 194, 2  (nrow, ncol, nlyr)
 #> resolution  : 0.04166667, 0.04166667  (x, y)
 #> extent      : -87.875, -79.79167, 24.29167, 31.29167  (xmin, xmax, ymin, ymax)
-#> coord. ref. : lon/lat WGS 84 (EPSG:4326) 
-#> sources     : CCEI_reclassRCP_4.5.tif  
-#>               CCEI_reclassRCP_8.5.tif  
-#> names       : RCP_4.5, RCP_8.5 
-#> min values  :       2,       3 
-#> max values  :       3,       3 
+#> coord. ref. : lon/lat WGS 84 (EPSG:4326)
+#> sources     : CCEI_reclassRCP_4.5.tif
+#>               CCEI_reclassRCP_8.5.tif
+#> names       : RCP_4.5, RCP_8.5
+#> min values  :       2,       3
+#> max values  :       3,       3
 #> 
 #> $htn
-#> class       : SpatRaster 
+#> class       : SpatRaster
 #> size        : 44, 43, 1  (nrow, ncol, nlyr)
 #> resolution  : 10000, 10000  (x, y)
 #> extent      : 1922000, 2352000, 6573000, 7013000  (xmin, xmax, ymin, ymax)
-#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs 
-#> source      : MWMT_MCMT_reclass.tif 
-#> name        : NB_norm_MWMT 
-#> min value   :            1 
-#> max value   :            4 
+#> coord. ref. : +proj=lcc +lat_0=0 +lon_0=-95 +lat_1=49 +lat_2=77 +x_0=0 +y_0=0 +ellps=GRS80 +units=m +no_defs
+#> source      : MWMT_MCMT_reclass.tif
+#> name        : NB_norm_MWMT
+#> min value   :            1
+#> max value   :            4
 #> 
 #> $clim_poly
 #> Simple feature collection with 1 feature and 10 fields

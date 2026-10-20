@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Using the ccviR App">
@@ -64,7 +64,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Using the ccviR App</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/see24/ccviR/blob/v1.0.0/vignettes/app_vignette2.Rmd" class="external-link"><code>vignettes/app_vignette2.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/see24/ccviR/blob/master/vignettes/app_vignette2.Rmd" class="external-link"><code>vignettes/app_vignette2.Rmd</code></a></small>
       <div class="d-none name"><code>app_vignette2.Rmd</code></div>
     </div>
 
@@ -80,7 +80,7 @@
 </h3>
 <p>The ccviR R package and Shiny app was developed by Environment and Climate Change Canada (ECCC) to implement the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe Climate Change Vulnerability Index (CCVI) version 3.02</a> <span class="citation">(<a href="#ref-young2016">Young et al. 2016</a>; <a href="#ref-endicott2024">Endicott and Naujokaitis-Lewis 2024</a>)</span>. It is designed to assist land managers to rapidly assess the relative climate change vulnerability of terrestrial and aquatic plant and animal species, as well as lichens across North America <span class="citation">(<a href="#ref-endicott2024">Endicott and Naujokaitis-Lewis 2024</a>)</span>. The package allows all of the geospatial aspects of calculating the CCVI to be done in R, removing the need for separate GIS calculations. The app provides an interactive application designed to offer a user-friendly and simple interface for calculating the NatureServe CCVI.</p>
 <p>The NatureServe CCVI is a rapid assessment tool designed to allow a relative grouping of unrelated taxa by vulnerability to climate change and to highlight which factors contribute to the climate change vulnerability of individual species or groups of taxa. Outputs of the NatureServe CCVI can inform conservation decisions and identify actions to increase species’ resilience to climate change. See <a href="https://www.degruyter.com/document/doi/10.7208/9780226074641-007/html" class="external-link">Young et. al (2012)</a>, <a href="https://doi.org/10.1002/wsb.478" class="external-link">Young et. al. (2015)</a> and the <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">NatureServe CCVI Guidelines</a> for more detailed descriptions of the index and how it was created.</p>
-<p>Recently NatureServe has produced a new version of the CCVI, Version 4.0. The new version builds off Version 3.02 but significantly changes the vulnerability questions, exposure calculation and scoring algorithm. This version of the CCVI is available as an Excel Spreadsheet or an interactive webpage but does not have a version released for Canada. While there are improvements in Version 4.0, many of the changes have not yet been peer-reviewed and the tool has not been widely used so far. On the other hand, the previous version of the NatureServe CCVI has been used extensively in State Wildlife Action Plans in the US and has been reviewed in several peer-reviewed papers <span class="citation">(<a href="#ref-young2015">Young, Dubois, and Rowland 2015</a>; <a href="#ref-young2012">Young et al. 2012</a>)</span>. Therefore, we continue to use Version 3.02 but will consider adopting improvements from Version 4.0 in the future.</p>
+<p>Recently NatureServe has produced a new version of the CCVI, Version 4.0. The new version builds off Version 3.02 but significantly changes the vulnerability questions, exposure calculation and scoring algorithm. This version of the CCVI is available as an Excel Spreadsheet or an interactive webpage but does not have a version released for Canada. While there are improvements in Version 4.0, many of the changes have not yet been peer-reviewed and the tool has not been widely used so far. On the other hand, the previous version of the NatureServe CCVI has been used extensively in State Wildlife Action Plans in the US and has been reviewed in several peer-reviewed papers <span class="citation">(<a href="#ref-young2015">Young et al. 2015</a>, <a href="#ref-young2012">2012</a>)</span>. Therefore, we continue to use Version 3.02 but will consider adopting improvements from Version 4.0 in the future.</p>
 <p>The CCVI is designed to assess the climate change vulnerability of terrestrial and aquatic plants, animals (including migratory species), and lichens, within a defined geographic area of the USA and Canada (i.e., North America). The index contemplates vulnerability based on the projected change in climate from a baseline of 1961-1990 to the year 2050.</p>
 <p>The NatureServe CCVI combines several components that contribute to a species’ vulnerability to climate change (Figure <a href="#fig:fig-CCVI-overview">1.1</a>). These include, exposure to changes in temperature and moisture (Section A), indirect exposure to other changes brought on by climate change (e.g. sea level rise; Section B), and traits related to species’ sensitivity or ability to adapt to climate change (Section C). It also optionally incorporates the results of documented or modeled responses to climate change (Section D; <span class="citation">Young et al. (<a href="#ref-young2012">2012</a>)</span>; <span class="citation">Young et al. (<a href="#ref-young2016">2016</a>)</span>). The resulting CCVI ranks include: ‘Less Vulnerable’, ‘Moderately Vulnerable’, ‘Highly Vulnerable’, ‘Extremely Vulnerable’ or ‘Insufficient Evidence’. Exposure is assessed by determining the proportion of the species’ range that falls into six classes of temperature and moisture change, which is used to assign an exposure multiplier. The vulnerability factors in Sections B, C and optionally D are each scored on a scale from ‘neutral’ (score: 0) to ‘greatly increases vulnerability’ (score: 3). The indirect exposure, sensitivity and adaptive capacity scores are multiplied by the exposure multiplier and summed. The final CCVI value is a result of applying thresholds to the total scores and balancing the sensitivity and adaptive capacity rank with the documented or modeled response rank. See Section <a href="#scoring-appendix">7</a> for a more detailed explanation of the scoring algorithm.</p>
 <div class="figure">
@@ -1124,9 +1124,9 @@ Figure 7.1: Steps to calculate the CCVI. 1) Temperature and moisture spatial lay
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-endicott2024" class="csl-entry">
-Endicott, Sarah, and Ilona Naujokaitis-Lewis. 2024. <span>“ccviR: An R Package and Shiny App to Implement the NatureServe Climate Change Vulnerability Index.”</span> <em>Journal of Open Source Software</em> 9 (103): 7150. <a href="https://doi.org/10.21105/joss.07150" class="external-link">https://doi.org/10.21105/joss.07150</a>.
+Endicott, Sarah, and Ilona Naujokaitis-Lewis. 2024. <span>“ccviR: An r Package and Shiny App to Implement the NatureServe Climate Change Vulnerability Index.”</span> <em>Journal of Open Source Software</em> 9 (103): 7150. <a href="https://doi.org/10.21105/joss.07150" class="external-link">https://doi.org/10.21105/joss.07150</a>.
 </div>
 <div id="ref-young2016" class="csl-entry">
 Young, Bruce E., Elizabeth Byers, Geoff Hammerson, Amanda Frances, Leah Oliver, and Amanda Treher. 2016. <span>“Guidelines for Using the NatureServe Climate Change Vulnerability Index.”</span> <em>NatureServe</em> 2.1: 58. <a href="https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf" class="external-link">https://www.natureserve.org/sites/default/files/guidelines_natureserveclimatechangevulnerabilityindex_r3.02_1_jun_2016.pdf</a>.
@@ -1150,7 +1150,7 @@ Young, Bruce E., Kimberly R. Hall, Elizabeth Byers, Kelly Gravuer, Geoff Hammers
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

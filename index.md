@@ -28,6 +28,7 @@ You can install the development version of ccviR from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("devtools")
 devtools::install_github("LandSciTech/ccviR")
 ```
@@ -38,6 +39,7 @@ The code below will open the app in your default browser with an example
 data set available.
 
 ``` r
+
 library(ccviR)
 run_ccvi_app("demo")
 ```
@@ -46,6 +48,7 @@ While the following will open the app with the current working directory
 as the default data location.
 
 ``` r
+
 run_ccvi_app()
 ```
 

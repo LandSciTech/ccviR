@@ -52,6 +52,7 @@ following code block loads the required packages and the example data
 set:
 
 ``` r
+
 #load packages
 library(ccviR)
 library(sf)
@@ -128,6 +129,7 @@ The following code prepares the climate data from the example data set
 using `prep_clim_data`:
 
 ``` r
+
 # climate data file names
 list.files(file.path(data_pth, "clim_files/raw"))
 #>  [1] "ccei_ssp245_fl.tif" "ccei_ssp585_fl.tif" "NB_norm_CMD.tif"   
@@ -193,6 +195,7 @@ The change in MAT and the classified MAT (output from `prep_clim_data`)
 can be plotted to demonstrate the classification of the change in MAT.
 
 ``` r
+
 # select color ramp for plots
 pal = c("#FFF9CA", "#FEE697", "#FEC24D", "#F88B22", "#D85A09", "#A33803")
 
@@ -208,6 +211,7 @@ terra::plot(mat_norm - mat_fut,
 ![](package_vignette_files/figure-html/unnamed-chunk-3-1.png)
 
 ``` r
+
 # breaks used to classify data (determined when preparing RCP4.5 data above)
 brks$brks_mat
 #>        [,1]   [,2] [,3]
@@ -236,6 +240,7 @@ relevant metadata. This file is required if the data is used with the
 ccviR Shiny app.
 
 ``` r
+
 # make readme csv
 write.csv(
   data.frame(Scenario_Name = c("RCP 4.5", "RCP 8.5"),
@@ -271,6 +276,7 @@ for more details on these spatial inputs. For this example all of the
 data is provided with the package.
 
 ``` r
+
 rng_poly <- read_sf(file.path(data_pth, "rng_poly.shp"), agr = "constant")
 assess_poly <- read_sf(file.path(data_pth, "assess_poly.shp"), agr = "constant")
 rng_chg <- terra::rast(c(file.path(data_pth, "rng_chg_45.tif"), 
@@ -295,6 +301,7 @@ multi-layer SpatRaster for variables that change, with one layer per
 scenario. The clim_poly is also included as an sf object.
 
 ``` r
+
 clim_dat <- get_clim_vars(file.path(data_pth, "clim_files/processed"), 
                           scenario_names = c("RCP 4.5", "RCP 8.5"))
 
@@ -314,6 +321,7 @@ Once the species specific and climate data is loaded, we can run the
 spatial data analysis:
 
 ``` r
+
 spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
                             clim_vars_lst = clim_dat, ptn_poly = PTN_poly,
                             hs_rast = rng_chg, hs_rcl = hs_rcl_mat, 
@@ -323,8 +331,6 @@ spat_res <- analyze_spatial(range_poly = rng_poly, scale_poly = assess_poly,
 #> Preparing polygon 'Assessment Area'
 #> Preparing polygon 'Range'
 #> Preparing polygon 'PTN'
-#> Clipping 'Range' to 'Climate Data Extent'
-#> Clipping 'Range' to 'Assessment Area'
 #> Assessing local climate exposure
 #> Assessing thermal & hydrological niches
 #> Assessing modelled range response to climate change
@@ -341,6 +347,7 @@ that the range is spread over the 2nd, 3rd and 4th highest exposure
 classes for change in MAT:
 
 ``` r
+
 spat_res$spat_table[, 1:7]
 #>   scenario_name MAT_1 MAT_2 MAT_3  MAT_4 MAT_5 MAT_6
 #> 1       RCP 4.5     0     0 8.067 64.113 27.82     0
@@ -364,6 +371,7 @@ RCP 4.5 scenario by overlaying the range clipped to the assessment area
 on top of the change in MAT raster:
 
 ``` r
+
 terra::plot(clim_dat$mat$RCP_4.5, col = pal)
 
 plot(st_geometry(spat_res$range_poly_assess), add = TRUE)
@@ -386,6 +394,7 @@ factor is calculated by the spatial analysis, indicated by
 results of the spatial analysis.
 
 ``` r
+
 # create a blank vulnerability question table
 vuln <- make_vuln_df("sp_name")
 ```
@@ -404,6 +413,7 @@ in the codeblocks below:
 Interactive editing:
 
 ``` r
+
 # you can interactively edit the table
 vuln <- edit(vuln)
 ```
@@ -411,6 +421,7 @@ vuln <- edit(vuln)
 Editing using code:
 
 ``` r
+
 # or use code (recommended for reproducibility)
 vuln$Value1[3:19] <- c(0, 0, 1, 0, -1, -1, -1, -1, 0, 0, 1, 0, 0, 1, 0, 0, 0)
 vuln$Value1[26:29] <- c(0, -1, -1, 0)
@@ -423,6 +434,7 @@ vuln$Value2[3:5] <- c(2, 0, 0)
 Editing using a csv:
 
 ``` r
+
 # save the table as a csv 
 write.csv(vuln, "path/to/write", row.names = FALSE)
 
@@ -439,6 +451,7 @@ number of rounds in the Monte Carlo has been reduced but it should
 generally be kept to the default (`n_rnds = 1000`).
 
 ``` r
+
 index_res <- calc_vulnerability(spat_res$spat_table, vuln, tax_grp = "Bird",
                                 n_rnds = 20)
 #> calculating vulnerability index RCP 4.5
@@ -457,6 +470,7 @@ LV: Less Vulnerable, and IE: Insufficient Evidence. Below we see that
 our example species is Highly Vulnerable to climate change:
 
 ``` r
+
 glimpse(index_res)
 #> Rows: 2
 #> Columns: 12
@@ -493,6 +507,7 @@ an index value of Extremely Vulnerable if the D score were higher or not
 included (-1 in the graph).
 
 ``` r
+
 plot_score_index(index_res)
 ```
 
@@ -506,6 +521,7 @@ the exposure multiplier that was used to modify the score for the
 vulnerability factor.
 
 ``` r
+
 q_score <- bind_rows(index_res$vuln_df %>% `names<-`(index_res$scenario_name), 
             .id = "scenario_name") %>%
   plot_q_score(tax_grp = "Bird")
