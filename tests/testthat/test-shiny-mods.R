@@ -35,12 +35,12 @@ test_that("Full app", {
   expect_screenshot_local(app, name = "03-spatial-ready")
 
   app$click("spatial-startSpatial")
-
+  Sys.sleep(5)
   app$wait_for_idle()
   Sys.sleep(1)
   expect_screenshot_local(app, name = "04-spatial-run")
   app$click("spatial-continue")
-  Sys.sleep(1)
+  Sys.sleep(5)
 
   # Section A
   app$wait_for_idle()
@@ -86,6 +86,7 @@ test_that("Full app", {
   Sys.sleep(1)
   app$expect_values(input = TRUE, export = TRUE, name = "11-sectionC-values", transform = clean_paths)
   app$click("section_c-continue")
+  Sys.sleep(5)
 
   # Section D
   app$wait_for_idle()
@@ -103,7 +104,7 @@ test_that("Full app", {
   expect_screenshot_local(app, name = "14-results-ready")
 
   app$click("results-calcIndex")
-  Sys.sleep(2)
+  Sys.sleep(10)
   app$wait_for_idle()
   expect_screenshot_local(app, name = "15-results-run")
 

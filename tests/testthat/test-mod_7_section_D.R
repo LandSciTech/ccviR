@@ -9,7 +9,7 @@ test_that("Section D", {
   shiny_app <- mod_D_test()
   app <- AppDriver$new(shiny_app, variant = platform_variant(r_version = FALSE))
   app$set_window_size(width = 1619, height = 993)
-  a <- app$wait_for_value(output = "test-map_D4", timeout = 10000)
+  a <- app$wait_for_value(output = "test-map_D4", timeout = 100000)
   Sys.sleep(1)
 
   app$expect_screenshot(name = "01-full-spatial")

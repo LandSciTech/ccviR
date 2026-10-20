@@ -17,7 +17,7 @@
       "lat": 27.83907609477782
     },
     "section_a-map_ccei_groups": [
-      "CartoDB",
+      "OpenStreetMap",
       "RCP 4.5",
       "RCP 8.5"
     ],
@@ -33,7 +33,7 @@
       "lat": 46.58906908309185
     },
     "section_a-map_cmd_groups": [
-      "CartoDB",
+      "OpenStreetMap",
       "RCP 4.5",
       "RCP 8.5"
     ],
@@ -49,7 +49,7 @@
       "lat": 46.58906908309185
     },
     "section_a-map_texp_groups": [
-      "CartoDB",
+      "OpenStreetMap",
       "RCP 4.5",
       "RCP 8.5"
     ],
@@ -158,7 +158,7 @@
       "lng": -66.40136718750001,
       "lat": 46.58906908309185
     },
-    "section_c-map_C2ai_groups": "CartoDB",
+    "section_c-map_C2ai_groups": "OpenStreetMap",
     "section_c-map_C2ai_zoom": 6,
     "section_c-map_C2aii_bounds": {
       "north": 47.07760411715964,
@@ -170,7 +170,7 @@
       "lng": -67.36816406250001,
       "lat": 47.07760411715964
     },
-    "section_c-map_C2aii_groups": "CartoDB",
+    "section_c-map_C2aii_groups": "OpenStreetMap",
     "section_c-map_C2aii_zoom": 7,
     "section_c-map_C2bi_bounds": {
       "north": 46.58906908309185,
@@ -182,7 +182,7 @@
       "lng": -66.40136718750001,
       "lat": 46.58906908309185
     },
-    "section_c-map_C2bi_groups": "CartoDB",
+    "section_c-map_C2bi_groups": "OpenStreetMap",
     "section_c-map_C2bi_zoom": 6,
     "section_d-D1": "2",
     "section_d-D2": null,
@@ -202,7 +202,7 @@
     "section_d-help_D3": 0,
     "section_d-help_D4": 0,
     "section_d-map_D2D3_bounds": {
-      "north": 49.52520834197442,
+      "north": 49.52520834197444,
       "east": -58.07373046875001,
       "south": 43.48481212891603,
       "west": -74.72900390625001
@@ -212,13 +212,13 @@
       "lat": 46.58906908309185
     },
     "section_d-map_D2D3_groups": [
-      "CartoDB",
+      "OpenStreetMap",
       "RCP 4.5",
       "RCP 8.5"
     ],
     "section_d-map_D2D3_zoom": 6,
     "section_d-map_D4_bounds": {
-      "north": 49.52520834197442,
+      "north": 49.52520834197444,
       "east": -58.07373046875001,
       "south": 43.48481212891603,
       "west": -74.72900390625001
@@ -437,8 +437,8 @@
         0
       ],
       "PTN": [
-        19.45391478831063,
-        19.45391478831063
+        19.45391478831048,
+        19.45391478831048
       ],
       "MAP_max": [
         1175,
@@ -457,8 +457,8 @@
         0.393
       ],
       "range_size": [
-        25902079658.56419,
-        25902079658.56419
+        25902079658.56439,
+        25902079658.56439
       ],
       "protected": [
         9.497999999999999,
@@ -866,13 +866,13 @@
       ],
       "ccviR_version": [
         [
+          1,
           0,
-          2,
           0
         ],
         [
+          1,
           0,
-          2,
           0
         ]
       ]

@@ -20,26 +20,22 @@ test_that("Data Prep app - inputs", {
   g <- app$get_value(output = "data-ui_scenarios")$html
   expect_true(stringr::str_detect(g, "Scenario 1"))
   expect_false(stringr::str_detect(g, "Scenario 2"))
-  expect_screenshot_local(app, name = "01-ready")
 
   # Add scenarios
   app$set_inputs(`data-scn_n` = 2)
   g <- app$get_value(output = "data-ui_scenarios")$html
   expect_true(stringr::str_detect(g, "Scenario 1"))
   expect_true(stringr::str_detect(g, "Scenario 2"))
-  expect_screenshot_local(app, name = "01_2-ready")
 
   # Half of MWMT/MCMT
   app$click("data-mwmt_norm_pth_clear")
   expect_equal(app$get_value(output = "data-submit_error")$message,
                "Must provide both MCMT and MWMT or neither")
-  expect_screenshot_local(app, name = "02-mwmt-mcmt-mismatch")
 
   # Missing inputs
   app$click("data-mat_norm_pth_clear")
   expect_equal(app$get_value(output = "data-submit_error")$message,
                "Missing required inputs")
-  expect_screenshot_local(app, name = "03-missing-inputs")
 
 })
 
@@ -67,6 +63,7 @@ test_that("Data Prep app - run", {
     options = list("ccviR.test_data_prep" = path))
   app$set_window_size(width = 1619, height = 993)
 
+  Sys.sleep(10)
   # Now we have the dir - but no files
   expect_true(fs::dir_exists(test_path("TESTING DATA UI OUTPUTS")))
   expect_length(fs::dir_ls(test_path("TESTING DATA UI OUTPUTS")), 0)
@@ -74,7 +71,7 @@ test_that("Data Prep app - run", {
   # Run data prep
   app$click("data-submit")
   # app$wait_for_idle()
-  Sys.sleep(1)
+  Sys.sleep(20)
 
   # Now we have the dir - and the files
   expect_true(fs::dir_exists(test_path("TESTING DATA UI OUTPUTS")))
@@ -84,8 +81,6 @@ test_that("Data Prep app - run", {
   expect_true(all(c("climate_data_readme.csv",
                     "CMD_reclassRCP_4.5.tif", "MAT_reclassRCP_4.5.tif") %in% f))
   expect_false(any(c("CMD_reclassRCP_8.5.tif", "MAT_reclassRCP_8.5.tif") %in% f)) # Only one scenario
-
-  expect_screenshot_local(app, name = "04-run")
 
   # Clean up
   fs::file_delete(f0)

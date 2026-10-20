@@ -264,9 +264,9 @@ ggplot() +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_continuous(expand = c(0, 0)) +
   scale_colour_manual(name = NULL, values = c("Assessment Area" = "black", "Range" = "red"))+
-  coord_sf(crs = 4326, 
-           # only show other side of dateline if range includes it
-           xlim = c(-179, max(-50, st_bbox(range_poly)["xmax"])))
+  coord_sf(crs = sf::st_crs(clim_vars$map)) 
+           # # only show other side of dateline if range includes it
+           # xlim = c(-179, max(-50, st_bbox(range_poly)["xmax"])))
 ```
 
 ## Index results

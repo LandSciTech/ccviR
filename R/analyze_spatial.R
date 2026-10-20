@@ -353,7 +353,8 @@ clip_poly <- function(poly, poly_clip, var1, var2, quiet) {
   poly <- validate_poly(poly, var1, quiet)
 
   already_clipped <- all(
-    sf::st_within(poly, poly_clip, sparse = FALSE)
+    sf::st_within(poly,
+                  sf::st_transform(poly_clip, sf::st_crs(poly)), sparse = FALSE)
   )
 
   if (already_clipped) {

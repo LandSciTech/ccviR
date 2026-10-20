@@ -107,8 +107,10 @@ make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
 
   out <- leaflet::leaflet() %>%
     # Tiles first to go under rasters
-    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap, group = "OpenStreetMap") %>%
-    leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron, group = "CartoDB")
+    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap, group = "OpenStreetMap") #%>%
+    # leaflet::addProviderTiles(leaflet::providers$CartoDB.Positron, group = "CartoDB")
+  # CartoDB now requires a free API key which users would have to set up themselves
+  # add back this default if hosted online.
 
   # Add second Raster
   if(!is.null(rast2)) {
@@ -162,7 +164,8 @@ make_map <- function(poly1, rast1 = NULL, poly2 = NULL, rast2 = NULL,
 
   out <- out %>%
     leaflet::addLayersControl(
-      baseGroups = c("CartoDB", "OpenStreetMap"),
+      baseGroups = c(#"CartoDB",
+                     "OpenStreetMap"),
       overlayGroups = rast_grp,
       options = leaflet::layersControlOptions(collapsed = FALSE)
     )
